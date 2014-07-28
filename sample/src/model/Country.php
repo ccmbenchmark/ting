@@ -1,5 +1,7 @@
 <?php
 
+namespace sample\model;
+
 class Country
 {
 
@@ -8,48 +10,40 @@ class Country
     protected $continent = null;
     protected $region    = null;
 
-
     public function setCode($code)
     {
         $this->code = (string) $code;
     }
-
 
     public function getCode()
     {
         return (string) $this->code;
     }
 
-
     public function setName($name)
     {
         $this->name = (string) $name;
     }
-
 
     public function getName()
     {
         return (string) $this->name;
     }
 
-
     public function setContinent($continent)
     {
         $this->continent = (string) $continent;
     }
-
 
     public function getContinent()
     {
         return (string) $this->continent;
     }
 
-
     public function setRegion($region)
     {
         $this->region = (string) $region;
     }
-
 
     public function getRegion()
     {

@@ -2,6 +2,8 @@
 
 namespace fastorm\Entity;
 
+use fastorm\Exception;
+
 class Metadata
 {
 
@@ -11,54 +13,40 @@ class Metadata
     protected $fields = array();
     protected $primary = array();
 
-
-    public function __construct($entityName, $directory)
-    {
-        $metadata = $this;
-        require_once $directory . '/Metadata' . $entityName . '.php';
-    }
-
-
     public function setConnection($connectionName)
     {
-        $this->connectionName = $connectionName;
+        $this->connectionName = (string) $connectionName;
     }
-
 
     public function getConnection()
     {
-        return $this->connectionName;
+        return (string) $this->connectionName;
     }
-
 
     public function setDatabase($databaseName)
     {
-        $this->databaseName = $databaseName;
+        $this->databaseName = (string) $databaseName;
     }
-
 
     public function getDatabase()
     {
-        return $this->databaseName;
+        return (string) $this->databaseName;
     }
-
 
     public function setTable($tableName)
     {
-        $this->table = $tableName;
+        $this->table = (string) $tableName;
     }
-
 
     public function getTable()
     {
-        return $this->table;
+        return (string) $this->table;
     }
-
 
     public function addField(array $params)
     {
         if (isset($params['fieldName']) === false || isset($params['columnName']) === false) {
-            throw new \RuntimeException('Field configuration must have fieldName and columnName properties');
+            throw new Exception('Field configuration must have fieldName and columnName properties');
         }
 
         $this->fields[$params['columnName']] = $params;
@@ -68,15 +56,23 @@ class Metadata
         }
     }
 
-
     public function getPrimary()
     {
         return $this->primary;
     }
 
-
     public function getFields()
     {
         return $this->fields;
+    }
+
+    public function getFieldsName()
+    {
+        return array_map(
+            function ($field) {
+                return $field['columnName'];
+            },
+            $this->fields
+        );
     }
 }

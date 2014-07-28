@@ -1,0 +1,16 @@
+{
+    "name": "fastorm",
+    "type": "library",
+    "license": "GPL-2.0",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "atoum/atoum": "dev-master"
+    },
+    "autoload": {
+        "psr-4" : {
+            "fastorm\\": "lib/fastorm"
+        }
+    }
+}
