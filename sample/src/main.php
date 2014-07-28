@@ -3,12 +3,11 @@
 namespace sample;
 
 // fastorm autoloader
-use fastorm\Adapter\Driver\NoResultException;
 use fastorm\Exception;
 
-require '../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
-require '../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $connections = array(
     'main' => array(
@@ -27,7 +26,7 @@ $em = \fastorm\Entity\Manager::getInstance(array(
 ));
 
 try {
-    $cityRepository = $em->getRepository('\sample\model\City');
+    $cityRepository = $em->getRepository('\sample\src\model\City');
     $results = $cityRepository->getZCountryWithLotsPopulation();
 
     foreach ($results as $result) {
@@ -41,7 +40,7 @@ try {
 echo str_repeat("-", 40) . "\n";
 
 try {
-    $countryRepository = $em->getRepository('\sample\model\Country');
+    $countryRepository = $em->getRepository('\sample\src\model\Country');
     $results = $countryRepository->hydrate($countryRepository->query("select * from T_COUNTRY_COU as b limit 3"));
 
     foreach ($results as $result) {
@@ -56,7 +55,7 @@ echo str_repeat("-", 40) . "\n";
 $em2 = \fastorm\Entity\Manager::getInstance();
 
 try {
-    $cityRepository = $em2->getRepository('\sample\model\City');
+    $cityRepository = $em2->getRepository('\sample\src\model\City');
     $results = $cityRepository->hydrate(
         $cityRepository->query(
             "select * from T_CITY_CIT as c
@@ -75,14 +74,14 @@ try {
 }
 
 echo str_repeat("-", 40) . "\n";
-$countryRepository = $em2->getRepository('\sample\model\Country');
+$countryRepository = $em2->getRepository('\sample\src\model\Country');
 var_dump($countryRepository->get('FRA'));
 
 echo str_repeat("-", 40) . "\n";
 echo str_repeat("-", 40) . "\n";
 
 try {
-    $cityRepository = $em2->getRepository('\sample\model\City');
+    $cityRepository = $em2->getRepository('\sample\src\model\City');
     $results = $cityRepository->hydrate(
         $cityRepository->query(
             "select * from T_CITY_CIT as c inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)

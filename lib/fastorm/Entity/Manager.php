@@ -9,11 +9,11 @@ use fastorm\Exception;
 class Manager
 {
 
-    protected static $instance = null;
+    protected static $instance  = null;
     protected $connectionConfig = null;
-    protected $connectionList = array();
-    protected $metadataList = array();
-    protected $tableToClass = array();
+    protected $connectionList   = array();
+    protected $metadataList     = array();
+    protected $tableToClass     = array();
 
     protected function __construct(array $config)
     {
@@ -35,8 +35,8 @@ class Manager
     }
 
     /**
-     * @param $table
-     * @return Model
+     * @param  string $table
+     * @return string
      */
     public function getClass($table)
     {
@@ -48,13 +48,18 @@ class Manager
         return $this->tableToClass[$table];
     }
 
-    public function loadConnection($connections)
+    /**
+     * @param  string $table
+     * @param  string $class
+     * @return void
+     */
+    public function setTableToClass($table, $class)
     {
-        $this->connectionConfig = $connections;
+        $this->tableToClass[$table] = $class;
     }
 
     /**
-     * @param $entityName
+     * @param  $entityName
      * @return Repository
      */
     public function getRepository($entityName)
@@ -65,7 +70,7 @@ class Manager
     }
 
     /**
-     * @param $repositoryName
+     * @param  $repositoryName
      * @return Metadata
      */
     public function loadMetadata($repositoryName)
@@ -77,7 +82,7 @@ class Manager
         }
 
         $this->metadataList[$entityName] = $repositoryName::loadMetadata(new Metadata());
-        $this->tableToClass[$this->metadataList[$entityName]->getTable()] = $entityName;
+        $this->setTableToClass($this->metadataList[$entityName]->getTable(), $entityName);
 
         return $this->metadataList[$entityName];
     }
