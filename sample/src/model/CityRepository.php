@@ -1,6 +1,6 @@
 <?php
 
-namespace sample\model;
+namespace sample\src\model;
 
 class CityRepository extends \fastorm\Entity\Repository
 {
