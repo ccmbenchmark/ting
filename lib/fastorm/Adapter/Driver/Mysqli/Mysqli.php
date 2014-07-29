@@ -116,4 +116,9 @@ class Mysqli implements Database
     {
         return '`'.$field.'`';
     }
+
+    public function protectTableName($table)
+    {
+        return '`'.str_replace('.', '`.`', $table).'`';
+    }
 }
