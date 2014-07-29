@@ -82,7 +82,7 @@ class Metadata extends atoum
                     'columnName' => 'bouhSecondColumn'
                 ));
             })
-            ->hasDefaultCode()
-            ->hasMessage('Primary key has already been setted.');
+                ->hasDefaultCode()
+                ->hasMessage('Primary key has already been setted.');
     }
 }
