@@ -43,17 +43,25 @@ class Metadata
         return (string) $this->table;
     }
 
+    /**
+     * @param array $params
+     * @throws \fastorm\Exception
+     */
     public function addField(array $params)
     {
         if (isset($params['fieldName']) === false || isset($params['columnName']) === false) {
             throw new Exception('Field configuration must have fieldName and columnName properties');
         }
 
-        $this->fields[$params['columnName']] = $params;
-
         if (isset($params['id']) === true && $params['id'] === true) {
+            if (count($this->primary) > 0) {
+                throw new Exception('Primary key has already been setted.');
+            }
             $this->primary = array('field' => $params['fieldName'], 'column' => $params['columnName']);
         }
+
+        $this->fields[$params['columnName']] = $params;
+
     }
 
     public function getPrimary()

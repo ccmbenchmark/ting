@@ -34,7 +34,7 @@ class Metadata extends atoum
                 ->isEqualTo('bouhTable');
     }
 
-    public function testExceptionAddField()
+    public function testAddFieldWithInvalidParametersShouldThrowException()
     {
         $this
             ->if($object = new \fastorm\Entity\Metadata())
@@ -54,7 +54,7 @@ class Metadata extends atoum
                 ->isEqualTo(array('bouhColumn' => array('fieldName' => 'bouhField', 'columnName' => 'bouhColumn')));
     }
 
-    public function testSetterGetterPrimary()
+    public function testGetterPrimaryShouldReturnValuePassedToSetter()
     {
         $this
             ->if($object = new \fastorm\Entity\Metadata())
@@ -64,5 +64,25 @@ class Metadata extends atoum
                 'columnName' => 'bouhColumn')))
             ->array($object->getPrimary())
                 ->isEqualTo(array('field' => 'bouhField', 'column' => 'bouhColumn'));
+    }
+
+    public function testSetterWithPrimaryKeyShouldThrowExceptionIfPrimaryAlreadySetted()
+    {
+        $this
+            ->if($object = new \fastorm\Entity\Metadata())
+            ->then($object->addField(array(
+                'id' => true,
+                'fieldName' => 'bouhField',
+                'columnName' => 'bouhColumn'
+            )))
+            ->exception(function () use ($object) {
+                $object->addField(array(
+                    'id' => true,
+                    'fieldName' => 'bouhSecondField',
+                    'columnName' => 'bouhSecondColumn'
+                ));
+            })
+                ->hasDefaultCode()
+                ->hasMessage('Primary key has already been setted.');
     }
 }
