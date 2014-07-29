@@ -16,7 +16,6 @@ class Metadata extends atoum
                 ->isEqualTo('bouhConnection');
     }
 
-
     public function testSetterGetterDatabase()
     {
         $this
@@ -26,7 +25,6 @@ class Metadata extends atoum
                 ->isEqualTo('bouhDatabase');
     }
 
-
     public function testSetterGetterTable()
     {
         $this
@@ -35,7 +33,6 @@ class Metadata extends atoum
             ->string($object->getTable())
                 ->isEqualTo('bouhTable');
     }
-
 
     public function testExceptionAddField()
     {
@@ -48,7 +45,6 @@ class Metadata extends atoum
                 ->hasMessage('Field configuration must have fieldName and columnName properties');
     }
 
-
     public function testSetterGetterAddField()
     {
         $this
@@ -57,7 +53,6 @@ class Metadata extends atoum
             ->array($object->getFields())
                 ->isEqualTo(array('bouhColumn' => array('fieldName' => 'bouhField', 'columnName' => 'bouhColumn')));
     }
-
 
     public function testSetterGetterPrimary()
     {
