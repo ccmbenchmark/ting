@@ -12,7 +12,7 @@ class Mysqli extends atoum
         $this
             ->if($object = new \fastorm\Adapter\Driver\Mysqli\Mysqli())
             ->variable($object->protectTableName('table'))
-            ->isEqualTo('`table`');
+                ->isEqualTo('`table`');
     }
 
     public function testProtectTableNameProtectionWithDatabase()
@@ -20,6 +20,6 @@ class Mysqli extends atoum
         $this
             ->if($object = new \fastorm\Adapter\Driver\Mysqli\Mysqli())
             ->variable($object->protectTableName('database.table'))
-            ->isEqualTo('`database`.`table`');
+                ->isEqualTo('`database`.`table`');
     }
 }
