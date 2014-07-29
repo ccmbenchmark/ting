@@ -15,4 +15,5 @@ interface Database
     public function getErrorNo();
     public function getErrorMessage();
     public function protectFieldName($fieldName);
+    public function protectTableName($tableName);
 }

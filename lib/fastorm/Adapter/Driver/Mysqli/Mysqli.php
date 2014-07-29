@@ -26,7 +26,7 @@ class Mysqli implements Database
             $this->connection = new \mysqli($hostname, $username, $password, null, $port);
             $this->connected = true;
         } catch (\mysqli_sql_exception $e) {
-            throw new DriverException('Connect Error : '.$e->getMessage(), $e->getCode());
+            throw new DriverException('Connect Error : ' . $e->getMessage(), $e->getCode());
         }
 
         return $this;
@@ -114,6 +114,11 @@ class Mysqli implements Database
 
     public function protectFieldName($field)
     {
-        return '`'.$field.'`';
+        return '`' . $field . '`';
+    }
+
+    public function protectTableName($table)
+    {
+        return '`' . str_replace('.', '`.`', $table) . '`';
     }
 }
