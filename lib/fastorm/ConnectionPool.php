@@ -2,7 +2,7 @@
 
 namespace fastorm;
 
-class ConnectionManager
+class ConnectionPool
 {
 
     private static $instance = null;
@@ -16,7 +16,7 @@ class ConnectionManager
     {
         if (self::$instance === null) {
             if (count($config) === 0) {
-                throw new Exception('First call to ConnectionManager must pass configuration in parameters');
+                throw new Exception('First call to ConnectionPool must pass configuration in parameters');
             }
 
         	self::$instance = new self($config);
