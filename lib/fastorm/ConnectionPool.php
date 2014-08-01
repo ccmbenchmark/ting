@@ -19,7 +19,7 @@ class ConnectionPool
                 throw new Exception('First call to ConnectionPool must pass configuration in parameters');
             }
 
-        	self::$instance = new self($config);
+            self::$instance = new self($config);
         }
 
         return self::$instance;
