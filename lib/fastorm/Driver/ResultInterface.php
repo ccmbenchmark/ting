@@ -1,8 +1,8 @@
 <?php
 
-namespace fastorm\Adapter;
+namespace fastorm\Driver;
 
-interface DatabaseResult
+interface ResultInterface
 {
 
     public function dataSeek($offset);
