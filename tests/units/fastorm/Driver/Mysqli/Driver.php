@@ -257,21 +257,4 @@ class Driver extends atoum
             ->boolean($callable)
                 ->isTrue();
     }
-
-    public function testIfIsErrorShouldCallCallable()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $mockDriver->errno = 123;
-        $mockDriver->error = 'unknown error';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-
-        $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($object->ifIsError(function () use(&$callable) {
-                $callable = true;
-            }))
-            ->boolean($callable)
-                ->isTrue();
-    }
 }
