@@ -1,20 +1,18 @@
 <?php
 
-namespace fastorm\Adapter\Driver\Mysqli;
+namespace fastorm\Driver\Mysqli;
 
-use fastorm\Adapter\Driver\QueryException;
+use fastorm\Driver\QueryException;
 
-class Statement implements \fastorm\Adapter\DatabaseStatement
+class Statement implements \fastorm\Driver\StatementInterface
 {
 
     protected $statement;
     protected $paramsOrder;
 
-    public function __construct(\mysqli_stmt $statement)
+    public function setStatement($statement)
     {
-
         $this->statement = $statement;
-
     }
 
     public function setParamsOrder(array $params)

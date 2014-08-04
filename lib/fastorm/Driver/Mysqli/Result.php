@@ -1,8 +1,8 @@
 <?php
 
-namespace fastorm\Adapter\Driver\Mysqli;
+namespace fastorm\Driver\Mysqli;
 
-class Result implements \fastorm\Adapter\DatabaseResult
+class Result implements \fastorm\Driver\ResultInterface
 {
 
     protected $result = null;
