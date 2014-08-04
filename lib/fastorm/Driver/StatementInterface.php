@@ -1,10 +1,11 @@
 <?php
 
-namespace fastorm\Adapter;
+namespace fastorm\Driver;
 
-interface DatabaseStatement
+interface StatementInterface
 {
 
+    public function setStatement($statement);
     public function bindParams(array $params);
     public function execute();
     public function getAffectedRows();
