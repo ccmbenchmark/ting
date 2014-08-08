@@ -28,9 +28,9 @@ class Driver extends atoum
             };
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->object($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-                ->isIdenticalTo($object);
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->object($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+                ->isIdenticalTo($driver);
     }
 
     public function testConnectParameters()
@@ -47,8 +47,8 @@ class Driver extends atoum
             };
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->variable($mockDriver->hostname)
                 ->isIdenticalTo('hostname.test')
             ->variable($mockDriver->username)
@@ -64,9 +64,9 @@ class Driver extends atoum
     public function testConnectWithWrongAuthOrPortShouldRaiseDriverException()
     {
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver())
-            ->exception(function () use($object) {
-                $object->connect('localhost', 'user.test', 'password.test', 1234);
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->exception(function () use($driver) {
+                $driver->connect('localhost', 'user.test', 'password.test', 1234);
             })
                 ->isInstanceOf('\fastorm\Driver\Exception');
     }
@@ -74,9 +74,9 @@ class Driver extends atoum
     public function testConnectWithUnresolvableHostShouldRaiseDriverException()
     {
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver())
-            ->exception(function () use($object) {
-                $object->connect('hostname.test', 'user.test', 'password.test', 1234);
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->exception(function () use($driver) {
+                $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
                 ->isInstanceOf('\fastorm\Driver\Exception');
     }
@@ -91,11 +91,30 @@ class Driver extends atoum
         };
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($object->setDatabase('bouh'))
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('bouh'))
             ->variable($mockDriver->database)
                 ->isIdenticalTo('bouh');
+    }
+
+    public function testsetDatabaseWithDatabaseAlreadySetShouldDoNothing()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver->error = '';
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->select_db = function ($database) {
+                $this->database = $database;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('bouh'))
+            ->then($driver->setDatabase('bouh'))
+            ->mock($mockDriver)
+                ->call('select_db')
+                    ->once();
     }
 
     public function testsetDatabaseShouldReturnSelf()
@@ -108,10 +127,10 @@ class Driver extends atoum
         };
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->object($object->setDatabase('bouh'))
-                ->isIdenticalTo($object);
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->object($driver->setDatabase('bouh'))
+                ->isIdenticalTo($driver);
     }
 
     public function testsetDatabaseShouldRaiseDriverException()
@@ -125,103 +144,12 @@ class Driver extends atoum
         };
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->exception(function () use ($object) {
-                $object->setDatabase('bouh');
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->exception(function () use ($driver) {
+                $driver->setDatabase('bouh');
             })
                 ->isInstanceOf('\fastorm\Driver\Exception');
-    }
-
-    public function testPrepareShouldCallConnectionPrepare()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->prepare = function ($sql) {
-            $this->sql = $sql;
-        };
-
-        $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($object->prepare('SELECT * FROM bouh', function () {}))
-            ->variable($mockDriver->sql)
-                ->isIdenticalTo('SELECT * FROM bouh');
-    }
-
-    public function testPrepareShouldReplaceNamedParameters()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->prepare = function ($sql) {
-            $this->sql = $sql;
-        };
-
-        $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($object->prepare('SELECT * FROM bouh WHERE id = :id AND name = :name', function () {}))
-            ->variable($mockDriver->sql)
-                ->isIdenticalTo('SELECT * FROM bouh WHERE id = ? AND name = ?');
-    }
-
-    public function testPrepareShouldConserveParametersOrder()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->prepare = function ($sql) {
-            $this->sql = $sql;
-        };
-
-        $mockStatement = new \mock\fastorm\Driver\StatementInterface();
-        $this->calling($mockStatement)->setParamsOrder = function ($params) {
-            $this->params = $params;
-        };
-
-        $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($object->prepare(
-                'SELECT * FROM bouh WHERE id = :id AND name = :name',
-                function () {},
-                $mockStatement
-            ))
-            ->variable($mockStatement->params)
-                ->isIdenticalTo(array('id' => null, 'name' => null));
-    }
-
-    public function testPrepareShouldThrowQueryExceptionWhenInvalidQuery()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $mockDriver->errno = 123;
-        $mockDriver->error = 'wrong query';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->prepare = false;
-
-        $mockStatement = new \mock\Fake\Statement();
-        $this->calling($mockStatement)->setParamsOrder = function ($params) {
-            $this->params = $params;
-        };
-
-        $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->exception(function () use($object) {
-                $object->prepare('simulated wrong query', function () {});
-            })
-                ->IsInstanceOf('\fastorm\Driver\QueryException');
-    }
-
-    public function testPrepareShouldReturnSelf()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-
-        $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->object($object->prepare('SELECT * FROM bouh', function () {}))
-                ->IsInstanceOf($object);
     }
 
     public function testIfNotConnectedShouldCallCallback()
@@ -230,11 +158,11 @@ class Driver extends atoum
         $this->calling($mockDriver)->real_connect = false;
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver())
-            ->exception(function () use($object) {
-                $object->connect('hostname.test', 'user.test', 'password.test', 1234);
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->exception(function () use($driver) {
+                $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
-            ->then($object->ifIsNotConnected(function () use(&$callable) {
+            ->then($driver->ifIsNotConnected(function () use(&$callable) {
                 $callable = true;
             }))
             ->boolean($callable)
@@ -249,12 +177,53 @@ class Driver extends atoum
         $this->calling($mockDriver)->real_connect = $mockDriver;
 
         $this
-            ->if($object = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($object->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($object->ifIsError(function () use(&$callable) {
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->ifIsError(function () use(&$callable) {
                 $callable = true;
             }))
             ->boolean($callable)
                 ->isTrue();
+    }
+
+    public function testPrepareShouldCallCallback()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->prepare('SELECT 1 FROM bouh WHERE first = :first AND second = :second',
+                function ($statement, $paramsOrder, $driverStatement)
+                    use (&$outerStatement, &$outerParamsOrder, &$outerDriverStatement) {
+                    $outerParamsOrder = $paramsOrder;
+                })
+            )
+            ->array($outerParamsOrder)
+                ->isIdenticalTo(array('first' => null, 'second' => null));
+    }
+
+    public function testPrepareShouldRaiseQueryException()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver->errno = 123;
+        $mockDriver->error = 'unknown error';
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->prepare = false;
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->exception(function () use ($driver) {
+                $driver->prepare(
+                    'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
+                    function ($statement, $paramsOrder, $driverStatement)
+                        use (&$outerStatement, &$outerParamsOrder, &$outerDriverStatement) {
+                        $outerParamsOrder = $paramsOrder;
+                    }
+                );
+            })
+                ->isInstanceOf('\fastorm\Driver\QueryException');
     }
 }

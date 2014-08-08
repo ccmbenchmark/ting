@@ -3,16 +3,12 @@
 namespace fastorm\Driver\Mysqli;
 
 use fastorm\Driver\DriverInterface;
+use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 
 class Driver implements DriverInterface
 {
-
-    /**
-     * @var \mysqli $connection
-     */
-    protected $connection;
 
     /**
      * @var object driver
@@ -22,7 +18,12 @@ class Driver implements DriverInterface
     /**
      * @var object driver connection
      */
-    protected $driverConnection = null;
+    protected $connection = null;
+
+    /**
+     * @var string
+     */
+    protected $currentDatabase = null;
 
     /**
      * @var bool
@@ -30,12 +31,12 @@ class Driver implements DriverInterface
     protected $connected = false;
 
 
-    public function __construct($driverConnection = null, $driver = null)
+    public function __construct($connection = null, $driver = null)
     {
-        if ($driverConnection === null) {
-            $this->driverConnection = \mysqli_init();
+        if ($connection === null) {
+            $this->connection = \mysqli_init();
         } else {
-            $this->driverConnection = $driverConnection;
+            $this->connection = $connection;
         }
 
         if ($this->driver === null) {
@@ -53,10 +54,9 @@ class Driver implements DriverInterface
 
         try {
             // @ to hide getaddrinfo failed, error is still catched by try/catch
-            $this->connection = @$this->driverConnection->real_connect($hostname, $username, $password, null, $port);
-            $this->connected = true;
+            $this->connected = @$this->connection->real_connect($hostname, $username, $password, null, $port);
         } catch (\Exception $e) {
-            throw new Exception('Connect Error : ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Connect Error: ' . $e->getMessage(), $e->getCode());
         }
 
         return $this;
@@ -65,11 +65,17 @@ class Driver implements DriverInterface
     public function setDatabase($database)
     {
 
+        if ($this->currentDatabase === $database) {
+            return $this;
+        }
+
         $this->connection->select_db($database);
 
         $this->ifIsError(function () {
             throw new Exception('Select database error: ' . $this->connection->error, $this->connection->errno);
         });
+
+        $this->currentDatabase = $database;
 
         return $this;
     }
@@ -83,10 +89,8 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function prepare($sql, callable $callback, \fastorm\Driver\StatementInterface $statement = null)
+    public function prepare($sql, callable $callback, StatementInterface $statement = null)
     {
-
-        $paramsOrder = array();
         $sql = preg_replace_callback(
             '/:([a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
@@ -96,22 +100,19 @@ class Driver implements DriverInterface
             $sql
         );
 
-        $mysqliStatement = $this->connection->prepare($sql);
-
-        if ($mysqliStatement === false) {
-            $this->ifIsError(function () use($sql) {
-                throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
-            });
-        }
-
         if ($statement === null) {
             $statement = new Statement();
         }
 
-        $statement->setStatement($mysqliStatement);
-        $statement->setParamsOrder($paramsOrder);
+        $driverStatement = $this->connection->prepare($sql);
 
-        $callback($statement);
+        if ($driverStatement === false) {
+            $this->ifIsError(function () use ($sql) {
+                throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
+            });
+        }
+
+        $callback($statement, $paramsOrder, $driverStatement);
 
         return $this;
     }
