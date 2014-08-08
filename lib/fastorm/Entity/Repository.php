@@ -2,65 +2,72 @@
 
 namespace fastorm\Entity;
 
-use fastorm\Adapter\DatabaseResult;
+use fastorm\ConnectionPool;
+use fastorm\Entity\MetadataRepository;
+use fastorm\Query;
 
 class Repository
 {
-    /**
-     * @var Manager
-     */
-    protected $em;
 
-    public function __construct(Manager $em)
+    protected static $instance = null;
+    protected $metadata;
+
+    protected function __construct()
     {
-        $this->em = $em;
+        MetadataRepository::getInstance()->loadMetadata(get_class($this), function($metadata) {
+            $this->metadata = $metadata;
+        });
     }
 
-    public function getEntityManager()
+    public static function getInstance()
     {
-        return $this->em;
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
     }
 
-    /**
-     * @param $primaryKeyValue
-     * @return Object|null
-     */
-    public function get($primaryKeyValue)
+    public function execute(Query $query, Collection $collection = null, ConnectionPool $connectionPool = null)
     {
 
-        $className = get_class($this);
-        $entityName = str_replace('Repository', '', $className);
-        $metadata = $this->em->loadMetadata($entityName);
-        $primaryColumn = $metadata->getPrimary()['column'];
-        $fields = $metadata->getFieldsName();
-        $databaseHandler = $this->em->getDatabaseHandler($metadata);
-        $fields = array_map(array($databaseHandler, 'protectFieldName'), $fields);
+        if ($connectionPool === null) {
+            $connectionPool = ConnectionPool::getInstance();
+        }
 
-        $sql = 'SELECT ' . $databaseHandler->protectFieldName($primaryColumn) . ', '.
-            implode(', ', $fields).' FROM ' . $metadata->getTable() .
-            ' WHERE ' . $databaseHandler->protectFieldName($primaryColumn) . ' = :id LIMIT 1';
+        if ($collection === null) {
+            $collection = new Collection();
+        }
 
-        return $this->hydrate(
-            $this->em->doQuery($className, $sql, array('id' => $primaryKeyValue))
-        )->first();
+        $this->metadata->connect(
+            $connectionPool,
+            function ($driver) use ($query, $collection) {
+                $this->metadata->columns(function ($columns) use ($query, $driver, $collection) {
+                    $query->execute($driver, $columns, $collection);
+                });
+            }
+        );
+
+        return $collection;
     }
 
-    /**
-     * @param  string                          $queryString
-     * @param  array                           $params
-     * @return \fastorm\Adapter\DatabaseResult
-     */
-    public function query($queryString, $params = array())
+    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
     {
-        return $this->em->doQuery(get_class($this), $queryString, $params);
-    }
+        if ($metadataRepository === null) {
+            $metadataRepository = MetadataRepository::getInstance();
+        }
 
-    /**
-     * @param  \fastorm\Adapter\DatabaseResult $result
-     * @return Hydrator
-     */
-    public function hydrate(DatabaseResult $result)
-    {
-        return new Hydrator($this, $result);
+        if ($metadata === null) {
+            $metadata = new Metadata();
+            $metadata->setClass(get_class());
+            $metadata->addField(array(
+               'id'         => true,
+               'fieldName'  => 'YOU_SHOULD_ADD',
+               'columnName' => 'YOUR_OWN_INIT_METADATA',
+               'type'       => 'IN_YOUR_REPOSITORY'
+            ));
+        }
+
+        $metadata->addInto($metadataRepository);
     }
 }
