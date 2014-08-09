@@ -12,14 +12,14 @@ class Driver implements DriverInterface
 
     }
 
+    public function prepare($sql, callable $callback, StatementInterface $statement = null)
+    {
+
+    }
+
     public function setDatabase($database)
     {
         $this->database = $database;
-    }
-
-    public function execute($sql, $columnsMeta = array(), StatementInterface $statement = null)
-    {
-
     }
 
     public function ifIsError(callable $callback)
