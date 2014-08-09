@@ -115,7 +115,7 @@ class Metadata extends atoum
             ->then($metadata->addInto($mockMetadataRepository))
             ->mock($mockMetadataRepository)
                 ->call('add')
-                    ->withArguments('Bouh', $metadata)->once();
+                    ->withIdenticalArguments('Bouh', $metadata)->once();
     }
 
     public function testConnectShouldCallConnectionPoolConnect()
@@ -130,7 +130,7 @@ class Metadata extends atoum
             ->then($metadata->connect($mockConnectionPool, $callback))
             ->mock($mockConnectionPool)
                 ->call('connect')
-                    ->withArguments('bouh_connection', 'bouh_database', $callback)->once();
+                    ->withIdenticalArguments('bouh_connection', 'bouh_database', $callback)->once();
     }
 
     public function testColumnsShouldCallCallback()
