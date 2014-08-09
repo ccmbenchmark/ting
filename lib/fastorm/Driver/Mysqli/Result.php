@@ -6,34 +6,68 @@ class Result implements \fastorm\Driver\ResultInterface
 {
 
     protected $result = null;
+    protected $fields = array();
 
-    public function __construct(\mysqli_result $result)
+    public function __construct($result)
     {
-        $this->result = $result;
+        $this->result = new \IteratorIterator($result);
+        $this->fields = $this->result->fetch_fields();
     }
 
     public function dataSeek($offset)
     {
         return $this->result->data_seek($offset);
-
     }
 
-    public function fetchArray()
+    public function format($data)
     {
-        return $this->result->fetch_array(MYSQLI_NUM);
-
-    }
-
-    public function fetchFields()
-    {
-
-        $fields = $this->result->fetch_fields();
-
-        if ($fields === false) {
+        if ($data === null) {
             return null;
         }
 
-        return $fields;
+        $columns = array();
+        $data = array_values($data);
 
+        foreach ($this->fields as $i => $rawField) {
+            $column = array(
+                'name'     => $rawField->name,
+                'orgName'  => $rawField->orgname,
+                'table'    => $rawField->table,
+                'orgTable' => $rawField->orgtable,
+                'value'    => $data[$i]
+            );
+
+            $columns[] = $column;
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Iterator
+     */
+    public function rewind()
+    {
+        $this->result->rewind();
+    }
+
+    public function current()
+    {
+        return $this->format($this->result->current());
+    }
+
+    public function key()
+    {
+        $this->result->key();
+    }
+
+    public function next()
+    {
+        $this->result->next();
+    }
+
+    public function valid()
+    {
+        return $this->result->valid();
     }
 }

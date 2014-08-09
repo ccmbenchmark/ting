@@ -2,10 +2,8 @@
 
 namespace fastorm\Driver;
 
-interface ResultInterface
+interface ResultInterface extends \Iterator
 {
-
     public function dataSeek($offset);
-    public function fetchArray();
-    public function fetchFields();
+    public function format($data);
 }
