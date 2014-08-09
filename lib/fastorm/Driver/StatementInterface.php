@@ -2,13 +2,10 @@
 
 namespace fastorm\Driver;
 
+use fastorm\Entity\Collection;
+
 interface StatementInterface
 {
-
-    public function setStatement($statement);
-    public function bindParams(array $params);
-    public function execute();
-    public function getAffectedRows();
-    public function getResult();
+    public function execute($statement, $params, $paramsOrder, Collection $collection);
     public function close();
 }

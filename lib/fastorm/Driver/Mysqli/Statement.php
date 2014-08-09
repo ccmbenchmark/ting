@@ -2,69 +2,75 @@
 
 namespace fastorm\Driver\Mysqli;
 
+use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Entity\Collection;
 
 class Statement implements \fastorm\Driver\StatementInterface
 {
 
-    protected $statement;
-    protected $paramsOrder;
-
-    public function setStatement($statement)
-    {
-        $this->statement = $statement;
-    }
-
-    public function setParamsOrder(array $params)
-    {
-        $this->paramsOrder = $params;
-    }
-
-    public function bindParams(array $params)
-    {
-
-        $values = array();
-        foreach (array_keys($this->paramsOrder) as $key) {
-            $values[] = &$params[$key];
-        }
-
-        array_unshift($values, str_repeat('s', count($this->paramsOrder)));
-        call_user_func_array(array($this->statement, 'bind_param'), $values);
-    }
+    protected $driverStatement = null;
 
     /**
      * @return bool
      */
-    public function execute()
+    public function execute($driverStatement, $params, $paramsOrder, Collection $collection)
     {
-        return $this->statement->execute();
-    }
+        $this->driverStatement = $driverStatement;
 
-    /**
-     * @return int
-     */
-    public function getAffectedRows()
-    {
-        return $this->statement->affected_rows;
-    }
+        $types = '';
+        $values = array();
+        foreach (array_keys($paramsOrder) as $key) {
+            switch ($params[$key]['type']) {
+                case 'int':
+                case 'integer':
+                    $type = 'i';
+                    break;
+                case 'float':
+                    $type = 'd';
+                    break;
+                case 'blob':
+                    $type = 'b';
+                    break;
+                default:
+                    $type = 's';
+            }
 
-    /**
-     * @return Result
-     * @throws \fastorm\Adapter\Driver\QueryException
-     */
-    public function getResult()
-    {
+            $types .= $type;
+            $values[] = &$params[$key]['value'];
 
-        $result = $this->statement->get_result();
-        if ($result === false) {
-            throw new QueryException($this->statement->error, $this->statement->errno);
         }
 
-        return new Result($result);
+        array_unshift($values, $types);
+        call_user_func_array(array($driverStatement, 'bind_param'), $values);
+
+        $driverStatement->execute();
+        $this->setCollectionWithResult($driverStatement, $collection);
+
+        return $this;
+    }
+
+    /**
+     * @throws \fastorm\Adapter\Driver\QueryException
+     */
+    public function setCollectionWithResult($driverStatment, Collection $collection)
+    {
+
+        $result = $driverStatment->get_result();
+        if ($result === false) {
+            throw new QueryException($driverStatment->error, $driverStatment->errno);
+        }
+
+        $collection->set(new Result($result));
+        return $this;
     }
 
     public function close()
     {
-        $this->statement->close();
+        if ($this->driverStatement === null) {
+            throw new Exception('statement->close can\'t be called before statement->execute');
+        }
+
+        $this->driverStatement->close();
     }
 }

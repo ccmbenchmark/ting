@@ -76,7 +76,7 @@ class Result extends atoum
 
     public function testIterator()
     {
-        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult(array('Bouh'));
 
         $this
             ->if($result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult))
@@ -84,7 +84,6 @@ class Result extends atoum
             ->mock($mockMysqliResult)
                 ->call('rewind')->once()
                 ->call('valid')->once()
-                ->call('current')->once()
             ->then($result->key())
             ->mock($mockMysqliResult)
                 ->call('key')->once()
@@ -96,6 +95,6 @@ class Result extends atoum
                 ->call('valid')->twice()
             ->then($result->current())
             ->mock($mockMysqliResult)
-                ->call('current')->twice();
+                ->call('current')->once();
     }
 }
