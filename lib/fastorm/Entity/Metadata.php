@@ -3,24 +3,21 @@
 namespace fastorm\Entity;
 
 use fastorm\Exception;
+use fastorm\ConnectionPool;
 
 class Metadata
 {
 
     protected $connectionName = null;
-    protected $databaseName = null;
-    protected $table = null;
-    protected $fields = array();
-    protected $primary = array();
+    protected $databaseName   = null;
+    protected $class          = null;
+    protected $table          = null;
+    protected $fields         = array();
+    protected $primary        = array();
 
     public function setConnection($connectionName)
     {
         $this->connectionName = (string) $connectionName;
-    }
-
-    public function getConnection()
-    {
-        return (string) $this->connectionName;
     }
 
     public function setDatabase($databaseName)
@@ -28,19 +25,18 @@ class Metadata
         $this->databaseName = (string) $databaseName;
     }
 
-    public function getDatabase()
+    public function setClass($className)
     {
-        return (string) $this->databaseName;
+        if (substr($className, 0, 1) === '\\') {
+            throw new Exception('Class must not start with a \\');
+        }
+
+        $this->class = (string) $className;
     }
 
     public function setTable($tableName)
     {
         $this->table = (string) $tableName;
-    }
-
-    public function getTable()
-    {
-        return (string) $this->table;
     }
 
     /**
@@ -64,23 +60,46 @@ class Metadata
 
     }
 
-    public function getPrimary()
+    public function ifTableKnown($table, callable $callback)
     {
-        return $this->primary;
+        if (strtolower($this->table) === strtolower($table)) {
+            $callback($this);
+        }
     }
 
-    public function getFields()
+    public function createObject()
     {
-        return $this->fields;
+        $class = substr($this->class, 0, -10); // Remove "Repository" from class
+        return new $class;
     }
 
-    public function getFieldsName()
+    public function setObjectProperty($object, $column, $value)
     {
-        return array_map(
-            function ($field) {
-                return $field['columnName'];
-            },
-            $this->fields
-        );
+        if (get_class($object) !== substr($this->class, 0, -10)) {
+            throw new Exception('setObjectProperty must be called on object of the Metadata\'s repository');
+        }
+
+        foreach ($this->fields as $fieldColumn => $field) {
+            if (strtolower($fieldColumn) === strtolower($column)) {
+                $property = 'set' . ucfirst(strtolower($field['fieldName']));
+                $object->$property($value);
+                break;
+            }
+        }
+    }
+
+    public function addInto(MetadataRepository $metadataRepository)
+    {
+        $metadataRepository->add($this->class, $this);
+    }
+
+    public function connect(ConnectionPool $connectionPool, callable $callback)
+    {
+        $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
+    }
+
+    public function columns(callable $callback)
+    {
+        $callback($this->fields);
     }
 }
