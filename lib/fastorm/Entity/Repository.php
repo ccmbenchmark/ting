@@ -14,7 +14,7 @@ class Repository
 
     protected function __construct()
     {
-        MetadataRepository::getInstance()->loadMetadata(get_class($this), function($metadata) {
+        MetadataRepository::getInstance()->loadMetadata($this, function($metadata) {
             $this->metadata = $metadata;
         });
     }
@@ -59,7 +59,7 @@ class Repository
 
         if ($metadata === null) {
             $metadata = new Metadata();
-            $metadata->setClass(get_class());
+            $metadata->setClass(get_called_class());
             $metadata->addField(array(
                'id'         => true,
                'fieldName'  => 'YOU_SHOULD_ADD',
