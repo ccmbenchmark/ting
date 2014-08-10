@@ -3,33 +3,43 @@
 namespace sample;
 
 // fastorm autoloader
-use fastorm\Exception;
-
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
+$metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+$repositoriesNumber = $metadataRepository->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
+
+echo str_repeat("-", 40) . "\n";
+echo 'Load Repositories: ' . $repositoriesNumber . "\n";
+echo str_repeat("-", 40) . "\n";
+
 $connections = array(
     'main' => array(
-        'type'     => 'mysql',
-        'host'     => 'localhost',
-        'user'     => 'world_sample',
-        'password' => 'world_sample',
-        'port'     => 3306
+        'namespace' => '\fastorm\Driver\Mysqli',
+        'host'      => 'localhost',
+        'user'      => 'world_sample',
+        'password'  => 'world_sample',
+        'port'      => 3306
     ),
 );
 
-$em = \fastorm\Entity\Manager::getInstance(array(
-    'connections' => $connections,
-    'modelDirectory' =>  __DIR__ . '/model',
-    'cacheDirectory' =>  __DIR__ . '/../tmp'
+$poolConnection = \fastorm\ConnectionPool::getInstance(array(
+    'connections' => $connections
 ));
 
-try {
-    $cityRepository = $em->getRepository('\sample\src\model\City');
-    $results = $cityRepository->getZCountryWithLotsPopulation();
 
-    foreach ($results as $result) {
+try {
+    $cityRepository = \sample\src\model\CityRepository::getInstance();
+
+    $collection = $cityRepository->execute(new \fastorm\Query(
+        "select * from T_CITY_CIT as c
+        inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
+        where co.cou_code = :code limit 3",
+        array('code' => 'FRA')
+    ))->hydrator(new \fastorm\Entity\Hydrator());
+
+    foreach ($collection as $result) {
         var_dump($result);
         echo str_repeat("-", 40) . "\n";
     }
@@ -37,59 +47,11 @@ try {
     var_dump($e->getMessage());
 }
 
-echo str_repeat("-", 40) . "\n";
-
 try {
-    $countryRepository = $em->getRepository('\sample\src\model\Country');
-    $results = $countryRepository->hydrate($countryRepository->query("select * from T_COUNTRY_COU as b limit 3"));
+    $cityRepository = \sample\src\model\CityRepository::getInstance();
+    $collection = $cityRepository->getZCountryWithLotsPopulation();
 
-    foreach ($results as $result) {
-        var_dump($result);
-        echo str_repeat("-", 40) . "\n";
-    }
-} catch (Exception $e) {
-    var_dump($e->getMessage());
-}
-
-echo str_repeat("-", 40) . "\n";
-$em2 = \fastorm\Entity\Manager::getInstance();
-
-try {
-    $cityRepository = $em2->getRepository('\sample\src\model\City');
-    $results = $cityRepository->hydrate(
-        $cityRepository->query(
-            "select * from T_CITY_CIT as c
-            inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 3",
-            array('code' => 'FRA')
-        )
-    );
-
-    foreach ($results as $result) {
-        var_dump($result);
-        echo str_repeat("-", 40) . "\n";
-    }
-} catch (Exception $e) {
-    var_dump($e->getMessage());
-}
-
-echo str_repeat("-", 40) . "\n";
-$countryRepository = $em2->getRepository('\sample\src\model\Country');
-var_dump($countryRepository->get('FRA'));
-
-echo str_repeat("-", 40) . "\n";
-echo str_repeat("-", 40) . "\n";
-
-try {
-    $cityRepository = $em2->getRepository('\sample\src\model\City');
-    $results = $cityRepository->hydrate(
-        $cityRepository->query(
-            "select * from T_CITY_CIT as c inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 3",
-            array('code' => 'ZZZ')
-        )
-    );
-    foreach ($results as $result) {
+    foreach ($collection as $result) {
         var_dump($result);
         echo str_repeat("-", 40) . "\n";
     }
