@@ -2,117 +2,54 @@
 
 namespace fastorm\Entity;
 
-use fastorm\Adapter\DatabaseResult;
+use fastorm\Entity\MetadataRepository;
 
-class Hydrator implements \Iterator
+class Hydrator
 {
 
-    protected $entityManager = null;
-    protected $metadataList = array();
-    protected $result = null;
-    protected $targets = array();
-    protected $iteratorPosition = 0;
-    protected $iteratorCurrent = null;
+    protected $metadataRepository = array();
 
-    public function __construct(Repository $entityRepository, DatabaseResult $result)
+    public function __construct(MetadataRepository $metadataRepository = null)
     {
-        $this->entityManager = $entityRepository->getEntityManager();
-        $this->result = $result;
+        if ($metadataRepository === null) {
+                $metadataRepository = MetadataRepository::getInstance();
+        }
 
-        $tableToLoad = array();
-        foreach ($this->result->fetchFields() as $index => $field) {
-            if (isset($this->targets[$field->table]) === false) {
-                $this->targets[$field->table] = array();
+        $this->metadataRepository = $metadataRepository;
+    }
+
+    public function hydrate($columns = array())
+    {
+        $result = array();
+        foreach ($columns as $column) {
+            if ($column['table'] === '') {
+                $column['table'] = 'db__table';
             }
 
-            if (in_array($field->orgtable, $tableToLoad) === false) {
-                $tableToLoad[] = $field->orgtable;
+            if (isset($result[$column['table']]) === false) {
+                $this->metadataRepository->hasMetadataForTable(
+                    $column['orgTable'],
+                    function ($metadata) use (&$result, $column) {
+                        $result[$column['table']] = $metadata->createObject();
+                    },
+                    function () use (&$result, $column) {
+                        $result[$column['table']] = new \stdClass();
+                    }
+                );
             }
 
-            $this->targets[$field->table][] = array(
-                'name' => $field->orgname,
-                'table' => $field->orgtable,
-                'index' => $index
+            $this->metadataRepository->hasMetadataForTable(
+                $column['orgTable'],
+                function ($metadata) use (&$result, $column) {
+                    $metadata->setObjectProperty($result[$column['table']], $column['orgName'], $column['value']);
+                },
+                function () use ($result, $column) {
+                    $property = 'db__' . $column['name'];
+                    $result[$column['table']]->$property = $column['value'];
+                }
             );
         }
 
-        foreach ($tableToLoad as $table) {
-            if (isset($this->metadataList[$table]) === false) {
-                $entityName = $this->entityManager->getClass($table);
-                if ($entityName !== null) {
-                    $this->metadataList[$table] = $this->entityManager->loadMetadata($entityName . 'Repository');
-                }
-            }
-        }
-    }
-
-    public function first()
-    {
-        $this->valid();
-        $objects = $this->current();
-
-        if (count($objects) > 0) {
-            return reset($objects);
-        }
-
-        return null;
-    }
-
-    /** iterator **/
-
-    public function rewind()
-    {
-
-        $this->result->dataSeek(0);
-        $this->iteratorPosition = 0;
-    }
-
-    public function valid()
-    {
-
-        $this->iteratorPosition++;
-        $this->iteratorCurrent = $this->result->fetchArray();
-
-        if ($this->iteratorCurrent !== null) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function key()
-    {
-        return $this->iteratorPosition;
-    }
-
-    public function current()
-    {
-
-        $objects = array();
-
-        foreach ($this->targets as $alias => $columns) {
-            foreach ($columns as $column) {
-                if (isset($objects[$alias]) === false) {
-                    $entityName = $this->entityManager->getClass($column['table']);
-                    if ($entityName === null) {
-                        continue;
-                    }
-                    $objects[$alias] = new $entityName();
-                }
-
-                $fields = $this->metadataList[$column['table']]->getFields();
-                if (isset($fields[$column['name']]['fieldName']) === true) {
-                    $propertyName = 'set' . ucfirst($fields[$column['name']]['fieldName']);
-                    $objects[$alias]->$propertyName($this->iteratorCurrent[$column['index']]);
-                }
-            }
-        }
-
-        return $objects;
-    }
-
-    public function next()
-    {
-        /** @todo */
+        return $result;
     }
 }
