@@ -56,7 +56,7 @@ class Metadata
             $this->primary = array('field' => $params['fieldName'], 'column' => $params['columnName']);
         }
 
-        $this->fields[$params['columnName']] = $params;
+        $this->fields[strtolower($params['columnName'])] = $params;
 
     }
 
@@ -64,7 +64,19 @@ class Metadata
     {
         if (strtolower($this->table) === strtolower($table)) {
             $callback($this);
+            return true;
         }
+
+        return false;
+    }
+
+    public function hasColumn($column)
+    {
+        if (isset($this->fields[strtolower($column)]) === true) {
+            return true;
+        }
+
+        return false;
     }
 
     public function createObject()

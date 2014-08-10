@@ -20,17 +20,19 @@ class Hydrator
 
     public function hydrate($columns = array())
     {
-        $result = array();
+        $result       = array();
+        $metadataList = array();
         foreach ($columns as $column) {
             if ($column['table'] === '') {
                 $column['table'] = 'db__table';
             }
 
             if (isset($result[$column['table']]) === false) {
-                $this->metadataRepository->hasMetadataForTable(
+                $this->metadataRepository->findMetadataForTable(
                     $column['orgTable'],
-                    function ($metadata) use (&$result, $column) {
-                        $result[$column['table']] = $metadata->createObject();
+                    function ($metadata) use ($column, &$result, &$metadataList) {
+                        $metadataList[$column['table']] = $metadata;
+                        $result[$column['table']]       = $metadata->createObject();
                     },
                     function () use (&$result, $column) {
                         $result[$column['table']] = new \stdClass();
@@ -38,16 +40,18 @@ class Hydrator
                 );
             }
 
-            $this->metadataRepository->hasMetadataForTable(
-                $column['orgTable'],
-                function ($metadata) use (&$result, $column) {
-                    $metadata->setObjectProperty($result[$column['table']], $column['orgName'], $column['value']);
-                },
-                function () use ($result, $column) {
-                    $property = 'db__' . $column['name'];
-                    $result[$column['table']]->$property = $column['value'];
-                }
-            );
+            if (isset($metadataList[$column['table']]) === true
+                && $metadataList[$column['table']]->hasColumn($column['orgName'])
+            ) {
+                $metadataList[$column['table']]->setObjectProperty(
+                    $result[$column['table']],
+                    $column['orgName'],
+                    $column['value']
+                );
+            } else {
+                $property = 'db__' . $column['name'];
+                $result[$column['table']]->$property = $column['value'];
+            }
         }
 
         return $result;

@@ -42,7 +42,7 @@ class MetadataRepository extends atoum
                 ->isIdenticalTo($outerRepository);
     }
 
-    public function testHasMetadataForTableShouldCallCallbackFound()
+    public function testFindMetadataForTableShouldCallCallbackFound()
     {
         $metadata = new \fastorm\Entity\Metadata();
         $metadata->setTable('T_BOUH_BOO');
@@ -52,7 +52,7 @@ class MetadataRepository extends atoum
 
         $this
             ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->hasMetadataForTable(
+            ->then($metadataRepository->findMetadataForTable(
                 'T_BOUH_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -67,7 +67,7 @@ class MetadataRepository extends atoum
                 ->isNull();
     }
 
-    public function testHasMetadataForTableShouldCallCallbackNotFound()
+    public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
         $metadata = new \fastorm\Entity\Metadata();
         $metadata->setTable('T_BOUH_BOO');
@@ -77,7 +77,7 @@ class MetadataRepository extends atoum
 
         $this
             ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->hasMetadataForTable(
+            ->then($metadataRepository->findMetadataForTable(
                 'T_BOUH2_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;

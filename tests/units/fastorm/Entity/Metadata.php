@@ -47,16 +47,46 @@ class Metadata extends atoum
                 ->hasMessage('Primary key has already been setted.');
     }
 
-    public function testIfTableKnownShouldCallCallback()
+    public function testIfTableKnownShouldCallCallbackAndReturnTrue()
     {
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->setTable('Bouh'))
-            ->then($metadata->ifTableKnown('bouh', function ($metadata) use (&$outerMetadata) {
+            ->boolean($metadata->ifTableKnown('bouh', function ($metadata) use (&$outerMetadata) {
                 $outerMetadata = $metadata;
             }))
+                ->isTrue()
             ->object($outerMetadata)
                 ->isIdenticalTo($metadata);
+    }
+
+    public function testIfTableKnownShouldReturnFalse()
+    {
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('Bouh'))
+            ->boolean($metadata->ifTableKnown('bim', function () { }))
+                ->isFalse();
+    }
+
+    public function testHasColumnShouldReturnTrue()
+    {
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('Bouh'))
+            ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
+            ->boolean($metadata->hasColumn('boo_bouh'))
+                ->isTrue();
+    }
+
+    public function testHasColumnShouldReturnFalse()
+    {
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('Bouh'))
+            ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
+            ->boolean($metadata->hasColumn('boo_no'))
+                ->isFalse();
     }
 
     public function testCreateObjectShouldReturnObject()
