@@ -2,12 +2,22 @@
 
 namespace sample\src\model;
 
+use fastorm\Entity\Metadata;
+use fastorm\Entity\MetadataRepository;
+
 class CountryRepository extends \fastorm\Entity\Repository
 {
-
-    public static function loadMetadata(\fastorm\Entity\Metadata $metadata)
+    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
     {
+        if ($metadataRepository === null) {
+            $metadataRepository = MetadataRepository::getInstance();
+        }
 
+        if ($metadata === null) {
+            $metadata = new Metadata();
+        }
+
+        $metadata->setClass(get_class());
         $metadata->setConnection('main');
         $metadata->setDatabase('world');
         $metadata->setTable('T_COUNTRY_COU');
@@ -33,6 +43,6 @@ class CountryRepository extends \fastorm\Entity\Repository
             'columnName' => 'cou_region',
         ));
 
-        return $metadata;
+        $metadata->addInto($metadataRepository);
     }
 }
