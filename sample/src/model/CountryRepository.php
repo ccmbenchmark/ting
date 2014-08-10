@@ -43,6 +43,11 @@ class CountryRepository extends \fastorm\Entity\Repository
             'columnName' => 'cou_region',
         ));
 
+        $metadata->addField(array(
+            'fieldName'  => 'president',
+            'columnName' => 'cou_head_of_state',
+        ));
+
         $metadata->addInto($metadataRepository);
     }
 }

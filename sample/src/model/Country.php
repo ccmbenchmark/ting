@@ -9,6 +9,7 @@ class Country
     protected $name      = null;
     protected $continent = null;
     protected $region    = null;
+    protected $president = null;
 
     public function setCode($code)
     {
@@ -48,5 +49,15 @@ class Country
     public function getRegion()
     {
         return (string) $this->region;
+    }
+
+    public function setPresident($president)
+    {
+        $this->president = (string) $president;
+    }
+
+    public function getPresident()
+    {
+        return (string) $this->president;
     }
 }
