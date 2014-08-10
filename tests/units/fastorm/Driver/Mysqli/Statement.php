@@ -90,50 +90,18 @@ class Statement extends atoum
         };
 
         $this->calling($driverStatement)->get_result = $result;
+        $this->calling($collection)->set = function ($result) use (&$outerResult) {
+            $outerResult = $result;
+        };
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
             ->then($statement->setCollectionWithResult($driverStatement, $collection))
-            ->then($collection->rewind())
-            ->array($collection->current())
-                ->isIdenticalTo(
-                    array(
-                        array(
-                            'name'     => 'prenom',
-                            'orgName'  => 'firstname',
-                            'table'    => 'bouh',
-                            'orgTable' => 'T_BOUH_BOO',
-                            'value'    => 'Sylvain'
-                        ),
-                        array(
-                            'name'     => 'nom',
-                            'orgName'  => 'name',
-                            'table'    => 'bouh',
-                            'orgTable' => 'T_BOUH_BOO',
-                            'value'    => 'Robez-Masson'
-                        )
-                    )
-                )
-            ->then($collection->next())
-            ->array($collection->current())
-                ->isIdenticalTo(
-                    array(
-                        array(
-                            'name'     => 'prenom',
-                            'orgName'  => 'firstname',
-                            'table'    => 'bouh',
-                            'orgTable' => 'T_BOUH_BOO',
-                            'value'    => 'Xavier'
-                        ),
-                        array(
-                            'name'     => 'nom',
-                            'orgName'  => 'name',
-                            'table'    => 'bouh',
-                            'orgTable' => 'T_BOUH_BOO',
-                            'value'    => 'Leune'
-                        )
-                    )
-                );
+            ->mock($collection)
+                ->call('set')
+                    ->once()
+            ->object($outerResult)
+                ->isCloneOf(new \fastorm\Driver\Mysqli\Result($result));
     }
 
     public function testSetCollectionShouldRaiseQueryException()

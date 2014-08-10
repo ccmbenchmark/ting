@@ -50,26 +50,26 @@ class Collection extends atoum
     public function testIterator()
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult(array('Bouh'));
-        $result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\fastorm\Driver\Mysqli\Result($mockMysqliResult);
 
         $this
             ->if($collection = new \fastorm\Entity\Collection())
             ->then($collection->set($result))
             ->then($collection->rewind())
-            ->mock($mockMysqliResult)
+            ->mock($result)
                 ->call('rewind')->once()
-                ->call('valid')->once()
+                ->call('next')->once()
             ->then($collection->key())
-            ->mock($mockMysqliResult)
+            ->mock($result)
                 ->call('key')->once()
             ->then($collection->next())
-            ->mock($mockMysqliResult)
-                ->call('next')->once()
+            ->mock($result)
+                ->call('next')->twice()
             ->then($collection->valid())
-            ->mock($mockMysqliResult)
-                ->call('valid')->twice()
+            ->mock($result)
+                ->call('valid')->once()
             ->then($collection->current())
-            ->mock($mockMysqliResult)
+            ->mock($result)
                 ->call('current')->once();
     }
 }

@@ -34,7 +34,6 @@ class Collection implements \Iterator
         return $this;
     }
 
-
     /**
      * Iterator
      */

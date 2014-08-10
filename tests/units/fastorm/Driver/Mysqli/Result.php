@@ -79,22 +79,21 @@ class Result extends atoum
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult(array('Bouh'));
 
         $this
-            ->if($result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \mock\fastorm\Driver\Mysqli\Result($mockMysqliResult))
             ->then($result->rewind())
-            ->mock($mockMysqliResult)
-                ->call('rewind')->once()
-                ->call('valid')->once()
+            ->mock($result)
+                ->call('next')->once()
             ->then($result->key())
-            ->mock($mockMysqliResult)
+            ->mock($result)
                 ->call('key')->once()
             ->then($result->next())
-            ->mock($mockMysqliResult)
-                ->call('next')->once()
+            ->mock($result)
+                ->call('next')->twice()
             ->then($result->valid())
-            ->mock($mockMysqliResult)
-                ->call('valid')->twice()
+            ->mock($result)
+                ->call('valid')->once()
             ->then($result->current())
-            ->mock($mockMysqliResult)
+            ->mock($result)
                 ->call('current')->once();
     }
 }
