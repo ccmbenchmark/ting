@@ -91,4 +91,26 @@ class MetadataRepository extends atoum
             ->variable($outerCallbackFound)
                 ->isNull();
     }
+
+    public function testBatchLoadMetadataShouldLoad1Repository()
+    {
+        $this
+            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
+            ->variable($return = $metadataRepository->batchLoadMetadata(
+                'tests\fixtures\model',
+                __DIR__ . '/../../../fixtures/model/*Repository.php')
+            )
+                ->isIdenticalTo(1);
+    }
+
+    public function testBatchLoadMetadataWithInvalidPathShouldReturn0()
+    {
+        $this
+            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
+            ->variable($return = $metadataRepository->batchLoadMetadata(
+                'tests\fixtures\model',
+                '/not/valid/path/*Repository.php')
+            )
+                ->isIdenticalTo(0);
+    }
 }

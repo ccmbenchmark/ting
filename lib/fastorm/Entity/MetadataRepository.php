@@ -56,4 +56,21 @@ class MetadataRepository
         }
         $callback($this->metadataList[get_class($repository)]);
     }
+
+    public function batchLoadMetadata($namespace, $globPattern)
+    {
+        if (file_exists(dirname($globPattern)) === false) {
+            return 0;
+        }
+
+        $loaded = 0;
+        foreach (glob($globPattern) as $repositoryFile)
+        {
+            $repository = $namespace . '\\' . basename($repositoryFile, '.php');
+            $repository::initMetadata();
+            $loaded++;
+        }
+
+        return $loaded;
+    }
 }
