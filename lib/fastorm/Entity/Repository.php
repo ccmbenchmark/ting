@@ -42,9 +42,7 @@ class Repository
         $this->metadata->connect(
             $connectionPool,
             function ($driver) use ($query, $collection) {
-                $this->metadata->columns(function ($columns) use ($query, $driver, $collection) {
-                    $query->execute($driver, $columns, $collection);
-                });
+                $query->execute($driver, $collection);
             }
         );
 

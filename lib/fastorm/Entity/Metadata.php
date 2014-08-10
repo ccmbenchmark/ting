@@ -97,9 +97,4 @@ class Metadata
     {
         $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
     }
-
-    public function columns(callable $callback)
-    {
-        $callback($this->fields);
-    }
 }

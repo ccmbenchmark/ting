@@ -25,9 +25,8 @@ class Repository extends atoum
 
         $mockQuery = new \mock\fastorm\Query('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
-            function ($driver, $columns, $collection) use (&$outerDriver, &$outerColumns, &$outerCollection) {
+            function ($driver, $collection) use (&$outerDriver, &$outerCollection) {
                 $outerDriver     = $driver;
-                $outerColumns    = $columns;
                 $outerCollection = $collection;
             };
 
@@ -38,13 +37,6 @@ class Repository extends atoum
             ->then($repository->execute($mockQuery, $collection, $mockConnectionPool))
             ->object($outerDriver)
                 ->isIdenticalTo($mockDriver)
-            ->array($outerColumns)
-                ->isIdenticalTo(array('YOUR_OWN_INIT_METADATA' => array(
-                    'id'         => true,
-                    'fieldName'  => 'YOU_SHOULD_ADD',
-                    'columnName' => 'YOUR_OWN_INIT_METADATA',
-                    'type'       => 'IN_YOUR_REPOSITORY'
-                )))
             ->object($outerCollection)
                 ->isIdenticalTo($collection);
     }
