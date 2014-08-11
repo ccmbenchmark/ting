@@ -40,6 +40,7 @@ class Collection implements \Iterator
     public function rewind()
     {
         $this->result->rewind();
+        return $this;
     }
 
     public function current()
@@ -55,6 +56,7 @@ class Collection implements \Iterator
     public function next()
     {
         $this->result->next();
+        return $this;
     }
 
     public function valid()
