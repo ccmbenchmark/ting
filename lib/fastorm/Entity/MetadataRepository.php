@@ -31,14 +31,14 @@ class MetadataRepository
         $this->metadataList[$repository] = $metadata;
     }
 
-    public function findMetadataForTable($table, callable $callbackHasMetadata, callable $callbackNoMetadata)
+    public function findMetadataForTable($table, callable $callbackFound, callable $callbackNotFound)
     {
         $found = false;
         foreach ($this->metadataList as $metadata) {
             $found = $metadata->ifTableKnown(
                 $table,
-                function ($metadata) use ($callbackHasMetadata) {
-                    $callbackHasMetadata($metadata);
+                function ($metadata) use ($callbackFound) {
+                    $callbackFound($metadata);
                 }
             );
 
@@ -48,7 +48,7 @@ class MetadataRepository
         }
 
         if ($found === false) {
-            $callbackNoMetadata();
+            $callbackNotFound();
         }
     }
 
