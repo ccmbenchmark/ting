@@ -36,7 +36,7 @@ class Metadata
 
     public function setTable($tableName)
     {
-        $this->table = (string) $tableName;
+        $this->table = (string) strtolower($tableName);
     }
 
     /**
@@ -53,7 +53,7 @@ class Metadata
             if (count($this->primary) > 0) {
                 throw new Exception('Primary key has already been setted.');
             }
-            $this->primary = array('field' => $params['fieldName'], 'column' => $params['columnName']);
+            $this->primary = array('field' => strtolower($params['fieldName']), 'column' => strtolower($params['columnName']));
         }
 
         $this->fields[strtolower($params['columnName'])] = $params;
@@ -62,7 +62,7 @@ class Metadata
 
     public function ifTableKnown($table, callable $callback)
     {
-        if (strtolower($this->table) === strtolower($table)) {
+        if ($this->table === strtolower($table)) {
             $callback($this);
             return true;
         }
@@ -87,17 +87,8 @@ class Metadata
 
     public function setObjectProperty($object, $column, $value)
     {
-        if (get_class($object) !== substr($this->class, 0, -10)) {
-            throw new Exception('setObjectProperty must be called on object of the Metadata\'s repository');
-        }
-
-        foreach ($this->fields as $fieldColumn => $field) {
-            if (strtolower($fieldColumn) === strtolower($column)) {
-                $property = 'set' . ucfirst(strtolower($field['fieldName']));
-                $object->$property($value);
-                break;
-            }
-        }
+        $property = 'set' . $this->fields[strtolower($column)]['fieldName'];
+        $object->$property($value);
     }
 
     public function addInto(MetadataRepository $metadataRepository)

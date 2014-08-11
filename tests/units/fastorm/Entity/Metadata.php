@@ -118,23 +118,6 @@ class Metadata extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
-    public function testSetObjectPropertyShouldRaiseException()
-    {
-        $notBouh = new \mock\repository\NotBouhRepository();
-
-        $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
-            ->then($metadata->setClass('mock\repository\BouhRepository'))
-            ->then($metadata->addField(array(
-                'fieldName'  => 'name',
-                'columnName' => 'boo_name'
-            )))
-            ->exception(function () use ($metadata, $notBouh) {
-                $metadata->setObjectProperty($notBouh, 'boo_name', 'Sylvain');
-            })
-                ->hasMessage('setObjectProperty must be called on object of the Metadata\'s repository');
-    }
-
     public function testAddIntoShouldCallMetadataRepositoryAdd()
     {
         $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
