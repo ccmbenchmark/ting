@@ -32,6 +32,10 @@ $poolConnection = \fastorm\ConnectionPool::getInstance(array(
 try {
     $cityRepository = \sample\src\model\CityRepository::getInstance();
 
+    var_dump($cityRepository->get(3));
+    echo str_repeat("-", 40) . "\n";
+    die;
+
     $collection = $cityRepository->execute(new \fastorm\Query(
         "select * from T_CITY_CIT as c
         inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)

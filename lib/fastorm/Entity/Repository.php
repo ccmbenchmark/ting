@@ -3,6 +3,8 @@
 namespace fastorm\Entity;
 
 use fastorm\ConnectionPool;
+use fastorm\Entity\Collection;
+use fastorm\Entity\Hydrator;
 use fastorm\Entity\MetadataRepository;
 use fastorm\Query;
 
@@ -26,6 +28,41 @@ class Repository
         }
 
         return self::$instance;
+    }
+
+    public function get(
+        $primaryKeyValue,
+        Hydrator $hydrator = null,
+        Collection $collection = null,
+        ConnectionPool $connectionPool = null
+    ) {
+        if ($hydrator === null) {
+            $hydrator = new Hydrator();
+        }
+
+        if ($collection === null) {
+            $collection = new Collection();
+        }
+
+        if ($connectionPool === null) {
+            $connectionPool = ConnectionPool::getInstance();
+        }
+
+        $this->metadata->connect(
+            $connectionPool,
+            function ($driver) use ($collection, $primaryKeyValue) {
+                $this->metadata->generateQueryForPrimary(
+                    $driver,
+                    $primaryKeyValue,
+                    function ($query) use ($driver, $collection) {
+                        $query->execute($driver, $collection);
+                    }
+                );
+            }
+        );
+
+        $collection->hydrator($hydrator);
+        return current($collection->rewind()->current());
     }
 
     public function execute(Query $query, Collection $collection = null, ConnectionPool $connectionPool = null)
@@ -59,7 +96,7 @@ class Repository
             $metadata = new Metadata();
             $metadata->setClass(get_called_class());
             $metadata->addField(array(
-               'id'         => true,
+               'primary'    => true,
                'fieldName'  => 'YOU_SHOULD_ADD',
                'columnName' => 'YOUR_OWN_INIT_METADATA',
                'type'       => 'IN_YOUR_REPOSITORY'
