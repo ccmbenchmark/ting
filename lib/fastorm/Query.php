@@ -21,35 +21,14 @@ class Query
         DriverInterface $driver,
         Collection $collection = null
     ) {
-        $params = array();
-
-        foreach ($this->params as $key => $value) {
-            switch (gettype($value)) {
-                case "integer":
-                    $type = "i";
-                    break;
-                case "double":
-                    $type = "f";
-                    break;
-                default:
-                    $type = "s";
-            }
-
-            $params[$key] = array(
-                'type'  => $type,
-                'value' => $value
-            );
-        }
-
         if ($collection === null) {
             $collection = new Collection();
         }
 
-
         $driver->prepare(
             $this->sql,
             function ($statement, $paramsOrder, $driverStatement) use ($params, $collection) {
-                $statement->execute($driverStatement, $params, $paramsOrder, $collection);
+                $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
             }
         );
 

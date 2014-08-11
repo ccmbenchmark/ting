@@ -34,10 +34,6 @@ class Query extends atoum
             ->string($outerSql)
                 ->isIdenticalTo($sql)
             ->array($outerParams)
-                ->isIdenticalTo(array(
-                    'old'  => array('type' => 'i', 'value' => 3),
-                    'name' => array('type' => 's', 'value' => 'bouhName'),
-                    'bim'  => array('type' => 'f', 'value' => 3.6)
-                ));
+                ->isIdenticalTo(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6));
     }
 }
