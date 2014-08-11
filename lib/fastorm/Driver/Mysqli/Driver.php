@@ -117,15 +117,18 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
     public function ifIsNotConnected(callable $callback)
     {
         if ($this->connected === false) {
             $callback();
         }
 
+        return $this;
+    }
+
+    public function escapeField($field, callable $callback)
+    {
+        $callback('`' . $field . '`');
         return $this;
     }
 }

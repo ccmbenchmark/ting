@@ -241,4 +241,18 @@ class Driver extends atoum
             })
                 ->isInstanceOf('\fastorm\Driver\QueryException');
     }
+
+    public function testEscapeFieldShouldCallCallbackAndReturnThis()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->object($driver->escapeField('Bouh', function ($escaped) use (&$outerEscaped) {
+                $outerEscaped = $escaped;
+            }))
+                ->isIdenticalTo($driver)
+            ->string($outerEscaped)
+                ->isIdenticalTo('`Bouh`');
+    }
 }

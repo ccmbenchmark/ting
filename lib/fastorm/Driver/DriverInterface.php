@@ -12,4 +12,5 @@ interface DriverInterface
     public function setDatabase($database);
     public function ifIsError(callable $callback);
     public function ifIsNotConnected(callable $callback);
+    public function escapeField($field, callable $callback);
 }

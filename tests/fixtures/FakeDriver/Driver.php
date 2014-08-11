@@ -31,4 +31,9 @@ class Driver implements DriverInterface
     {
 
     }
+
+    public function escapeField($field, callable $callback)
+    {
+
+    }
 }
