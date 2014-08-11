@@ -27,7 +27,7 @@ class Query
 
         $driver->prepare(
             $this->sql,
-            function ($statement, $paramsOrder, $driverStatement) use ($params, $collection) {
+            function ($statement, $paramsOrder, $driverStatement) use ($collection) {
                 $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
             }
         );
