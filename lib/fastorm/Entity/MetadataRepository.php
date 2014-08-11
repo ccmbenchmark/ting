@@ -67,8 +67,7 @@ class MetadataRepository
         }
 
         $loaded = 0;
-        foreach (glob($globPattern) as $repositoryFile)
-        {
+        foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
             $repository::initMetadata();
             $loaded++;

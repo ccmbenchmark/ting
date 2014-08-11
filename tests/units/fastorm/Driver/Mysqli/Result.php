@@ -11,7 +11,9 @@ class Result extends atoum
     {
 
         $mockMysqliResult = new \mock\fastorm\Driver\ResultInterface();
-        $this->calling($mockMysqliResult)->data_seek = function ($index) { return true; };
+        $this->calling($mockMysqliResult)->data_seek = function ($index) {
+            return true;
+        };
 
         $this
             ->if($result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult))

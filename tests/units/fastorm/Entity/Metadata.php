@@ -65,7 +65,11 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->setTable('Bouh'))
-            ->boolean($metadata->ifTableKnown('bim', function () { }))
+            ->boolean($metadata->ifTableKnown(
+                'bim',
+                function () {
+                }
+            ))
                 ->isFalse();
     }
 
@@ -134,7 +138,8 @@ class Metadata extends atoum
     public function testConnectShouldCallConnectionPoolConnect()
     {
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
-        $callback = function ($bouh) { };
+        $callback = function ($bouh) {
+        };
 
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())

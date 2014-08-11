@@ -53,7 +53,9 @@ class Metadata
             if (count($this->primary) > 0) {
                 throw new Exception('Primary key has already been setted.');
             }
-            $this->primary = array('field' => strtolower($params['fieldName']), 'column' => strtolower($params['columnName']));
+            $this->primary = array(
+                'field' => strtolower($params['fieldName']),
+                'column' => strtolower($params['columnName']));
         }
 
         $this->fields[strtolower($params['columnName'])] = $params;

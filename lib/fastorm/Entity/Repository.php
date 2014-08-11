@@ -14,7 +14,7 @@ class Repository
 
     protected function __construct()
     {
-        MetadataRepository::getInstance()->loadMetadata($this, function($metadata) {
+        MetadataRepository::getInstance()->loadMetadata($this, function ($metadata) {
             $this->metadata = $metadata;
         });
     }

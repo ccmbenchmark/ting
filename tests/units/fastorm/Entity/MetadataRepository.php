@@ -98,8 +98,8 @@ class MetadataRepository extends atoum
             ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
-                __DIR__ . '/../../../fixtures/model/*Repository.php')
-            )
+                __DIR__ . '/../../../fixtures/model/*Repository.php'
+            ))
                 ->isIdenticalTo(1);
     }
 
@@ -109,8 +109,8 @@ class MetadataRepository extends atoum
             ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
-                '/not/valid/path/*Repository.php')
-            )
+                '/not/valid/path/*Repository.php'
+            ))
                 ->isIdenticalTo(0);
     }
 }

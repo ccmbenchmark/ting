@@ -38,7 +38,12 @@ class ConnectionPool extends atoum
         $this
             ->if($connectionPool = \fastorm\ConnectionPool::getInstance(array('connections' => array())))
             ->exception(function () use ($connectionPool) {
-                $connectionPool->connect('bouh', 'bouhDb', function () {});
+                $connectionPool->connect(
+                    'bouh',
+                    'bouhDb',
+                    function () {
+                    }
+                );
             })
                 ->hasMessage('Connection not found: bouh');
     }

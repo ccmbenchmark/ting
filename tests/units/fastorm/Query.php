@@ -15,7 +15,7 @@ class Query extends atoum
         $this->calling($mockStatement)->execute =
             function ($mockStatement, $params, $paramsOrder, $collection) use (&$outerParams) {
                 $outerParams = $params;
-        };
+            };
 
         $this->calling($mockDriver)->prepare =
             function ($sql, $callback) use (&$outerSql, $mockStatement) {

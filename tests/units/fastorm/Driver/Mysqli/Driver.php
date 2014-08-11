@@ -65,7 +65,7 @@ class Driver extends atoum
     {
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver())
-            ->exception(function () use($driver) {
+            ->exception(function () use ($driver) {
                 $driver->connect('localhost', 'user.test', 'password.test', 1234);
             })
                 ->isInstanceOf('\fastorm\Driver\Exception');
@@ -75,7 +75,7 @@ class Driver extends atoum
     {
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver())
-            ->exception(function () use($driver) {
+            ->exception(function () use ($driver) {
                 $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
                 ->isInstanceOf('\fastorm\Driver\Exception');
@@ -159,10 +159,10 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver())
-            ->exception(function () use($driver) {
+            ->exception(function () use ($driver) {
                 $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
-            ->then($driver->ifIsNotConnected(function () use(&$callable) {
+            ->then($driver->ifIsNotConnected(function () use (&$callable) {
                 $callable = true;
             }))
             ->boolean($callable)
@@ -179,7 +179,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->ifIsError(function () use(&$callable) {
+            ->then($driver->ifIsError(function () use (&$callable) {
                 $callable = true;
             }))
             ->boolean($callable)
@@ -194,12 +194,20 @@ class Driver extends atoum
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->prepare('SELECT 1 FROM bouh WHERE first = :first AND second = :second',
-                function ($statement, $paramsOrder, $driverStatement)
-                    use (&$outerStatement, &$outerParamsOrder, &$outerDriverStatement) {
+            ->then($driver->prepare(
+                'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
+                function (
+                    $statement,
+                    $paramsOrder,
+                    $driverStatement
+                ) use (
+                    &$outerStatement,
+                    &$outerParamsOrder,
+                    &$outerDriverStatement
+                ) {
                     $outerParamsOrder = $paramsOrder;
-                })
-            )
+                }
+            ))
             ->array($outerParamsOrder)
                 ->isIdenticalTo(array('first' => null, 'second' => null));
     }
@@ -218,8 +226,15 @@ class Driver extends atoum
             ->exception(function () use ($driver) {
                 $driver->prepare(
                     'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
-                    function ($statement, $paramsOrder, $driverStatement)
-                        use (&$outerStatement, &$outerParamsOrder, &$outerDriverStatement) {
+                    function (
+                        $statement,
+                        $paramsOrder,
+                        $driverStatement
+                    ) use (
+                        &$outerStatement,
+                        &$outerParamsOrder,
+                        &$outerDriverStatement
+                    ) {
                         $outerParamsOrder = $paramsOrder;
                     }
                 );
