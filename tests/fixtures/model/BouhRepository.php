@@ -23,9 +23,19 @@ class BouhRepository extends \fastorm\Entity\Repository
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField(array(
-           'id'         => true,
+           'primary'    => true,
            'fieldName'  => 'id',
            'columnName' => 'boo_id'
+        ));
+
+        $metadata->addField(array(
+           'fieldName'  => 'firstname',
+           'columnName' => 'boo_firstname'
+        ));
+
+        $metadata->addField(array(
+           'fieldName'  => 'name',
+           'columnName' => 'boo_name'
         ));
 
         $metadata->addInto($metadataRepository);
