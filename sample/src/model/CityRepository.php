@@ -37,7 +37,7 @@ class CityRepository extends \fastorm\Entity\Repository
         $metadata->setTable('T_CITY_CIT');
 
         $metadata->addField(array(
-           'id'         => true,
+           'primary'    => true,
            'fieldName'  => 'id',
            'columnName' => 'cit_id',
            'type'       => 'int'

@@ -2,8 +2,10 @@
 
 namespace fastorm\Entity;
 
+use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
 use fastorm\ConnectionPool;
+use fastorm\Query;
 
 class Metadata
 {
@@ -36,7 +38,7 @@ class Metadata
 
     public function setTable($tableName)
     {
-        $this->table = (string) strtolower($tableName);
+        $this->table = (string) $tableName;
     }
 
     /**
@@ -49,7 +51,7 @@ class Metadata
             throw new Exception('Field configuration must have fieldName and columnName properties');
         }
 
-        if (isset($params['id']) === true && $params['id'] === true) {
+        if (isset($params['primary']) === true && $params['primary'] === true) {
             if (count($this->primary) > 0) {
                 throw new Exception('Primary key has already been setted.');
             }
@@ -64,7 +66,7 @@ class Metadata
 
     public function ifTableKnown($table, callable $callback)
     {
-        if ($this->table === strtolower($table)) {
+        if (strtolower($this->table) === strtolower($table)) {
             $callback($this);
             return true;
         }
@@ -101,5 +103,18 @@ class Metadata
     public function connect(ConnectionPool $connectionPool, callable $callback)
     {
         $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
+    }
+
+    public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, callable $callback)
+    {
+        $driver
+            ->escapeField($this->table, function ($field) use (&$sql) {
+                $sql = 'SELECT * FROM ' . $field;
+            })
+            ->escapeField($this->primary['column'], function ($field) use (&$sql) {
+            $sql .= ' WHERE ' . $field . ' = :primary';
+            });
+
+        $callback(new Query($sql, array('primary' => $primaryValue)));
     }
 }

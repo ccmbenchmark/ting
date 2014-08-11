@@ -23,7 +23,7 @@ class CountryRepository extends \fastorm\Entity\Repository
         $metadata->setTable('T_COUNTRY_COU');
 
         $metadata->addField(array(
-           'id'         => true,
+           'primary'    => true,
            'fieldName'  => 'code',
            'columnName' => 'cou_code'
         ));

@@ -32,13 +32,13 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->addField(array(
-                'id' => true,
-                'fieldName' => 'bouhField',
+                'primary'    => true,
+                'fieldName'  => 'bouhField',
                 'columnName' => 'bouhColumn'
             )))
             ->exception(function () use ($metadata) {
                 $metadata->addField(array(
-                    'id'         => true,
+                    'primary'    => true,
                     'fieldName'  => 'bouhSecondField',
                     'columnName' => 'bouhSecondColumn'
                 ));
@@ -149,5 +149,27 @@ class Metadata extends atoum
             ->mock($mockConnectionPool)
                 ->call('connect')
                     ->withIdenticalArguments('bouh_connection', 'bouh_database', $callback)->once();
+    }
+
+    public function testGenerateQueryForPrimaryShouldCallCallbackWithQueryObject()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('T_BOUH_BO'))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'id',
+                'columnName' => 'id'
+            )))
+            ->then($metadata->generateQueryForPrimary($mockDriver, 'BOuH', function ($query) use (&$outerQuery) {
+                $outerQuery = $query;
+            }))
+            ->object($outerQuery)
+                ->isCloneOf(
+                    new \fastorm\Query('SELECT * FROM `T_BOUH_BO` WHERE `id` = :primary', array('primary' => 'BOuH'))
+                );
+
     }
 }
