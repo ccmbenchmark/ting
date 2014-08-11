@@ -11,22 +11,10 @@ class Statement extends atoum
         $driverStatement = new \mock\Fake\DriverStatement();
         $collection      = new \mock\fastorm\Entity\Collection();
         $params          = array(
-            'firstname' => array(
-                'type'  => 'string',
-                'value' => 'Sylvain'
-            ),
-            'id' => array(
-                'type'  => 'int',
-                'value' => 3
-            ),
-            'old' => array(
-                'type'  => 'float',
-                'value' => 32.1
-            ),
-            'description' => array(
-                'type'  => 'blob',
-                'value' => 'A very long description'
-            )
+            'firstname'   => 'Sylvain',
+            'id'          => 3,
+            'old'         => 32.1,
+            'description' => 'A very long description'
         );
         $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null);
 
@@ -37,7 +25,7 @@ class Statement extends atoum
             ->then($statement->execute($driverStatement, $params, $paramsOrder, $collection))
             ->mock($driverStatement)
                 ->call('bind_param')
-                    ->withIdenticalArguments('sibd', 'Sylvain', 3, 'A very long description', 32.1)->once();
+                    ->withIdenticalArguments('sisd', 'Sylvain', 3, 'A very long description', 32.1)->once();
     }
 
     public function testExecuteShouldCallDriverStatementExecute()

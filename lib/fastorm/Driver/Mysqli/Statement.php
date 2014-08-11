@@ -17,27 +17,21 @@ class Statement implements \fastorm\Driver\StatementInterface
     public function execute($driverStatement, $params, $paramsOrder, Collection $collection)
     {
         $this->driverStatement = $driverStatement;
-
         $types = '';
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
-            switch ($params[$key]['type']) {
-                case 'int':
-                case 'integer':
-                    $type = 'i';
+            switch (gettype($params[$key])) {
+                case "integer":
+                    $type = "i";
                     break;
-                case 'float':
-                    $type = 'd';
-                    break;
-                case 'blob':
-                    $type = 'b';
+                case "double":
+                    $type = "d";
                     break;
                 default:
-                    $type = 's';
+                    $type = "s";
             }
-
             $types .= $type;
-            $values[] = &$params[$key]['value'];
+            $values[] = &$params[$key];
 
         }
 
