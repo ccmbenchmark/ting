@@ -3,6 +3,7 @@
 namespace fastorm\Entity;
 
 use fastorm\ConnectionPool;
+use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
 use fastorm\Entity\Hydrator;
 use fastorm\Entity\MetadataRepository;
@@ -16,7 +17,7 @@ class Repository
 
     protected function __construct()
     {
-        MetadataRepository::getInstance()->loadMetadata($this, function ($metadata) {
+        MetadataRepository::getInstance()->loadMetadata($this, function (Metadata $metadata) {
             $this->metadata = $metadata;
         });
     }
@@ -50,11 +51,11 @@ class Repository
 
         $this->metadata->connect(
             $connectionPool,
-            function ($driver) use ($collection, $primaryKeyValue) {
+            function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
                 $this->metadata->generateQueryForPrimary(
                     $driver,
                     $primaryKeyValue,
-                    function ($query) use ($driver, $collection) {
+                    function (Query $query) use ($driver, $collection) {
                         $query->execute($driver, $collection);
                     }
                 );
@@ -78,7 +79,7 @@ class Repository
 
         $this->metadata->connect(
             $connectionPool,
-            function ($driver) use ($query, $collection) {
+            function (DriverInterface $driver) use ($query, $collection) {
                 $query->execute($driver, $collection);
             }
         );

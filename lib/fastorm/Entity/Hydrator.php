@@ -2,6 +2,7 @@
 
 namespace fastorm\Entity;
 
+use fastorm\Entity\Metadata;
 use fastorm\Entity\MetadataRepository;
 
 class Hydrator
@@ -30,7 +31,7 @@ class Hydrator
             if (isset($result[$column['table']]) === false) {
                 $this->metadataRepository->findMetadataForTable(
                     $column['orgTable'],
-                    function ($metadata) use ($column, &$result, &$metadataList) {
+                    function (Metadata $metadata) use ($column, &$result, &$metadataList) {
                         $metadataList[$column['table']] = $metadata;
                         $result[$column['table']]       = $metadata->createObject();
                     },

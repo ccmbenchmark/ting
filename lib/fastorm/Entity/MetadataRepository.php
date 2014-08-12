@@ -37,7 +37,7 @@ class MetadataRepository
         foreach ($this->metadataList as $metadata) {
             $found = $metadata->ifTableKnown(
                 $table,
-                function ($metadata) use ($callbackFound) {
+                function (Metadata $metadata) use ($callbackFound) {
                     $callbackFound($metadata);
                 }
             );
