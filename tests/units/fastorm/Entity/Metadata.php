@@ -52,7 +52,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->setTable('Bouh'))
-            ->boolean($metadata->ifTableKnown('bouh', function ($metadata) use (&$outerMetadata) {
+            ->boolean($metadata->ifTableKnown('Bouh', function ($metadata) use (&$outerMetadata) {
                 $outerMetadata = $metadata;
             }))
                 ->isTrue()
@@ -66,7 +66,7 @@ class Metadata extends atoum
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown(
-                'bim',
+                'Bim',
                 function () {
                 }
             ))
@@ -78,7 +78,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->setTable('Bouh'))
-            ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
+            ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'boo_bouh')))
             ->boolean($metadata->hasColumn('boo_bouh'))
                 ->isTrue();
     }

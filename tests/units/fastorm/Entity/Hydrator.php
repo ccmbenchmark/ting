@@ -11,14 +11,14 @@ class Hydrator extends atoum
         $data = array(
             array(
                 'name'     => 'fname',
-                'orgName'  => 'BOO_FIRSTNAME',
+                'orgName'  => 'boo_firstname',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
             ),
             array(
                 'name'     => 'name',
-                'orgName'  => 'BOO_NAME',
+                'orgName'  => 'boo_name',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'
@@ -58,14 +58,14 @@ class Hydrator extends atoum
         $data = array(
             array(
                 'name'     => 'fname',
-                'orgName'  => 'BOO_FIRSTNAME',
+                'orgName'  => 'boo_firstname',
                 'table'    => '',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
             ),
             array(
                 'name'     => 'name',
-                'orgName'  => 'BOO_NAME',
+                'orgName'  => 'boo_name',
                 'table'    => '',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'
@@ -105,14 +105,14 @@ class Hydrator extends atoum
         $data = array(
             array(
                 'name'     => 'fname',
-                'orgName'  => 'BOO_FIRSTNAME',
+                'orgName'  => 'boo_firstname',
                 'table'    => '',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
             ),
             array(
                 'name'     => 'name',
-                'orgName'  => 'BOO_NAME',
+                'orgName'  => 'boo_name',
                 'table'    => '',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'

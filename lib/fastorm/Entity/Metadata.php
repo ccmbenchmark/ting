@@ -56,17 +56,18 @@ class Metadata
                 throw new Exception('Primary key has already been setted.');
             }
             $this->primary = array(
-                'field' => strtolower($params['fieldName']),
-                'column' => strtolower($params['columnName']));
+                'field'  => $params['fieldName'],
+                'column' => $params['columnName']
+            );
         }
 
-        $this->fields[strtolower($params['columnName'])] = $params;
+        $this->fields[$params['columnName']] = $params;
 
     }
 
     public function ifTableKnown($table, callable $callback)
     {
-        if (strtolower($this->table) === strtolower($table)) {
+        if ($this->table === $table) {
             $callback($this);
             return true;
         }
@@ -76,7 +77,7 @@ class Metadata
 
     public function hasColumn($column)
     {
-        if (isset($this->fields[strtolower($column)]) === true) {
+        if (isset($this->fields[$column]) === true) {
             return true;
         }
 
@@ -91,7 +92,7 @@ class Metadata
 
     public function setObjectProperty($object, $column, $value)
     {
-        $property = 'set' . $this->fields[strtolower($column)]['fieldName'];
+        $property = 'set' . $this->fields[$column]['fieldName'];
         $object->$property($value);
     }
 
