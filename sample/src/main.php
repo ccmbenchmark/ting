@@ -34,7 +34,6 @@ try {
 
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
-    die;
 
     $collection = $cityRepository->execute(new \fastorm\Query(
         "select * from T_CITY_CIT as c
