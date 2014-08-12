@@ -3,6 +3,7 @@
 namespace fastorm;
 
 use fastorm\Driver\DriverInterface;
+use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
 class Query
@@ -27,9 +28,10 @@ class Query
 
         $driver->prepare(
             $this->sql,
-            function ($statement, $paramsOrder, $driverStatement) use ($collection) {
+            function (StatementInterface $statement, $paramsOrder, $driverStatement, Collection $collection) {
                 $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
-            }
+            },
+            $collection
         );
 
         return $this;

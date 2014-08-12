@@ -4,6 +4,7 @@ namespace tests\fixtures\FakeDriver;
 
 use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
+use fastorm\Entity\Collection;
 
 class Driver implements DriverInterface
 {
@@ -12,7 +13,7 @@ class Driver implements DriverInterface
 
     }
 
-    public function prepare($sql, callable $callback, StatementInterface $statement = null)
+    public function prepare($sql, callable $callback, Collection $collection, StatementInterface $statement = null)
     {
 
     }

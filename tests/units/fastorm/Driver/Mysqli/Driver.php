@@ -206,7 +206,8 @@ class Driver extends atoum
                     &$outerDriverStatement
                 ) {
                     $outerParamsOrder = $paramsOrder;
-                }
+                },
+                new \fastorm\Entity\Collection()
             ))
             ->array($outerParamsOrder)
                 ->isIdenticalTo(array('first' => null, 'second' => null));
@@ -229,14 +230,16 @@ class Driver extends atoum
                     function (
                         $statement,
                         $paramsOrder,
-                        $driverStatement
+                        $driverStatement,
+                        $collection
                     ) use (
                         &$outerStatement,
                         &$outerParamsOrder,
                         &$outerDriverStatement
                     ) {
                         $outerParamsOrder = $paramsOrder;
-                    }
+                    },
+                    new \fastorm\Entity\Collection()
                 );
             })
                 ->isInstanceOf('\fastorm\Driver\QueryException');

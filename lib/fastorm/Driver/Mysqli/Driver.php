@@ -6,6 +6,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Entity\Collection;
 
 class Driver implements DriverInterface
 {
@@ -89,7 +90,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function prepare($sql, callable $callback, StatementInterface $statement = null)
+    public function prepare($sql, callable $callback, Collection $collection, StatementInterface $statement = null)
     {
         $sql = preg_replace_callback(
             '/:([a-zA-Z0-9_-]+)/',
@@ -112,7 +113,7 @@ class Driver implements DriverInterface
             });
         }
 
-        $callback($statement, $paramsOrder, $driverStatement);
+        $callback($statement, $paramsOrder, $driverStatement, $collection);
 
         return $this;
     }
