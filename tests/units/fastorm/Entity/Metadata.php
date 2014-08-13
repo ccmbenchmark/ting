@@ -263,9 +263,14 @@ class Metadata extends atoum
                 'fieldName'  => 'firstname',
                 'columnName' => 'boo_firstname'
             )))
-            ->then($metadata->generateQueryForUpdate($mockDriver, $entity, $properties, function ($query) use (&$outerQuery) {
-                $outerQuery = $query;
-            }))
+            ->then($metadata->generateQueryForUpdate(
+                $mockDriver,
+                $entity,
+                $properties,
+                function ($query) use (&$outerQuery) {
+                    $outerQuery = $query;
+                }
+            ))
             ->object($outerQuery)
                 ->isCloneOf(
                     new \fastorm\Query(

@@ -36,7 +36,7 @@ class UnitOfWork implements PropertyListenerInterface
     public function manage($entity)
     {
         $this->entitiesManaged[spl_object_hash($entity)] = true;
-        if ($entity instanceOf NotifyPropertyInterface) {
+        if ($entity instanceof NotifyPropertyInterface) {
             $entity->addPropertyListener($this);
         }
     }
@@ -184,7 +184,8 @@ class UnitOfWork implements PropertyListenerInterface
             return;
         }
 
-        $metadataRepository->findMetadataForEntity($entity,
+        $metadataRepository->findMetadataForEntity(
+            $entity,
             function ($metadata) use ($connectionPool, $entity, $properties) {
                 $metadata->connect(
                     $connectionPool,
@@ -207,7 +208,8 @@ class UnitOfWork implements PropertyListenerInterface
     protected function flushNew($oid, MetadataRepository $metadataRepository, ConnectionPool $connectionPool)
     {
         $entity = $this->entities[$oid];
-        $metadataRepository->findMetadataForEntity($entity,
+        $metadataRepository->findMetadataForEntity(
+            $entity,
             function ($metadata) use ($connectionPool, $entity) {
                 $metadata->connect(
                     $connectionPool,
@@ -231,7 +233,8 @@ class UnitOfWork implements PropertyListenerInterface
     protected function flushDelete($oid, MetadataRepository $metadataRepository, ConnectionPool $connectionPool)
     {
         $entity = $this->entities[$oid];
-        $metadataRepository->findMetadataForEntity($entity,
+        $metadataRepository->findMetadataForEntity(
+            $entity,
             function ($metadata) use ($connectionPool, $entity) {
                 $metadata->connect(
                     $connectionPool,

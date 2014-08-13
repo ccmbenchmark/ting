@@ -23,7 +23,10 @@ class UnitOfWork extends atoum
         );
 
         $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
-        $metadataRepository->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../fixtures/model/*Repository.php');
+        $metadataRepository->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../fixtures/model/*Repository.php'
+        );
     }
 
     public function testShouldBeSingleton()
@@ -160,7 +163,7 @@ class UnitOfWork extends atoum
 
         $outerOid = array();
         $this->calling($mockMetadata)->generateQueryForUpdate =
-            function($driver, $entity, $properties, $callback) use (&$outerOid) {
+            function ($driver, $entity, $properties, $callback) use (&$outerOid) {
                 $outerOid[] = spl_object_hash($entity);
                 $callback(new \fastorm\Query(""));
             };
@@ -199,50 +202,50 @@ class UnitOfWork extends atoum
                     spl_object_hash($entity2),
                     spl_object_hash($entity3)
             ));
-        }
+    }
 
-        public function testFlushShouldCallFlushManagedButDoNothing()
-        {
-            $mockMetadata = new \mock\fastorm\Entity\Metadata();
-            \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
+    public function testFlushShouldCallFlushManagedButDoNothing()
+    {
+        $mockMetadata = new \mock\fastorm\Entity\Metadata();
+        \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
-            $outerOid = array();
-            $this->calling($mockMetadata)->generateQueryForUpdate =
-                function($driver, $entity, $properties, $callback) use (&$outerOid) {
-                    $outerOid[] = spl_object_hash($entity);
-                };
+        $outerOid = array();
+        $this->calling($mockMetadata)->generateQueryForUpdate =
+            function ($driver, $entity, $properties, $callback) use (&$outerOid) {
+                $outerOid[] = spl_object_hash($entity);
+            };
 
-            $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
-            $this->calling($mockMetadataRepository)->findMetadataForEntity =
-                function ($entity, $callback) use ($mockMetadata) {
-                    $callback($mockMetadata);
-                };
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
+        $this->calling($mockMetadataRepository)->findMetadataForEntity =
+            function ($entity, $callback) use ($mockMetadata) {
+                $callback($mockMetadata);
+            };
 
-            $entity1 = new \mock\tests\fixtures\model\Bouh();
-            $entity2 = new \mock\tests\fixtures\model\Bouh();
-            $entity3 = new \mock\tests\fixtures\model\Bouh();
-            $entity2->setName('Bouh');
+        $entity1 = new \mock\tests\fixtures\model\Bouh();
+        $entity2 = new \mock\tests\fixtures\model\Bouh();
+        $entity3 = new \mock\tests\fixtures\model\Bouh();
+        $entity2->setName('Bouh');
 
-            $this
-                ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
-                ->then($unitOfWork->detach($entity1))
-                ->then($unitOfWork->detach($entity2))
-                ->then($unitOfWork->detach($entity3))
-                ->then(function () {
-                    unset($outerOId);
-                })
-                ->then($outerOid = array())
-                ->then($unitOfWork->manage($entity1))
-                ->then($unitOfWork->manage($entity2))
-                ->then($unitOfWork->manage($entity3))
-                ->then($entity2->setName('Bidule'))
-                ->then($entity2->setName('Bouh')) // Set the default value
-                ->then($unitOfWork->persist($entity1))
-                ->then($unitOfWork->persist($entity2))
-                ->then($unitOfWork->persist($entity3))
-                ->then($unitOfWork->flush($mockMetadataRepository))
-                ->array($outerOid)
-                    ->isIdenticalTo(array());
+        $this
+            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->then($unitOfWork->detach($entity1))
+            ->then($unitOfWork->detach($entity2))
+            ->then($unitOfWork->detach($entity3))
+            ->then(function () {
+                unset($outerOId);
+            })
+            ->then($outerOid = array())
+            ->then($unitOfWork->manage($entity1))
+            ->then($unitOfWork->manage($entity2))
+            ->then($unitOfWork->manage($entity3))
+            ->then($entity2->setName('Bidule'))
+            ->then($entity2->setName('Bouh')) // Set the default value
+            ->then($unitOfWork->persist($entity1))
+            ->then($unitOfWork->persist($entity2))
+            ->then($unitOfWork->persist($entity3))
+            ->then($unitOfWork->flush($mockMetadataRepository))
+            ->array($outerOid)
+                ->isIdenticalTo(array());
     }
 
     public function testFlushShouldCallFlushNew()
@@ -255,7 +258,7 @@ class UnitOfWork extends atoum
 
         $outerOid = array();
         $this->calling($mockMetadata)->generateQueryForInsert =
-            function($driver, $entity, $callback) use (&$outerOid, $mockQuery) {
+            function ($driver, $entity, $callback) use (&$outerOid, $mockQuery) {
                 $outerOid[] = spl_object_hash($entity);
                 $callback($mockQuery);
             };
@@ -308,7 +311,7 @@ class UnitOfWork extends atoum
 
         $outerOid = array();
         $this->calling($mockMetadata)->generateQueryForDelete =
-            function($driver, $entity, $callback) use (&$outerOid) {
+            function ($driver, $entity, $callback) use (&$outerOid) {
                 $outerOid[] = spl_object_hash($entity);
                 $callback(new \fastorm\Query(""));
             };

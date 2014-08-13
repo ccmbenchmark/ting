@@ -209,7 +209,8 @@ class Metadata
             ->escapeFields(
                 $columns,
                 function ($fields) use (&$sql, $columns) {
-                    $sql = 'DELETE FROM ' . $fields['table'] . ' WHERE ' . $fields['primary'] . ' = :' . $columns['primary'];
+                    $sql = 'DELETE FROM ' . $fields['table']
+                        . ' WHERE ' . $fields['primary'] . ' = :' . $columns['primary'];
                 }
             );
 

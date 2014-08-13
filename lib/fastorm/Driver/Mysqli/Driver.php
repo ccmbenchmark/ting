@@ -90,8 +90,12 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function prepare($sql, callable $callback, Collection $collection = null, StatementInterface $statement = null)
-    {
+    public function prepare(
+        $sql,
+        callable $callback,
+        Collection $collection = null,
+        StatementInterface $statement = null
+    ) {
         $sql = preg_replace_callback(
             '/:([a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
@@ -117,7 +121,7 @@ class Driver implements DriverInterface
 
         if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
             $queryType = Statement::TYPE_AFFECTED;
-        } else if (strpos($sql, 'INSERT') === 0) {
+        } elseif (strpos($sql, 'INSERT') === 0) {
             $queryType = Statement::TYPE_INSERT;
         }
 
@@ -139,7 +143,7 @@ class Driver implements DriverInterface
 
     public function escapeFields($fields, callable $callback)
     {
-        foreach ($fields as $key => &$field) {
+        foreach ($fields as &$field) {
             $field = '`' . $field . '`';
         }
 

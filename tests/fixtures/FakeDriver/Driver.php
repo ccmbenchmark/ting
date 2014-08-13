@@ -13,8 +13,12 @@ class Driver implements DriverInterface
 
     }
 
-    public function prepare($sql, callable $callback, Collection $collection = null, StatementInterface $statement = null)
-    {
+    public function prepare(
+        $sql,
+        callable $callback,
+        Collection $collection = null,
+        StatementInterface $statement = null
+    ) {
 
     }
 
