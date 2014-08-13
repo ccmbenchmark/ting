@@ -1,6 +1,6 @@
 <?php
 
-namespace sample;
+namespace sample\src;
 
 // fastorm autoloader
 require __DIR__ . '/../../vendor/autoload.php';
