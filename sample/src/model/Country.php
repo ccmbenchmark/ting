@@ -2,7 +2,10 @@
 
 namespace sample\src\model;
 
-class Country
+use fastorm\NotifyPropertyInterface;
+use fastorm\PropertyListenerInterface;
+
+class Country implements NotifyPropertyInterface
 {
 
     protected $code      = null;
@@ -11,8 +14,25 @@ class Country
     protected $region    = null;
     protected $president = null;
 
+    public function addPropertyListener(PropertyListenerInterface $listener)
+    {
+        $this->listeners[] = $listener;
+    }
+
+    public function propertyChanged($propertyName, $oldValue, $newValue)
+    {
+        if ($oldValue === $newValue) {
+            return;
+        }
+
+        foreach ($this->listeners as $listener) {
+            $listener->propertyChanged($this, $propertyName, $oldValue, $newValue);
+        }
+    }
+
     public function setCode($code)
     {
+        $this->propertyChanged('code', $this->code, $code);
         $this->code = (string) $code;
     }
 
@@ -23,6 +43,7 @@ class Country
 
     public function setName($name)
     {
+        $this->propertyChanged('name', $this->name, $name);
         $this->name = (string) $name;
     }
 
@@ -33,6 +54,7 @@ class Country
 
     public function setContinent($continent)
     {
+        $this->propertyChanged('continent', $this->continent, $continent);
         $this->continent = (string) $continent;
     }
 
@@ -43,6 +65,7 @@ class Country
 
     public function setRegion($region)
     {
+        $this->propertyChanged('region', $this->region, $region);
         $this->region = (string) $region;
     }
 
@@ -53,6 +76,7 @@ class Country
 
     public function setPresident($president)
     {
+        $this->propertyChanged('president', $this->president, $president);
         $this->president = (string) $president;
     }
 

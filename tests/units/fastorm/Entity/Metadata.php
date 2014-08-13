@@ -93,16 +93,16 @@ class Metadata extends atoum
                 ->isFalse();
     }
 
-    public function testCreateObjectShouldReturnObject()
+    public function testCreateEntityShouldReturnObject()
     {
         $this
             ->if($metadata = new \fastorm\Entity\Metadata())
             ->then($metadata->setClass('mock\repository\BouhRepository'))
-            ->object($bouh = $metadata->createObject())
+            ->object($bouh = $metadata->createEntity())
                 ->isInstanceOf('\mock\repository\Bouh');
     }
 
-    public function testSetObjectProperty()
+    public function testSetEntityProperty()
     {
         $metadata = new \fastorm\Entity\Metadata();
         $metadata->setClass('mock\repository\BouhRepository');
@@ -111,15 +111,36 @@ class Metadata extends atoum
             'columnName' => 'boo_name'
         ));
 
-        $bouh = $metadata->createObject();
+        $bouh = $metadata->createEntity();
         $this->calling($bouh)->setName = function ($name) {
             $this->name = $name;
         };
 
         $this
-            ->if($metadata->setObjectProperty($bouh, 'boo_name', 'Sylvain'))
+            ->if($metadata->setEntityProperty($bouh, 'boo_name', 'Sylvain'))
             ->string($bouh->name)
                 ->isIdenticalTo('Sylvain');
+    }
+
+    public function testSetEntityPrimary()
+    {
+        $metadata = new \fastorm\Entity\Metadata();
+        $metadata->setClass('mock\repository\BouhRepository');
+        $metadata->addField(array(
+            'primary'    => true,
+            'fieldName'  => 'id',
+            'columnName' => 'boo_id'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->setId = function ($id) {
+            $this->id = $id;
+        };
+
+        $this
+            ->if($metadata->setEntityPrimary($bouh, 321))
+            ->integer($bouh->id)
+                ->isIdenticalTo(321);
     }
 
     public function testAddIntoShouldCallMetadataRepositoryAdd()
@@ -171,5 +192,118 @@ class Metadata extends atoum
                     new \fastorm\Query('SELECT * FROM `T_BOUH_BO` WHERE `id` = :primary', array('primary' => 'BOuH'))
                 );
 
+    }
+
+    public function testGenerateQueryForInsertShouldCallCallbackWithQueryObject()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+
+        $entity = new \tests\fixtures\model\Bouh();
+        $entity->setId(123);
+        $entity->setFirstname('Sylvain');
+        $entity->setName('Robez-Masson');
+
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('T_BOUH_BO'))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'id',
+                'columnName' => 'boo_id'
+            )))
+            ->then($metadata->addField(array(
+                'fieldName'  => 'name',
+                'columnName' => 'boo_name'
+            )))
+            ->then($metadata->addField(array(
+                'fieldName'  => 'firstname',
+                'columnName' => 'boo_firstname'
+            )))
+            ->then($metadata->generateQueryForInsert($mockDriver, $entity, function ($query) use (&$outerQuery) {
+                $outerQuery = $query;
+            }))
+            ->object($outerQuery)
+                ->isCloneOf(
+                    new \fastorm\Query(
+                        'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
+                        . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
+                        array(
+                            'boo_id'        => 123,
+                            'boo_firstname' => 'Sylvain',
+                            'boo_name'      => 'Robez-Masson'
+                        )
+                    )
+                );
+    }
+
+    public function testGenerateQueryForUpdateShouldCallCallbackWithQueryObject()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+
+        $entity = new \tests\fixtures\model\Bouh();
+        $entity->setId(123);
+        $entity->setFirstname('Sylvain');
+        $entity->setName('Robez-Masson');
+
+        $properties = array('name');
+
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('T_BOUH_BO'))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'id',
+                'columnName' => 'boo_id'
+            )))
+            ->then($metadata->addField(array(
+                'fieldName'  => 'name',
+                'columnName' => 'boo_name'
+            )))
+            ->then($metadata->addField(array(
+                'fieldName'  => 'firstname',
+                'columnName' => 'boo_firstname'
+            )))
+            ->then($metadata->generateQueryForUpdate($mockDriver, $entity, $properties, function ($query) use (&$outerQuery) {
+                $outerQuery = $query;
+            }))
+            ->object($outerQuery)
+                ->isCloneOf(
+                    new \fastorm\Query(
+                        'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
+                        array(
+                            'boo_id'        => 123,
+                            'boo_name'      => 'Robez-Masson'
+                        )
+                    )
+                );
+    }
+
+    public function testGenerateQueryForDeleteShouldCallCallbackWithQueryObject()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+
+        $entity = new \tests\fixtures\model\Bouh();
+        $entity->setId(123);
+
+        $this
+            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->then($metadata->setTable('T_BOUH_BO'))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'id',
+                'columnName' => 'boo_id'
+            )))
+            ->then($metadata->generateQueryForDelete($mockDriver, $entity, function ($query) use (&$outerQuery) {
+                $outerQuery = $query;
+            }))
+            ->object($outerQuery)
+                ->isCloneOf(
+                    new \fastorm\Query(
+                        'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
+                        array(
+                            'boo_id'        => 123
+                        )
+                    )
+                );
     }
 }

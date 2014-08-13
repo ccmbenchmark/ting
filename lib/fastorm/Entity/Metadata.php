@@ -84,16 +84,23 @@ class Metadata
         return false;
     }
 
-    public function createObject()
+    public function createEntity()
     {
         $class = substr($this->class, 0, -10); // Remove "Repository" from class
         return new $class;
     }
 
-    public function setObjectProperty($object, $column, $value)
+    public function setEntityPrimary($entity, $value)
+    {
+        $property = 'set' . $this->primary['field'];
+        $entity->$property($value);
+        return $this;
+    }
+
+    public function setEntityProperty($entity, $column, $value)
     {
         $property = 'set' . $this->fields[$column]['fieldName'];
-        $object->$property($value);
+        $entity->$property($value);
     }
 
     public function addInto(MetadataRepository $metadataRepository)
@@ -109,13 +116,103 @@ class Metadata
     public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, callable $callback)
     {
         $driver
-            ->escapeField($this->table, function ($field) use (&$sql) {
-                $sql = 'SELECT * FROM ' . $field;
+            ->escapeFields(array($this->table), function ($fields) use (&$sql) {
+                $sql = 'SELECT * FROM ' . $fields[0];
             })
-            ->escapeField($this->primary['column'], function ($field) use (&$sql) {
-            $sql .= ' WHERE ' . $field . ' = :primary';
+            ->escapeFields(array($this->primary['column']), function ($fields) use (&$sql) {
+            $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
         $callback(new Query($sql, array('primary' => $primaryValue)));
+    }
+
+    public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
+    {
+
+        $columns = array();
+        $columns['table'] = $this->table;
+
+        foreach ($this->fields as $column => $field) {
+            $columns[] = $column;
+            $propertyName = 'get' . $field['fieldName'];
+            $values[$column] = $entity->$propertyName();
+        }
+
+        $driver
+            ->escapeFields(
+                $columns,
+                function ($fields) use (&$sql, $columns) {
+                    $table = $fields['table'];
+                    unset($fields['table']);
+                    unset($columns['table']);
+
+                    $sql = 'INSERT INTO ' . $table . ' ('
+                        . implode($fields, ', ') . ') VALUES (:' . implode($columns, ', :') . ')';
+                }
+            );
+
+        $callback(new Query($sql, $values));
+    }
+
+    public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
+    {
+        $values  = array();
+        $columns = array();
+        $columns['table']   = $this->table;
+        $columns['primary'] = $this->primary['column'];
+
+        $propertyName = 'get' . $this->primary['field'];
+        $values[$this->primary['column']]  = $entity->$propertyName();
+
+        foreach ($this->fields as $column => $field) {
+            if (in_array($field['fieldName'], $properties) === true) {
+                $columns[] = $column;
+                $propertyName = 'get' . $field['fieldName'];
+                $values[$column] = $entity->$propertyName();
+            }
+        }
+
+        $driver
+            ->escapeFields(
+                $columns,
+                function ($fields) use (&$sql, $columns) {
+                    $table = $fields['table'];
+                    unset($fields['table']);
+
+                    $primary = $fields['primary'];
+                    unset($fields['primary']);
+
+                    $sqlSet = array();
+                    foreach ($fields as $index => $field) {
+                        $sqlSet[] = $field . ' = :' . $columns[$index];
+                    }
+
+                    $sql = 'UPDATE ' . $table . ' SET ' . implode($sqlSet, ', ')
+                        . ' WHERE ' . $primary . ' = :' . $columns['primary'];
+                }
+            );
+
+        $callback(new Query($sql, $values));
+    }
+
+    public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
+    {
+        $values  = array();
+        $columns = array();
+        $columns['table']   = $this->table;
+        $columns['primary'] = $this->primary['column'];
+
+        $propertyName = 'get' . $this->primary['field'];
+        $values[$this->primary['column']]  = $entity->$propertyName();
+
+        $driver
+            ->escapeFields(
+                $columns,
+                function ($fields) use (&$sql, $columns) {
+                    $sql = 'DELETE FROM ' . $fields['table'] . ' WHERE ' . $fields['primary'] . ' = :' . $columns['primary'];
+                }
+            );
+
+        $callback(new Query($sql, $values));
     }
 }

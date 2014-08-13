@@ -2,6 +2,9 @@
 
 namespace fastorm\Entity;
 
+use fastorm\NotifyPropertyInterface;
+use fastorm\PropertyListenerInterface;
+use fastorm\UnitOfWork;
 use fastorm\Entity\Metadata;
 use fastorm\Entity\MetadataRepository;
 
@@ -10,13 +13,19 @@ class Hydrator
 
     protected $metadataRepository = array();
 
-    public function __construct(MetadataRepository $metadataRepository = null)
+    public function __construct(MetadataRepository $metadataRepository = null, UnitofWork $unitOfWork = null)
     {
         if ($metadataRepository === null) {
-                $metadataRepository = MetadataRepository::getInstance();
+            $metadataRepository = MetadataRepository::getInstance();
         }
 
         $this->metadataRepository = $metadataRepository;
+
+        if ($unitOfWork === null) {
+            $unitOfWork = UnitOfWork::getInstance();
+        }
+
+        $this->unitOfWork = $unitOfWork;
     }
 
     public function hydrate($columns = array())
@@ -33,7 +42,7 @@ class Hydrator
                     $column['orgTable'],
                     function (Metadata $metadata) use ($column, &$result, &$metadataList) {
                         $metadataList[$column['table']] = $metadata;
-                        $result[$column['table']]       = $metadata->createObject();
+                        $result[$column['table']]       = $metadata->createEntity();
                     },
                     function () use (&$result, $column) {
                         $result[$column['table']] = new \stdClass();
@@ -44,7 +53,7 @@ class Hydrator
             if (isset($metadataList[$column['table']]) === true
                 && $metadataList[$column['table']]->hasColumn($column['orgName'])
             ) {
-                $metadataList[$column['table']]->setObjectProperty(
+                $metadataList[$column['table']]->setEntityProperty(
                     $result[$column['table']],
                     $column['orgName'],
                     $column['value']
@@ -53,6 +62,10 @@ class Hydrator
                 $property = 'db__' . $column['name'];
                 $result[$column['table']]->$property = $column['value'];
             }
+        }
+
+        foreach ($result as $entity) {
+            $this->unitOfWork->manage($entity);
         }
 
         return $result;

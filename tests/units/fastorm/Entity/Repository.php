@@ -81,6 +81,7 @@ class Repository extends atoum
             };
 
         $bouh = new \tests\fixtures\model\Bouh();
+        $bouh->addPropertyListener(\fastorm\UnitOfWork::getInstance());
         $bouh->setId(3);
         $bouh->setfirstname('Sylvain');
 
