@@ -42,6 +42,60 @@ class MetadataRepository extends atoum
                 ->isIdenticalTo($outerRepository);
     }
 
+    public function testFindMetadataForEntityShouldCallCallbackFound()
+    {
+        $metadata = new \fastorm\Entity\Metadata();
+        $metadata->setClass('tests\fixtures\model\BouhRepository');
+
+        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+        $metadata->addInto($metadataRepository);
+
+        $entity = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
+            ->then($metadataRepository->findMetadataForEntity(
+                $entity,
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackFound)
+                ->isTrue()
+            ->variable($outerCallbackNotFound)
+                ->isNull();
+    }
+
+    public function testFindMetadataForEntityShouldCallCallbackNotFound()
+    {
+        $metadata = new \fastorm\Entity\Metadata();
+        $metadata->setClass('tests\fixtures\model\BouhRepository');
+
+        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+        $metadata->addInto($metadataRepository);
+
+        $entity = new \mock\tests\fixtures\model\Bouh2();
+
+        $this
+            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
+            ->then($metadataRepository->findMetadataForEntity(
+                $entity,
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackNotFound)
+                ->isTrue()
+            ->variable($outerCallbackFound)
+                ->isNull();
+    }
+
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
         $metadata = new \fastorm\Entity\Metadata();

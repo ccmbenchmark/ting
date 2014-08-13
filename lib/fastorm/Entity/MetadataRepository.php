@@ -52,6 +52,16 @@ class MetadataRepository
         }
     }
 
+    public function findMetadataForEntity($entity, callable $callbackFound, callable $callbackNotFound = null)
+    {
+        $repository = get_class($entity) . 'Repository';
+        if (isset($this->metadataList[$repository]) === true) {
+            $callbackFound($this->metadataList[$repository]);
+        } elseif ($callbackNotFound !== null) {
+            $callbackNotFound();
+        }
+    }
+
     public function loadMetadata(Repository $repository, callable $callback)
     {
         if (isset($this->metadataList[get_class($repository)]) === false) {
