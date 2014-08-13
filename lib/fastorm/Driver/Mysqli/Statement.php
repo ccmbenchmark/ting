@@ -9,12 +9,23 @@ use fastorm\Entity\Collection;
 class Statement implements \fastorm\Driver\StatementInterface
 {
 
+    const TYPE_RESULT   = 1;
+    const TYPE_AFFECTED = 2;
+    const TYPE_INSERT   = 3;
+
     protected $driverStatement = null;
+    protected $queryType       = null;
+
+
+    public function setQueryType($type)
+    {
+        $this->queryType = (int) $type;
+    }
 
     /**
-     * @return bool
+     * @return bool|int
      */
-    public function execute($driverStatement, $params, $paramsOrder, Collection $collection)
+    public function execute($driverStatement, $params, $paramsOrder, Collection $collection = null)
     {
         $this->driverStatement = $driverStatement;
         $types = '';
@@ -39,24 +50,36 @@ class Statement implements \fastorm\Driver\StatementInterface
         call_user_func_array(array($driverStatement, 'bind_param'), $values);
 
         $driverStatement->execute();
-        $this->setCollectionWithResult($driverStatement, $collection);
 
-        return $this;
+        return $this->setCollectionWithResult($driverStatement, $collection);
     }
 
     /**
      * @throws \fastorm\Adapter\Driver\QueryException
      */
-    public function setCollectionWithResult($driverStatment, Collection $collection)
+    public function setCollectionWithResult($driverStatement, Collection $collection = null)
     {
+        if ($collection === null) { // update or insert
+            if ($this->queryType === self::TYPE_INSERT) {
+                    return $driverStatement->insert_id;
+            }
 
-        $result = $driverStatment->get_result();
+            $result = $driverStatement->affected_rows;
+
+            if ($result === null || $result === -1) {
+                return false;
+            }
+            return $result;
+        }
+
+        $result = $driverStatement->get_result();
+
         if ($result === false) {
-            throw new QueryException($driverStatment->error, $driverStatment->errno);
+            throw new QueryException($driverStatement->error, $driverStatement->errno);
         }
 
         $collection->set(new Result($result));
-        return $this;
+        return true;
     }
 
     public function close()

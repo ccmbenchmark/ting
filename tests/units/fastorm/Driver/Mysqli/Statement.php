@@ -92,6 +92,47 @@ class Statement extends atoum
                 ->isCloneOf(new \fastorm\Driver\Mysqli\Result($result));
     }
 
+    public function testSetCollectionWithResultWithQueryTypeInsertShouldReturnId()
+    {
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $driverStatement->insert_id = 123;
+
+        $this
+            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\fastorm\Driver\Mysqli\Statement::TYPE_INSERT))
+            ->integer($statement->setCollectionWithResult($driverStatement))
+                ->isIdenticalTo(123);
+    }
+
+    public function testSetCollectionWithResultWithoutCollectionShouldReturnAffectedRows()
+    {
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $driverStatement->affected_rows = 321;
+
+        $this
+            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->integer($statement->setCollectionWithResult($driverStatement))
+                ->isIdenticalTo(321);
+    }
+
+    public function testSetCollectionWithResultWithoutCollectionShouldReturnFalse()
+    {
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $driverStatement->affected_rows = null;
+
+        $this
+            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->boolean($statement->setCollectionWithResult($driverStatement))
+                ->isFalse();
+
+        $driverStatement->affected_rows = -1;
+
+        $this
+            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->boolean($statement->setCollectionWithResult($driverStatement))
+                ->isFalse();
+    }
+
     public function testSetCollectionShouldRaiseQueryException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();

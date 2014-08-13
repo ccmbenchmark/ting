@@ -22,18 +22,21 @@ class Query
         DriverInterface $driver,
         Collection $collection = null
     ) {
-        if ($collection === null) {
-            $collection = new Collection();
-        }
-
         $driver->prepare(
             $this->sql,
-            function (StatementInterface $statement, $paramsOrder, $driverStatement, Collection $collection) {
-                $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
+            function (
+                StatementInterface $statement,
+                $paramsOrder,
+                $driverStatement,
+                Collection $collection = null
+            ) use (
+                &$result
+            ) {
+                $result = $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
             },
             $collection
         );
 
-        return $this;
+        return $result;
     }
 }

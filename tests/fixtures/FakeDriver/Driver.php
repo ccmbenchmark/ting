@@ -13,7 +13,7 @@ class Driver implements DriverInterface
 
     }
 
-    public function prepare($sql, callable $callback, Collection $collection, StatementInterface $statement = null)
+    public function prepare($sql, callable $callback, Collection $collection = null, StatementInterface $statement = null)
     {
 
     }
@@ -33,7 +33,7 @@ class Driver implements DriverInterface
 
     }
 
-    public function escapeField($field, callable $callback)
+    public function escapeFields($fields, callable $callback)
     {
 
     }

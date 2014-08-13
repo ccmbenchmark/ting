@@ -90,7 +90,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function prepare($sql, callable $callback, Collection $collection, StatementInterface $statement = null)
+    public function prepare($sql, callable $callback, Collection $collection = null, StatementInterface $statement = null)
     {
         $sql = preg_replace_callback(
             '/:([a-zA-Z0-9_-]+)/',
@@ -113,6 +113,16 @@ class Driver implements DriverInterface
             });
         }
 
+        $queryType = Statement::TYPE_RESULT;
+
+        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
+            $queryType = Statement::TYPE_AFFECTED;
+        } else if (strpos($sql, 'INSERT') === 0) {
+            $queryType = Statement::TYPE_INSERT;
+        }
+
+        $statement->setQueryType($queryType);
+
         $callback($statement, $paramsOrder, $driverStatement, $collection);
 
         return $this;
@@ -127,9 +137,13 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function escapeField($field, callable $callback)
+    public function escapeFields($fields, callable $callback)
     {
-        $callback('`' . $field . '`');
+        foreach ($fields as $key => &$field) {
+            $field = '`' . $field . '`';
+        }
+
+        $callback($fields);
         return $this;
     }
 }

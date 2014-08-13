@@ -245,17 +245,65 @@ class Driver extends atoum
                 ->isInstanceOf('\fastorm\Driver\QueryException');
     }
 
-    public function testEscapeFieldShouldCallCallbackAndReturnThis()
+    public function testPrepareShouldCallStatementSetQueryTypeAffected()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+
+        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
+        $this->calling($mockStatement)->setQueryType = function ($queryType) use (&$outerQueryType) {
+            $outerQueryType = $queryType;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->prepare(
+                'UPDATE T_BOUH_BOO SET ...',
+                function () {
+                },
+                null,
+                $mockStatement
+            ))
+            ->integer($outerQueryType)
+                ->isIdenticalTo(\fastorm\Driver\Mysqli\Statement::TYPE_AFFECTED);
+    }
+
+    public function testPrepareShouldCallStatementSetQueryTypeInsert()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+
+        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
+        $this->calling($mockStatement)->setQueryType = function ($queryType) use (&$outerQueryType) {
+            $outerQueryType = $queryType;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->prepare(
+                'INSERT INTO T_BOUH_BOO ...',
+                function () {
+                },
+                null,
+                $mockStatement
+            ))
+            ->integer($outerQueryType)
+                ->isIdenticalTo(\fastorm\Driver\Mysqli\Statement::TYPE_INSERT);
+    }
+
+    public function testEscapeFieldsShouldCallCallbackAndReturnThis()
     {
         $mockDriver = new \mock\Fake\Mysqli();
 
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->object($driver->escapeField('Bouh', function ($escaped) use (&$outerEscaped) {
+            ->object($driver->escapeFields(array('Bouh'), function ($escaped) use (&$outerEscaped) {
                 $outerEscaped = $escaped;
             }))
                 ->isIdenticalTo($driver)
-            ->string($outerEscaped)
+            ->string($outerEscaped[0])
                 ->isIdenticalTo('`Bouh`');
     }
 }
