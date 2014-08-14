@@ -27,6 +27,9 @@ class Metadata
         $this->databaseName = (string) $databaseName;
     }
 
+    /**
+     * @throws \fastorm\Exception
+     */
     public function setClass($className)
     {
         if (substr($className, 0, 1) === '\\') {

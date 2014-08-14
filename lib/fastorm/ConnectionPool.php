@@ -9,6 +9,9 @@ class ConnectionPool
     protected $connectionConfig = array();
     protected $connections = array();
 
+    /**
+     * @throws \fastorm\Exception
+     */
     protected function __construct($config)
     {
         if (isset($config['connections']) === false) {
@@ -18,6 +21,9 @@ class ConnectionPool
         $this->connectionConfig = $config['connections'];
     }
 
+    /**
+     * @throws \fastorm\Exception
+     */
     public static function getInstance($config = array())
     {
         if (self::$instance === null) {
@@ -31,6 +37,9 @@ class ConnectionPool
         return self::$instance;
     }
 
+    /**
+     * @throws \fastorm\Exception
+     */
     public function connect($connectionName, $database, callable $callback)
     {
         if (isset($this->connections[$connectionName]) === false) {

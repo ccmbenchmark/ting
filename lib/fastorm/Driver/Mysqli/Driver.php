@@ -47,7 +47,9 @@ class Driver implements DriverInterface
         }
     }
 
-
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
     public function connect($hostname, $username, $password, $port = 3306)
     {
 
@@ -63,6 +65,9 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
     public function setDatabase($database)
     {
 
@@ -90,6 +95,9 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    /**
+     * @throws \fastorm\Driver\QueryException
+     */
     public function prepare(
         $sql,
         callable $callback,
