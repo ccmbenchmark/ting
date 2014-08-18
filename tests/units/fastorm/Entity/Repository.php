@@ -10,8 +10,17 @@ class Repository extends atoum
     public function testShouldBeSingleton()
     {
         $this
-            ->object(\fastorm\Entity\Repository::getInstance())
-            ->isIdenticalTo(\fastorm\Entity\Repository::getInstance());
+            ->object(\tests\fixtures\model\BouhRepository::getInstance())
+            ->isIdenticalTo(\tests\fixtures\model\BouhRepository::getInstance());
+    }
+
+    public function testInitMetadataShouldRaiseException()
+    {
+        $this
+            ->exception(function () {
+                \fastorm\Entity\Repository::getInstance();
+            })
+                ->hasMessage('You should add initMetadata in your class repository');
     }
 
     public function testExecuteShouldExecuteQuery()
@@ -33,7 +42,7 @@ class Repository extends atoum
         $collection = new \fastorm\Entity\Collection();
 
         $this
-            ->if($repository = \fastorm\Entity\Repository::getInstance())
+            ->if($repository = \tests\fixtures\model\BouhRepository::getInstance())
             ->then($repository->execute($mockQuery, $collection, $mockConnectionPool))
             ->object($outerDriver)
                 ->isIdenticalTo($mockDriver)

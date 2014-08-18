@@ -7,6 +7,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
 use fastorm\Entity\Hydrator;
 use fastorm\Entity\MetadataRepository;
+use fastorm\Exception;
 use fastorm\Query;
 
 class Repository
@@ -89,21 +90,28 @@ class Repository
 
     public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
+        throw new Exception('You should add initMetadata in your class repository');
 
-        if ($metadata === null) {
-            $metadata = new Metadata();
+        /**
+         * Example for your repository :
+         *
+            if ($metadataRepository === null) {
+                $metadataRepository = MetadataRepository::getInstance();
+            }
+
+            if ($metadata === null) {
+                $metadata = new Metadata();
+            }
+
             $metadata->setClass(get_called_class());
             $metadata->addField(array(
                'primary'    => true,
-               'fieldName'  => 'YOU_SHOULD_ADD',
-               'columnName' => 'YOUR_OWN_INIT_METADATA',
-               'type'       => 'IN_YOUR_REPOSITORY'
+               'fieldName'  => 'aField',
+               'columnName' => 'COLUMN_NAME',
+               'type'       => 'int'
             ));
-        }
 
-        $metadata->addInto($metadataRepository);
+            $metadata->addInto($metadataRepository);
+        */
     }
 }
