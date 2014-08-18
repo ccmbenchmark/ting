@@ -33,10 +33,6 @@ class Hydrator
         $result       = array();
         $metadataList = array();
         foreach ($columns as $column) {
-            if ($column['table'] === '') {
-                $column['table'] = 'db__table';
-            }
-
             if (isset($result[$column['table']]) === false) {
                 $this->metadataRepository->findMetadataForTable(
                     $column['orgTable'],
@@ -59,8 +55,11 @@ class Hydrator
                     $column['value']
                 );
             } else {
-                $property = 'db__' . $column['name'];
-                $result[$column['table']]->$property = $column['value'];
+                if (isset($result['db__table']) === false) {
+                    $result['db__table'] = new \stdClass();
+                }
+                
+                $result['db__table']->$column['name'] = $column['value'];
             }
         }
 

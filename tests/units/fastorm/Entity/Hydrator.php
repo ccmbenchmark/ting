@@ -53,22 +53,29 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
-    public function testHydrateShouldHydrateIntoDbTable()
+    public function testHydrateShouldHydrateUnknownColumnIntoDbTable()
     {
         $data = array(
             array(
                 'name'     => 'fname',
                 'orgName'  => 'boo_firstname',
-                'table'    => '',
+                'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
             ),
             array(
                 'name'     => 'name',
                 'orgName'  => 'boo_name',
-                'table'    => '',
+                'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'
+            ),
+            array(
+                'name'     => 'otherColumn',
+                'orgName'  => 'boo_other_column',
+                'table'    => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Happy Face'
             )
         );
 
@@ -94,13 +101,15 @@ class Hydrator extends atoum
         $this
             ->if($hydrator = new \fastorm\Entity\Hydrator($metadataRepository))
             ->then($data = $hydrator->hydrate($data))
-            ->string($data['db__table']->getName())
+            ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
-            ->string($data['db__table']->getFirstname())
-                ->isIdenticalTo('Sylvain');
+            ->string($data['bouh']->getFirstname())
+                ->isIdenticalTo('Sylvain')
+            ->string($data['db__table']->otherColumn)
+                ->isIdenticalTo('Happy Face');
     }
 
-    public function testHydrateShouldHydrateWithDbPrefix()
+    public function testHydrateShouldHydrateIntoDbTable()
     {
         $data = array(
             array(
@@ -122,9 +131,9 @@ class Hydrator extends atoum
         $this
             ->if($hydrator = new \fastorm\Entity\Hydrator())
             ->then($data = $hydrator->hydrate($data))
-            ->string($data['db__table']->db__name)
+            ->string($data['db__table']->name)
                 ->isIdenticalTo('Robez-Masson')
-            ->string($data['db__table']->db__fname)
+            ->string($data['db__table']->fname)
                 ->isIdenticalTo('Sylvain');
     }
 }
