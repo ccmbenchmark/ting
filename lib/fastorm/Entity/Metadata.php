@@ -118,12 +118,18 @@ class Metadata
 
     public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, callable $callback)
     {
+        $fields = array_keys($this->fields);
+        array_unshift($fields, $this->table);
+
         $driver
-            ->escapeFields(array($this->table), function ($fields) use (&$sql) {
-                $sql = 'SELECT * FROM ' . $fields[0];
+            ->escapeFields($fields, function ($fields) use (&$sql) {
+                $table = $fields[0];
+                unset($fields[0]);
+
+                $sql = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $table;
             })
             ->escapeFields(array($this->primary['column']), function ($fields) use (&$sql) {
-            $sql .= ' WHERE ' . $fields[0] . ' = :primary';
+                $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
         $callback(new Query($sql, array('primary' => $primaryValue)));

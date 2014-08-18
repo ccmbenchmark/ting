@@ -184,12 +184,16 @@ class Metadata extends atoum
                 'fieldName'  => 'id',
                 'columnName' => 'id'
             )))
+            ->then($metadata->addField(array(
+                'fieldName'  => 'name',
+                'columnName' => 'bo_name'
+            )))
             ->then($metadata->generateQueryForPrimary($mockDriver, 'BOuH', function ($query) use (&$outerQuery) {
                 $outerQuery = $query;
             }))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query('SELECT * FROM `T_BOUH_BO` WHERE `id` = :primary', array('primary' => 'BOuH'))
+                    new \fastorm\Query('SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary', array('primary' => 'BOuH'))
                 );
 
     }
