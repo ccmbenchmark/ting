@@ -78,7 +78,10 @@ class Driver extends atoum
             ->exception(function () use ($driver) {
                 $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
-                ->isInstanceOf('\fastorm\Driver\Exception');
+                ->isInstanceOf('\fastorm\Driver\Exception')
+                ->error()
+                    ->withType(E_WARNING)
+                    ->exists();
     }
 
     public function testsetDatabase()
@@ -162,6 +165,9 @@ class Driver extends atoum
             ->exception(function () use ($driver) {
                 $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
+                ->error()
+                    ->withType(E_WARNING)
+                    ->exists()
             ->then($driver->ifIsNotConnected(function () use (&$callable) {
                 $callable = true;
             }))

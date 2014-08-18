@@ -56,8 +56,7 @@ class Driver implements DriverInterface
         $this->driver->report_mode = MYSQLI_REPORT_STRICT;
 
         try {
-            // @ to hide getaddrinfo failed, error is still catched by try/catch
-            $this->connected = @$this->connection->real_connect($hostname, $username, $password, null, $port);
+            $this->connected = $this->connection->real_connect($hostname, $username, $password, null, $port);
         } catch (\Exception $e) {
             throw new Exception('Connect Error: ' . $e->getMessage(), $e->getCode());
         }
