@@ -16,10 +16,16 @@ class Statement implements \fastorm\Driver\StatementInterface
     protected $driverStatement = null;
     protected $queryType       = null;
 
-
+    /**
+     * @throws \fastorm\Adapter\Driver\Exception
+     */
     public function setQueryType($type)
     {
-        $this->queryType = (int) $type;
+        if (in_array($type, array(self::TYPE_RESULT, self::TYPE_AFFECTED, self::TYPE_INSERT)) === false) {
+            throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
+        }
+
+        $this->queryType = $type;
     }
 
     /**

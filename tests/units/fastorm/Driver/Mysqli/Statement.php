@@ -180,4 +180,14 @@ class Statement extends atoum
             })
                 ->hasMessage('statement->close can\'t be called before statement->execute');
     }
+
+    public function testSetQueryTypeWithInvalidTypeShouldRaisException()
+    {
+        $this
+            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->exception(function () use ($statement) {
+                $statement->setQueryType(PHP_INT_MAX);
+            })
+                ->hasMessage('setQueryType should use one of constant Statement::TYPE_*');
+    }
 }
