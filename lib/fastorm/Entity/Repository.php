@@ -2,65 +2,116 @@
 
 namespace fastorm\Entity;
 
-use fastorm\Adapter\DatabaseResult;
+use fastorm\ConnectionPool;
+use fastorm\Driver\DriverInterface;
+use fastorm\Entity\Collection;
+use fastorm\Entity\Hydrator;
+use fastorm\Entity\MetadataRepository;
+use fastorm\Exception;
+use fastorm\Query;
 
 class Repository
 {
-    /**
-     * @var Manager
-     */
-    protected $em;
 
-    public function __construct(Manager $em)
+    protected static $instance = null;
+    protected $metadata;
+
+    protected function __construct()
     {
-        $this->em = $em;
+        MetadataRepository::getInstance()->loadMetadata($this, function (Metadata $metadata) {
+            $this->metadata = $metadata;
+        });
     }
 
-    public function getEntityManager()
+    public static function getInstance()
     {
-        return $this->em;
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
     }
 
-    /**
-     * @param $primaryKeyValue
-     * @return Object|null
-     */
-    public function get($primaryKeyValue)
-    {
+    public function get(
+        $primaryKeyValue,
+        Hydrator $hydrator = null,
+        Collection $collection = null,
+        ConnectionPool $connectionPool = null
+    ) {
+        if ($hydrator === null) {
+            $hydrator = new Hydrator();
+        }
 
-        $className = get_class($this);
-        $entityName = str_replace('Repository', '', $className);
-        $metadata = $this->em->loadMetadata($entityName);
-        $primaryColumn = $metadata->getPrimary()['column'];
-        $fields = $metadata->getFieldsName();
-        $databaseHandler = $this->em->getDatabaseHandler($metadata);
-        $fields = array_map(array($databaseHandler, 'protectFieldName'), $fields);
+        if ($collection === null) {
+            $collection = new Collection();
+        }
 
-        $sql = 'SELECT ' . $databaseHandler->protectFieldName($primaryColumn) . ', '.
-            implode(', ', $fields).' FROM ' . $metadata->getTable() .
-            ' WHERE ' . $databaseHandler->protectFieldName($primaryColumn) . ' = :id LIMIT 1';
+        if ($connectionPool === null) {
+            $connectionPool = ConnectionPool::getInstance();
+        }
 
-        return $this->hydrate(
-            $this->em->doQuery($className, $sql, array('id' => $primaryKeyValue))
-        )->first();
+        $this->metadata->connect(
+            $connectionPool,
+            function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
+                $this->metadata->generateQueryForPrimary(
+                    $driver,
+                    $primaryKeyValue,
+                    function (Query $query) use ($driver, $collection) {
+                        $query->execute($driver, $collection);
+                    }
+                );
+            }
+        );
+
+        $collection->hydrator($hydrator);
+        return current($collection->rewind()->current());
     }
 
-    /**
-     * @param  string                          $queryString
-     * @param  array                           $params
-     * @return \fastorm\Adapter\DatabaseResult
-     */
-    public function query($queryString, $params = array())
+    public function execute(Query $query, Collection $collection = null, ConnectionPool $connectionPool = null)
     {
-        return $this->em->doQuery(get_class($this), $queryString, $params);
+
+        if ($connectionPool === null) {
+            $connectionPool = ConnectionPool::getInstance();
+        }
+
+        if ($collection === null) {
+            $collection = new Collection();
+        }
+
+        $this->metadata->connect(
+            $connectionPool,
+            function (DriverInterface $driver) use ($query, $collection) {
+                $query->execute($driver, $collection);
+            }
+        );
+
+        return $collection;
     }
 
-    /**
-     * @param  \fastorm\Adapter\DatabaseResult $result
-     * @return Hydrator
-     */
-    public function hydrate(DatabaseResult $result)
+    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
     {
-        return new Hydrator($this, $result);
+        throw new Exception('You should add initMetadata in your class repository');
+
+        /**
+         * Example for your repository :
+         *
+            if ($metadataRepository === null) {
+                $metadataRepository = MetadataRepository::getInstance();
+            }
+
+            if ($metadata === null) {
+                $metadata = new Metadata();
+            }
+
+            $metadata->setClass(get_called_class());
+            $metadata->addField(array(
+               'primary'    => true,
+               'fieldName'  => 'aField',
+               'columnName' => 'COLUMN_NAME',
+               'type'       => 'int'
+            ));
+
+            $metadata->addInto($metadataRepository);
+        */
     }
 }

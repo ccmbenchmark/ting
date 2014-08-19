@@ -28,36 +28,36 @@ $poolConnection = \fastorm\ConnectionPool::getInstance(array(
     'connections' => $connections
 ));
 
+$unitOfWork = \fastorm\UnitOfWork::getInstance();
 
 try {
     $cityRepository = \sample\src\model\CityRepository::getInstance();
+    $city = $cityRepository->get(3);
+    var_dump($city);
 
-    var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
+    $city->setName("boum");
+    $city->setDistrict('Yolé');
+    $unitOfWork->persist($city);
 
-    $collection = $cityRepository->execute(new \fastorm\Query(
-        "select * from T_CITY_CIT as c
-        inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
-        where co.cou_code = :code limit 3",
-        array('code' => 'FRA')
-    ))->hydrator(new \fastorm\Entity\Hydrator());
+    $city2 = new model\City();
+    $city2->setName('Bouh');
+    $city2->setDistrict('Yo');
+    $unitOfWork->persist($city2);
 
-    foreach ($collection as $result) {
-        var_dump($result);
-        echo str_repeat("-", 40) . "\n";
-    }
-} catch (Exception $e) {
-    var_dump($e->getMessage());
-}
+    $unitOfWork->flush();
 
-try {
-    $cityRepository = \sample\src\model\CityRepository::getInstance();
-    $collection = $cityRepository->getZCountryWithLotsPopulation();
+    $city->setName("Herat");
+    $city->setDistrict('Herat');
+    $unitOfWork->persist($city);
 
-    foreach ($collection as $result) {
-        var_dump($result);
-        echo str_repeat("-", 40) . "\n";
-    }
+    $city2->setName('Bouh 2');
+    $unitOfWork->persist($city2);
+
+    $unitOfWork->flush();
+
+    $unitOfWork->remove($city2);
+    $unitOfWork->flush();
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
