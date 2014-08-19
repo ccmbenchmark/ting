@@ -299,6 +299,26 @@ class Driver extends atoum
                 ->isIdenticalTo(\fastorm\Driver\Mysqli\Statement::TYPE_INSERT);
     }
 
+    public function testPrepareShouldNotTransformEscapedColon()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->prepare = function ($sql) use (&$outerSql) {
+            $outerSql = $sql;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->prepare(
+                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"',
+                function () {
+                }
+            ))
+            ->string($outerSql)
+                ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
+    }
+
     public function testEscapeFieldsShouldCallCallbackAndReturnThis()
     {
         $mockDriver = new \mock\Fake\Mysqli();
