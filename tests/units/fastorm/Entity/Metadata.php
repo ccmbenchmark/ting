@@ -193,7 +193,10 @@ class Metadata extends atoum
             }))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query('SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary', array('primary' => 'BOuH'))
+                    new \fastorm\Query(
+                        'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
+                        array('primary' => 'BOuH')
+                    )
                 );
 
     }
