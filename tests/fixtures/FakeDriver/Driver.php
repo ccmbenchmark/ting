@@ -8,6 +8,12 @@ use fastorm\Entity\Collection;
 
 class Driver implements DriverInterface
 {
+
+    public static function forConnectionKey($connectionName, $database, callable $callback)
+    {
+        $callback($connectionName);
+    }
+
     public function connect($hostname, $username, $password, $port)
     {
 

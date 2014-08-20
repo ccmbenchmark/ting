@@ -32,6 +32,11 @@ class Driver implements DriverInterface
     protected $connected = false;
 
 
+    public static function forConnectionKey($connectionName, $database, callable $callback)
+    {
+        $callback($connectionName);
+    }
+
     public function __construct($connection = null, $driver = null)
     {
         if ($connection === null) {

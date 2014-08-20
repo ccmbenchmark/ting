@@ -19,4 +19,5 @@ interface DriverInterface
     public function ifIsError(callable $callback);
     public function ifIsNotConnected(callable $callback);
     public function escapeFields($fields, callable $callback);
+    public static function forConnectionKey($connectionName, $database, callable $callback);
 }

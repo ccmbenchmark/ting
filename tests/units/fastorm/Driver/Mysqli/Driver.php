@@ -7,6 +7,16 @@ use \mageekguy\atoum;
 class Driver extends atoum
 {
 
+    public function testForConnectionKeyShouldCallCallbackWithConnectionName()
+    {
+        $this
+            ->if(\fastorm\Driver\Mysqli\Driver::forConnectionKey('BouhName', 'BouhDatabase', function ($connectionKey) use (&$outerConnectionKey) {
+                $outerConnectionKey = $connectionKey;
+            }))
+            ->string($outerConnectionKey)
+                ->isIdenticalTo('BouhName');
+    }
+
     public function testShouldImplementDriverInterface()
     {
         $this
