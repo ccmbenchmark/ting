@@ -104,13 +104,15 @@ class Driver implements DriverInterface
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(
-            '/:([a-zA-Z0-9_-]+)/',
+            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
                 return '?';
             },
             $sql
         );
+
+        $sql = str_replace('\:', ':', $sql);
 
         if ($statement === null) {
             $statement = new Statement();
