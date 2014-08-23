@@ -7,18 +7,11 @@ use \mageekguy\atoum;
 class Repository extends atoum
 {
 
-    public function testShouldBeSingleton()
-    {
-        $this
-            ->object(\tests\fixtures\model\BouhRepository::getInstance())
-            ->isIdenticalTo(\tests\fixtures\model\BouhRepository::getInstance());
-    }
-
     public function testInitMetadataShouldRaiseException()
     {
         $this
             ->exception(function () {
-                \fastorm\Entity\Repository::getInstance();
+                new \fastorm\Entity\Repository();
             })
                 ->hasMessage('You should add initMetadata in your class repository');
     }
@@ -42,8 +35,8 @@ class Repository extends atoum
         $collection = new \fastorm\Entity\Collection();
 
         $this
-            ->if($repository = \tests\fixtures\model\BouhRepository::getInstance())
-            ->then($repository->execute($mockQuery, $collection, $mockConnectionPool))
+            ->if($repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($repository->execute($mockQuery, $collection))
             ->object($outerDriver)
                 ->isIdenticalTo($mockDriver)
             ->object($outerCollection)
@@ -95,8 +88,66 @@ class Repository extends atoum
         $bouh->setfirstname('Sylvain');
 
         $this
-            ->if($bouhRepository = \tests\fixtures\model\BouhRepository::getInstance())
-            ->object($bouhRepository->get(3, null, null, $mockConnectionPool))
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->object($bouhRepository->get(3, null, null))
                 ->isCloneOf($bouh);
+    }
+
+    public function testStartTransactionShouldDisableAutocommit()
+    {
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($bouhRepository->startTransaction())
+            ->boolean($mockDriver->isAutocommitEnabled())
+                ->isFalse();
+    }
+
+    public function testCommitShouldEnableAutocommit()
+    {
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($bouhRepository->startTransaction())
+            ->then($bouhRepository->commit())
+            ->boolean($mockDriver->isAutocommitEnabled())
+                ->isTrue()
+        ;
+    }
+
+    public function testRollbackShouldEnableAutocommit()
+    {
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($bouhRepository->startTransaction())
+            ->then($bouhRepository->rollback())
+            ->boolean($mockDriver->isAutocommitEnabled())
+                ->isTrue()
+        ;
     }
 }

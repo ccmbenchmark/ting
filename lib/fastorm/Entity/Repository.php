@@ -3,10 +3,8 @@
 namespace fastorm\Entity;
 
 use fastorm\ConnectionPool;
+use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
-use fastorm\Entity\Collection;
-use fastorm\Entity\Hydrator;
-use fastorm\Entity\MetadataRepository;
 use fastorm\Exception;
 use fastorm\Query;
 
@@ -15,28 +13,27 @@ class Repository
 
     protected static $instance = null;
     protected $metadata;
+    /**
+     * @var \fastorm\ConnectionPoolInterface
+     */
+    protected $connectionPool;
 
-    protected function __construct()
+    public function __construct(ConnectionPoolInterface $connectionPool = null)
     {
         MetadataRepository::getInstance()->loadMetadata($this, function (Metadata $metadata) {
             $this->metadata = $metadata;
         });
-    }
-
-    public static function getInstance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new static();
+        if ($connectionPool === null) {
+            $this->connectionPool = ConnectionPool::getInstance();
+        } else {
+            $this->connectionPool = $connectionPool;
         }
-
-        return self::$instance;
     }
 
     public function get(
         $primaryKeyValue,
         Hydrator $hydrator = null,
-        Collection $collection = null,
-        ConnectionPool $connectionPool = null
+        Collection $collection = null
     ) {
         if ($hydrator === null) {
             $hydrator = new Hydrator();
@@ -46,12 +43,8 @@ class Repository
             $collection = new Collection();
         }
 
-        if ($connectionPool === null) {
-            $connectionPool = ConnectionPool::getInstance();
-        }
-
         $this->metadata->connect(
-            $connectionPool,
+            $this->connectionPool,
             function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
                 $this->metadata->generateQueryForPrimary(
                     $driver,
@@ -67,19 +60,14 @@ class Repository
         return current($collection->rewind()->current());
     }
 
-    public function execute(Query $query, Collection $collection = null, ConnectionPool $connectionPool = null)
+    public function execute(Query $query, Collection $collection = null)
     {
-
-        if ($connectionPool === null) {
-            $connectionPool = ConnectionPool::getInstance();
-        }
-
         if ($collection === null) {
             $collection = new Collection();
         }
 
         $this->metadata->connect(
-            $connectionPool,
+            $this->connectionPool,
             function (DriverInterface $driver) use ($query, $collection) {
                 $query->execute($driver, $collection);
             }
@@ -113,5 +101,35 @@ class Repository
 
             $metadata->addInto($metadataRepository);
         */
+    }
+
+    public function startTransaction()
+    {
+        $this->metadata->connect(
+            $this->connectionPool,
+            function (DriverInterface $driver) {
+                $driver->startTransaction();
+            }
+        );
+    }
+
+    public function rollback()
+    {
+        $this->metadata->connect(
+            $this->connectionPool,
+            function (DriverInterface $driver) {
+                $driver->rollback();
+            }
+        );
+    }
+
+    public function commit()
+    {
+        $this->metadata->connect(
+            $this->connectionPool,
+            function (DriverInterface $driver) {
+                $driver->commit();
+            }
+        );
     }
 }
