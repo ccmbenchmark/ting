@@ -139,7 +139,7 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
-    public function flush(MetadataRepository $metadataRepository = null, ConnectionPool $connectionPool = null)
+    public function flush(MetadataRepository $metadataRepository = null, ConnectionPoolInterface $connectionPool = null)
     {
         if ($metadataRepository === null) {
             $metadataRepository = MetadataRepository::getInstance();
@@ -166,7 +166,7 @@ class UnitOfWork implements PropertyListenerInterface
         }
     }
 
-    protected function flushManaged($oid, MetadataRepository $metadataRepository, ConnectionPool $connectionPool)
+    protected function flushManaged($oid, MetadataRepository $metadataRepository, ConnectionPoolInterface $connectionPool)
     {
         if (isset($this->entitiesChanged[$oid]) === false) {
             return;
@@ -205,7 +205,7 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function flushNew($oid, MetadataRepository $metadataRepository, ConnectionPool $connectionPool)
+    protected function flushNew($oid, MetadataRepository $metadataRepository, ConnectionPoolInterface $connectionPool)
     {
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
@@ -230,7 +230,7 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function flushDelete($oid, MetadataRepository $metadataRepository, ConnectionPool $connectionPool)
+    protected function flushDelete($oid, MetadataRepository $metadataRepository, ConnectionPoolInterface $connectionPool)
     {
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
