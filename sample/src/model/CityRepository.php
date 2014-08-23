@@ -21,6 +21,17 @@ class CityRepository extends \fastorm\Entity\Repository
         return $this->execute($query)->hydrator(new Hydrator());
     }
 
+    public function getNumberOfCities()
+    {
+
+        $query = new Query(
+            "select COUNT(*) AS nb from T_CITY_CIT as a WHERE cit_population > :population",
+            ['population' => 20000]
+        );
+
+        return $this->execute($query);
+    }
+
     public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
     {
         if ($metadataRepository === null) {
