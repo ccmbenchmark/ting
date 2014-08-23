@@ -31,6 +31,10 @@ class Driver implements DriverInterface
      */
     protected $connected = false;
 
+    /**
+     * @var bool
+     */
+    protected $autocommit = true;
 
     public function __construct($connection = null, $driver = null)
     {
@@ -158,5 +162,46 @@ class Driver implements DriverInterface
 
         $callback($fields);
         return $this;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function startTransaction()
+    {
+        if ($this->autocommit === false) {
+            throw new Exception('Cannot start another transaction');
+        }
+        $this->connection->begin_transaction();
+        $this->autocommit = false;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function commit()
+    {
+        if ($this->autocommit === true) {
+            throw new Exception('Cannot commit no transaction');
+        }
+        $this->connection->commit();
+        $this->autocommit = true;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function rollback()
+    {
+        if ($this->autocommit === true) {
+            throw new Exception('Cannot rollback no transaction');
+        }
+        $this->connection->rollback();
+        $this->autocommit = true;
+    }
+
+    public function isAutocommitEnabled()
+    {
+        return $this->autocommit;
     }
 }
