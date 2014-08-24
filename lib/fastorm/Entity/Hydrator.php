@@ -58,7 +58,7 @@ class Hydrator
                 if (isset($result['db__table']) === false) {
                     $result['db__table'] = new \stdClass();
                 }
-                
+
                 $result['db__table']->$column['name'] = $column['value'];
             }
         }
