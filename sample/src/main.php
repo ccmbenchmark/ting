@@ -36,8 +36,8 @@ try {
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->execute(new \fastorm\Query(
-        "select * from T_CITY_CIT as c
-        inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
+        "select * from t_city_cit as c
+        inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
     ))->hydrator(new \fastorm\Entity\Hydrator());
