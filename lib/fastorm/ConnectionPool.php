@@ -45,12 +45,12 @@ class ConnectionPool
         if (isset($this->connectionConfig[$connectionName]) === false) {
             throw new Exception('Connection not found: ' . $connectionName);
         }
-        
+
         $driverClass = $this->connectionConfig[$connectionName]['namespace'] . '\\Driver';
 
         $driverClass::forConnectionKey(
-            $connectionName, 
-            $database, 
+            $connectionName,
+            $database,
             function ($connectionKey) use ($driverClass, $connectionName, $callback, $database) {
                 if (isset($this->connections[$connectionKey]) === false) {
                     $driver = new $driverClass();
