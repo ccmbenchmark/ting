@@ -333,16 +333,16 @@ class Driver extends atoum
                 ->isIdenticalTo('`Bouh`');
     }
 
-    public function testStartTransactionShouldDisableAutocommit()
+    public function testStartTransactionShouldOpenTransaction()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->boolean($driver->isAutocommitEnabled())
-                ->isTrue()
+            ->boolean($driver->isTransactionOpened())
+                ->isFalse()
             ->then($driver->startTransaction())
-            ->boolean($driver->isAutocommitEnabled())
-                ->isFalse();
+            ->boolean($driver->isTransactionOpened())
+                ->isTrue();
     }
 
     public function testStartTransactionShouldRaiseExceptionIfCalledTwice()
@@ -358,15 +358,15 @@ class Driver extends atoum
         ;
     }
 
-    public function testCommitShouldEnableAutocommit()
+    public function testCommitShouldCloseConnection()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->then($driver->commit())
-            ->boolean($driver->isAutocommitEnabled())
-                ->isTrue()
+            ->boolean($driver->isTransactionOpened())
+                ->isFalse()
             ;
     }
 
@@ -382,15 +382,15 @@ class Driver extends atoum
         ;
     }
 
-    public function testRollbackShouldEnableAutocommit()
+    public function testRollbackShouldCloseTransaction()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->then($driver->rollback())
-            ->boolean($driver->isAutocommitEnabled())
-                ->isTrue()
+            ->boolean($driver->isTransactionOpened())
+                ->isFalse()
             ;
     }
 

@@ -93,7 +93,7 @@ class Repository extends atoum
                 ->isCloneOf($bouh);
     }
 
-    public function testStartTransactionShouldDisableAutocommit()
+    public function testStartTransactionShouldOpenTransaction()
     {
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
@@ -107,11 +107,11 @@ class Repository extends atoum
         $this
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
             ->then($bouhRepository->startTransaction())
-            ->boolean($mockDriver->isAutocommitEnabled())
-                ->isFalse();
+            ->boolean($mockDriver->isTransactionOpened())
+                ->isTrue();
     }
 
-    public function testCommitShouldEnableAutocommit()
+    public function testCommitShouldCloseTransaction()
     {
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
@@ -126,12 +126,12 @@ class Repository extends atoum
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->commit())
-            ->boolean($mockDriver->isAutocommitEnabled())
-                ->isTrue()
+            ->boolean($mockDriver->isTransactionOpened())
+                ->isFalse()
         ;
     }
 
-    public function testRollbackShouldEnableAutocommit()
+    public function testRollbackShouldCloseTransaction()
     {
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
@@ -146,8 +146,8 @@ class Repository extends atoum
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->rollback())
-            ->boolean($mockDriver->isAutocommitEnabled())
-                ->isTrue()
+            ->boolean($mockDriver->isTransactionOpened())
+                ->isFalse()
         ;
     }
 }
