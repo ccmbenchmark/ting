@@ -20,7 +20,7 @@ class Query extends atoum
         $this->calling($mockDriver)->prepare =
             function ($sql, $callback) use (&$outerSql, $mockStatement) {
                 $outerSql = $sql;
-                $callback($mockStatement, array(), array(), new \fastorm\Entity\Collection());
+                $callback($mockStatement, array(), array());
             };
 
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
