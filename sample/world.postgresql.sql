@@ -30,10 +30,10 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: T_CITY_CIT; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: t_city_cit; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE "T_CITY_CIT" (
+CREATE TABLE "t_city_cit" (
     cit_id integer NOT NULL,
     cit_name text NOT NULL,
     cou_code character(3) NOT NULL,
@@ -42,13 +42,13 @@ CREATE TABLE "T_CITY_CIT" (
 );
 
 
-ALTER TABLE public."T_CITY_CIT" OWNER TO postgres;
+ALTER TABLE public."t_city_cit" OWNER TO postgres;
 
 --
--- Name: T_COUNTRYLANGUAGE_COL; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: t_countrylanguage_col; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE "T_COUNTRYLANGUAGE_COL" (
+CREATE TABLE "t_countrylanguage_col" (
     cou_code character(3) NOT NULL,
     col_language text NOT NULL,
     col_isofficial boolean NOT NULL,
@@ -56,13 +56,13 @@ CREATE TABLE "T_COUNTRYLANGUAGE_COL" (
 );
 
 
-ALTER TABLE public."T_COUNTRYLANGUAGE_COL" OWNER TO postgres;
+ALTER TABLE public."t_countrylanguage_col" OWNER TO postgres;
 
 --
--- Name: T_COUNTRY_COU; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: t_country_cou; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE "T_COUNTRY_COU" (
+CREATE TABLE "t_country_cou" (
     cou_code character(3) NOT NULL,
     cou_name text NOT NULL,
     cou_continent text NOT NULL,
@@ -75,20 +75,20 @@ CREATE TABLE "T_COUNTRY_COU" (
     cou_gnpold numeric(10,2),
     cou_localname text NOT NULL,
     cou_governmentform text NOT NULL,
-    cou_headofstate text,
+    cou_head_of_state text,
     cou_capital integer,
     cou_code2 character(2) NOT NULL,
     CONSTRAINT country_continent_check CHECK ((((((((cou_continent = 'Asia'::text) OR (cou_continent = 'Europe'::text)) OR (cou_continent = 'North America'::text)) OR (cou_continent = 'Africa'::text)) OR (cou_continent = 'Oceania'::text)) OR (cou_continent = 'Antarctica'::text)) OR (cou_continent = 'South America'::text)))
 );
 
 
-ALTER TABLE public."T_COUNTRY_COU" OWNER TO postgres;
+ALTER TABLE public."t_country_cou" OWNER TO postgres;
 
 --
--- Data for Name: T_CITY_CIT; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: t_city_cit; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "T_CITY_CIT" (cit_id, cit_name, cou_code, cit_district, cit_population) FROM stdin;
+COPY "t_city_cit" (cit_id, cit_name, cou_code, cit_district, cit_population) FROM stdin;
 1	Kabul	AFG	Kabol	1780000
 2	Qandahar	AFG	Qandahar	237500
 3	Herat	AFG	Herat	186800
@@ -4172,10 +4172,10 @@ COPY "T_CITY_CIT" (cit_id, cit_name, cou_code, cit_district, cit_population) FRO
 
 
 --
--- Data for Name: T_COUNTRYLANGUAGE_COL; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: t_countrylanguage_col; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "T_COUNTRYLANGUAGE_COL" (cou_code, col_language, col_isofficial, col_percentage) FROM stdin;
+COPY "t_countrylanguage_col" (cou_code, col_language, col_isofficial, col_percentage) FROM stdin;
 AFG	Pashto	t	52.4000015
 NLD	Dutch	t	95.5999985
 ANT	Papiamento	t	86.1999969
@@ -5164,10 +5164,10 @@ USA	Portuguese	f	0.200000003
 
 
 --
--- Data for Name: T_COUNTRY_COU; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: t_country_cou; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "T_COUNTRY_COU" (cou_code, cou_name, cou_continent, cou_region, cou_surfacearea, cou_indepyear, cou_population, cou_lifeexpectancy, cou_gnp, cou_gnpold, cou_localname, cou_governmentform, cou_headofstate, cou_capital, cou_code2) FROM stdin;
+COPY "t_country_cou" (cou_code, cou_name, cou_continent, cou_region, cou_surfacearea, cou_indepyear, cou_population, cou_lifeexpectancy, cou_gnp, cou_gnpold, cou_localname, cou_governmentform, cou_head_of_state, cou_capital, cou_code2) FROM stdin;
 AFG	Afghanistan	Asia	Southern and Central Asia	652090	1919	22720000	45.9000015	5976.00	\N	Afganistan/Afqanestan	Islamic Emirate	Mohammad Omar	1	AF
 NLD	Netherlands	Europe	Western Europe	41526	1581	15864000	78.3000031	371362.00	360478.00	Nederland	Constitutional Monarchy	Beatrix	5	NL
 ANT	Netherlands Antilles	North America	Caribbean	800	\N	217000	74.6999969	1941.00	\N	Nederlandse Antillen	Nonmetropolitan Territory of The Netherlands	Beatrix	33	AN
@@ -5414,7 +5414,7 @@ UMI	United States Minor Outlying Islands	Oceania	Micronesia/Caribbean	16	\N	0	\N
 -- Name: city_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
-ALTER TABLE ONLY "T_CITY_CIT"
+ALTER TABLE ONLY "t_city_cit"
     ADD CONSTRAINT city_pkey PRIMARY KEY (cit_id);
 
 
@@ -5422,7 +5422,7 @@ ALTER TABLE ONLY "T_CITY_CIT"
 -- Name: country_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
-ALTER TABLE ONLY "T_COUNTRY_COU"
+ALTER TABLE ONLY "t_country_cou"
     ADD CONSTRAINT country_pkey PRIMARY KEY (cou_code);
 
 
@@ -5430,7 +5430,7 @@ ALTER TABLE ONLY "T_COUNTRY_COU"
 -- Name: countrylanguage_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
-ALTER TABLE ONLY "T_COUNTRYLANGUAGE_COL"
+ALTER TABLE ONLY "t_countrylanguage_col"
     ADD CONSTRAINT countrylanguage_pkey PRIMARY KEY (cou_code, col_language);
 
 
@@ -5438,16 +5438,16 @@ ALTER TABLE ONLY "T_COUNTRYLANGUAGE_COL"
 -- Name: country_capital_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY "T_COUNTRY_COU"
-    ADD CONSTRAINT country_capital_fkey FOREIGN KEY (cou_capital) REFERENCES "T_CITY_CIT"(cit_id);
+ALTER TABLE ONLY "t_country_cou"
+    ADD CONSTRAINT country_capital_fkey FOREIGN KEY (cou_capital) REFERENCES "t_city_cit"(cit_id);
 
 
 --
 -- Name: countrylanguage_countrycode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY "T_COUNTRYLANGUAGE_COL"
-    ADD CONSTRAINT countrylanguage_countrycode_fkey FOREIGN KEY (cou_code) REFERENCES "T_COUNTRY_COU"(cou_code);
+ALTER TABLE ONLY "t_countrylanguage_col"
+    ADD CONSTRAINT countrylanguage_countrycode_fkey FOREIGN KEY (cou_code) REFERENCES "t_country_cou"(cou_code);
 
 
 --
