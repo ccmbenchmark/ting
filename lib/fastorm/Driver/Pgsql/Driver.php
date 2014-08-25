@@ -26,11 +26,6 @@ class Driver implements DriverInterface
         $callback($connectionName . '|' . $database);
     }
 
-    public function __construct()
-    {
-
-    }
-
     public function connect($hostname, $username, $password, $port)
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
