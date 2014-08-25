@@ -166,8 +166,11 @@ class UnitOfWork implements PropertyListenerInterface
         }
     }
 
-    protected function flushManaged($oid, MetadataRepository $metadataRepository, ConnectionPoolInterface $connectionPool)
-    {
+    protected function flushManaged(
+        $oid,
+        MetadataRepository $metadataRepository,
+        ConnectionPoolInterface $connectionPool
+    ) {
         if (isset($this->entitiesChanged[$oid]) === false) {
             return;
         }
@@ -230,8 +233,11 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function flushDelete($oid, MetadataRepository $metadataRepository, ConnectionPoolInterface $connectionPool)
-    {
+    protected function flushDelete(
+        $oid,
+        MetadataRepository $metadataRepository,
+        ConnectionPoolInterface $connectionPool
+    ) {
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
             $entity,
