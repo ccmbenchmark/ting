@@ -46,7 +46,8 @@ class Result implements \fastorm\Driver\ResultInterface
 
         $queryColumns = $matches[0][1];
 
-        if (strpos($queryColumns, '*') !== false) {
+        // We need a better solution
+        if (preg_match('/(^|\s*)\*(\s*|$)/', $queryColumns) === 1) {
             throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
         }
 
