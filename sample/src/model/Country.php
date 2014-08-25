@@ -7,7 +7,7 @@ use fastorm\PropertyListenerInterface;
 
 class Country implements NotifyPropertyInterface
 {
-
+    protected $listeners = array();
     protected $code      = null;
     protected $name      = null;
     protected $continent = null;

@@ -21,4 +21,5 @@ interface DriverInterface
     public function startTransaction();
     public function rollback();
     public function commit();
+    public static function forConnectionKey($connectionName, $database, callable $callback);
 }
