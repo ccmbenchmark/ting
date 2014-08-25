@@ -12,7 +12,7 @@ class Driver implements DriverInterface
 {
 
     /**
-     * @var ressource pgsql
+     * @var resource pgsql
      */
     protected $connection = null;
 
