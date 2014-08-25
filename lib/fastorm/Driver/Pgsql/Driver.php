@@ -92,10 +92,12 @@ class Driver implements DriverInterface
         $statement->setQuery($sql);
 
         $callback($statement, $paramsOrder, $statementName, $collection);
+        return $this;
     }
 
     public function ifIsError(callable $callback)
     {
+        $error = '';
         if ($this->connection !== null) {
             $error = pg_last_error($this->connection);
         }
