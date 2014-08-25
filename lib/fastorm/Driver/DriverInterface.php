@@ -3,7 +3,6 @@
 namespace fastorm\Driver;
 
 use fastorm\Entity\Collection;
-use fastorm\Entity\Hydrator;
 
 interface DriverInterface
 {
@@ -19,4 +18,7 @@ interface DriverInterface
     public function ifIsError(callable $callback);
     public function ifIsNotConnected(callable $callback);
     public function escapeFields($fields, callable $callback);
+    public function startTransaction();
+    public function rollback();
+    public function commit();
 }

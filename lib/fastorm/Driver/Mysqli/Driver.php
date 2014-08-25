@@ -31,6 +31,10 @@ class Driver implements DriverInterface
      */
     protected $connected = false;
 
+    /**
+     * @var bool
+     */
+    protected $autocommit = true;
 
     public function __construct($connection = null, $driver = null)
     {
@@ -127,10 +131,11 @@ class Driver implements DriverInterface
         }
 
         $queryType = Statement::TYPE_RESULT;
-
-        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
+        $sqlCompare = trim(strtoupper($sql));
+        /* @todo We REALLY need to do this better :  we don't like playing riddle */
+        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
             $queryType = Statement::TYPE_AFFECTED;
-        } elseif (strpos($sql, 'INSERT') === 0) {
+        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
             $queryType = Statement::TYPE_INSERT;
         }
 
@@ -158,5 +163,46 @@ class Driver implements DriverInterface
 
         $callback($fields);
         return $this;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function startTransaction()
+    {
+        if ($this->autocommit === false) {
+            throw new Exception('Cannot start another transaction');
+        }
+        $this->connection->begin_transaction();
+        $this->autocommit = false;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function commit()
+    {
+        if ($this->autocommit === true) {
+            throw new Exception('Cannot commit no transaction');
+        }
+        $this->connection->commit();
+        $this->autocommit = true;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function rollback()
+    {
+        if ($this->autocommit === true) {
+            throw new Exception('Cannot rollback no transaction');
+        }
+        $this->connection->rollback();
+        $this->autocommit = true;
+    }
+
+    public function isAutocommitEnabled()
+    {
+        return $this->autocommit;
     }
 }

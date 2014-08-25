@@ -41,4 +41,19 @@ class Driver implements DriverInterface
     {
 
     }
+
+    public function startTransaction()
+    {
+
+    }
+
+    public function rollback()
+    {
+
+    }
+
+    public function commit()
+    {
+
+    }
 }

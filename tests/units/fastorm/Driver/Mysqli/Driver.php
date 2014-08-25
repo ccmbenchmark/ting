@@ -332,4 +332,77 @@ class Driver extends atoum
             ->string($outerEscaped[0])
                 ->isIdenticalTo('`Bouh`');
     }
+
+    public function testStartTransactionShouldDisableAutocommit()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->boolean($driver->isAutocommitEnabled())
+                ->isTrue()
+            ->then($driver->startTransaction())
+            ->boolean($driver->isAutocommitEnabled())
+                ->isFalse();
+    }
+
+    public function testStartTransactionShouldRaiseExceptionIfCalledTwice()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->startTransaction())
+            ->exception(function () use ($driver) {
+                    $driver->startTransaction();
+            })
+                ->isInstanceOf('\fastorm\Driver\Exception')
+        ;
+    }
+
+    public function testCommitShouldEnableAutocommit()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->startTransaction())
+            ->then($driver->commit())
+            ->boolean($driver->isAutocommitEnabled())
+                ->isTrue()
+            ;
+    }
+
+    public function testCommitShouldRaiseExceptionIfNoTransaction()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                    $driver->commit();
+            })
+                ->isInstanceOf('\fastorm\Driver\Exception')
+        ;
+    }
+
+    public function testRollbackShouldEnableAutocommit()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->startTransaction())
+            ->then($driver->rollback())
+            ->boolean($driver->isAutocommitEnabled())
+                ->isTrue()
+            ;
+    }
+
+    public function testRollbackShouldRaiseExceptionIfNoTransaction()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                    $driver->rollback();
+            })
+                ->isInstanceOf('\fastorm\Driver\Exception')
+        ;
+    }
 }

@@ -2,9 +2,9 @@
 
 namespace fastorm\Entity;
 
+use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
-use fastorm\ConnectionPool;
 use fastorm\Query;
 
 class Metadata
@@ -111,7 +111,7 @@ class Metadata
         $metadataRepository->add($this->class, $this);
     }
 
-    public function connect(ConnectionPool $connectionPool, callable $callback)
+    public function connect(ConnectionPoolInterface $connectionPool, callable $callback)
     {
         $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
     }
