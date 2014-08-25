@@ -131,10 +131,11 @@ class Driver implements DriverInterface
         }
 
         $queryType = Statement::TYPE_RESULT;
-
-        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
+        $sqlCompare = trim(strtoupper($sql));
+        /* @todo We REALLY need to do this better :  we don't like playing riddle */
+        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
             $queryType = Statement::TYPE_AFFECTED;
-        } elseif (strpos($sql, 'INSERT') === 0) {
+        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
             $queryType = Statement::TYPE_INSERT;
         }
 
