@@ -34,7 +34,7 @@ class Driver implements DriverInterface
     /**
      * @var bool
      */
-    protected $autocommit = true;
+    protected $transactionOpened = false;
 
     public function __construct($connection = null, $driver = null)
     {
@@ -169,11 +169,11 @@ class Driver implements DriverInterface
      */
     public function startTransaction()
     {
-        if ($this->autocommit === false) {
+        if ($this->transactionOpened === true) {
             throw new Exception('Cannot start another transaction');
         }
         $this->connection->begin_transaction();
-        $this->autocommit = false;
+        $this->transactionOpened = true;
     }
 
     /**
@@ -181,11 +181,11 @@ class Driver implements DriverInterface
      */
     public function commit()
     {
-        if ($this->autocommit === true) {
+        if ($this->transactionOpened === false) {
             throw new Exception('Cannot commit no transaction');
         }
         $this->connection->commit();
-        $this->autocommit = true;
+        $this->transactionOpened = false;
     }
 
     /**
@@ -193,15 +193,15 @@ class Driver implements DriverInterface
      */
     public function rollback()
     {
-        if ($this->autocommit === true) {
+        if ($this->transactionOpened === false) {
             throw new Exception('Cannot rollback no transaction');
         }
         $this->connection->rollback();
-        $this->autocommit = true;
+        $this->transactionOpened = false;
     }
 
-    public function isAutocommitEnabled()
+    public function isTransactionOpened()
     {
-        return $this->autocommit;
+        return $this->transactionOpened;
     }
 }

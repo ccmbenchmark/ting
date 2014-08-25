@@ -38,7 +38,7 @@ try {
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
-    $collection = $cityRepository->execute(new \fastorm\Query(
+    $collection = $cityRepository->executePrepared(new \fastorm\PreparedQuery(
         "select * from T_CITY_CIT as c
         inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
@@ -71,7 +71,7 @@ try {
     $nb = $cityRepository->getNumberOfCities();
     var_dump(['initial' => $nb->rewind()->current()]);
     $cityRepository->startTransaction();
-        $cityRepository->execute(new \fastorm\Query(
+        $cityRepository->executePrepared(new \fastorm\PreparedQuery(
             "INSERT INTO T_CITY_CIT
             (cit_name, cit_population) VALUES
             (:name, :pop)",

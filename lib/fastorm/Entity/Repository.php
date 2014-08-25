@@ -6,6 +6,7 @@ use fastorm\ConnectionPool;
 use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
+use fastorm\PreparedQuery;
 use fastorm\Query;
 
 class Repository
@@ -70,6 +71,21 @@ class Repository
             $this->connectionPool,
             function (DriverInterface $driver) use ($query, $collection) {
                 $query->execute($driver, $collection);
+            }
+        );
+
+        return $collection;
+    }
+
+    public function executePrepared(PreparedQuery $query, $collection = null)
+    {
+        if ($collection === null) {
+            $collection = new Collection();
+        }
+        $this->metadata->connect(
+            $this->connectionPool,
+            function (DriverInterface $driver) use ($query, $collection) {
+                $query->setDriver($driver)->prepare()->execute($collection);
             }
         );
 
