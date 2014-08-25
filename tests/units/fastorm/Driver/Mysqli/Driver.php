@@ -313,6 +313,26 @@ class Driver extends atoum
                 ->isIdenticalTo(\fastorm\Driver\Mysqli\Statement::TYPE_INSERT);
     }
 
+    public function testPrepareShouldNotTransformEscapedColon()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->prepare = function ($sql) use (&$outerSql) {
+            $outerSql = $sql;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->prepare(
+                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"',
+                function () {
+                }
+            ))
+            ->string($outerSql)
+                ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
+    }
+
     public function testEscapeFieldsShouldCallCallbackAndReturnThis()
     {
         $mockDriver = new \mock\Fake\Mysqli();
@@ -325,5 +345,78 @@ class Driver extends atoum
                 ->isIdenticalTo($driver)
             ->string($outerEscaped[0])
                 ->isIdenticalTo('`Bouh`');
+    }
+
+    public function testStartTransactionShouldOpenTransaction()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->boolean($driver->isTransactionOpened())
+                ->isFalse()
+            ->then($driver->startTransaction())
+            ->boolean($driver->isTransactionOpened())
+                ->isTrue();
+    }
+
+    public function testStartTransactionShouldRaiseExceptionIfCalledTwice()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->startTransaction())
+            ->exception(function () use ($driver) {
+                    $driver->startTransaction();
+            })
+                ->isInstanceOf('\fastorm\Driver\Exception')
+        ;
+    }
+
+    public function testCommitShouldCloseConnection()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->startTransaction())
+            ->then($driver->commit())
+            ->boolean($driver->isTransactionOpened())
+                ->isFalse()
+            ;
+    }
+
+    public function testCommitShouldRaiseExceptionIfNoTransaction()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                    $driver->commit();
+            })
+                ->isInstanceOf('\fastorm\Driver\Exception')
+        ;
+    }
+
+    public function testRollbackShouldCloseTransaction()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->startTransaction())
+            ->then($driver->rollback())
+            ->boolean($driver->isTransactionOpened())
+                ->isFalse()
+            ;
+    }
+
+    public function testRollbackShouldRaiseExceptionIfNoTransaction()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                    $driver->rollback();
+            })
+                ->isInstanceOf('\fastorm\Driver\Exception')
+        ;
     }
 }

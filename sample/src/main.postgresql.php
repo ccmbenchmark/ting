@@ -19,7 +19,7 @@ $connections = array(
         'namespace' => '\fastorm\Driver\Pgsql',
         'host'      => 'localhost',
         'user'      => 'postgres',
-        'password'  => 'postgres',
+        'password'  => 'p455w0rd',
         'port'      => 5432
     ),
 );
@@ -30,9 +30,9 @@ $poolConnection = \fastorm\ConnectionPool::getInstance(array(
 
 
 try {
-    $cityRepository = \sample\src\model\CityRepository::getInstance();
+    $cityRepository = new \sample\src\model\CityRepository();
 
-    //var_dump($cityRepository->get(3));
+    var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->execute(new \fastorm\Query(
@@ -54,7 +54,7 @@ try {
 }
 
 try {
-    $cityRepository = \sample\src\model\CityRepository::getInstance();
+    $cityRepository = new \sample\src\model\CityRepository();
     $collection = $cityRepository->getZCountryWithLotsPopulation();
 
     foreach ($collection as $result) {

@@ -2,7 +2,7 @@
 
 namespace fastorm;
 
-class ConnectionPool
+class ConnectionPool implements ConnectionPoolInterface
 {
 
     protected static $instance = null;

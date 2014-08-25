@@ -15,7 +15,8 @@ class MetadataRepository extends atoum
 
     public function testCallLoadMetadataTwiceShouldCallCallbackWithInstanceMetadata()
     {
-        $repository = \tests\fixtures\model\BouhRepository::getInstance();
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool);
 
         $this
             ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
@@ -28,7 +29,8 @@ class MetadataRepository extends atoum
 
     public function testCallLoadMetadataTwiceShouldCallCallbackWithSameMetadataObject()
     {
-        $repository = \tests\fixtures\model\BouhRepository::getInstance();
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool);
 
         $this
             ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())

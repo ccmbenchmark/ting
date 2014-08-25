@@ -16,6 +16,11 @@ class Driver implements DriverInterface
      */
     protected $connection = null;
 
+    /**
+     * @var bool
+     */
+    protected $transactionOpened = false;
+
     public static function forConnectionKey($connectionName, $database, callable $callback)
     {
         $callback($connectionName . '|' . $database);
@@ -122,5 +127,41 @@ class Driver implements DriverInterface
 
         $callback($fields);
         return $this;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function startTransaction()
+    {
+        if ($this->transactionOpened === true) {
+            throw new Exception('Cannot start another transaction');
+        }
+        pg_query($this->connection, 'BEGIN');
+        $this->transactionOpened = true;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function commit()
+    {
+        if ($this->transactionOpened === false) {
+            throw new Exception('Cannot commit no transaction');
+        }
+        pg_query($this->connection, 'COMMIT');
+        $this->transactionOpened = false;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function rollback()
+    {
+        if ($this->transactionOpened === false) {
+            throw new Exception('Cannot rollback no transaction');
+        }
+        pg_query($this->connection, 'ROLLBACK');
+        $this->transactionOpened = false;
     }
 }

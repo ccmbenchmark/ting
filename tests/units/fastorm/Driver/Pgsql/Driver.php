@@ -262,4 +262,91 @@ class Driver extends atoum
             ->string($outerEscaped[0])
                 ->isIdenticalTo('"Bouh"');
     }
+
+    public function testStartTransactionShouldExecuteQueryBegin()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->then($driver->startTransaction())
+            ->string($outerQuery)
+                ->isIdenticalTo('BEGIN');
+    }
+
+    public function testStartTransactionShouldRaiseException()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->then($driver->startTransaction())
+            ->exception(function () use ($driver) {
+                $driver->startTransaction();
+            })
+                ->hasMessage('Cannot start another transaction');
+
+    }
+
+    public function testCommitShouldExecuteQueryCommit()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->then($driver->startTransaction())
+            ->then($driver->commit())
+            ->string($outerQuery)
+                ->isIdenticalTo('COMMIT');
+    }
+
+    public function testCommitShouldRaiseException()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->exception(function () use ($driver) {
+                $driver->commit();
+            })
+                ->hasMessage('Cannot commit no transaction');
+
+    }
+
+    public function testRollbackShouldExecuteQueryRollback()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->then($driver->startTransaction())
+            ->then($driver->rollback())
+            ->string($outerQuery)
+                ->isIdenticalTo('ROLLBACK');
+    }
+
+    public function testRollbackShouldRaiseException()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->exception(function () use ($driver) {
+                $driver->rollback();
+            })
+                ->hasMessage('Cannot rollback no transaction');
+
+    }
 }

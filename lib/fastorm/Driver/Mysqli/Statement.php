@@ -65,7 +65,7 @@ class Statement implements \fastorm\Driver\StatementInterface
      */
     public function setCollectionWithResult($driverStatement, Collection $collection = null)
     {
-        if ($collection === null) { // update or insert
+        if ($this->queryType !== self::TYPE_RESULT) {
             if ($this->queryType === self::TYPE_INSERT) {
                     return $driverStatement->insert_id;
             }

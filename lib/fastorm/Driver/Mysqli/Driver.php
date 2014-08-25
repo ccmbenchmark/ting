@@ -31,6 +31,10 @@ class Driver implements DriverInterface
      */
     protected $connected = false;
 
+    /**
+     * @var bool
+     */
+    protected $transactionOpened = false;
 
     public static function forConnectionKey($connectionName, $database, callable $callback)
     {
@@ -109,13 +113,15 @@ class Driver implements DriverInterface
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(
-            '/:([a-zA-Z0-9_-]+)/',
+            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
                 return '?';
             },
             $sql
         );
+
+        $sql = str_replace('\:', ':', $sql);
 
         if ($statement === null) {
             $statement = new Statement();
@@ -130,10 +136,11 @@ class Driver implements DriverInterface
         }
 
         $queryType = Statement::TYPE_RESULT;
-
-        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
+        $sqlCompare = trim(strtoupper($sql));
+        /* @todo We REALLY need to do this better :  we don't like playing riddle */
+        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
             $queryType = Statement::TYPE_AFFECTED;
-        } elseif (strpos($sql, 'INSERT') === 0) {
+        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
             $queryType = Statement::TYPE_INSERT;
         }
 
@@ -161,5 +168,46 @@ class Driver implements DriverInterface
 
         $callback($fields);
         return $this;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function startTransaction()
+    {
+        if ($this->transactionOpened === true) {
+            throw new Exception('Cannot start another transaction');
+        }
+        $this->connection->begin_transaction();
+        $this->transactionOpened = true;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function commit()
+    {
+        if ($this->transactionOpened === false) {
+            throw new Exception('Cannot commit no transaction');
+        }
+        $this->connection->commit();
+        $this->transactionOpened = false;
+    }
+
+    /**
+     * @throws \fastorm\Driver\Exception
+     */
+    public function rollback()
+    {
+        if ($this->transactionOpened === false) {
+            throw new Exception('Cannot rollback no transaction');
+        }
+        $this->connection->rollback();
+        $this->transactionOpened = false;
+    }
+
+    public function isTransactionOpened()
+    {
+        return $this->transactionOpened;
     }
 }
