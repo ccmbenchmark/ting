@@ -104,7 +104,6 @@ class Driver implements DriverInterface
     public function prepare(
         $sql,
         callable $callback,
-        Collection $collection = null,
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(
@@ -141,7 +140,7 @@ class Driver implements DriverInterface
 
         $statement->setQueryType($queryType);
 
-        $callback($statement, $paramsOrder, $driverStatement, $collection);
+        $callback($statement, $paramsOrder, $driverStatement);
 
         return $this;
     }

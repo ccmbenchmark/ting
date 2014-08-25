@@ -27,14 +27,13 @@ class Query
             function (
                 StatementInterface $statement,
                 $paramsOrder,
-                $driverStatement,
-                Collection $collection = null
+                $driverStatement
             ) use (
-                &$result
+                &$result,
+                $collection
             ) {
                 $result = $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
-            },
-            $collection
+            }
         );
 
         return $result;

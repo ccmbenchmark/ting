@@ -2,8 +2,6 @@
 
 namespace fastorm\Driver;
 
-use fastorm\Entity\Collection;
-
 interface DriverInterface
 {
 
@@ -11,7 +9,6 @@ interface DriverInterface
     public function prepare(
         $sql,
         callable $callback,
-        Collection $collection = null,
         StatementInterface $statement = null
     );
     public function setDatabase($database);

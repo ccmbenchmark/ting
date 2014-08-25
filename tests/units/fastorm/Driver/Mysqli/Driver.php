@@ -212,8 +212,7 @@ class Driver extends atoum
                     &$outerDriverStatement
                 ) {
                     $outerParamsOrder = $paramsOrder;
-                },
-                new \fastorm\Entity\Collection()
+                }
             ))
             ->array($outerParamsOrder)
                 ->isIdenticalTo(array('first' => null, 'second' => null));
@@ -244,8 +243,7 @@ class Driver extends atoum
                         &$outerDriverStatement
                     ) {
                         $outerParamsOrder = $paramsOrder;
-                    },
-                    new \fastorm\Entity\Collection()
+                    }
                 );
             })
                 ->isInstanceOf('\fastorm\Driver\QueryException');
@@ -268,7 +266,6 @@ class Driver extends atoum
                 'UPDATE T_BOUH_BOO SET ...',
                 function () {
                 },
-                null,
                 $mockStatement
             ))
             ->integer($outerQueryType)
@@ -292,7 +289,6 @@ class Driver extends atoum
                 'INSERT INTO T_BOUH_BOO ...',
                 function () {
                 },
-                null,
                 $mockStatement
             ))
             ->integer($outerQueryType)
