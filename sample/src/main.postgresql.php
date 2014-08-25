@@ -39,8 +39,8 @@ try {
         'select
             cit_id, cit_name, c.cou_code, cit_district, cit_population,
             co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
-        from T_CITY_CIT as c
-        inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
+        from t_city_cit as c
+        inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3',
         array('code' => 'FRA')
     ))->hydrator(new \fastorm\Entity\Hydrator());
