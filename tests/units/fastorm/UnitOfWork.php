@@ -6,7 +6,7 @@ use \mageekguy\atoum;
 
 class UnitOfWork extends atoum
 {
-    public function beforeTestMethod()
+    public function beforeTestMethod($method)
     {
         \fastorm\ConnectionPool::getInstance(
             array(
