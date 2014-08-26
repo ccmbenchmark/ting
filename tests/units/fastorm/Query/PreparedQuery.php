@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm;
+namespace tests\units\fastorm\Query;
 
 use \mageekguy\atoum;
 
@@ -26,7 +26,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
-            ->if($query = new \fastorm\PreparedQuery(
+            ->if($query = new \fastorm\Query\PreparedQuery(
                 $sql,
                 array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)
             ))
@@ -41,11 +41,11 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                     $query->execute();
             })
-            ->isInstanceOf('\fastorm\Driver\QueryException')
+            ->isInstanceOf('\fastorm\Query\QueryException')
         ;
     }
 
@@ -53,7 +53,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->object($query->setParams(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)))
                 ->isIdenticalTo($query)
         ;
@@ -64,7 +64,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $mockDriver    = new \mock\fastorm\Driver\Mysqli\Driver();
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->object($query->setDriver($mockDriver))
             ->isIdenticalTo($query)
         ;
@@ -74,11 +74,11 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                 $query->prepare();
             })
-                ->isInstanceOf('\fastorm\Driver\QueryException')
+                ->isInstanceOf('\fastorm\Query\QueryException')
             ;
     }
 
@@ -89,7 +89,7 @@ class PreparedQuery extends atoum
 
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->then($query->setDriver($mockDriver))
             ->object($query->prepare())
                 ->isIdenticalTo($query->prepare())
@@ -100,11 +100,11 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                     $query->execute();
             })
-            ->isInstanceOf('\fastorm\Driver\QueryException')
+            ->isInstanceOf('\fastorm\Query\QueryException')
         ;
     }
 
@@ -112,7 +112,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                     $query->setParams('dah');
             })
@@ -139,7 +139,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
-            ->if($query = new \fastorm\PreparedQuery(
+            ->if($query = new \fastorm\Query\PreparedQuery(
                 $sql,
                 array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)
             ))

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace fastorm;
+namespace fastorm\Query;
 
 use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
@@ -14,6 +14,9 @@ abstract class Query
 
     protected $sql = '';
     protected $params = array();
+    /**
+     * @var DriverInterface $driver
+     */
     protected $driver = null;
 
     final public function __construct($sql, $params = array())
@@ -52,7 +55,7 @@ abstract class Query
     /**
      * @param Collection $collection
      * @return mixed
-     * @throws Driver\QueryException
+     * @throws QueryException
      */
     abstract public function execute(
         Collection $collection = null

@@ -5,8 +5,8 @@ namespace fastorm\Entity;
 use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
-use fastorm\PreparedQuery;
-use fastorm\SimpleQuery;
+use fastorm\Query\PreparedQuery;
+use fastorm\Query\SimpleQuery;
 
 class Metadata
 {

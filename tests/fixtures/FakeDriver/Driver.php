@@ -4,7 +4,7 @@ namespace tests\fixtures\FakeDriver;
 
 use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
-use fastorm\Query;
+use fastorm\Query\Query;
 
 class Driver implements DriverInterface
 {

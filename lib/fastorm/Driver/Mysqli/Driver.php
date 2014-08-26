@@ -6,7 +6,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
-use fastorm\Query;
+use fastorm\Query\Query;
 
 class Driver implements DriverInterface
 {

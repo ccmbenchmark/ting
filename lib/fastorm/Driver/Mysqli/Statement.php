@@ -6,7 +6,7 @@ use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
-use fastorm\Query;
+use fastorm\Query\Query;
 
 class Statement implements StatementInterface
 {

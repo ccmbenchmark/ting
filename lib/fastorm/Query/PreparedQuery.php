@@ -1,8 +1,7 @@
 <?php
 
-namespace fastorm;
+namespace fastorm\Query;
 
-use fastorm\Driver\QueryException;
 use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
@@ -15,7 +14,7 @@ class PreparedQuery extends Query
 
     /**
      * @return $this
-     * @throws Driver\QueryException
+     * @throws QueryException
      */
     public function prepare()
     {
@@ -47,7 +46,7 @@ class PreparedQuery extends Query
     /**
      * @param Collection $collection
      * @return mixed
-     * @throws Driver\QueryException
+     * @throws QueryException
      */
     public function execute(
         Collection $collection = null

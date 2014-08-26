@@ -2,10 +2,9 @@
 
 namespace fastorm;
 
-use fastorm\ConnectionPool;
 use fastorm\Driver\DriverInterface;
-use fastorm\Entity\Collection;
 use fastorm\Entity\MetadataRepository;
+use fastorm\Query\PreparedQuery;
 
 class UnitOfWork implements PropertyListenerInterface
 {

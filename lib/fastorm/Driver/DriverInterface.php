@@ -2,7 +2,7 @@
 
 namespace fastorm\Driver;
 
-use fastorm\Query;
+use fastorm\Query\Query;
 
 interface DriverInterface
 {

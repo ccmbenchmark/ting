@@ -162,7 +162,7 @@ class UnitOfWork extends atoum
         \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
         $outerOid = array();
-        $mockPreparedQuery = new \mock\fastorm\PreparedQuery('');
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery('');
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -256,7 +256,7 @@ class UnitOfWork extends atoum
         $mockMetadata = new \mock\fastorm\Entity\Metadata();
         \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
-        $mockQuery = new \mock\fastorm\PreparedQuery("");
+        $mockQuery = new \mock\fastorm\Query\PreparedQuery("");
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -312,7 +312,7 @@ class UnitOfWork extends atoum
         $mockMetadata = new \mock\fastorm\Entity\Metadata();
         \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
-        $mockPreparedQuery = new \mock\fastorm\PreparedQuery('');
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery('');
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $outerOid = array();

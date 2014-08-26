@@ -201,7 +201,7 @@ class Driver extends atoum
                 $mockStatement
             ))
             ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\Query::TYPE_AFFECTED);
+                ->isIdenticalTo(\fastorm\Query\Query::TYPE_AFFECTED);
     }
 
     public function testPrepareShouldCallStatementSetQueryTypeInsert()
@@ -225,7 +225,7 @@ class Driver extends atoum
                 $mockStatement
             ))
             ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\Query::TYPE_INSERT);
+                ->isIdenticalTo(\fastorm\Query\Query::TYPE_INSERT);
     }
 
     public function testPrepareShouldNotTransformEscapedColon()
