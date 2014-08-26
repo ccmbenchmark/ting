@@ -25,7 +25,7 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query('SELECT * FROM bouh');
+        $mockQuery = new \mock\fastorm\SimpleQuery('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
@@ -49,7 +49,7 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query('SELECT * FROM bouh');
+        $mockQuery = new \mock\fastorm\SimpleQuery('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;

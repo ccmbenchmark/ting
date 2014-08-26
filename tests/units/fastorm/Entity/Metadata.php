@@ -193,7 +193,7 @@ class Metadata extends atoum
             }))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query(
+                    new \fastorm\SimpleQuery(
                         'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
                         array('primary' => 'BOuH')
                     )
