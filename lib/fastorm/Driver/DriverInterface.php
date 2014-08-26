@@ -2,13 +2,17 @@
 
 namespace fastorm\Driver;
 
+use fastorm\Query;
+
 interface DriverInterface
 {
 
     public function connect($hostname, $username, $password, $port);
+    public function execute($sql, callable $callback, $queryType);
     public function prepare(
         $sql,
         callable $callback,
+        $queryType = Query::TYPE_RESULT,
         StatementInterface $statement = null
     );
     public function setDatabase($database);
