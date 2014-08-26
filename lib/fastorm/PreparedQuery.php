@@ -2,61 +2,16 @@
 
 namespace fastorm;
 
-use fastorm\Driver\DriverInterface;
 use fastorm\Driver\QueryException;
 use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
-class PreparedQuery
+class PreparedQuery extends Query
 {
-
-    protected $sql = '';
-    protected $params = array();
-
-    /**
-     * @var DriverInterface
-     */
-    protected $driver = null;
     protected $paramsOrder = array();
     protected $statement = null;
     protected $driverStatement = null;
     protected $prepared = false;
-
-    /**
-     * @param $sql Query
-     * @param array $params
-     */
-    public function __construct($sql, $params = array())
-    {
-        $this->sql = $sql;
-        $this->params = $params;
-    }
-
-    /**
-     * @param DriverInterface $driver
-     * @return $this
-     */
-    public function setDriver(DriverInterface $driver)
-    {
-        $this->driver = $driver;
-
-        return $this;
-    }
-
-    /**
-     * @param array $params
-     * @return $this
-     * @throws \InvalidArgumentException
-     */
-    public function setParams($params)
-    {
-        if (!is_array($params)) {
-            throw new \InvalidArgumentException('Params should be an array');
-        }
-        $this->params = $params;
-
-        return $this;
-    }
 
     /**
      * @return $this

@@ -1,22 +1,26 @@
 <?php
 
+
 namespace fastorm;
 
 use fastorm\Driver\DriverInterface;
-use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
-class Query
+abstract class Query
 {
+    const TYPE_RESULT   = 1;
+    const TYPE_AFFECTED = 2;
+    const TYPE_INSERT   = 3;
 
     protected $sql = '';
     protected $params = array();
     protected $driver = null;
 
-    public function __construct($sql, $params = array())
+    final public function __construct($sql, $params = array())
     {
         $this->sql = $sql;
         $this->params = $params;
+        $this->setQueryType();
     }
 
     /**
@@ -48,31 +52,14 @@ class Query
     /**
      * @param Collection $collection
      * @return mixed
-     * @throws QueryException
+     * @throws Driver\QueryException
      */
-    public function execute(
+    abstract public function execute(
         Collection $collection = null
-    ) {
-        if ($this->driver === null) {
-            throw new QueryException('You have to set the driver before to call execute');
-        }
+    );
 
-        return $this->driver->executeSimpleQuery($this->sql, $this->params, $collection);
+    final private function setQueryType()
+    {
 
-        /*$this->driver->prepare(
-            $this->sql,
-            function (
-                StatementInterface $statement,
-                $paramsOrder,
-                $driverStatement
-            ) use (
-                &$result,
-                $collection
-            ) {
-                $result = $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
-            }
-        );
-
-        return $result;*/
     }
 }
