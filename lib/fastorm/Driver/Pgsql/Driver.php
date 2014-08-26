@@ -51,7 +51,6 @@ class Driver implements DriverInterface
     public function prepare(
         $sql,
         callable $callback,
-        Collection $collection = null,
         StatementInterface $statement = null
     ) {
         $paramsOrder = array();
@@ -91,7 +90,7 @@ class Driver implements DriverInterface
         $statement->setQueryType($queryType);
         $statement->setQuery($sql);
 
-        $callback($statement, $paramsOrder, $statementName, $collection);
+        $callback($statement, $paramsOrder, $statementName);
         return $this;
     }
 
