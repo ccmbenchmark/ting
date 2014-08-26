@@ -4,14 +4,11 @@ namespace fastorm\Driver\Pgsql;
 
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
-class Statement implements \fastorm\Driver\StatementInterface
+class Statement implements StatementInterface
 {
-
-    const TYPE_RESULT   = 1;
-    const TYPE_AFFECTED = 2;
-    const TYPE_INSERT   = 3;
 
     protected $connection    = null;
     protected $statementName = null;
@@ -42,6 +39,10 @@ class Statement implements \fastorm\Driver\StatementInterface
     }
 
     /**
+     * @param $statementName
+     * @param $params
+     * @param $paramsOrder
+     * @param Collection $collection
      * @return bool|int
      */
     public function execute($statementName, $params, $paramsOrder, Collection $collection = null)

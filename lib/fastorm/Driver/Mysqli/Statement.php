@@ -4,14 +4,11 @@ namespace fastorm\Driver\Mysqli;
 
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
-class Statement implements \fastorm\Driver\StatementInterface
+class Statement implements StatementInterface
 {
-
-    const TYPE_RESULT   = 1;
-    const TYPE_AFFECTED = 2;
-    const TYPE_INSERT   = 3;
 
     protected $driverStatement = null;
     protected $queryType       = null;
