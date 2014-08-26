@@ -31,7 +31,7 @@ $poolConnection = \fastorm\ConnectionPool::getInstance(array(
     'connections' => $connections
 ));
 
-
+echo '<h2>City1</h2>';
 try {
     $cityRepository = new \sample\src\model\CityRepository();
 
@@ -39,6 +39,28 @@ try {
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->executePrepared(new \fastorm\PreparedQuery(
+        "select * from T_CITY_CIT as c
+        inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
+        where co.cou_code = :code limit 3",
+        array('code' => 'FRA')
+    ))->hydrator(new \fastorm\Entity\Hydrator());
+
+    foreach ($collection as $result) {
+        var_dump($result);
+        echo str_repeat("-", 40) . "\n";
+    }
+} catch (Exception $e) {
+    var_dump($e->getMessage());
+}
+
+echo '<h2>City2</h2>';
+try {
+    $cityRepository = new \sample\src\model\CityRepository();
+
+    var_dump($cityRepository->get(3));
+    echo str_repeat("-", 40) . "\n";
+
+    $collection = $cityRepository->execute(new \fastorm\Query(
         "select * from T_CITY_CIT as c
         inner join T_COUNTRY_COU as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",

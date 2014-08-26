@@ -95,4 +95,58 @@ class PreparedQuery extends atoum
                 ->isIdenticalTo($query->prepare())
         ;
     }
+
+    public function testExecuteShouldRaiseExceptionIfNoDriver()
+    {
+        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
+        $this
+            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->exception(function () use ($query) {
+                    $query->execute();
+            })
+            ->isInstanceOf('\fastorm\Driver\QueryException')
+        ;
+    }
+
+    public function testSetParamsShouldRaiseExceptionIfParamIsNotAnArray()
+    {
+        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
+        $this
+            ->if($query = new \fastorm\PreparedQuery($sql))
+            ->exception(function () use ($query) {
+                    $query->setParams('dah');
+            })
+            ->isInstanceOf('\InvalidArgumentException')
+        ;
+    }
+
+    public function testExecuteShouldPrepareQueryIfNot()
+    {
+        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
+        $mockDriver    = new \mock\fastorm\Driver\Mysqli\Driver();
+
+        $this->calling($mockStatement)->execute =
+            function ($mockStatement, $params, $paramsOrder, $collection) use (&$outerParams) {
+                $outerParams = $params;
+            };
+
+        $this->calling($mockDriver)->prepare =
+            function ($sql, $callback) use (&$outerSql, $mockStatement) {
+                $outerSql = $sql;
+                $callback($mockStatement, array(), array());
+            };
+
+        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
+
+        $this
+            ->if($query = new \fastorm\PreparedQuery(
+                $sql,
+                array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)
+            ))
+            ->then($query->setDriver($mockDriver)->execute())
+            ->string($outerSql)
+                ->isIdenticalTo($sql)
+            ->array($outerParams)
+                ->isIdenticalTo(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6));
+    }
 }

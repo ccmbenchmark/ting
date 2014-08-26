@@ -51,7 +51,7 @@ class Repository
                     $driver,
                     $primaryKeyValue,
                     function (Query $query) use ($driver, $collection) {
-                        $query->execute($driver, $collection);
+                        $query->setDriver($driver)->execute($collection);
                     }
                 );
             }
@@ -70,7 +70,7 @@ class Repository
         $this->metadata->connect(
             $this->connectionPool,
             function (DriverInterface $driver) use ($query, $collection) {
-                $query->execute($driver, $collection);
+                $query->setDriver($driver)->execute($collection);
             }
         );
 

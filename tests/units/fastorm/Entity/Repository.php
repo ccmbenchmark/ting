@@ -27,8 +27,7 @@ class Repository extends atoum
 
         $mockQuery = new \mock\fastorm\Query('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
-            function ($driver, $collection) use (&$outerDriver, &$outerCollection) {
-                $outerDriver     = $driver;
+            function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
             };
 
@@ -37,10 +36,84 @@ class Repository extends atoum
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
             ->then($repository->execute($mockQuery, $collection))
-            ->object($outerDriver)
-                ->isIdenticalTo($mockDriver)
             ->object($outerCollection)
                 ->isIdenticalTo($collection);
+    }
+
+    public function testExecuteShouldReturnACollectionIfNoParam()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+        $mockQuery = new \mock\fastorm\Query('SELECT * FROM bouh');
+        $this->calling($mockQuery)->execute =
+            function ($collection) use (&$outerCollection) {
+                $outerCollection = $collection;
+            };
+        $this
+            ->if($repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($repository->execute($mockQuery))
+            ->object($outerCollection)
+                ->isInstanceOf('\fastorm\Entity\Collection');
+    }
+
+    public function testExecutePreparedShouldPrepareAndExecuteQuery()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+        $mockQuery = new \mock\fastorm\PreparedQuery('SELECT * FROM bouh WHERE truc = :bidule');
+        $this->calling($mockQuery)->prepare =
+            function () use ($mockQuery) {
+                return $mockQuery;
+            }
+        ;
+        $this->calling($mockQuery)->execute =
+            function ($collection) use (&$outerCollection) {
+                $outerCollection = $collection;
+            };
+
+        $collection = new \fastorm\Entity\Collection();
+
+        $this
+            ->if($repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($repository->executePrepared($mockQuery, $collection))
+            ->object($outerCollection)
+                ->isIdenticalTo($collection);
+    }
+
+    public function testExecutePreparedShouldReturnACollectionIfNoParam()
+    {
+        $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+        $mockQuery = new \mock\fastorm\PreparedQuery('SELECT * FROM bouh WHERE truc = :bidule');
+        $this->calling($mockQuery)->prepare =
+            function () use ($mockQuery) {
+                return $mockQuery;
+            }
+        ;
+        $this->calling($mockQuery)->execute =
+            function ($collection) use (&$outerCollection) {
+                $outerCollection = $collection;
+            };
+        $this
+            ->if($repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool))
+            ->then($repository->executePrepared($mockQuery))
+            ->object($outerCollection)
+                ->isInstanceOf('\fastorm\Entity\Collection');
     }
 
     public function testGet()
