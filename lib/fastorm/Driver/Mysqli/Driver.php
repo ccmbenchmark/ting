@@ -6,7 +6,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
-use fastorm\Entity\Collection;
+use fastorm\Query;
 
 class Driver implements DriverInterface
 {
@@ -103,12 +103,18 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    public function execute($sql, callable $callback, $queryType)
+    {
+
+    }
+
     /**
      * @throws \fastorm\Driver\QueryException
      */
     public function prepare(
         $sql,
         callable $callback,
+        $queryType = Query::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(
@@ -134,13 +140,13 @@ class Driver implements DriverInterface
             });
         }
 
-        $queryType = Statement::TYPE_RESULT;
+        $queryType = Query::TYPE_RESULT;
         $sqlCompare = trim(strtoupper($sql));
         /* @todo We REALLY need to do this better :  we don't like playing riddle */
         if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
-            $queryType = Statement::TYPE_AFFECTED;
+            $queryType = Query::TYPE_AFFECTED;
         } elseif (strpos($sqlCompare, 'INSERT') === 0) {
-            $queryType = Statement::TYPE_INSERT;
+            $queryType = Query::TYPE_INSERT;
         }
 
         $statement->setQueryType($queryType);

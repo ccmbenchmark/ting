@@ -280,10 +280,11 @@ class Driver extends atoum
                 'UPDATE T_BOUH_BOO SET ...',
                 function () {
                 },
+                $outerQueryType,
                 $mockStatement
             ))
             ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\Driver\Mysqli\Statement::TYPE_AFFECTED);
+                ->isIdenticalTo(\fastorm\Query::TYPE_AFFECTED);
     }
 
     public function testPrepareShouldCallStatementSetQueryTypeInsert()
@@ -303,10 +304,11 @@ class Driver extends atoum
                 'INSERT INTO T_BOUH_BOO ...',
                 function () {
                 },
+                $outerQueryType,
                 $mockStatement
             ))
             ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\Driver\Mysqli\Statement::TYPE_INSERT);
+                ->isIdenticalTo(\fastorm\Query::TYPE_INSERT);
     }
 
     public function testPrepareShouldNotTransformEscapedColon()

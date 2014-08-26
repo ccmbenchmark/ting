@@ -6,7 +6,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
-use fastorm\Entity\Collection;
+use fastorm\Query;
 
 class Driver implements DriverInterface
 {
@@ -48,9 +48,15 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    public function execute($sql, callable $callback, $queryType)
+    {
+
+    }
+
     public function prepare(
         $sql,
         callable $callback,
+        $queryType = Query::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
         $paramsOrder = array();
@@ -78,12 +84,12 @@ class Driver implements DriverInterface
             });
         }
 
-        $queryType = Statement::TYPE_RESULT;
+        $queryType = Query::TYPE_RESULT;
 
         if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
-            $queryType = Statement::TYPE_AFFECTED;
+            $queryType = Query::TYPE_AFFECTED;
         } elseif (strpos($sql, 'INSERT') === 0) {
-            $queryType = Statement::TYPE_INSERT;
+            $queryType = Query::TYPE_INSERT;
         }
 
         $statement->setConnection($this->connection);

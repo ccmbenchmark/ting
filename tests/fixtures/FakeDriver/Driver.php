@@ -4,6 +4,7 @@ namespace tests\fixtures\FakeDriver;
 
 use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
+use fastorm\Query;
 
 class Driver implements DriverInterface
 {
@@ -18,9 +19,15 @@ class Driver implements DriverInterface
 
     }
 
+    public function execute($sql, callable $callback, $queryType)
+    {
+
+    }
+
     public function prepare(
         $sql,
         callable $callback,
+        $queryType = Query::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
 
