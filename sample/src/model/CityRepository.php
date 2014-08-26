@@ -2,7 +2,7 @@
 
 namespace sample\src\model;
 
-use fastorm\PreparedQuery;
+use fastorm\Query\PreparedQuery;
 use fastorm\Entity\Hydrator;
 use fastorm\Entity\Metadata;
 use fastorm\Entity\MetadataRepository;
