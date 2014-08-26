@@ -29,7 +29,11 @@ class Statement implements \fastorm\Driver\StatementInterface
     }
 
     /**
-     * @return bool|int
+     * @param $driverStatement
+     * @param $params
+     * @param $paramsOrder
+     * @param Collection $collection
+     * @return bool
      */
     public function execute($driverStatement, $params, $paramsOrder, Collection $collection = null)
     {
