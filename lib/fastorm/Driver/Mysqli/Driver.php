@@ -103,7 +103,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function execute($sql, callable $callback, $queryType)
+    public function execute($sql, callable $callback, $queryType = Query::TYPE_RESULT)
     {
 
     }
@@ -138,15 +138,6 @@ class Driver implements DriverInterface
             $this->ifIsError(function () use ($sql) {
                 throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
             });
-        }
-
-        $queryType = Query::TYPE_RESULT;
-        $sqlCompare = trim(strtoupper($sql));
-        /* @todo We REALLY need to do this better :  we don't like playing riddle */
-        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
-            $queryType = Query::TYPE_AFFECTED;
-        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
-            $queryType = Query::TYPE_INSERT;
         }
 
         $statement->setQueryType($queryType);

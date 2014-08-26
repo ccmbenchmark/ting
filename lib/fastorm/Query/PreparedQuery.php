@@ -8,6 +8,9 @@ use fastorm\Entity\Collection;
 class PreparedQuery extends Query
 {
     protected $paramsOrder = array();
+    /**
+     * @var StatementInterface
+     */
     protected $statement = null;
     protected $driverStatement = null;
     protected $prepared = false;

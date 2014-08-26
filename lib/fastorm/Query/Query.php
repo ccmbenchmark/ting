@@ -14,6 +14,8 @@ abstract class Query
 
     protected $sql = '';
     protected $params = array();
+    protected $queryType = self::TYPE_RESULT;
+
     /**
      * @var DriverInterface $driver
      */
@@ -63,6 +65,14 @@ abstract class Query
 
     final private function setQueryType()
     {
-
+        $queryType = self::TYPE_RESULT;
+        $sqlCompare = trim(strtoupper($this->sql));
+        /* @todo We REALLY need to do this better :  we don't like playing riddle */
+        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
+            $queryType = self::TYPE_AFFECTED;
+        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
+            $queryType = self::TYPE_INSERT;
+        }
+        $this->queryType = $queryType;
     }
 }

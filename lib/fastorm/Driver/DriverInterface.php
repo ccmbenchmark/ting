@@ -8,7 +8,7 @@ interface DriverInterface
 {
 
     public function connect($hostname, $username, $password, $port);
-    public function execute($sql, callable $callback, $queryType);
+    public function execute($sql, callable $callback, $queryType = Query::TYPE_RESULT);
     public function prepare(
         $sql,
         callable $callback,

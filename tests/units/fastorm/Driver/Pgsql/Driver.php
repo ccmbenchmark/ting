@@ -180,7 +180,7 @@ class Driver extends atoum
                 ->isInstanceOf('\fastorm\Driver\QueryException');
     }
 
-    public function testPrepareShouldCallStatementSetQueryTypeAffected()
+    /*public function testPrepareShouldCallStatementSetQueryTypeAffected()
     {
         $this->function->pg_connect = true;
         $this->function->pg_prepare = true;
@@ -226,7 +226,7 @@ class Driver extends atoum
             ))
             ->integer($outerQueryType)
                 ->isIdenticalTo(\fastorm\Query\Query::TYPE_INSERT);
-    }
+    }*/
 
     public function testPrepareShouldNotTransformEscapedColon()
     {

@@ -263,7 +263,7 @@ class Driver extends atoum
                 ->isInstanceOf('\fastorm\Driver\QueryException');
     }
 
-    public function testPrepareShouldCallStatementSetQueryTypeAffected()
+    /*public function testPrepareShouldCallStatementSetQueryTypeAffected()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this->calling($mockDriver)->real_connect = $mockDriver;
@@ -309,7 +309,7 @@ class Driver extends atoum
             ))
             ->integer($outerQueryType)
                 ->isIdenticalTo(\fastorm\Query\Query::TYPE_INSERT);
-    }
+    }*/
 
     public function testPrepareShouldNotTransformEscapedColon()
     {

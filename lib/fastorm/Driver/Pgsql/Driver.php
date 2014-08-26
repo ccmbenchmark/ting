@@ -48,7 +48,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function execute($sql, callable $callback, $queryType)
+    public function execute($sql, callable $callback, $queryType = Query::TYPE_RESULT)
     {
 
     }
@@ -84,16 +84,9 @@ class Driver implements DriverInterface
             });
         }
 
-        $queryType = Query::TYPE_RESULT;
-
-        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
-            $queryType = Query::TYPE_AFFECTED;
-        } elseif (strpos($sql, 'INSERT') === 0) {
-            $queryType = Query::TYPE_INSERT;
-        }
-
-        $statement->setConnection($this->connection);
-        $statement->setQueryType($queryType);
+        $statement
+            ->setConnection($this->connection)
+            ->setQueryType($queryType);
         $statement->setQuery($sql);
 
         $callback($statement, $paramsOrder, $statementName);

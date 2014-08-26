@@ -15,7 +15,9 @@ class Statement implements StatementInterface
     protected $queryType       = null;
 
     /**
-     * @throws \fastorm\Adapter\Driver\Exception
+     * @param $type
+     * @return $this
+     * @throws \fastorm\Driver\Exception
      */
     public function setQueryType($type)
     {
@@ -24,6 +26,8 @@ class Statement implements StatementInterface
         }
 
         $this->queryType = $type;
+
+        return $this;
     }
 
     /**

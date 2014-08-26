@@ -19,7 +19,7 @@ class SimpleQuery extends Query
             throw new QueryException('You have to set the driver before to call execute');
         }
 
-        return $this->driver->execute($this->sql, $this->params, $collection);
+        //return $this->driver->execute($this->sql, $this->params, $collection);
 
         /*$this->driver->prepare(
             $this->sql,

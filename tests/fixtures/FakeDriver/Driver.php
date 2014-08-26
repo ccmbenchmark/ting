@@ -19,7 +19,7 @@ class Driver implements DriverInterface
 
     }
 
-    public function execute($sql, callable $callback, $queryType)
+    public function execute($sql, callable $callback, $queryType = Query::TYPE_RESULT)
     {
 
     }

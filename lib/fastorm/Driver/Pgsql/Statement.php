@@ -17,18 +17,32 @@ class Statement implements StatementInterface
     protected $query         = null;
 
 
+    /**
+     * @param $connection
+     * @return $this
+     */
     public function setConnection($connection)
     {
         $this->connection = $connection;
-    }
 
-    public function setQuery($query)
-    {
-        $this->query = (string) $query;
+        return $this;
     }
 
     /**
-     * @throws \fastorm\Adapter\Driver\Exception
+     * @param $query
+     * @return $this
+     */
+    public function setQuery($query)
+    {
+        $this->query = (string) $query;
+
+        return $this;
+    }
+
+    /**
+     * @param $type
+     * @return $this
+     * @throws \fastorm\Driver\Exception
      */
     public function setQueryType($type)
     {
@@ -37,6 +51,8 @@ class Statement implements StatementInterface
         }
 
         $this->queryType = $type;
+
+        return $this;
     }
 
     /**
@@ -59,7 +75,7 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @throws \fastorm\Adapter\Driver\QueryException
+     * @throws \fastorm\Driver\QueryException
      */
     public function setCollectionWithResult($resultResource, Collection $collection = null)
     {
