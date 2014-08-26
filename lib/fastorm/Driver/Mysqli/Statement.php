@@ -6,6 +6,7 @@ use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
+use fastorm\Query;
 
 class Statement implements StatementInterface
 {
@@ -18,8 +19,8 @@ class Statement implements StatementInterface
      */
     public function setQueryType($type)
     {
-        if (in_array($type, array(self::TYPE_RESULT, self::TYPE_AFFECTED, self::TYPE_INSERT)) === false) {
-            throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
+        if (in_array($type, array(Query::TYPE_RESULT, Query::TYPE_AFFECTED, Query::TYPE_INSERT)) === false) {
+            throw new Exception('setQueryType should use one of constant Query::TYPE_*');
         }
 
         $this->queryType = $type;
@@ -62,12 +63,15 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @throws \fastorm\Adapter\Driver\QueryException
+     * @param $driverStatement
+     * @param Collection $collection
+     * @return bool|Result
+     * @throws \fastorm\Driver\QueryException
      */
     public function setCollectionWithResult($driverStatement, Collection $collection = null)
     {
-        if ($this->queryType !== self::TYPE_RESULT) {
-            if ($this->queryType === self::TYPE_INSERT) {
+        if ($this->queryType !== Query::TYPE_RESULT) {
+            if ($this->queryType === Query::TYPE_INSERT) {
                     return $driverStatement->insert_id;
             }
 
