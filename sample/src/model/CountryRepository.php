@@ -20,7 +20,7 @@ class CountryRepository extends \fastorm\Entity\Repository
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
         $metadata->setDatabase('world');
-        $metadata->setTable('T_COUNTRY_COU');
+        $metadata->setTable('t_country_cou');
 
         $metadata->addField(array(
            'primary'    => true,

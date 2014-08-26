@@ -42,25 +42,32 @@ class ConnectionPool implements ConnectionPoolInterface
      */
     public function connect($connectionName, $database, callable $callback)
     {
-        if (isset($this->connections[$connectionName]) === false) {
-            if (isset($this->connectionConfig[$connectionName]) === false) {
-                throw new Exception('Connection not found: ' . $connectionName);
-            }
-
-            $driverClass = $this->connectionConfig[$connectionName]['namespace'] . '\\Driver';
-            $driver = new $driverClass();
-            $driver->connect(
-                $this->connectionConfig[$connectionName]['host'],
-                $this->connectionConfig[$connectionName]['user'],
-                $this->connectionConfig[$connectionName]['password'],
-                $this->connectionConfig[$connectionName]['port']
-            );
-            $this->connections[$connectionName] = $driver;
+        if (isset($this->connectionConfig[$connectionName]) === false) {
+            throw new Exception('Connection not found: ' . $connectionName);
         }
 
-        $this->connections[$connectionName]->setDatabase($database);
+        $driverClass = $this->connectionConfig[$connectionName]['namespace'] . '\\Driver';
 
-        $callback($this->connections[$connectionName]);
+        $driverClass::forConnectionKey(
+            $connectionName,
+            $database,
+            function ($connectionKey) use ($driverClass, $connectionName, $callback, $database) {
+                if (isset($this->connections[$connectionKey]) === false) {
+                    $driver = new $driverClass();
+                    $driver->connect(
+                        $this->connectionConfig[$connectionName]['host'],
+                        $this->connectionConfig[$connectionName]['user'],
+                        $this->connectionConfig[$connectionName]['password'],
+                        $this->connectionConfig[$connectionName]['port']
+                    );
+                    $this->connections[$connectionKey] = $driver;
+                }
+
+                $this->connections[$connectionKey]->setDatabase($database);
+
+                $callback($this->connections[$connectionKey]);
+            }
+        );
 
         return $this;
     }

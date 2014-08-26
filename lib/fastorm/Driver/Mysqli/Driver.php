@@ -51,6 +51,11 @@ class Driver implements DriverInterface
         }
     }
 
+    public static function forConnectionKey($connectionName, $database, callable $callback)
+    {
+        $callback($connectionName);
+    }
+
     /**
      * @throws \fastorm\Driver\Exception
      */
