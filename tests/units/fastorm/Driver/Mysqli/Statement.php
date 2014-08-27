@@ -22,7 +22,7 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_RESULT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->execute($driverStatement, $params, $paramsOrder, $collection))
             ->mock($driverStatement)
                 ->call('bind_param')
@@ -38,7 +38,7 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_RESULT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->execute($driverStatement, array(), array(), $collection))
             ->mock($driverStatement)
                 ->call('execute')
@@ -86,7 +86,7 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_RESULT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->setCollectionWithResult($driverStatement, $collection))
             ->mock($collection)
                 ->call('set')
@@ -102,8 +102,8 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_RESULT))
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_INSERT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_INSERT))
             ->integer($statement->setCollectionWithResult($driverStatement))
                 ->isIdenticalTo(123);
     }
@@ -148,7 +148,7 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_RESULT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
             ->exception(function () use ($statement, $driverStatement, $collection) {
                 $statement->setCollectionWithResult($driverStatement, $collection);
             })
@@ -164,7 +164,7 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_RESULT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->execute($driverStatement, array(), array(), $collection))
             ->then($statement->close())
             ->mock($driverStatement)
@@ -194,6 +194,6 @@ class Statement extends atoum
             ->exception(function () use ($statement) {
                 $statement->setQueryType(PHP_INT_MAX);
             })
-                ->hasMessage('setQueryType should use one of constant Query::TYPE_*');
+                ->hasMessage('setQueryType should use one of constant QueryAbstract::TYPE_*');
     }
 }

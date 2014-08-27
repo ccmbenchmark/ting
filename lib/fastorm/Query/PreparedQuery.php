@@ -5,7 +5,7 @@ namespace fastorm\Query;
 use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
 
-class PreparedQuery extends Query
+class PreparedQuery extends QueryAbstract
 {
     protected $paramsOrder = array();
     /**

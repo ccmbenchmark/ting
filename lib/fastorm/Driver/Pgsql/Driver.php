@@ -7,7 +7,7 @@ use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Entity\Collection;
-use fastorm\Query\Query;
+use fastorm\Query\QueryAbstract;
 
 class Driver implements DriverInterface
 {
@@ -56,7 +56,7 @@ class Driver implements DriverInterface
      * @param Collection $collection
      * @return bool|int
      */
-    public function execute($sql, $params = array(), $queryType = Query::TYPE_RESULT, Collection $collection = null)
+    public function execute($sql, $params = array(), $queryType = QueryAbstract::TYPE_RESULT, Collection $collection = null)
     {
         $paramsOrder = array();
         $sql = $this->convertParameters($sql, $paramsOrder);
@@ -82,7 +82,7 @@ class Driver implements DriverInterface
     public function setCollectionWithResult($resultResource, $query, $queryType, Collection $collection = null)
     {
         if ($collection === null) { // update or insert
-            if ($queryType === Query::TYPE_INSERT) {
+            if ($queryType === QueryAbstract::TYPE_INSERT) {
                 $resultResource = pg_query($this->connection, 'SELECT lastval()');
                 $row = pg_fetch_row($resultResource);
                 return $row[0];
@@ -112,7 +112,7 @@ class Driver implements DriverInterface
     public function prepare(
         $sql,
         callable $callback,
-        $queryType = Query::TYPE_RESULT,
+        $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
         $paramsOrder = array();

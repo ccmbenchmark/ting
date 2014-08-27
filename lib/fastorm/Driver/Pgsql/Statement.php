@@ -6,7 +6,7 @@ use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
-use fastorm\Query\Query;
+use fastorm\Query\QueryAbstract;
 
 class Statement implements StatementInterface
 {
@@ -46,7 +46,7 @@ class Statement implements StatementInterface
      */
     public function setQueryType($type)
     {
-        if (in_array($type, array(Query::TYPE_RESULT, Query::TYPE_AFFECTED, Query::TYPE_INSERT)) === false) {
+        if (in_array($type, array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)) === false) {
             throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
         }
 
@@ -80,7 +80,7 @@ class Statement implements StatementInterface
     public function setCollectionWithResult($resultResource, Collection $collection = null)
     {
         if ($collection === null) { // update or insert
-            if ($this->queryType === Query::TYPE_INSERT) {
+            if ($this->queryType === QueryAbstract::TYPE_INSERT) {
                 $resultResource = pg_query($this->connection, 'SELECT lastval()');
                 $row = pg_fetch_row($resultResource);
                 return $row[0];

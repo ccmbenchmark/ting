@@ -7,7 +7,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
 
 /** @todo move to QueryAbstract */
-abstract class Query
+abstract class QueryAbstract
 {
     const TYPE_RESULT   = 1;
     const TYPE_AFFECTED = 2;

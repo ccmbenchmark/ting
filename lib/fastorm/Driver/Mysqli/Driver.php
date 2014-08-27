@@ -7,7 +7,7 @@ use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Entity\Collection;
-use fastorm\Query\Query;
+use fastorm\Query\QueryAbstract;
 
 class Driver implements DriverInterface
 {
@@ -104,7 +104,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function execute($sql, $params = array(), $queryType = Query::TYPE_RESULT, Collection $collection = null)
+    public function execute($sql, $params = array(), $queryType = QueryAbstract::TYPE_RESULT, Collection $collection = null)
     {
         $sql = preg_replace_callback(
             '/(?<!\\\):([a-zA-Z0-9_-]+)/',
@@ -133,8 +133,8 @@ class Driver implements DriverInterface
 
     public function setCollectionWithResult($result, $queryType, Collection $collection = null)
     {
-        if ($queryType !== Query::TYPE_RESULT) {
-            if ($queryType === Query::TYPE_INSERT) {
+        if ($queryType !== QueryAbstract::TYPE_RESULT) {
+            if ($queryType === QueryAbstract::TYPE_INSERT) {
                 return $this->connection->insert_id;
             }
 
@@ -160,7 +160,7 @@ class Driver implements DriverInterface
     public function prepare(
         $sql,
         callable $callback,
-        $queryType = Query::TYPE_RESULT,
+        $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(

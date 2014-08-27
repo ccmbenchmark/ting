@@ -101,7 +101,7 @@ class Statement extends atoum
 
         $this
             ->if($statement = new \fastorm\Driver\Pgsql\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\Query::TYPE_INSERT))
+            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_INSERT))
             ->integer($statement->setCollectionWithResult(new \ArrayIterator()))
                 ->isIdenticalTo(123);
     }

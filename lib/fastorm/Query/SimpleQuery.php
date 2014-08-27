@@ -4,7 +4,7 @@ namespace fastorm\Query;
 
 use fastorm\Entity\Collection;
 
-class SimpleQuery extends Query
+class SimpleQuery extends QueryAbstract
 {
 
     /**
@@ -19,7 +19,7 @@ class SimpleQuery extends Query
             throw new QueryException('You have to set the driver before to call execute');
         }
 
-        if ($collection === null && $this->queryType == Query::TYPE_RESULT) {
+        if ($collection === null && $this->queryType == QueryAbstract::TYPE_RESULT) {
             $collection = new Collection();
         }
 

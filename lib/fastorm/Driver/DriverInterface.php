@@ -3,17 +3,17 @@
 namespace fastorm\Driver;
 
 use fastorm\Entity\Collection;
-use fastorm\Query\Query;
+use fastorm\Query\QueryAbstract;
 
 interface DriverInterface
 {
 
     public function connect($hostname, $username, $password, $port);
-    public function execute($sql, $params = array(), $queryType = Query::TYPE_RESULT, Collection $collection = null);
+    public function execute($sql, $params = array(), $queryType = QueryAbstract::TYPE_RESULT, Collection $collection = null);
     public function prepare(
         $sql,
         callable $callback,
-        $queryType = Query::TYPE_RESULT,
+        $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     );
     public function setDatabase($database);
