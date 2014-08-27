@@ -4,7 +4,7 @@ namespace fastorm\Query;
 
 use fastorm\Entity\Collection;
 
-class SimpleQuery extends QueryAbstract
+class Query extends QueryAbstract
 {
 
     /**

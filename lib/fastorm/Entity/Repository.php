@@ -7,7 +7,7 @@ use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
 use fastorm\Query\PreparedQuery;
-use fastorm\Query\SimpleQuery;
+use fastorm\Query\Query;
 
 class Repository
 {
@@ -50,7 +50,7 @@ class Repository
                 $this->metadata->generateQueryForPrimary(
                     $driver,
                     $primaryKeyValue,
-                    function (SimpleQuery $query) use ($driver, $collection) {
+                    function (Query $query) use ($driver, $collection) {
                         $query->setDriver($driver)->execute($collection);
                     }
                 );
@@ -61,7 +61,7 @@ class Repository
         return current($collection->rewind()->current());
     }
 
-    public function execute(SimpleQuery $query, Collection $collection = null)
+    public function execute(Query $query, Collection $collection = null)
     {
         if ($collection === null) {
             $collection = new Collection();

@@ -6,7 +6,7 @@ use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
 use fastorm\Query\PreparedQuery;
-use fastorm\Query\SimpleQuery;
+use fastorm\Query\Query;
 
 class Metadata
 {
@@ -133,7 +133,7 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback(new SimpleQuery($sql, array('primary' => $primaryValue)));
+        $callback(new Query($sql, array('primary' => $primaryValue)));
     }
 
     public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
