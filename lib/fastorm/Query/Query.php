@@ -6,6 +6,7 @@ namespace fastorm\Query;
 use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
 
+/** @todo move to QueryAbstract */
 abstract class Query
 {
     const TYPE_RESULT   = 1;
@@ -70,7 +71,7 @@ abstract class Query
         /* @todo We REALLY need to do this better :  we don't like playing riddle */
         if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
             $queryType = self::TYPE_AFFECTED;
-        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
+        } elseif (strpos($sqlCompare, 'INSERT') === 0 || strpos($sqlCompare, 'REPLACE' === 0)) {
             $queryType = self::TYPE_INSERT;
         }
         $this->queryType = $queryType;

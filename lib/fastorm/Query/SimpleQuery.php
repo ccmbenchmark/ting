@@ -19,22 +19,10 @@ class SimpleQuery extends Query
             throw new QueryException('You have to set the driver before to call execute');
         }
 
-        //return $this->driver->execute($this->sql, $this->params, $collection);
+        if ($collection === null && $this->queryType == Query::TYPE_RESULT) {
+            $collection = new Collection();
+        }
 
-        /*$this->driver->prepare(
-            $this->sql,
-            function (
-                StatementInterface $statement,
-                $paramsOrder,
-                $driverStatement
-            ) use (
-                &$result,
-                $collection
-            ) {
-                $result = $statement->execute($driverStatement, $this->params, $paramsOrder, $collection);
-            }
-        );
-
-        return $result;*/
+        return $this->driver->execute($this->sql, $this->params, $this->queryType, $collection);
     }
 }

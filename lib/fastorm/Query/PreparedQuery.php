@@ -39,7 +39,9 @@ class PreparedQuery extends Query
                 $this->statement = $statement;
                 $this->paramsOrder = $paramsOrder;
                 $this->driverStatement = $driverStatement;
-            }
+            },
+            $this->queryType,
+            $this->statement
         );
         $this->prepared = true;
 

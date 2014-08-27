@@ -35,7 +35,7 @@ echo '<h2>City1</h2>';
 try {
     $cityRepository = new \sample\src\model\CityRepository();
 
-    //var_dump($cityRepository->get(3));
+    var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->executePrepared(new \fastorm\Query\PreparedQuery(

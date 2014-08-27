@@ -121,11 +121,9 @@ class Repository extends atoum
         $mockConnectionPool  = new \mock\fastorm\ConnectionPool();
         $driverFake          = new \mock\Fake\Mysqli();
         $mockDriver          = new \mock\fastorm\Driver\Mysqli\Driver($driverFake);
-        $driverStatementFake = new \mock\Fake\DriverStatement();
         $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
 
-        $this->calling($driverFake)->prepare = $driverStatementFake;
-        $this->calling($driverStatementFake)->get_result = $mockMysqliResult;
+        $this->calling($driverFake)->query = $mockMysqliResult;
 
         $this->calling($mockMysqliResult)->fetch_fields = function () {
             $fields = array();

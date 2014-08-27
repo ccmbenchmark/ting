@@ -6,6 +6,7 @@ use fastorm\Driver\DriverInterface;
 use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Entity\Collection;
 use fastorm\Query\Query;
 
 class Driver implements DriverInterface
@@ -17,7 +18,7 @@ class Driver implements DriverInterface
     protected $driver = null;
 
     /**
-     * @var object driver connection
+     * @var \mysqli driver connection
      */
     protected $connection = null;
 
@@ -103,9 +104,54 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function execute($sql, callable $callback, $queryType = Query::TYPE_RESULT)
+    public function execute($sql, $params = array(), $queryType = Query::TYPE_RESULT, Collection $collection = null)
     {
+        $sql = preg_replace_callback(
+            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
+            function ($match) use ($params) {
+                if (!array_key_exists($match[1], $params)) {
+                    throw new QueryException('Value has not been setted for param ' . $match[1]);
+                }
+                $value = $this->connection->escape_string($params[$match[1]]);
+                switch (gettype($value)) {
+                    case "integer":
+                        // integer and double doesn't need quotes
+                    case "double":
+                        break;
+                    default:
+                        $value = '"' . $value . '"';
+                }
+                return $value;
+            },
+            $sql
+        );
+        $result = $this->connection->query($sql);
 
+        return $this->setCollectionWithResult($result, $queryType, $collection);
+    }
+
+
+    public function setCollectionWithResult($result, $queryType, Collection $collection = null)
+    {
+        if ($queryType !== Query::TYPE_RESULT) {
+            if ($queryType === Query::TYPE_INSERT) {
+                return $this->connection->insert_id;
+            }
+
+            $result = $this->connection->affected_rows;
+
+            if ($result === null || $result === -1) {
+                return false;
+            }
+            return $result;
+        }
+
+        if ($result === false) {
+            throw new QueryException($this->connection->error, $this->connection->errno);
+        }
+
+        $collection->set(new Result($result));
+        return true;
     }
 
     /**
