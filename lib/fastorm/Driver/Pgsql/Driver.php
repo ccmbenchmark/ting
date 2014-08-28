@@ -56,8 +56,12 @@ class Driver implements DriverInterface
      * @param Collection $collection
      * @return bool|int
      */
-    public function execute($sql, $params = array(), $queryType = QueryAbstract::TYPE_RESULT, Collection $collection = null)
-    {
+    public function execute(
+        $sql,
+        $params = array(),
+        $queryType = QueryAbstract::TYPE_RESULT,
+        Collection $collection = null
+    ) {
         $paramsOrder = array();
         $sql = $this->convertParameters($sql, $paramsOrder);
 

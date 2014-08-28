@@ -104,8 +104,12 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function execute($sql, $params = array(), $queryType = QueryAbstract::TYPE_RESULT, Collection $collection = null)
-    {
+    public function execute(
+        $sql,
+        $params = array(),
+        $queryType = QueryAbstract::TYPE_RESULT,
+        Collection $collection = null
+    ) {
         $sql = preg_replace_callback(
             '/(?<!\\\):([a-zA-Z0-9_-]+)/',
             function ($match) use ($params) {

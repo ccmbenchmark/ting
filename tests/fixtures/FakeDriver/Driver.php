@@ -20,8 +20,12 @@ class Driver implements DriverInterface
 
     }
 
-    public function execute($sql, $params = array(), $queryType = QueryAbstract::TYPE_RESULT, Collection $collection = null)
-    {
+    public function execute(
+        $sql,
+        $params = array(),
+        $queryType = QueryAbstract::TYPE_RESULT,
+        Collection $collection = null
+    ) {
 
     }
 

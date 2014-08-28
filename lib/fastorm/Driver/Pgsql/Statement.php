@@ -46,7 +46,13 @@ class Statement implements StatementInterface
      */
     public function setQueryType($type)
     {
-        if (in_array($type, array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)) === false) {
+        if (
+            in_array(
+                $type,
+                array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
+            )
+            === false
+        ) {
             throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
         }
 
