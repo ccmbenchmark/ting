@@ -2,6 +2,7 @@
 
 namespace tests\units\fastorm\Driver\Mysqli;
 
+use fastorm\Query\Query;
 use \mageekguy\atoum;
 
 class Driver extends atoum
@@ -263,53 +264,116 @@ class Driver extends atoum
                 ->isInstanceOf('\fastorm\Driver\QueryException');
     }
 
-    /*public function testPrepareShouldCallStatementSetQueryTypeAffected()
+    public function testExecuteShouldCallDriverQueryAndReturnACollection()
     {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $driverFake          = new \mock\Fake\Mysqli();
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
 
-        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
-        $this->calling($mockStatement)->setQueryType = function ($queryType) use (&$outerQueryType) {
-            $outerQueryType = $queryType;
-        };
+        $this->calling($driverFake)->query = $mockMysqliResult;
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->prepare(
-                'UPDATE T_BOUH_BOO SET ...',
-                function () {
-                },
-                $outerQueryType,
-                $mockStatement
-            ))
-            ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\QueryAbstract\QueryAbstract::TYPE_AFFECTED);
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->then($driver->execute('Empty query'))
+            ->mock($driverFake)
+                ->call('query')
+                    ->once();
     }
 
-    public function testPrepareShouldCallStatementSetQueryTypeInsert()
+    public function testExecuteShouldRaiseExceptionIfValueNotDefined()
     {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->exception(function () use ($driver) {
+                $driver->execute('SELECT * WHERE id = :id');
+            })
+                ->isInstanceOf('\fastorm\Driver\QueryException');
+    }
 
-        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
-        $this->calling($mockStatement)->setQueryType = function ($queryType) use (&$outerQueryType) {
-            $outerQueryType = $queryType;
-        };
+    public function testExecuteShouldBuildACorrectQuery()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
+
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->prepare(
-                'INSERT INTO T_BOUH_BOO ...',
-                function () {
-                },
-                $outerQueryType,
-                $mockStatement
-            ))
-            ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\QueryAbstract\QueryAbstract::TYPE_INSERT);
-    }*/
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->and(
+                $this->calling($driverFake)->escape_string = function ($value) {
+                    return addcslashes($value, '"');
+                }
+            )
+            ->and(
+                $this->calling($driverFake)->query = function ($sql) use (&$outerSql, $mockMysqliResult) {
+                    $outerSql = $sql;
+                    return $mockMysqliResult;
+                }
+            )
+            ->then(
+                $driver->execute(
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id AND name = :name AND age = :age',
+                    ['id' => 12, 'name' => 'L\'étang du lac', 'age' => 12.6]
+                )
+            )
+            ->string($outerSql)
+                ->isEqualTo(
+                    'SELECT population FROM T_CITY_CIT WHERE id = 12 AND name = "L\'étang du lac" AND age = 12.6'
+                )
+            ->mock($driverFake)
+                ->call('query')
+                    ->once();
+    }
+
+    public function testSetCollectionWithIncorrectQueryShouldRaiseException()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->and($driverFake->errno = 12)
+            ->and($driverFake->error = 'You tried an incorrect query')
+            ->exception(
+                function () use ($driver) {
+                    $driver->setCollectionWithResult(false, Query::TYPE_RESULT);
+                }
+            )
+                ->isInstanceOf('\fastorm\Driver\QueryException')
+        ;
+    }
+
+    public function testSetCollectionShouldReturnInsertIdOnInsertion()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->and($driverFake->insert_id = 3)
+            ->integer($driver->setCollectionWithResult(true, Query::TYPE_INSERT))
+                ->isEqualTo(3)
+        ;
+    }
+
+    public function testSetCollectionShouldReturnAffectedRowsNumberOnUpdate()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->and($driverFake->affected_rows = 12)
+            ->integer($driver->setCollectionWithResult(true, Query::TYPE_AFFECTED))
+                ->isEqualTo(12)
+        ;
+    }
+
+    public function testSetCollectionShouldReturnFalseOnIncorrectResult()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->and($driverFake->affected_rows = null)
+            ->boolean($driver->setCollectionWithResult(true, Query::TYPE_AFFECTED))
+                ->isFalse()
+        ;
+    }
 
     public function testPrepareShouldNotTransformEscapedColon()
     {

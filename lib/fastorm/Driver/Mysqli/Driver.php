@@ -116,16 +116,18 @@ class Driver implements DriverInterface
                 if (!array_key_exists($match[1], $params)) {
                     throw new QueryException('Value has not been setted for param ' . $match[1]);
                 }
-                $value = $this->connection->escape_string($params[$match[1]]);
+                $value = $params[$match[1]];
                 switch (gettype($value)) {
                     case "integer":
                         // integer and double doesn't need quotes
                     case "double":
+                        return $value;
                         break;
                     default:
-                        $value = '"' . $value . '"';
+                        $value = '"' . $this->connection->escape_string($value) . '"';
+                        return $value;
+                    break;
                 }
-                return $value;
             },
             $sql
         );
@@ -152,6 +154,10 @@ class Driver implements DriverInterface
 
         if ($result === false) {
             throw new QueryException($this->connection->error, $this->connection->errno);
+        }
+
+        if ($collection == null) {
+            $collection = new Collection();
         }
 
         $collection->set(new Result($result));
