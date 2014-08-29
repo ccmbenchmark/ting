@@ -70,7 +70,7 @@ class Driver implements DriverInterface
             $values[] = &$params[$key];
         }
 
-        $result = pg_query($this->connection, $sql, $values);
+        $result = pg_query_params($this->connection, $sql, $values);
 
         return $this->setCollectionWithResult($result, $sql, $queryType, $collection);
     }
@@ -85,7 +85,7 @@ class Driver implements DriverInterface
      */
     public function setCollectionWithResult($resultResource, $query, $queryType, Collection $collection = null)
     {
-        if ($collection === null) { // update or insert
+        if ($queryType !== QueryAbstract::TYPE_RESULT) {
             if ($queryType === QueryAbstract::TYPE_INSERT) {
                 $resultResource = pg_query($this->connection, 'SELECT lastval()');
                 $row = pg_fetch_row($resultResource);
@@ -101,6 +101,10 @@ class Driver implements DriverInterface
 
         $result = new Result($resultResource);
         $result->setQuery($query);
+
+        if ($collection === null) {
+            $collection = new Collection();
+        }
 
         $collection->set($result);
         return true;
