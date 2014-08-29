@@ -264,7 +264,7 @@ class Driver extends atoum
                 ->isInstanceOf('\fastorm\Driver\QueryException');
     }
 
-    public function testExecuteShouldCallDriverQueryAndReturnACollection()
+    public function testExecuteShouldCallDriverQuery()
     {
         $driverFake          = new \mock\Fake\Mysqli();
         $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
