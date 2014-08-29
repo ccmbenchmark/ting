@@ -4,32 +4,43 @@ namespace fastorm\Driver\Mysqli;
 
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
+use fastorm\Query\QueryAbstract;
 
-class Statement implements \fastorm\Driver\StatementInterface
+class Statement implements StatementInterface
 {
-
-    const TYPE_RESULT   = 1;
-    const TYPE_AFFECTED = 2;
-    const TYPE_INSERT   = 3;
 
     protected $driverStatement = null;
     protected $queryType       = null;
 
     /**
-     * @throws \fastorm\Adapter\Driver\Exception
+     * @param $type
+     * @return $this
+     * @throws \fastorm\Driver\Exception
      */
     public function setQueryType($type)
     {
-        if (in_array($type, array(self::TYPE_RESULT, self::TYPE_AFFECTED, self::TYPE_INSERT)) === false) {
-            throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
+        if (
+            in_array(
+                $type,
+                array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
+            ) === false
+        ) {
+            throw new Exception('setQueryType should use one of constant QueryAbstract::TYPE_*');
         }
 
         $this->queryType = $type;
+
+        return $this;
     }
 
     /**
-     * @return bool|int
+     * @param $driverStatement
+     * @param $params
+     * @param $paramsOrder
+     * @param Collection $collection
+     * @return bool
      */
     public function execute($driverStatement, $params, $paramsOrder, Collection $collection = null)
     {
@@ -61,12 +72,15 @@ class Statement implements \fastorm\Driver\StatementInterface
     }
 
     /**
-     * @throws \fastorm\Adapter\Driver\QueryException
+     * @param $driverStatement
+     * @param Collection $collection
+     * @return bool|Result
+     * @throws \fastorm\Driver\QueryException
      */
     public function setCollectionWithResult($driverStatement, Collection $collection = null)
     {
-        if ($this->queryType !== self::TYPE_RESULT) {
-            if ($this->queryType === self::TYPE_INSERT) {
+        if ($this->queryType !== QueryAbstract::TYPE_RESULT) {
+            if ($this->queryType === QueryAbstract::TYPE_INSERT) {
                     return $driverStatement->insert_id;
             }
 

@@ -7,6 +7,7 @@ use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Entity\Collection;
+use fastorm\Query\QueryAbstract;
 
 class Driver implements DriverInterface
 {
@@ -17,7 +18,7 @@ class Driver implements DriverInterface
     protected $driver = null;
 
     /**
-     * @var object driver connection
+     * @var \mysqli driver connection
      */
     protected $connection = null;
 
@@ -36,11 +37,6 @@ class Driver implements DriverInterface
      */
     protected $transactionOpened = false;
 
-    public static function forConnectionKey($connectionName, $database, callable $callback)
-    {
-        $callback($connectionName);
-    }
-
     public function __construct($connection = null, $driver = null)
     {
         if ($connection === null) {
@@ -54,6 +50,11 @@ class Driver implements DriverInterface
         } else {
             $this->driver = $driver;
         }
+    }
+
+    public static function forConnectionKey($connectionName, $database, callable $callback)
+    {
+        $callback($connectionName);
     }
 
     /**
@@ -103,13 +104,72 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    public function execute(
+        $sql,
+        $params = array(),
+        $queryType = QueryAbstract::TYPE_RESULT,
+        Collection $collection = null
+    ) {
+        $sql = preg_replace_callback(
+            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
+            function ($match) use ($params) {
+                if (!array_key_exists($match[1], $params)) {
+                    throw new QueryException('Value has not been setted for param ' . $match[1]);
+                }
+                $value = $params[$match[1]];
+                switch (gettype($value)) {
+                    case "integer":
+                        // integer and double doesn't need quotes
+                    case "double":
+                        return $value;
+                        break;
+                    default:
+                        return '"' . $this->connection->real_escape_string($value) . '"';
+                    break;
+                }
+            },
+            $sql
+        );
+        $result = $this->connection->query($sql);
+
+        return $this->setCollectionWithResult($result, $queryType, $collection);
+    }
+
+
+    public function setCollectionWithResult($result, $queryType, Collection $collection = null)
+    {
+        if ($queryType !== QueryAbstract::TYPE_RESULT) {
+            if ($queryType === QueryAbstract::TYPE_INSERT) {
+                return $this->connection->insert_id;
+            }
+
+            $result = $this->connection->affected_rows;
+
+            if ($result === null || $result === -1) {
+                return false;
+            }
+            return $result;
+        }
+
+        if ($result === false) {
+            throw new QueryException($this->connection->error, $this->connection->errno);
+        }
+
+        if ($collection == null) {
+            $collection = new Collection();
+        }
+
+        $collection->set(new Result($result));
+        return true;
+    }
+
     /**
      * @throws \fastorm\Driver\QueryException
      */
     public function prepare(
         $sql,
         callable $callback,
-        Collection $collection = null,
+        $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(
@@ -135,18 +195,9 @@ class Driver implements DriverInterface
             });
         }
 
-        $queryType = Statement::TYPE_RESULT;
-        $sqlCompare = trim(strtoupper($sql));
-        /* @todo We REALLY need to do this better :  we don't like playing riddle */
-        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
-            $queryType = Statement::TYPE_AFFECTED;
-        } elseif (strpos($sqlCompare, 'INSERT') === 0) {
-            $queryType = Statement::TYPE_INSERT;
-        }
-
         $statement->setQueryType($queryType);
 
-        $callback($statement, $paramsOrder, $driverStatement, $collection);
+        $callback($statement, $paramsOrder, $driverStatement);
 
         return $this;
     }

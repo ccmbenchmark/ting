@@ -4,14 +4,12 @@ namespace fastorm\Driver\Pgsql;
 
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
+use fastorm\Driver\StatementInterface;
 use fastorm\Entity\Collection;
+use fastorm\Query\QueryAbstract;
 
-class Statement implements \fastorm\Driver\StatementInterface
+class Statement implements StatementInterface
 {
-
-    const TYPE_RESULT   = 1;
-    const TYPE_AFFECTED = 2;
-    const TYPE_INSERT   = 3;
 
     protected $connection    = null;
     protected $statementName = null;
@@ -19,29 +17,54 @@ class Statement implements \fastorm\Driver\StatementInterface
     protected $query         = null;
 
 
+    /**
+     * @param $connection
+     * @return $this
+     */
     public function setConnection($connection)
     {
         $this->connection = $connection;
-    }
 
-    public function setQuery($query)
-    {
-        $this->query = (string) $query;
+        return $this;
     }
 
     /**
-     * @throws \fastorm\Adapter\Driver\Exception
+     * @param $query
+     * @return $this
+     */
+    public function setQuery($query)
+    {
+        $this->query = (string) $query;
+
+        return $this;
+    }
+
+    /**
+     * @param $type
+     * @return $this
+     * @throws \fastorm\Driver\Exception
      */
     public function setQueryType($type)
     {
-        if (in_array($type, array(self::TYPE_RESULT, self::TYPE_AFFECTED, self::TYPE_INSERT)) === false) {
+        if (
+            in_array(
+                $type,
+                array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
+            ) === false
+        ) {
             throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
         }
 
         $this->queryType = $type;
+
+        return $this;
     }
 
     /**
+     * @param $statementName
+     * @param $params
+     * @param $paramsOrder
+     * @param Collection $collection
      * @return bool|int
      */
     public function execute($statementName, $params, $paramsOrder, Collection $collection = null)
@@ -57,12 +80,12 @@ class Statement implements \fastorm\Driver\StatementInterface
     }
 
     /**
-     * @throws \fastorm\Adapter\Driver\QueryException
+     * @throws \fastorm\Driver\QueryException
      */
     public function setCollectionWithResult($resultResource, Collection $collection = null)
     {
         if ($collection === null) { // update or insert
-            if ($this->queryType === self::TYPE_INSERT) {
+            if ($this->queryType === QueryAbstract::TYPE_INSERT) {
                 $resultResource = pg_query($this->connection, 'SELECT lastval()');
                 $row = pg_fetch_row($resultResource);
                 return $row[0];

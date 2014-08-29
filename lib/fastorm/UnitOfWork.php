@@ -2,10 +2,9 @@
 
 namespace fastorm;
 
-use fastorm\ConnectionPool;
 use fastorm\Driver\DriverInterface;
-use fastorm\Entity\Collection;
 use fastorm\Entity\MetadataRepository;
+use fastorm\Query\PreparedQuery;
 
 class UnitOfWork implements PropertyListenerInterface
 {
@@ -74,7 +73,7 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entities[$oid] = $entity;
     }
 
-    public function isPersisted($entity)
+    public function shouldBePersisted($entity)
     {
         if (isset($this->entitiesShouldBePersisted[spl_object_hash($entity)]) === true) {
             return true;
@@ -126,7 +125,7 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entities[$oid] = $entity;
     }
 
-    public function isRemoved($entity)
+    public function shouldBeRemoved($entity)
     {
         $oid = spl_object_hash($entity);
         if (
@@ -197,8 +196,8 @@ class UnitOfWork implements PropertyListenerInterface
                             $driver,
                             $entity,
                             $properties,
-                            function (Query $query) use ($driver, $entity) {
-                                $query->execute($driver);
+                            function (PreparedQuery $query) use ($driver, $entity) {
+                                $query->setDriver($driver)->execute();
                                 $this->detach($entity);
                             }
                         );
@@ -220,8 +219,8 @@ class UnitOfWork implements PropertyListenerInterface
                         $metadata->generateQueryForInsert(
                             $driver,
                             $entity,
-                            function (Query $query) use ($driver, $entity, $metadata) {
-                                $id = $query->execute($driver);
+                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
+                                $id = $query->setDriver($driver)->execute();
                                 $metadata->setEntityPrimary($entity, $id);
                                 $this->detach($entity);
                                 $this->manage($entity);
@@ -248,8 +247,8 @@ class UnitOfWork implements PropertyListenerInterface
                         $metadata->generateQueryForDelete(
                             $driver,
                             $entity,
-                            function (Query $query) use ($driver, $entity, $metadata) {
-                                $query->execute($driver);
+                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
+                                $query->setDriver($driver)->execute();
                                 $this->detach($entity);
                             }
                         );

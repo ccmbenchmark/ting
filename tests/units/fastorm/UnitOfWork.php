@@ -69,7 +69,7 @@ class UnitOfWork extends atoum
         $this
             ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
             ->then($unitOfWork->persist($mockEntity))
-            ->boolean($unitOfWork->isPersisted($mockEntity))
+            ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
             ->boolean($unitOfWork->isNew($mockEntity))
                 ->isTrue();
@@ -81,7 +81,7 @@ class UnitOfWork extends atoum
 
         $this
             ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
-            ->boolean($unitOfWork->isPersisted($mockEntity))
+            ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isFalse();
     }
 
@@ -93,7 +93,7 @@ class UnitOfWork extends atoum
             ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
             ->then($unitOfWork->manage($mockEntity))
             ->then($unitOfWork->persist($mockEntity))
-            ->boolean($unitOfWork->isPersisted($mockEntity))
+            ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
             ->boolean($unitOfWork->isNew($mockEntity))
                 ->isFalse();
@@ -128,10 +128,10 @@ class UnitOfWork extends atoum
         $this
             ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
             ->then($unitOfWork->persist($mockEntity))
-            ->boolean($unitOfWork->isPersisted($mockEntity))
+            ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
             ->then($unitOfWork->detach($mockEntity))
-            ->boolean($unitOfWork->isPersisted($mockEntity))
+            ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isFalse();
     }
 
@@ -142,7 +142,7 @@ class UnitOfWork extends atoum
         $this
             ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
             ->then($unitOfWork->remove($mockEntity))
-            ->boolean($unitOfWork->isRemoved($mockEntity))
+            ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isTrue();
     }
 
@@ -152,7 +152,7 @@ class UnitOfWork extends atoum
 
         $this
             ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
-            ->boolean($unitOfWork->isRemoved($mockEntity))
+            ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isFalse();
     }
 
@@ -162,10 +162,13 @@ class UnitOfWork extends atoum
         \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
         $outerOid = array();
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery('');
+        $this->calling($mockPreparedQuery)->execute = 3;
+
         $this->calling($mockMetadata)->generateQueryForUpdate =
-            function ($driver, $entity, $properties, $callback) use (&$outerOid) {
+            function ($driver, $entity, $properties, $callback) use (&$outerOid, $mockPreparedQuery) {
                 $outerOid[] = spl_object_hash($entity);
-                $callback(new \fastorm\Query(""));
+                $callback($mockPreparedQuery);
             };
 
         $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
@@ -190,11 +193,11 @@ class UnitOfWork extends atoum
             ->then($unitOfWork->persist($entity2))
             ->then($unitOfWork->persist($entity3))
             ->then($unitOfWork->flush($mockMetadataRepository))
-            ->boolean($unitOfWork->isPersisted($entity1))
+            ->boolean($unitOfWork->shouldBePersisted($entity1))
                 ->isFalse()
-            ->boolean($unitOfWork->isPersisted($entity2))
+            ->boolean($unitOfWork->shouldBePersisted($entity2))
                 ->isFalse()
-            ->boolean($unitOfWork->isPersisted($entity3))
+            ->boolean($unitOfWork->shouldBePersisted($entity3))
                 ->isFalse()
             ->array($outerOid)
                 ->isIdenticalTo(array(
@@ -253,7 +256,7 @@ class UnitOfWork extends atoum
         $mockMetadata = new \mock\fastorm\Entity\Metadata();
         \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
-        $mockQuery = new \mock\fastorm\Query("");
+        $mockQuery = new \mock\fastorm\Query\PreparedQuery("");
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -290,11 +293,11 @@ class UnitOfWork extends atoum
                 ->isTrue()
             ->boolean($unitOfWork->isManaged($entity2))
                 ->isTrue()
-            ->boolean($unitOfWork->isPersisted($entity1))
+            ->boolean($unitOfWork->shouldBePersisted($entity1))
                 ->isFalse()
-            ->boolean($unitOfWork->isPersisted($entity2))
+            ->boolean($unitOfWork->shouldBePersisted($entity2))
                 ->isFalse()
-            ->boolean($unitOfWork->isPersisted($entity2))
+            ->boolean($unitOfWork->shouldBePersisted($entity2))
                 ->isFalse()
             ->array($outerOid)
                 ->isIdenticalTo(array(
@@ -309,11 +312,14 @@ class UnitOfWork extends atoum
         $mockMetadata = new \mock\fastorm\Entity\Metadata();
         \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
 
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery('');
+        $this->calling($mockPreparedQuery)->execute = 3;
+
         $outerOid = array();
         $this->calling($mockMetadata)->generateQueryForDelete =
-            function ($driver, $entity, $callback) use (&$outerOid) {
+            function ($driver, $entity, $callback) use (&$outerOid, $mockPreparedQuery) {
                 $outerOid[] = spl_object_hash($entity);
-                $callback(new \fastorm\Query(""));
+                $callback($mockPreparedQuery);
             };
 
         $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
@@ -332,11 +338,11 @@ class UnitOfWork extends atoum
             ->then($unitOfWork->remove($entity2))
             ->then($unitOfWork->remove($entity3))
             ->then($unitOfWork->flush($mockMetadataRepository))
-            ->boolean($unitOfWork->isPersisted($entity1))
+            ->boolean($unitOfWork->shouldBePersisted($entity1))
                 ->isFalse()
-            ->boolean($unitOfWork->isPersisted($entity2))
+            ->boolean($unitOfWork->shouldBePersisted($entity2))
                 ->isFalse()
-            ->boolean($unitOfWork->isPersisted($entity3))
+            ->boolean($unitOfWork->shouldBePersisted($entity3))
                 ->isFalse()
             ->array($outerOid)
                 ->isIdenticalTo(array(

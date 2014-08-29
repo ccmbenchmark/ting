@@ -5,7 +5,8 @@ namespace fastorm\Entity;
 use fastorm\ConnectionPoolInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
-use fastorm\Query;
+use fastorm\Query\PreparedQuery;
+use fastorm\Query\Query;
 
 class Metadata
 {
@@ -160,7 +161,7 @@ class Metadata
                 }
             );
 
-        $callback(new Query($sql, $values));
+        $callback(new PreparedQuery($sql, $values));
     }
 
     public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
@@ -201,7 +202,7 @@ class Metadata
                 }
             );
 
-        $callback(new Query($sql, $values));
+        $callback(new PreparedQuery($sql, $values));
     }
 
     public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
@@ -223,6 +224,6 @@ class Metadata
                 }
             );
 
-        $callback(new Query($sql, $values));
+        $callback(new PreparedQuery($sql, $values));
     }
 }

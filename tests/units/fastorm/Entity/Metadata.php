@@ -193,7 +193,7 @@ class Metadata extends atoum
             }))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query(
+                    new \fastorm\Query\Query(
                         'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
                         array('primary' => 'BOuH')
                     )
@@ -231,7 +231,7 @@ class Metadata extends atoum
             }))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query(
+                    new \fastorm\Query\PreparedQuery(
                         'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
                         . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
                         array(
@@ -280,7 +280,7 @@ class Metadata extends atoum
             ))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query(
+                    new \fastorm\Query\PreparedQuery(
                         'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
                         array(
                             'boo_id'        => 123,
@@ -310,7 +310,7 @@ class Metadata extends atoum
             }))
             ->object($outerQuery)
                 ->isCloneOf(
-                    new \fastorm\Query(
+                    new \fastorm\Query\PreparedQuery(
                         'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
                         array(
                             'boo_id'        => 123

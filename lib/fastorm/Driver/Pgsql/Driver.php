@@ -7,6 +7,7 @@ use fastorm\Driver\StatementInterface;
 use fastorm\Driver\Exception;
 use fastorm\Driver\QueryException;
 use fastorm\Entity\Collection;
+use fastorm\Query\QueryAbstract;
 
 class Driver implements DriverInterface
 {
@@ -48,23 +49,82 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    /**
+     * @param $sql
+     * @param array $params
+     * @param int $queryType
+     * @param Collection $collection
+     * @return bool|int
+     */
+    public function execute(
+        $sql,
+        $params = array(),
+        $queryType = QueryAbstract::TYPE_RESULT,
+        Collection $collection = null
+    ) {
+        $paramsOrder = array();
+        $sql = $this->convertParameters($sql, $paramsOrder);
+
+        $values = array();
+        foreach (array_keys($paramsOrder) as $key) {
+            $values[] = &$params[$key];
+        }
+
+        $result = pg_query_params($this->connection, $sql, $values);
+
+        return $this->setCollectionWithResult($result, $sql, $queryType, $collection);
+    }
+
+    /**
+     * @param $resultResource
+     * @param $query
+     * @param $queryType
+     * @param Collection $collection
+     * @return bool|int
+     * @throws \fastorm\Driver\QueryException
+     */
+    public function setCollectionWithResult($resultResource, $query, $queryType, Collection $collection = null)
+    {
+        if ($queryType !== QueryAbstract::TYPE_RESULT) {
+            if ($queryType === QueryAbstract::TYPE_INSERT) {
+                $resultResource = pg_query($this->connection, 'SELECT lastval()');
+                $row = pg_fetch_row($resultResource);
+                return $row[0];
+            }
+
+            return pg_affected_rows($resultResource);
+        }
+
+        if ($resultResource === false) {
+            throw new QueryException(pg_result_error($this->connection));
+        }
+
+        $result = new Result($resultResource);
+        $result->setQuery($query);
+
+        if ($collection === null) {
+            $collection = new Collection();
+        }
+
+        $collection->set($result);
+        return true;
+    }
+
+    /**
+     * @param $sql
+     * @param callable $callback
+     * @param int $queryType
+     * @param StatementInterface $statement
+     * @return $this
+     */
     public function prepare(
         $sql,
         callable $callback,
-        Collection $collection = null,
+        $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
         $paramsOrder = array();
-        $sql = preg_replace_callback(
-            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
-            function ($match) use (&$paramsOrder) {
-                $paramsOrder[$match[1]] = null;
-                return '$' . count($paramsOrder);
-            },
-            $sql
-        );
-
-        $sql = str_replace('\:', ':', $sql);
+        $sql = $this->convertParameters($sql, $paramsOrder);
 
         if ($statement === null) {
             $statement = new Statement();
@@ -79,20 +139,34 @@ class Driver implements DriverInterface
             });
         }
 
-        $queryType = Statement::TYPE_RESULT;
-
-        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
-            $queryType = Statement::TYPE_AFFECTED;
-        } elseif (strpos($sql, 'INSERT') === 0) {
-            $queryType = Statement::TYPE_INSERT;
-        }
-
-        $statement->setConnection($this->connection);
-        $statement->setQueryType($queryType);
+        $statement
+            ->setConnection($this->connection)
+            ->setQueryType($queryType);
         $statement->setQuery($sql);
 
-        $callback($statement, $paramsOrder, $statementName, $collection);
+        $callback($statement, $paramsOrder, $statementName);
         return $this;
+    }
+
+    /**
+     * @param $sql
+     * @param $paramsOrder
+     * @return mixed
+     */
+    private function convertParameters($sql, &$paramsOrder)
+    {
+        $sql = preg_replace_callback(
+            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
+            function ($match) use (&$paramsOrder) {
+                $paramsOrder[$match[1]] = null;
+                return '$' . count($paramsOrder);
+            },
+            $sql
+        );
+
+        $sql = str_replace('\:', ':', $sql);
+
+        return $sql;
     }
 
     public function ifIsError(callable $callback)

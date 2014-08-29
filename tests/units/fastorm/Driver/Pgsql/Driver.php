@@ -2,6 +2,8 @@
 
 namespace tests\units\fastorm\Driver\Pgsql;
 
+use fastorm\Entity\Collection;
+use fastorm\Query\Query;
 use \mageekguy\atoum;
 
 class Driver extends atoum
@@ -144,8 +146,7 @@ class Driver extends atoum
                     &$outerParamsOrder
                 ) {
                     $outerParamsOrder = $paramsOrder;
-                },
-                new \fastorm\Entity\Collection()
+                }
             ))
             ->array($outerParamsOrder)
                 ->isIdenticalTo(array('first' => null, 'second' => null));
@@ -175,59 +176,10 @@ class Driver extends atoum
                         &$outerDriverStatement
                     ) {
                         $outerParamsOrder = $paramsOrder;
-                    },
-                    new \fastorm\Entity\Collection()
+                    }
                 );
             })
                 ->isInstanceOf('\fastorm\Driver\QueryException');
-    }
-
-    public function testPrepareShouldCallStatementSetQueryTypeAffected()
-    {
-        $this->function->pg_connect = true;
-        $this->function->pg_prepare = true;
-
-        $mockStatement = new \mock\fastorm\Driver\Pgsql\Statement();
-        $this->calling($mockStatement)->setQueryType = function ($queryType) use (&$outerQueryType) {
-            $outerQueryType = $queryType;
-        };
-
-        $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->prepare(
-                'UPDATE T_BOUH_BOO SET ...',
-                function () {
-                },
-                null,
-                $mockStatement
-            ))
-            ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\Driver\Pgsql\Statement::TYPE_AFFECTED);
-    }
-
-    public function testPrepareShouldCallStatementSetQueryTypeInsert()
-    {
-        $this->function->pg_connect = true;
-        $this->function->pg_prepare = true;
-
-        $mockStatement = new \mock\fastorm\Driver\Pgsql\Statement();
-        $this->calling($mockStatement)->setQueryType = function ($queryType) use (&$outerQueryType) {
-            $outerQueryType = $queryType;
-        };
-
-        $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->prepare(
-                'INSERT INTO T_BOUH_BOO ...',
-                function () {
-                },
-                null,
-                $mockStatement
-            ))
-            ->integer($outerQueryType)
-                ->isIdenticalTo(\fastorm\Driver\Pgsql\Statement::TYPE_INSERT);
     }
 
     public function testPrepareShouldNotTransformEscapedColon()
@@ -348,5 +300,121 @@ class Driver extends atoum
             })
                 ->hasMessage('Cannot rollback no transaction');
 
+    }
+
+    public function testExecuteInsertShouldCallPgQueryAndReturnInsertId()
+    {
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->and(
+                $this->function->pg_query_params =
+                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
+                    $outerQuery = $query;
+                    $outerParams = $params;
+                }
+            )
+            ->and(
+                $this->function->pg_query =
+                function ($connection, $query) use (&$outerQueryLastVal) {
+                    $outerQueryLastVal = $query;
+                }
+            )
+            ->and($this->function->pg_fetch_row = [12])
+            ->integer(
+                $driver->execute(
+                    'INSERT INTO T_CITY_CIT (id, name, age) VALUES (:id, :name, :age)',
+                    ['id' => 12, 'name' => 'L\'étang du lac', 'age' => 12.6],
+                    Query::TYPE_INSERT
+                )
+            )
+                ->isIdenticalTo(12)
+            ->string($outerQuery)
+                ->isIdenticalTo('INSERT INTO T_CITY_CIT (id, name, age) VALUES ($1, $2, $3)')
+            ->array($outerParams)
+                ->isIdenticalTo([12, 'L\'étang du lac', 12.6])
+            ->string($outerQueryLastVal)
+                ->isIdenticalTo('SELECT lastval()')
+            ;
+    }
+
+    public function testExecuteUpdateShouldCallPgQueryAndReturnAffectedRows()
+    {
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->and(
+                $this->function->pg_query_params =
+                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
+                    $outerQuery = $query;
+                    $outerParams = $params;
+                }
+            )
+            ->and($this->function->pg_affected_rows = 4)
+            ->integer(
+                $driver->execute(
+                    'UPDATE T_CITY_CIT SET name = :name WHERE id > :id',
+                    ['id' => 12, 'name' => 'L\'étang du lac', 'age' => 12.6],
+                    Query::TYPE_AFFECTED
+                )
+            )
+                ->isIdenticalTo(4)
+            ->string($outerQuery)
+                ->isIdenticalTo('UPDATE T_CITY_CIT SET name = $1 WHERE id > $2')
+            ->array($outerParams)
+                ->isIdenticalTo(['L\'étang du lac', 12])
+            ;
+    }
+
+    public function testSetCollectionShouldRaiseExceptionOnError()
+    {
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->and(
+                $this->function->pg_query_params =
+                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
+                    $outerQuery = $query;
+                    $outerParams = $params;
+                }
+            )
+            ->and($this->function->pg_affected_rows = 4)
+            ->exception(
+                function () use ($driver) {
+                    $driver->setCollectionWithResult(
+                        false,
+                        'UPDATE T_CITY_CIT SET name = :name WHERE id > :id',
+                        Query::TYPE_RESULT,
+                        new Collection()
+                    );
+                }
+            )
+                ->isInstanceOf('\fastorm\Driver\QueryException')
+            ;
+    }
+
+    public function testExecuteSelectShouldCallPgQueryAndReturnTrue()
+    {
+
+        $this
+            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->and(
+                $this->function->pg_query_params =
+                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
+                    $outerQuery = $query;
+                    $outerParams = $params;
+                }
+            )
+            ->and($this->function->pg_field_table = 'T_CITY_CIT')
+            ->boolean(
+                $driver->execute(
+                    'SELECT id FROM T_CITY_CIT WHERE name = :name',
+                    ['name' => 'L\'étang du lac'],
+                    Query::TYPE_RESULT
+                )
+            )
+                ->isTrue
+            ->string($outerQuery)
+                ->isIdenticalTo('SELECT id FROM T_CITY_CIT WHERE name = $1')
+            ->array($outerParams)
+                ->isIdenticalTo(['L\'étang du lac'])
+            ;
     }
 }
