@@ -297,7 +297,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
             ->and(
-                $this->calling($driverFake)->escape_string = function ($value) {
+                $this->calling($driverFake)->real_escape_string = function ($value) {
                     return addcslashes($value, '"');
                 }
             )

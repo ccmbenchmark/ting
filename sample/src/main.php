@@ -31,7 +31,7 @@ $poolConnection = \fastorm\ConnectionPool::getInstance(array(
     'connections' => $connections
 ));
 
-echo '<h2>City1</h2>';
+echo 'City1'."\n";
 try {
     $cityRepository = new \sample\src\model\CityRepository();
 
@@ -53,7 +53,7 @@ try {
     var_dump($e->getMessage());
 }
 
-echo '<h2>City2</h2>';
+echo 'City2'."\n";
 try {
     $cityRepository = new \sample\src\model\CityRepository();
 

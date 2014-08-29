@@ -15,8 +15,8 @@ class CityRepository extends \fastorm\Entity\Repository
 
         $query = new PreparedQuery(
             'select cit_id, cit_name, cou_code, cit_district, cit_population
-            from T_CITY_CIT as a where cit_name like :name and cit_population > :population limit 3',
-            array('name' => 'Z%', 'population' => '200000')
+            from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
+            array('name' => 'Z%', 'population' => 200000)
         );
 
         return $this->executePrepared($query)->hydrator(new Hydrator());
@@ -46,7 +46,7 @@ class CityRepository extends \fastorm\Entity\Repository
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
         $metadata->setDatabase('world');
-        $metadata->setTable('T_CITY_CIT');
+        $metadata->setTable('t_city_cit');
 
         $metadata->addField(array(
             'primary'    => true,

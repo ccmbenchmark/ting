@@ -108,18 +108,6 @@ class PreparedQuery extends atoum
         ;
     }
 
-    public function testSetParamsShouldRaiseExceptionIfParamIsNotAnArray()
-    {
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-        $this
-            ->if($query = new \fastorm\Query\PreparedQuery($sql))
-            ->exception(function () use ($query) {
-                    $query->setParams('dah');
-            })
-            ->isInstanceOf('\InvalidArgumentException')
-        ;
-    }
-
     public function testExecuteShouldPrepareQueryIfNot()
     {
         $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();

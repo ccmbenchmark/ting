@@ -33,11 +33,8 @@ abstract class QueryAbstract
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function setParams($params)
+    public function setParams(array $params)
     {
-        if (!is_array($params)) {
-            throw new \InvalidArgumentException('Params should be an array');
-        }
         $this->params = $params;
 
         return $this;

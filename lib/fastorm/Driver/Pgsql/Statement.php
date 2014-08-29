@@ -50,8 +50,7 @@ class Statement implements StatementInterface
             in_array(
                 $type,
                 array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
-            )
-            === false
+            ) === false
         ) {
             throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
         }

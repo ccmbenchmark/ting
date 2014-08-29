@@ -124,8 +124,7 @@ class Driver implements DriverInterface
                         return $value;
                         break;
                     default:
-                        $value = '"' . $this->connection->escape_string($value) . '"';
-                        return $value;
+                        return '"' . $this->connection->real_escape_string($value) . '"';
                     break;
                 }
             },
