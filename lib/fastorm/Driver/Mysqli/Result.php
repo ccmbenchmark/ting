@@ -31,12 +31,49 @@ class Result implements \fastorm\Driver\ResultInterface
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
+            $value = $data[$i];
+
+            if (gettype($value) === 'string') {
+                switch ($rawField->type){
+                    case MYSQLI_TYPE_DECIMAL:
+                        // Decimal
+                        // Next lines are all mapped to float
+                    case MYSQLI_TYPE_DOUBLE:
+                        // Double
+                    case MYSQLI_TYPE_NEWDECIMAL:
+                        // Mysql 5.0.3 + : Decimal or numeric
+                    case MYSQLI_TYPE_FLOAT:
+                        // Float
+                        $value = (float)$value;
+                        break;
+                    case MYSQLI_TYPE_TINY:
+                        // Tinyint
+                    case MYSQLI_TYPE_INT24:
+                        // MediumInt
+                    case MYSQLI_TYPE_LONG:
+                        // Int
+                    case MYSQLI_TYPE_SHORT:
+                        //SMALLINT
+                        $value = (int)$value;
+                        break;
+                    case MYSQLI_TYPE_NULL:
+                        // Type null
+                        $value = null;
+                        break;
+                    case MYSQLI_TYPE_LONGLONG:
+                        // Bigint, bigger than PHP_INT_MAX
+                        // These case is here as a reminder
+                        $value = (string)$value;
+                        break;
+                }
+            }
+
             $column = array(
                 'name'     => $rawField->name,
                 'orgName'  => $rawField->orgname,
                 'table'    => $rawField->table,
                 'orgTable' => $rawField->orgtable,
-                'value'    => $data[$i]
+                'value'    => $value
             );
 
             $columns[] = $column;

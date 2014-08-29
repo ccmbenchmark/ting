@@ -67,6 +67,7 @@ class Statement extends atoum
             $stdClass->orgname  = 'firstname';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
@@ -74,6 +75,7 @@ class Statement extends atoum
             $stdClass->orgname  = 'name';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             return $fields;

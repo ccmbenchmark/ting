@@ -132,6 +132,7 @@ class Repository extends atoum
             $stdClass->orgname  = 'boo_id';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
@@ -139,6 +140,7 @@ class Repository extends atoum
             $stdClass->orgname  = 'boo_firstname';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             return $fields;
