@@ -23,9 +23,8 @@ class Repository
     public function __construct(ContainerInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
-
         $this->connectionPool = $this->serviceLocator->get('ConnectionPool');
-        $this->serviceLocator->get('MetadataRepository')->loadMetadata($this, function (Metadata $metadata) {
+        $this->serviceLocator->get('MetadataRepository')->loadMetadata(get_class($this), function (Metadata $metadata) {
             $this->metadata = $metadata;
         });
     }

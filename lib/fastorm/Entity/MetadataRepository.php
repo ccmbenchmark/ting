@@ -2,28 +2,19 @@
 
 namespace fastorm\Entity;
 
+use fastorm\ContainerInterface;
 use fastorm\Entity\Metadata;
 use fastorm\Entity\Repository;
 
 class MetadataRepository
 {
 
-    protected static $instance = null;
-    protected $metadataList = array();
+    protected $metadataList   = array();
+    protected $serviceLocator = null;
 
-
-    protected function __construct()
+    public function __construct(ContainerInterface $serviceLocator)
     {
-
-    }
-
-    public static function getInstance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
+        $this->serviceLocator = $serviceLocator;
     }
 
     public function add($repository, Metadata $metadata)
@@ -62,12 +53,12 @@ class MetadataRepository
         }
     }
 
-    public function loadMetadata(Repository $repository, callable $callback)
+    public function loadMetadata($repositoryClass, callable $callback)
     {
-        if (isset($this->metadataList[get_class($repository)]) === false) {
-            $repository::initMetadata();
+        if (isset($this->metadataList[$repositoryClass]) === false) {
+            $repositoryClass::initMetadata($this->serviceLocator);
         }
-        $callback($this->metadataList[get_class($repository)]);
+        $callback($this->metadataList[$repositoryClass]);
     }
 
     public function batchLoadMetadata($namespace, $globPattern)
@@ -79,7 +70,7 @@ class MetadataRepository
         $loaded = 0;
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $repository::initMetadata();
+            $repository::initMetadata($this->serviceLocator);
             $loaded++;
         }
 

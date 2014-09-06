@@ -6,57 +6,58 @@ use \mageekguy\atoum;
 
 class MetadataRepository extends atoum
 {
-    public function testShouldBeSingleton()
+    public function testCallLoadMetadataShouldCallCallbackWithInstanceMetadata()
     {
-        $this
-            ->object(\fastorm\Entity\MetadataRepository::getInstance())
-            ->isIdenticalTo(\fastorm\Entity\MetadataRepository::getInstance());
-    }
-
-    public function testCallLoadMetadataTwiceShouldCallCallbackWithInstanceMetadata()
-    {
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
-        $repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool);
+        $serviceLocator = new \fastorm\ServiceLocator();
 
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->loadMetadata($repository, function ($repository) use (&$outerRepository) {
-                $outerRepository = $repository;
-            }))
-            ->object($outerRepository)
+            ->if($metadataRepository = $serviceLocator->get('MetadataRepository'))
+            ->then($metadataRepository->loadMetadata(
+                'tests\fixtures\model\BouhRepository',
+                function ($metadata) use (&$outerMetadata) {
+                    $outerMetadata = $metadata;
+                }
+            ))
+            ->object($outerMetadata)
                 ->isInstanceOf('\fastorm\Entity\Metadata');
     }
 
     public function testCallLoadMetadataTwiceShouldCallCallbackWithSameMetadataObject()
     {
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
-        $repository = new \tests\fixtures\model\BouhRepository($mockConnectionPool);
+        $serviceLocator = new \fastorm\ServiceLocator();
 
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->loadMetadata($repository, function ($repository) use (&$outerRepository) {
-                $outerRepository = $repository;
-            }))
-            ->then($metadataRepository->loadMetadata($repository, function ($repository) use (&$outerRepository2) {
-                $outerRepository2 = $repository;
-            }))
-            ->object($outerRepository2)
-                ->isIdenticalTo($outerRepository);
+            ->if($metadataRepository = $serviceLocator->get('MetadataRepository'))
+            ->then($metadataRepository->loadMetadata(
+                'tests\fixtures\model\BouhRepository',
+                function ($metadata) use (&$outerMetadata) {
+                    $outerMetadata = $metadata;
+                }
+            ))
+            ->then($metadataRepository->loadMetadata(
+                'tests\fixtures\model\BouhRepository',
+                function ($metadata) use (&$outerMetadata2) {
+                    $outerMetadata2 = $metadata;
+                }
+            ))
+            ->object($outerMetadata)
+                ->isIdenticalTo($outerMetadata);
     }
 
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
-        $metadata = new \fastorm\Entity\Metadata();
+        $serviceLocator = new \fastorm\ServiceLocator();
+
+        $metadata = new \fastorm\Entity\Metadata($serviceLocator);
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
         $metadata->addInto($metadataRepository);
 
         $entity = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->findMetadataForEntity(
+            ->if($metadataRepository->findMetadataForEntity(
                 $entity,
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -73,17 +74,18 @@ class MetadataRepository extends atoum
 
     public function testFindMetadataForEntityShouldCallCallbackNotFound()
     {
-        $metadata = new \fastorm\Entity\Metadata();
+        $serviceLocator = new \fastorm\ServiceLocator();
+
+        $metadata = new \fastorm\Entity\Metadata($serviceLocator);
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
         $metadata->addInto($metadataRepository);
 
         $entity = new \mock\tests\fixtures\model\Bouh2();
 
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->findMetadataForEntity(
+            ->if($metadataRepository->findMetadataForEntity(
                 $entity,
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -100,15 +102,16 @@ class MetadataRepository extends atoum
 
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
-        $metadata = new \fastorm\Entity\Metadata();
+        $serviceLocator = new \fastorm\ServiceLocator();
+
+        $metadata = new \fastorm\Entity\Metadata($serviceLocator);
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
         $metadata->addInto($metadataRepository);
 
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->findMetadataForTable(
+            ->if($metadataRepository->findMetadataForTable(
                 'T_BOUH_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -125,15 +128,16 @@ class MetadataRepository extends atoum
 
     public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
-        $metadata = new \fastorm\Entity\Metadata();
+        $serviceLocator = new \fastorm\ServiceLocator();
+
+        $metadata = new \fastorm\Entity\Metadata($serviceLocator);
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
         $metadata->addInto($metadataRepository);
 
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
-            ->then($metadataRepository->findMetadataForTable(
+            ->if($metadataRepository->findMetadataForTable(
                 'T_BOUH2_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -151,7 +155,7 @@ class MetadataRepository extends atoum
     public function testBatchLoadMetadataShouldLoad1Repository()
     {
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
+            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository(new \fastorm\ServiceLocator()))
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../../fixtures/model/*Repository.php'
@@ -162,7 +166,7 @@ class MetadataRepository extends atoum
     public function testBatchLoadMetadataWithInvalidPathShouldReturn0()
     {
         $this
-            ->if($metadataRepository = \fastorm\Entity\MetadataRepository::getInstance())
+            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository(new \fastorm\ServiceLocator()))
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 '/not/valid/path/*Repository.php'
