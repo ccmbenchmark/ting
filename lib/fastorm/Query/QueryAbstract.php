@@ -12,8 +12,8 @@ abstract class QueryAbstract
     const TYPE_AFFECTED = 2;
     const TYPE_INSERT   = 3;
 
-    protected $sql = '';
-    protected $params = array();
+    protected $sql       = '';
+    protected $params    = array();
     protected $queryType = self::TYPE_RESULT;
 
     /**
@@ -21,11 +21,12 @@ abstract class QueryAbstract
      */
     protected $driver = null;
 
-    final public function __construct($sql, $params = array())
+    public function setSql($sql)
     {
         $this->sql = $sql;
-        $this->params = $params;
         $this->setQueryType();
+
+        return $this;
     }
 
     /**
@@ -56,9 +57,7 @@ abstract class QueryAbstract
      * @return mixed
      * @throws QueryException
      */
-    abstract public function execute(
-        Collection $collection = null
-    );
+    abstract public function execute(Collection $collection = null);
 
     final private function setQueryType()
     {

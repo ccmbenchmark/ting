@@ -61,7 +61,8 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query\Query('SELECT * FROM bouh');
+        $mockQuery = new \mock\fastorm\Query\Query();
+        $mockQuery->setSql('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
@@ -88,7 +89,8 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery('SELECT * FROM bouh WHERE truc = :bidule');
+        $mockQuery = new \mock\fastorm\Query\PreparedQuery();
+        $mockQuery->setSql('SELECT * FROM bouh WHERE truc = :bidule');
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
                 return $mockQuery;
@@ -123,7 +125,8 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery('SELECT * FROM bouh WHERE truc = :bidule');
+        $mockQuery = new \mock\fastorm\Query\PreparedQuery();
+        $mockQuery->setSql('SELECT * FROM bouh WHERE truc = :bidule');
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
                 return $mockQuery;
