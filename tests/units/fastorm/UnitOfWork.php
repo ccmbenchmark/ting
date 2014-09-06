@@ -6,34 +6,27 @@ use \mageekguy\atoum;
 
 class UnitOfWork extends atoum
 {
+    protected $serviceLocator     = null;
+
     public function beforeTestMethod($method)
     {
-        \fastorm\ConnectionPool::getInstance(
-            array(
-                'connections' => array(
-                    'main' => array(
-                        'namespace' => '\tests\fixtures\FakeDriver',
-                        'host'      => 'localhost.test',
-                        'user'      => 'test',
-                        'password'  => 'test',
-                        'port'      => 3306
-                    )
-                )
-            )
+        $this->serviceLocator = new \fastorm\ServiceLocator();
+        $connectionPool = new \fastorm\ConnectionPool();
+        $connectionPool->setConfig(
+            [
+                'main' => [
+                    'namespace' => '\tests\fixtures\FakeDriver',
+                    'host'      => 'localhost.test',
+                    'user'      => 'test',
+                    'password'  => 'test',
+                    'port'      => 3306
+                ]
+            ]
         );
 
-        $metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
-        $metadataRepository->batchLoadMetadata(
-            'tests\fixtures\model',
-            __DIR__ . '/../../fixtures/model/*Repository.php'
-        );
-    }
-
-    public function testShouldBeSingleton()
-    {
-        $this
-            ->object(\fastorm\UnitOfWork::getInstance())
-            ->isIdenticalTo(\fastorm\UnitOfWork::getInstance());
+        $this->serviceLocator->set('ConnectionPool', function ($container) use ($connectionPool) {
+            return $connectionPool;
+        });
     }
 
     public function testManageShouldAddProperyListener()
@@ -44,7 +37,7 @@ class UnitOfWork extends atoum
         };
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->manage($mockEntity))
             ->object($outerUnitOfWork)
                 ->IsIdenticalTo($unitOfWork)
@@ -57,7 +50,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->boolean($unitOfWork->isManaged($mockEntity))
                 ->isFalse();
     }
@@ -67,7 +60,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->persist($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
@@ -80,7 +73,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isFalse();
     }
@@ -90,7 +83,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->manage($mockEntity))
             ->then($unitOfWork->persist($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
@@ -104,7 +97,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->propertyChanged($mockEntity, 'firstname', 'Sylvain', 'Sylvain'))
             ->boolean($unitOfWork->isPropertyChanged($mockEntity, 'firstname'))
                 ->isFalse();
@@ -115,7 +108,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->propertyChanged($mockEntity, 'firstname', 'Sylvain', 'Sylvain 2'))
             ->boolean($unitOfWork->isPropertyChanged($mockEntity, 'firstname'))
                 ->isTrue();
@@ -126,7 +119,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->persist($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
@@ -140,7 +133,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->remove($mockEntity))
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isTrue();
@@ -151,18 +144,35 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isFalse();
     }
 
     public function testFlushShouldCallFlushManaged()
     {
-        $mockMetadata = new \mock\fastorm\Entity\Metadata();
-        \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
+
+        $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
+            return $mockMetadataRepository;
+        });
+
+        $this->serviceLocator->set('Metadata', function ($container) use ($mockMetadata) {
+            return $mockMetadata;
+        });
+
+
+        \tests\fixtures\model\BouhRepository::initMetadata($this->serviceLocator);
+
+        $this->calling($mockMetadataRepository)->findMetadataForEntity =
+            function ($entity, $callback) use ($mockMetadata) {
+                return $callback($mockMetadata);
+            };
+
 
         $outerOid = array();
-        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery('');
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery();
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -171,18 +181,12 @@ class UnitOfWork extends atoum
                 $callback($mockPreparedQuery);
             };
 
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
-        $this->calling($mockMetadataRepository)->findMetadataForEntity =
-            function ($entity, $callback) use ($mockMetadata) {
-                $callback($mockMetadata);
-            };
-
         $entity1 = new \mock\tests\fixtures\model\Bouh();
         $entity2 = new \mock\tests\fixtures\model\Bouh();
         $entity3 = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->manage($entity1))
             ->then($unitOfWork->manage($entity2))
             ->then($unitOfWork->manage($entity3))
@@ -209,8 +213,18 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushManagedButDoNothing()
     {
-        $mockMetadata = new \mock\fastorm\Entity\Metadata();
-        \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
+        
+        $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
+            return $mockMetadataRepository;
+        });
+
+        $this->serviceLocator->set('Metadata', function ($container) use ($mockMetadata) {
+            return $mockMetadata;
+        });
+
+        \tests\fixtures\model\BouhRepository::initMetadata($this->serviceLocator);
 
         $outerOid = array();
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -218,7 +232,6 @@ class UnitOfWork extends atoum
                 $outerOid[] = spl_object_hash($entity);
             };
 
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
         $this->calling($mockMetadataRepository)->findMetadataForEntity =
             function ($entity, $callback) use ($mockMetadata) {
                 $callback($mockMetadata);
@@ -230,7 +243,7 @@ class UnitOfWork extends atoum
         $entity2->setName('Bouh');
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->detach($entity1))
             ->then($unitOfWork->detach($entity2))
             ->then($unitOfWork->detach($entity3))
@@ -253,10 +266,20 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushNew()
     {
-        $mockMetadata = new \mock\fastorm\Entity\Metadata();
-        \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
+        
+        $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
+            return $mockMetadataRepository;
+        });
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery("");
+        $this->serviceLocator->set('Metadata', function ($container) use ($mockMetadata) {
+            return $mockMetadata;
+        });
+
+        \tests\fixtures\model\BouhRepository::initMetadata($this->serviceLocator);
+
+        $mockQuery = new \mock\fastorm\Query\PreparedQuery();
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -266,7 +289,6 @@ class UnitOfWork extends atoum
                 $callback($mockQuery);
             };
 
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
         $this->calling($mockMetadataRepository)->findMetadataForEntity =
             function ($entity, $callback) use ($mockMetadata) {
                 $callback($mockMetadata);
@@ -277,7 +299,7 @@ class UnitOfWork extends atoum
         $entity3 = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($entity1->setName('Bouh 1'))
             ->then($entity2->setName('Bouh 2'))
             ->then($entity3->setName('Bouh 3'))
@@ -309,10 +331,20 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushDelete()
     {
-        $mockMetadata = new \mock\fastorm\Entity\Metadata();
-        \tests\fixtures\model\BouhRepository::initMetadata(null, $mockMetadata);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
+        
+        $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
+            return $mockMetadataRepository;
+        });
 
-        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery('');
+        $this->serviceLocator->set('Metadata', function ($container) use ($mockMetadata) {
+            return $mockMetadata;
+        });
+
+        \tests\fixtures\model\BouhRepository::initMetadata($this->serviceLocator);
+
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery();
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $outerOid = array();
@@ -322,7 +354,6 @@ class UnitOfWork extends atoum
                 $callback($mockPreparedQuery);
             };
 
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
         $this->calling($mockMetadataRepository)->findMetadataForEntity =
             function ($entity, $callback) use ($mockMetadata) {
                 $callback($mockMetadata);
@@ -333,7 +364,7 @@ class UnitOfWork extends atoum
         $entity3 = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = \fastorm\UnitOfWork::getInstance())
+            ->if($unitOfWork = new \fastorm\UnitOfWork($this->serviceLocator))
             ->then($unitOfWork->remove($entity1))
             ->then($unitOfWork->remove($entity2))
             ->then($unitOfWork->remove($entity3))
