@@ -6,37 +6,11 @@ use \mageekguy\atoum;
 
 class ConnectionPool extends atoum
 {
-
-    public function testShouldRaiseExceptionWhenNoConfigurationArgument()
-    {
-        $this
-            ->exception(function () {
-                \fastorm\ConnectionPool::getInstance();
-            })
-                ->hasDefaultCode()
-                ->hasMessage('First call to ConnectionPool must pass configuration in parameters');
-    }
-
-    public function testShouldRaiseExceptionWhenNoConnectionsInConfiguartion()
-    {
-        $this
-            ->exception(function () {
-                \fastorm\ConnectionPool::getInstance(array('noConnections'));
-            })
-                ->hasMessage('Configuration must have "connections" key');
-    }
-
-    public function testShouldBeSingleton()
-    {
-        $this
-            ->object(\fastorm\ConnectionPool::getInstance(array('connections' => array())))
-            ->isIdenticalTo(\fastorm\ConnectionPool::getInstance());
-    }
-
     public function testConnectionShouldRaiseExceptionWhenConnectionNotFound()
     {
         $this
-            ->if($connectionPool = \fastorm\ConnectionPool::getInstance(array('connections' => array())))
+            ->if($connectionPool = new \fastorm\ConnectionPool())
+            ->and($connectionPool->setConfig(['connections' => []]))
             ->exception(function () use ($connectionPool) {
                 $connectionPool->connect(
                     'bouh',
@@ -51,18 +25,17 @@ class ConnectionPool extends atoum
     public function testConnectionShouldCallSetDatabase()
     {
         $this
-            ->if($connectionPool = \fastorm\ConnectionPool::getInstance(
-                array(
-                    'connections' => array(
-                        'bouh' => array(
-                            'namespace' => '\tests\fixtures\FakeDriver',
-                            'host'      => 'localhost.test',
-                            'user'      => 'test',
-                            'password'  => 'test',
-                            'port'      => 3306
-                        )
-                    )
-                )
+            ->if($connectionPool = new \fastorm\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'host'      => 'localhost.test',
+                        'user'      => 'test',
+                        'password'  => 'test',
+                        'port'      => 3306
+                    ]
+                ]
             ))
             ->then($connectionPool->connect(
                 'bouh',
@@ -78,18 +51,17 @@ class ConnectionPool extends atoum
     public function testConnectionShouldCallCallbackWithConnection()
     {
         $this
-            ->if($connectionPool = \fastorm\ConnectionPool::getInstance(
-                array(
-                    'connections' => array(
-                        'bouh' => array(
-                            'namespace' => '\tests\fixtures\FakeDriver',
-                            'host'      => 'localhost.test',
-                            'user'      => 'test',
-                            'password'  => 'test',
-                            'port'      => 3306
-                        )
-                    )
-                )
+            ->if($connectionPool = new \fastorm\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'host'      => 'localhost.test',
+                        'user'      => 'test',
+                        'password'  => 'test',
+                        'port'      => 3306
+                    ]
+                ]
             ))
             ->then($connectionPool->connect(
                 'bouh',

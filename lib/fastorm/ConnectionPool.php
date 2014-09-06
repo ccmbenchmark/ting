@@ -5,36 +5,15 @@ namespace fastorm;
 class ConnectionPool implements ConnectionPoolInterface
 {
 
-    protected static $instance = null;
     protected $connectionConfig = array();
     protected $connections = array();
 
     /**
      * @throws \fastorm\Exception
      */
-    protected function __construct($config)
+    public function setConfig($config)
     {
-        if (isset($config['connections']) === false) {
-            throw new Exception('Configuration must have "connections" key');
-        }
-
-        $this->connectionConfig = $config['connections'];
-    }
-
-    /**
-     * @throws \fastorm\Exception
-     */
-    public static function getInstance($config = array())
-    {
-        if (self::$instance === null) {
-            if (count($config) === 0) {
-                throw new Exception('First call to ConnectionPool must pass configuration in parameters');
-            }
-
-            self::$instance = new self($config);
-        }
-
-        return self::$instance;
+        $this->connectionConfig = $config;
     }
 
     /**
