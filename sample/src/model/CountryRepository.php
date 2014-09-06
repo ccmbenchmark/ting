@@ -7,15 +7,10 @@ use fastorm\Entity\MetadataRepository;
 
 class CountryRepository extends \fastorm\Entity\Repository
 {
-    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
+    public static function initMetadata(\fastorm\ContainerInterface $serviceLocator)
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
-
-        if ($metadata === null) {
-            $metadata = new Metadata();
-        }
+        $metadataRepository = $serviceLocator->get('MetadataRepository');
+        $metadata           = $serviceLocator->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
