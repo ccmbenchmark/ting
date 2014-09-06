@@ -13,7 +13,6 @@ class Country implements NotifyPropertyInterface
     protected $continent = null;
     protected $region    = null;
     protected $president = null;
-    protected $listeners = [];
 
     public function addPropertyListener(PropertyListenerInterface $listener)
     {
