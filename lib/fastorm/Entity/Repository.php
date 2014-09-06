@@ -4,6 +4,7 @@ namespace fastorm\Entity;
 
 use fastorm\ConnectionPool;
 use fastorm\ConnectionPoolInterface;
+use fastorm\ContainerInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
 use fastorm\Query\PreparedQuery;
@@ -12,23 +13,21 @@ use fastorm\Query\Query;
 class Repository
 {
 
-    protected static $instance = null;
-    protected $metadata;
+    protected $serviceLocator = null;
+    protected $metadata       = null;
     /**
      * @var \fastorm\ConnectionPoolInterface
      */
     protected $connectionPool;
 
-    public function __construct(ConnectionPoolInterface $connectionPool = null)
+    public function __construct(ContainerInterface $serviceLocator)
     {
-        MetadataRepository::getInstance()->loadMetadata($this, function (Metadata $metadata) {
+        $this->serviceLocator = $serviceLocator;
+
+        $this->connectionPool = $this->serviceLocator->get('ConnectionPool');
+        $this->serviceLocator->get('MetadataRepository')->loadMetadata($this, function (Metadata $metadata) {
             $this->metadata = $metadata;
         });
-        if ($connectionPool === null) {
-            $this->connectionPool = ConnectionPool::getInstance();
-        } else {
-            $this->connectionPool = $connectionPool;
-        }
     }
 
     public function get(
@@ -36,12 +35,13 @@ class Repository
         Hydrator $hydrator = null,
         Collection $collection = null
     ) {
+
         if ($hydrator === null) {
-            $hydrator = new Hydrator();
+            $hydrator = $this->serviceLocator->get('Hydrator');
         }
 
         if ($collection === null) {
-            $collection = new Collection();
+            $collection = $this->serviceLocator->get('Collection');
         }
 
         $this->metadata->connect(
@@ -63,8 +63,12 @@ class Repository
 
     public function execute(Query $query, Collection $collection = null)
     {
+        if ($query === null) {
+            $query = $this->serviceLocator->get('Query');
+        }
+
         if ($collection === null) {
-            $collection = new Collection();
+            $collection = $this->serviceLocator->get('Collection');
         }
 
         $this->metadata->connect(
@@ -79,9 +83,14 @@ class Repository
 
     public function executePrepared(PreparedQuery $query, $collection = null)
     {
-        if ($collection === null) {
-            $collection = new Collection();
+        if ($query === null) {
+            $query = $this->serviceLocator->get('Query');
         }
+
+        if ($collection === null) {
+            $collection = $this->serviceLocator->get('Collection');
+        }
+
         $this->metadata->connect(
             $this->connectionPool,
             function (DriverInterface $driver) use ($query, $collection) {
@@ -92,20 +101,15 @@ class Repository
         return $collection;
     }
 
-    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
+    public static function initMetadata(ContainerInterface $serviceLocator)
     {
         throw new Exception('You should add initMetadata in your class repository');
 
         /**
          * Example for your repository :
          *
-            if ($metadataRepository === null) {
-                $metadataRepository = MetadataRepository::getInstance();
-            }
-
-            if ($metadata === null) {
-                $metadata = new Metadata();
-            }
+            $metadataRepository = $serviceLocator->get('MetadataRepository');
+            $metadata           = $serviceLocator->get('Metadata');
 
             $metadata->setClass(get_called_class());
             $metadata->addField(array(
