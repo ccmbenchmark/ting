@@ -3,6 +3,7 @@
 namespace fastorm\Entity;
 
 use fastorm\ConnectionPoolInterface;
+use fastorm\ContainerInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
 use fastorm\Query\PreparedQuery;
@@ -11,12 +12,18 @@ use fastorm\Query\Query;
 class Metadata
 {
 
+    protected $serviceLocator = null;
     protected $connectionName = null;
     protected $databaseName   = null;
     protected $class          = null;
     protected $table          = null;
     protected $fields         = array();
     protected $primary        = array();
+
+    public function __construct(ContainerInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+    }
 
     public function setConnection($connectionName)
     {
@@ -133,7 +140,7 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback(new Query($sql, array('primary' => $primaryValue)));
+        $callback($this->serviceLocator->get('Query')->setSql($sql)->setParams(array('primary' => $primaryValue)));
     }
 
     public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
@@ -161,7 +168,7 @@ class Metadata
                 }
             );
 
-        $callback(new PreparedQuery($sql, $values));
+        $callback($this->serviceLocator->get('PreparedQuery')->setSql($sql)->setParams($values));
     }
 
     public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
@@ -202,7 +209,7 @@ class Metadata
                 }
             );
 
-        $callback(new PreparedQuery($sql, $values));
+        $callback($this->serviceLocator->get('PreparedQuery')->setSql($sql)->setParams($values));
     }
 
     public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
@@ -224,6 +231,6 @@ class Metadata
                 }
             );
 
-        $callback(new PreparedQuery($sql, $values));
+        $callback($this->serviceLocator->get('PreparedQuery')->setSql($sql)->setParams($values));
     }
 }
