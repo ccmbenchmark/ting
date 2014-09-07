@@ -143,20 +143,6 @@ class Metadata extends atoum
                 ->isIdenticalTo(321);
     }
 
-    public function testAddIntoShouldCallMetadataRepositoryAdd()
-    {
-        $serviceLocator         = new \fastorm\ServiceLocator();
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($serviceLocator);
-
-        $this
-            ->if($metadata = new \fastorm\Entity\Metadata($serviceLocator))
-            ->then($metadata->setClass('Bouh'))
-            ->then($metadata->addInto($mockMetadataRepository))
-            ->mock($mockMetadataRepository)
-                ->call('add')
-                    ->withIdenticalArguments('Bouh', $metadata)->once();
-    }
-
     public function testConnectShouldCallConnectionPoolConnect()
     {
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();

@@ -6,44 +6,6 @@ use \mageekguy\atoum;
 
 class MetadataRepository extends atoum
 {
-    public function testCallLoadMetadataShouldCallCallbackWithInstanceMetadata()
-    {
-        $serviceLocator = new \fastorm\ServiceLocator();
-
-        $this
-            ->if($metadataRepository = $serviceLocator->get('MetadataRepository'))
-            ->then($metadataRepository->loadMetadata(
-                'tests\fixtures\model\BouhRepository',
-                function ($metadata) use (&$outerMetadata) {
-                    $outerMetadata = $metadata;
-                }
-            ))
-            ->object($outerMetadata)
-                ->isInstanceOf('\fastorm\Entity\Metadata');
-    }
-
-    public function testCallLoadMetadataTwiceShouldCallCallbackWithSameMetadataObject()
-    {
-        $serviceLocator = new \fastorm\ServiceLocator();
-
-        $this
-            ->if($metadataRepository = $serviceLocator->get('MetadataRepository'))
-            ->then($metadataRepository->loadMetadata(
-                'tests\fixtures\model\BouhRepository',
-                function ($metadata) use (&$outerMetadata) {
-                    $outerMetadata = $metadata;
-                }
-            ))
-            ->then($metadataRepository->loadMetadata(
-                'tests\fixtures\model\BouhRepository',
-                function ($metadata) use (&$outerMetadata2) {
-                    $outerMetadata2 = $metadata;
-                }
-            ))
-            ->object($outerMetadata)
-                ->isIdenticalTo($outerMetadata);
-    }
-
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
         $serviceLocator = new \fastorm\ServiceLocator();
@@ -52,7 +14,7 @@ class MetadataRepository extends atoum
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
         $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
-        $metadata->addInto($metadataRepository);
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \tests\fixtures\model\Bouh();
 
@@ -80,7 +42,7 @@ class MetadataRepository extends atoum
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
         $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
-        $metadata->addInto($metadataRepository);
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \mock\tests\fixtures\model\Bouh2();
 
@@ -108,7 +70,7 @@ class MetadataRepository extends atoum
         $metadata->setTable('T_BOUH_BOO');
 
         $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
-        $metadata->addInto($metadataRepository);
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
             ->if($metadataRepository->findMetadataForTable(
@@ -134,7 +96,7 @@ class MetadataRepository extends atoum
         $metadata->setTable('T_BOUH_BOO');
 
         $metadataRepository = new \fastorm\Entity\MetadataRepository($serviceLocator);
-        $metadata->addInto($metadataRepository);
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
             ->if($metadataRepository->findMetadataForTable(

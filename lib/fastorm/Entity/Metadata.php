@@ -114,11 +114,6 @@ class Metadata
         $entity->$property($value);
     }
 
-    public function addInto(MetadataRepository $metadataRepository)
-    {
-        $metadataRepository->add($this->class, $this);
-    }
-
     public function connect(ConnectionPoolInterface $connectionPool, callable $callback)
     {
         $connectionPool->connect($this->connectionName, $this->databaseName, $callback);

@@ -17,11 +17,6 @@ class MetadataRepository
         $this->serviceLocator = $serviceLocator;
     }
 
-    public function add($repository, Metadata $metadata)
-    {
-        $this->metadataList[$repository] = $metadata;
-    }
-
     public function findMetadataForTable($table, callable $callbackFound, callable $callbackNotFound)
     {
         $found = false;
@@ -53,12 +48,11 @@ class MetadataRepository
         }
     }
 
-    public function loadMetadata($repositoryClass, callable $callback)
+    public function addMetadata($repositoryClass, Metadata $metadata)
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
-            $repositoryClass::initMetadata($this->serviceLocator);
+            $this->metadataList[$repositoryClass] = $metadata;
         }
-        $callback($this->metadataList[$repositoryClass]);
     }
 
     public function batchLoadMetadata($namespace, $globPattern)
@@ -70,7 +64,7 @@ class MetadataRepository
         $loaded = 0;
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $repository::initMetadata($this->serviceLocator);
+            $this->addMetadata($repository, $repository::initMetadata($this->serviceLocator));
             $loaded++;
         }
 

@@ -35,8 +35,7 @@ class CityRepository extends \fastorm\Entity\Repository
 
     public static function initMetadata(\fastorm\ContainerInterface $serviceLocator)
     {
-        $metadataRepository = $serviceLocator->get('MetadataRepository');
-        $metadata           = $serviceLocator->get('Metadata');
+        $metadata = $serviceLocator->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
@@ -74,6 +73,6 @@ class CityRepository extends \fastorm\Entity\Repository
             'type'       => 'int'
         ));
 
-        $metadata->addInto($metadataRepository);
+        return $metadata;
     }
 }

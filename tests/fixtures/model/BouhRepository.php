@@ -10,8 +10,7 @@ class BouhRepository extends \fastorm\Entity\Repository
 {
     public static function initMetadata(ContainerInterface $serviceLocator)
     {
-        $metadataRepository = $serviceLocator->get('MetadataRepository');
-        $metadata           = $serviceLocator->get('Metadata');
+        $metadata = $serviceLocator->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
@@ -33,6 +32,7 @@ class BouhRepository extends \fastorm\Entity\Repository
            'fieldName'  => 'name',
            'columnName' => 'boo_name'
         ));
-        $metadata->addInto($metadataRepository);
+
+        return $metadata;
     }
 }

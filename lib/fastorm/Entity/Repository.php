@@ -15,6 +15,7 @@ class Repository
 
     protected $serviceLocator = null;
     protected $metadata       = null;
+
     /**
      * @var \fastorm\ConnectionPoolInterface
      */
@@ -24,9 +25,9 @@ class Repository
     {
         $this->serviceLocator = $serviceLocator;
         $this->connectionPool = $this->serviceLocator->get('ConnectionPool');
-        $this->serviceLocator->get('MetadataRepository')->loadMetadata(get_class($this), function (Metadata $metadata) {
-            $this->metadata = $metadata;
-        });
+        $class  = get_class($this);
+        $this->metadata = $class::initMetadata($this->serviceLocator);
+        $this->serviceLocator->get('MetadataRepository')->addMetadata($class, $this->metadata);
     }
 
     public function get(
@@ -107,8 +108,7 @@ class Repository
         /**
          * Example for your repository :
          *
-            $metadataRepository = $serviceLocator->get('MetadataRepository');
-            $metadata           = $serviceLocator->get('Metadata');
+            $metadata = $serviceLocator->get('Metadata');
 
             $metadata->setClass(get_called_class());
             $metadata->addField(array(
@@ -118,7 +118,7 @@ class Repository
                'type'       => 'int'
             ));
 
-            $metadata->addInto($metadataRepository);
+            return $metadata;
         */
     }
 

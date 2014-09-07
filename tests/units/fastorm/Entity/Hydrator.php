@@ -42,7 +42,7 @@ class Hydrator extends atoum
             'type'       => 'string'
         ));
 
-        $metadata->addInto($serviceLocator->get('MetadataRepository'));
+        $serviceLocator->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
             ->if($hydrator = new \fastorm\Entity\Hydrator($serviceLocator))
@@ -96,7 +96,7 @@ class Hydrator extends atoum
             'type'       => 'string'
         ));
 
-        $metadata->addInto($serviceLocator->get('MetadataRepository'));
+        $serviceLocator->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
             ->if($hydrator = new \fastorm\Entity\Hydrator($serviceLocator))

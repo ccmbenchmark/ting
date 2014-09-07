@@ -9,8 +9,7 @@ class CountryRepository extends \fastorm\Entity\Repository
 {
     public static function initMetadata(\fastorm\ContainerInterface $serviceLocator)
     {
-        $metadataRepository = $serviceLocator->get('MetadataRepository');
-        $metadata           = $serviceLocator->get('Metadata');
+        $metadata = $serviceLocator->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
@@ -43,6 +42,6 @@ class CountryRepository extends \fastorm\Entity\Repository
             'columnName' => 'cou_head_of_state',
         ));
 
-        $metadata->addInto($metadataRepository);
+        return $metadata;
     }
 }
