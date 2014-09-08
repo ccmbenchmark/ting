@@ -63,10 +63,6 @@ class Repository
 
     public function execute(Query $query, Collection $collection = null)
     {
-        if ($query === null) {
-            $query = $this->serviceLocator->get('Query');
-        }
-
         if ($collection === null) {
             $collection = $this->serviceLocator->get('Collection');
         }
@@ -83,10 +79,6 @@ class Repository
 
     public function executePrepared(PreparedQuery $query, $collection = null)
     {
-        if ($query === null) {
-            $query = $this->serviceLocator->get('Query');
-        }
-
         if ($collection === null) {
             $collection = $this->serviceLocator->get('Collection');
         }
