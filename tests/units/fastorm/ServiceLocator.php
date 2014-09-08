@@ -20,9 +20,9 @@ class ServiceLocator extends atoum
                 ->isInstanceOf('\fastorm\Entity\Metadata')
             ->object($serviceLocator->get('Collection'))
                 ->isInstanceOf('\fastorm\Entity\Collection')
-            ->object($serviceLocator->get('Query'))
+            ->object($serviceLocator->getWithArguments('Query', ['sql' => '']))
                 ->isInstanceOf('\fastorm\Query\QueryAbstract')
-            ->object($serviceLocator->get('PreparedQuery'))
+            ->object($serviceLocator->getWithArguments('PreparedQuery', ['sql' => '']))
                 ->isInstanceOf('\fastorm\Query\QueryAbstract')
             ->object($serviceLocator->get('Hydrator'))
                 ->isInstanceOf('\fastorm\Entity\Hydrator');

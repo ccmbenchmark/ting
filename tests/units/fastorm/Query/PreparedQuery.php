@@ -26,8 +26,9 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql)->setParams(['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]))
+            ->if($query = new \fastorm\Query\PreparedQuery(
+                ['sql' => $sql, 'params' => ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]]
+            ))
             ->then($query->setDriver($mockDriver)->prepare()->execute())
             ->string($outerSql)
                 ->isIdenticalTo($sql)
@@ -39,8 +40,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
             ->exception(function () use ($query) {
                     $query->execute();
             })
@@ -52,8 +52,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
             ->object($query->setParams(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)))
                 ->isIdenticalTo($query)
         ;
@@ -64,8 +63,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $mockDriver    = new \mock\fastorm\Driver\Mysqli\Driver();
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
             ->object($query->setDriver($mockDriver))
             ->isIdenticalTo($query)
         ;
@@ -75,8 +73,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
             ->exception(function () use ($query) {
                 $query->prepare();
             })
@@ -91,8 +88,7 @@ class PreparedQuery extends atoum
 
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
             ->then($query->setDriver($mockDriver))
             ->object($query->prepare())
                 ->isIdenticalTo($query->prepare())
@@ -103,8 +99,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setSql($sql))
+            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
             ->exception(function () use ($query) {
                     $query->execute();
             })
@@ -131,9 +126,9 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery())
-            ->and($query->setsql($sql))
-            ->and($query->setParams(['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]))
+            ->if($query = new \fastorm\Query\PreparedQuery(
+                ['sql' => $sql, 'params' => ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]]
+            ))
             ->then($query->setDriver($mockDriver)->execute())
             ->string($outerSql)
                 ->isIdenticalTo($sql)

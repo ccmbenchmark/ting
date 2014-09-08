@@ -30,12 +30,12 @@ class ServiceLocator implements ContainerInterface
             return new Entity\Collection();
         });
 
-        $this->container['Query'] = $this->container->factory(function ($container) {
-            return new Query\Query();
+        $this->container['Query'] = $this->container->factory(function ($container, $args) {
+            return new Query\Query($args);
         });
 
-        $this->container['PreparedQuery'] = $this->container->factory(function ($container) {
-            return new Query\PreparedQuery();
+        $this->container['PreparedQuery'] = $this->container->factory(function ($container, $args) {
+            return new Query\PreparedQuery($args);
         });
 
         $this->container['Hydrator'] = $this->container->factory(function ($container) {
@@ -61,5 +61,11 @@ class ServiceLocator implements ContainerInterface
     public function has($id)
     {
         return isset($this->container[$id]);
+    }
+
+    public function getWithArguments($id, $params)
+    {
+        $callback = $this->container->raw($id);
+        return $callback($this->container, $params);
     }
 }

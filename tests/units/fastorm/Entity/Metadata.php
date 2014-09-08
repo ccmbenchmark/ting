@@ -164,9 +164,10 @@ class Metadata extends atoum
     {
         $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
 
-        $query = new \fastorm\Query\Query();
-        $query->setSql('SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary');
-        $query->setParams(['primary' => 'BOuH']);
+        $query = new \fastorm\Query\Query([
+            'sql'    => 'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
+            'params' => ['primary' => 'BOuH']
+        ]);
 
         $this
             ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
@@ -197,15 +198,14 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
-        $query = new \fastorm\Query\PreparedQuery();
-        $query->setSql(
-            'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
-            . 'VALUES (:boo_id, :boo_name, :boo_firstname)'
-        );
-        $query->setParams([
-            'boo_id'        => 123,
-            'boo_firstname' => 'Sylvain',
-            'boo_name'      => 'Robez-Masson'
+        $query = new \fastorm\Query\PreparedQuery([
+            'sql' => 'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
+            . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
+            'params' => [
+                'boo_id'        => 123,
+                'boo_firstname' => 'Sylvain',
+                'boo_name'      => 'Robez-Masson'
+            ]
         ]);
 
         $this
@@ -240,11 +240,9 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
-        $query = new \fastorm\Query\PreparedQuery();
-        $query->setSql('UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id');
-        $query->setParams([
-            'boo_id'   => 123,
-            'boo_name' => 'Robez-Masson'
+        $query = new \fastorm\Query\PreparedQuery([
+            'sql'    => 'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
+            'params' => ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
         ]);
 
         $properties = array('name');
@@ -284,9 +282,10 @@ class Metadata extends atoum
         $entity = new \tests\fixtures\model\Bouh();
         $entity->setId(123);
 
-        $query = new \fastorm\Query\PreparedQuery();
-        $query->setSql('DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id');
-        $query->setParams(['boo_id' => 123]);
+        $query = new \fastorm\Query\PreparedQuery([
+            'sql'    => 'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
+            'params' => ['boo_id' => 123]
+        ]);
 
         $this
             ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))

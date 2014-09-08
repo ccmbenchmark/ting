@@ -151,7 +151,19 @@ class Result extends atoum
 
     public function testIterator()
     {
-        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult(array('Bouh'));
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['value'], ['value2']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = array();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
 
         $this
             ->if($result = new \mock\fastorm\Driver\Mysqli\Result($mockMysqliResult))

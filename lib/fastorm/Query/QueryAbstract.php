@@ -3,8 +3,9 @@
 
 namespace fastorm\Query;
 
-use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
+use fastorm\Driver\DriverInterface;
+use fastorm\Query\QueryException;
 
 abstract class QueryAbstract
 {
@@ -21,9 +22,18 @@ abstract class QueryAbstract
      */
     protected $driver = null;
 
-    public function setSql($sql)
+    public function __construct($args)
     {
-        $this->sql = $sql;
+        if (isset($args['sql']) === false) {
+            throw new QueryException('Constructor array parameters must have "sql" key');
+        }
+
+        $this->sql = $args['sql'];
+
+        if (isset($args['params']) === true) {
+            $this->params = $args['params'];
+        }
+
         $this->setQueryType();
 
         return $this;

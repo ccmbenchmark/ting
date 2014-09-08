@@ -172,7 +172,7 @@ class UnitOfWork extends atoum
 
 
         $outerOid = array();
-        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery();
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -215,7 +215,7 @@ class UnitOfWork extends atoum
     {
         $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
         $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
-        
+
         $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
         });
@@ -268,7 +268,7 @@ class UnitOfWork extends atoum
     {
         $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
         $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
-        
+
         $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
         });
@@ -279,7 +279,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($this->serviceLocator);
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery();
+        $mockQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -333,7 +333,7 @@ class UnitOfWork extends atoum
     {
         $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->serviceLocator);
         $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->serviceLocator);
-        
+
         $this->serviceLocator->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
         });
@@ -344,7 +344,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($this->serviceLocator);
 
-        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery();
+        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $outerOid = array();

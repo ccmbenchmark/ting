@@ -14,10 +14,13 @@ class CityRepository extends \fastorm\Entity\Repository
     {
 
         $query = $this->serviceLocator
-            ->get('PreparedQuery')
-            ->setSql('select cit_id, cit_name, cou_code, cit_district, cit_population
-                from t_city_cit as a where cit_name like :name and cit_population > :population limit 3')
-            ->setParams(['name' => 'Z%', 'population' => 200000]);
+            ->getWithArguments(
+                'PreparedQuery',
+                [
+                    'sql'    => 'select cit_id, cit_name, cou_code, cit_district, cit_population
+                        from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
+                    'params' => ['name' => 'Z%', 'population' => 200000]
+                ]);
 
         return $this->executePrepared($query)->hydrator(new Hydrator($this->serviceLocator));
     }
@@ -26,9 +29,12 @@ class CityRepository extends \fastorm\Entity\Repository
     {
 
         $query = $this->serviceLocator
-            ->get('PreparedQuery')
-            ->setsql('select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population')
-            ->setParams(['population' => 20000]);
+            ->getWithArguments(
+                'PreparedQuery',
+                [
+                    'sql'    => 'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
+                    'params' => ['population' => 20000]
+                ]);
 
         return $this->executePrepared($query);
     }

@@ -135,7 +135,10 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback($this->serviceLocator->get('Query')->setSql($sql)->setParams(array('primary' => $primaryValue)));
+        $callback($this->serviceLocator->getWithArguments(
+            'Query',
+            ['sql' => $sql, 'params' => ['primary' => $primaryValue]]
+        ));
     }
 
     public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
@@ -163,7 +166,7 @@ class Metadata
                 }
             );
 
-        $callback($this->serviceLocator->get('PreparedQuery')->setSql($sql)->setParams($values));
+        $callback($this->serviceLocator->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 
     public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
@@ -204,7 +207,7 @@ class Metadata
                 }
             );
 
-        $callback($this->serviceLocator->get('PreparedQuery')->setSql($sql)->setParams($values));
+        $callback($this->serviceLocator->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 
     public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
@@ -226,6 +229,6 @@ class Metadata
                 }
             );
 
-        $callback($this->serviceLocator->get('PreparedQuery')->setSql($sql)->setParams($values));
+        $callback($this->serviceLocator->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 }

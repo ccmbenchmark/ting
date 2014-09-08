@@ -91,12 +91,13 @@ try {
     var_dump(['initial' => $nb->rewind()->current()]);
     $cityRepository->startTransaction();
         $cityRepository->executePrepared(
-            $serviceLocator->get('PreparedQuery')
-                ->setSql(
+            $serviceLocator->getWithArguments(
+                'PreparedQuery',
+                ['sql' =>
                     "INSERT INTO t_city_cit
                     (cit_name, cit_population) VALUES
-                    (:name, :pop)")
-                ->setParams(['name' => 'BOUH_TEST', 'pop' => 25000])
+                    (:name, :pop)",
+                'params' => ['name' => 'BOUH_TEST', 'pop' => 25000]])
         );
     $cityRepository->rollback();
     $nb = $cityRepository->getNumberOfCities();
