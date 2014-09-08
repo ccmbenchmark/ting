@@ -80,7 +80,7 @@ class Hydrator extends atoum
         );
 
         $serviceLocator = new \fastorm\ServiceLocator();
-        $metadata = new \fastorm\Entity\Metadata($serviceLocator);
+        $metadata       = new \fastorm\Entity\Metadata($serviceLocator);
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
