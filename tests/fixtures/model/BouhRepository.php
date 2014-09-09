@@ -8,9 +8,9 @@ use fastorm\Entity\MetadataRepository;
 
 class BouhRepository extends \fastorm\Entity\Repository
 {
-    public static function initMetadata(ContainerInterface $serviceLocator)
+    public static function initMetadata(ContainerInterface $services)
     {
-        $metadata = $serviceLocator->get('Metadata');
+        $metadata = $services->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');

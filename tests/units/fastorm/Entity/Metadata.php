@@ -9,7 +9,7 @@ class Metadata extends atoum
     public function testSetClassShouldRaiseExceptionWhenStartWithSlash()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->exception(function () use ($metadata) {
                     $metadata->setClass('\my\namespace\Bouh');
             })
@@ -19,7 +19,7 @@ class Metadata extends atoum
     public function testAddFieldWithInvalidParametersShouldThrowException()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->exception(function () use ($metadata) {
                 $metadata->addField(array('fieldName' => 'bouh'));
             })
@@ -30,7 +30,7 @@ class Metadata extends atoum
     public function testSetterWithPrimaryKeyShouldThrowExceptionIfPrimaryAlreadySetted()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->addField(array(
                 'primary'    => true,
                 'fieldName'  => 'bouhField',
@@ -50,7 +50,7 @@ class Metadata extends atoum
     public function testIfTableKnownShouldCallCallbackAndReturnTrue()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown('Bouh', function ($metadata) use (&$outerMetadata) {
                 $outerMetadata = $metadata;
@@ -63,7 +63,7 @@ class Metadata extends atoum
     public function testIfTableKnownShouldReturnFalse()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown(
                 'Bim',
@@ -76,7 +76,7 @@ class Metadata extends atoum
     public function testHasColumnShouldReturnTrue()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'boo_bouh')))
             ->boolean($metadata->hasColumn('boo_bouh'))
@@ -86,7 +86,7 @@ class Metadata extends atoum
     public function testHasColumnShouldReturnFalse()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
             ->boolean($metadata->hasColumn('boo_no'))
@@ -96,7 +96,7 @@ class Metadata extends atoum
     public function testCreateEntityShouldReturnObject()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setClass('mock\repository\BouhRepository'))
             ->object($bouh = $metadata->createEntity())
                 ->isInstanceOf('\mock\repository\Bouh');
@@ -104,7 +104,7 @@ class Metadata extends atoum
 
     public function testSetEntityProperty()
     {
-        $metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator());
+        $metadata = new \fastorm\Entity\Metadata(new \fastorm\Services());
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'fieldName'  => 'name',
@@ -124,7 +124,7 @@ class Metadata extends atoum
 
     public function testSetEntityPrimary()
     {
-        $metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator());
+        $metadata = new \fastorm\Entity\Metadata(new \fastorm\Services());
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'primary'    => true,
@@ -151,7 +151,7 @@ class Metadata extends atoum
         };
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setConnection('bouh_connection'))
             ->then($metadata->setDatabase('bouh_database'))
             ->then($metadata->connect($mockConnectionPool, $callback))
@@ -170,7 +170,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -209,7 +209,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -248,7 +248,7 @@ class Metadata extends atoum
         $properties = array('name');
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -288,7 +288,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\ServiceLocator()))
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,

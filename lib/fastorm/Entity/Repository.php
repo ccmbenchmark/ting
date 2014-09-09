@@ -13,21 +13,21 @@ use fastorm\Query\Query;
 class Repository
 {
 
-    protected $serviceLocator = null;
-    protected $metadata       = null;
+    protected $services = null;
+    protected $metadata = null;
 
     /**
      * @var \fastorm\ConnectionPoolInterface
      */
     protected $connectionPool;
 
-    public function __construct(ContainerInterface $serviceLocator)
+    public function __construct(ContainerInterface $services)
     {
-        $this->serviceLocator = $serviceLocator;
-        $this->connectionPool = $this->serviceLocator->get('ConnectionPool');
+        $this->services = $services;
+        $this->connectionPool = $this->services->get('ConnectionPool');
         $class  = get_class($this);
-        $this->metadata = $class::initMetadata($this->serviceLocator);
-        $this->serviceLocator->get('MetadataRepository')->addMetadata($class, $this->metadata);
+        $this->metadata = $class::initMetadata($this->services);
+        $this->services->get('MetadataRepository')->addMetadata($class, $this->metadata);
     }
 
     public function get(
@@ -37,11 +37,11 @@ class Repository
     ) {
 
         if ($hydrator === null) {
-            $hydrator = $this->serviceLocator->get('Hydrator');
+            $hydrator = $this->services->get('Hydrator');
         }
 
         if ($collection === null) {
-            $collection = $this->serviceLocator->get('Collection');
+            $collection = $this->services->get('Collection');
         }
 
         $this->metadata->connect(
@@ -64,7 +64,7 @@ class Repository
     public function execute(Query $query, Collection $collection = null)
     {
         if ($collection === null) {
-            $collection = $this->serviceLocator->get('Collection');
+            $collection = $this->services->get('Collection');
         }
 
         $this->metadata->connect(
@@ -80,7 +80,7 @@ class Repository
     public function executePrepared(PreparedQuery $query, $collection = null)
     {
         if ($collection === null) {
-            $collection = $this->serviceLocator->get('Collection');
+            $collection = $this->services->get('Collection');
         }
 
         $this->metadata->connect(
@@ -93,14 +93,14 @@ class Repository
         return $collection;
     }
 
-    public static function initMetadata(ContainerInterface $serviceLocator)
+    public static function initMetadata(ContainerInterface $services)
     {
         throw new Exception('You should add initMetadata in your class repository');
 
         /**
          * Example for your repository :
          *
-            $metadata = $serviceLocator->get('Metadata');
+            $metadata = $services->get('Metadata');
 
             $metadata->setClass(get_called_class());
             $metadata->addField(array(

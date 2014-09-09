@@ -12,14 +12,14 @@ class UnitOfWork implements PropertyListenerInterface
     const STATE_MANAGED = 2;
     const STATE_DELETE  = 3;
 
-    protected $serviceLocator            = null;
+    protected $services                  = null;
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
 
-    public function __construct(ContainerInterface $serviceLocator)
+    public function __construct(ContainerInterface $services)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->services = $services;
     }
 
     public function manage($entity)
@@ -53,7 +53,7 @@ class UnitOfWork implements PropertyListenerInterface
 
     public function persist($entity)
     {
-        $oid = spl_object_hash($entity);
+        $oid   = spl_object_hash($entity);
         $state = self::STATE_NEW;
         if (isset($this->entitiesManaged[$oid]) === true) {
             $state = self::STATE_MANAGED;
@@ -149,8 +149,8 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function flushManaged($oid)
     {
-        $metadataRepository = $this->serviceLocator->get('MetadataRepository');
-        $connectionPool = $this->serviceLocator->get('ConnectionPool');
+        $metadataRepository = $this->services->get('MetadataRepository');
+        $connectionPool     = $this->services->get('ConnectionPool');
 
         if (isset($this->entitiesChanged[$oid]) === false) {
             return;
@@ -191,8 +191,8 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function flushNew($oid)
     {
-        $metadataRepository = $this->serviceLocator->get('MetadataRepository');
-        $connectionPool = $this->serviceLocator->get('ConnectionPool');
+        $metadataRepository = $this->services->get('MetadataRepository');
+        $connectionPool     = $this->services->get('ConnectionPool');
 
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
@@ -219,9 +219,9 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function flushDelete($oid)
     {
-        $metadataRepository = $this->serviceLocator->get('MetadataRepository');
-        $connectionPool = $this->serviceLocator->get('ConnectionPool');
-        
+        $metadataRepository = $this->services->get('MetadataRepository');
+        $connectionPool     = $this->services->get('ConnectionPool');
+
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
             $entity,

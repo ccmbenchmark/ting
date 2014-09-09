@@ -9,12 +9,12 @@ use fastorm\Entity\Repository;
 class MetadataRepository
 {
 
-    protected $metadataList   = array();
-    protected $serviceLocator = null;
+    protected $metadataList = array();
+    protected $services     = null;
 
-    public function __construct(ContainerInterface $serviceLocator)
+    public function __construct(ContainerInterface $services)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->services = $services;
     }
 
     public function findMetadataForTable($table, callable $callbackFound, callable $callbackNotFound)
@@ -64,7 +64,7 @@ class MetadataRepository
         $loaded = 0;
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata($this->serviceLocator));
+            $this->addMetadata($repository, $repository::initMetadata($this->services));
             $loaded++;
         }
 

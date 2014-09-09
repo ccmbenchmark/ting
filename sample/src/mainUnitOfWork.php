@@ -7,8 +7,8 @@ require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$serviceLocator = new \fastorm\ServiceLocator();
-$repositoriesNumber = $serviceLocator->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
+$services = new \fastorm\Services();
+$repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
 echo 'Load Repositories: ' . $repositoriesNumber . "\n";
@@ -24,14 +24,14 @@ $connections = [
     ],
 ];
 
-$serviceLocator = new \fastorm\ServiceLocator();
-$repositoriesNumber = $serviceLocator->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
+$services = new \fastorm\Services();
+$repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
-$serviceLocator->get('ConnectionPool')->setConfig($connections);
-$unitOfWork = $serviceLocator->get('UnitOfWork');
+$services->get('ConnectionPool')->setConfig($connections);
+$unitOfWork = $services->get('UnitOfWork');
 
 try {
-    $cityRepository = new \sample\src\model\CityRepository($serviceLocator);
+    $cityRepository = new \sample\src\model\CityRepository($services);
     $city = $cityRepository->get(3);
     var_dump($city);
 

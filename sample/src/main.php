@@ -10,8 +10,8 @@ require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$serviceLocator = new \fastorm\ServiceLocator();
-$repositoriesNumber = $serviceLocator->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
+$services = new \fastorm\Services();
+$repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
 echo 'Load Repositories: ' . $repositoriesNumber . "\n";
@@ -27,11 +27,11 @@ $connections = [
     ]
 ];
 
-$serviceLocator->get('ConnectionPool')->setConfig($connections);
+$services->get('ConnectionPool')->setConfig($connections);
 
 echo 'City1'."\n";
 try {
-    $cityRepository = new \sample\src\model\CityRepository($serviceLocator);
+    $cityRepository = new \sample\src\model\CityRepository($services);
 
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
@@ -41,7 +41,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
-    ))->hydrator(new \fastorm\Entity\Hydrator($serviceLocator));
+    ))->hydrator(new \fastorm\Entity\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -53,7 +53,7 @@ try {
 
 echo 'City2'."\n";
 try {
-    $cityRepository = new \sample\src\model\CityRepository($serviceLocator);
+    $cityRepository = new \sample\src\model\CityRepository($services);
 
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
@@ -63,7 +63,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
-    ))->hydrator(new \fastorm\Entity\Hydrator($serviceLocator));
+    ))->hydrator(new \fastorm\Entity\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -74,7 +74,7 @@ try {
 }
 
 try {
-    $cityRepository = new \sample\src\model\CityRepository($serviceLocator);
+    $cityRepository = new \sample\src\model\CityRepository($services);
     $collection = $cityRepository->getZCountryWithLotsPopulation();
 
     foreach ($collection as $result) {
@@ -86,12 +86,12 @@ try {
 }
 
 try {
-    $cityRepository = new \sample\src\model\CityRepository($serviceLocator);
+    $cityRepository = new \sample\src\model\CityRepository($services);
     $nb = $cityRepository->getNumberOfCities();
     var_dump(['initial' => $nb->rewind()->current()]);
     $cityRepository->startTransaction();
         $cityRepository->executePrepared(
-            $serviceLocator->getWithArguments(
+            $services->getWithArguments(
                 'PreparedQuery',
                 ['sql' =>
                     "INSERT INTO t_city_cit

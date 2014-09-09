@@ -7,9 +7,9 @@ use fastorm\Entity\MetadataRepository;
 
 class CountryRepository extends \fastorm\Entity\Repository
 {
-    public static function initMetadata(\fastorm\ContainerInterface $serviceLocator)
+    public static function initMetadata(\fastorm\ContainerInterface $services)
     {
-        $metadata = $serviceLocator->get('Metadata');
+        $metadata = $services->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');

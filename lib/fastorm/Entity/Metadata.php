@@ -12,7 +12,7 @@ use fastorm\Query\Query;
 class Metadata
 {
 
-    protected $serviceLocator = null;
+    protected $services       = null;
     protected $connectionName = null;
     protected $databaseName   = null;
     protected $class          = null;
@@ -20,9 +20,9 @@ class Metadata
     protected $fields         = array();
     protected $primary        = array();
 
-    public function __construct(ContainerInterface $serviceLocator)
+    public function __construct(ContainerInterface $services)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->services = $services;
     }
 
     public function setConnection($connectionName)
@@ -135,7 +135,7 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback($this->serviceLocator->getWithArguments(
+        $callback($this->services->getWithArguments(
             'Query',
             ['sql' => $sql, 'params' => ['primary' => $primaryValue]]
         ));
@@ -166,7 +166,7 @@ class Metadata
                 }
             );
 
-        $callback($this->serviceLocator->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
+        $callback($this->services->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 
     public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
@@ -207,7 +207,7 @@ class Metadata
                 }
             );
 
-        $callback($this->serviceLocator->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
+        $callback($this->services->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 
     public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
@@ -229,6 +229,6 @@ class Metadata
                 }
             );
 
-        $callback($this->serviceLocator->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
+        $callback($this->services->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 }

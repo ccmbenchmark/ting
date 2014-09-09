@@ -27,7 +27,7 @@ class Collection extends atoum
 
     public function testHydrateWithHydratorShouldCallHydratorHydrate()
     {
-        $mockHydrator = new \mock\fastorm\Entity\Hydrator(new \fastorm\ServiceLocator());
+        $mockHydrator = new \mock\fastorm\Entity\Hydrator(new \fastorm\Services());
         $data = array(
             array(
                 'name'     => 'name',

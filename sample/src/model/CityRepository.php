@@ -13,7 +13,7 @@ class CityRepository extends \fastorm\Entity\Repository
     public function getZCountryWithLotsPopulation()
     {
 
-        $query = $this->serviceLocator
+        $query = $this->services
             ->getWithArguments(
                 'PreparedQuery',
                 [
@@ -22,13 +22,13 @@ class CityRepository extends \fastorm\Entity\Repository
                     'params' => ['name' => 'Z%', 'population' => 200000]
                 ]);
 
-        return $this->executePrepared($query)->hydrator(new Hydrator($this->serviceLocator));
+        return $this->executePrepared($query)->hydrator(new Hydrator($this->services));
     }
 
     public function getNumberOfCities()
     {
 
-        $query = $this->serviceLocator
+        $query = $this->services
             ->getWithArguments(
                 'PreparedQuery',
                 [
@@ -39,9 +39,9 @@ class CityRepository extends \fastorm\Entity\Repository
         return $this->executePrepared($query);
     }
 
-    public static function initMetadata(\fastorm\ContainerInterface $serviceLocator)
+    public static function initMetadata(\fastorm\ContainerInterface $services)
     {
-        $metadata = $serviceLocator->get('Metadata');
+        $metadata = $services->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');

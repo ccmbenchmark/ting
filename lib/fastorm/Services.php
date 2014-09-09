@@ -2,7 +2,7 @@
 
 namespace fastorm;
 
-class ServiceLocator implements ContainerInterface
+class Services implements ContainerInterface
 {
 
     protected $container = null;

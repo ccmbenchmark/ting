@@ -4,34 +4,34 @@ namespace tests\units\fastorm;
 
 use \mageekguy\atoum;
 
-class ServiceLocator extends atoum
+class Services extends atoum
 {
     public function testConstructShouldInitAllDependencies()
     {
         $this
-            ->if($serviceLocator = new \fastorm\ServiceLocator())
-            ->object($serviceLocator->get('ConnectionPool'))
+            ->if($services = new \fastorm\Services())
+            ->object($services->get('ConnectionPool'))
                 ->isInstanceOf('\fastorm\ConnectionPoolInterface')
-            ->object($serviceLocator->get('MetadataRepository'))
+            ->object($services->get('MetadataRepository'))
                 ->isInstanceOf('\fastorm\Entity\MetadataRepository')
-            ->object($serviceLocator->get('UnitOfWork'))
+            ->object($services->get('UnitOfWork'))
                 ->isInstanceOf('\fastorm\UnitOfWork')
-            ->object($serviceLocator->get('Metadata'))
+            ->object($services->get('Metadata'))
                 ->isInstanceOf('\fastorm\Entity\Metadata')
-            ->object($serviceLocator->get('Collection'))
+            ->object($services->get('Collection'))
                 ->isInstanceOf('\fastorm\Entity\Collection')
-            ->object($serviceLocator->getWithArguments('Query', ['sql' => '']))
+            ->object($services->getWithArguments('Query', ['sql' => '']))
                 ->isInstanceOf('\fastorm\Query\QueryAbstract')
-            ->object($serviceLocator->getWithArguments('PreparedQuery', ['sql' => '']))
+            ->object($services->getWithArguments('PreparedQuery', ['sql' => '']))
                 ->isInstanceOf('\fastorm\Query\QueryAbstract')
-            ->object($serviceLocator->get('Hydrator'))
+            ->object($services->get('Hydrator'))
                 ->isInstanceOf('\fastorm\Entity\Hydrator');
     }
 
     public function testShouldImplementsContainerInterface()
     {
         $this
-            ->object($serviceLocator = new \fastorm\ServiceLocator())
+            ->object($services = new \fastorm\Services())
             ->isInstanceOf('\fastorm\ContainerInterface');
     }
 
@@ -42,9 +42,9 @@ class ServiceLocator extends atoum
         };
 
         $this
-            ->if($serviceLocator = new \fastorm\ServiceLocator())
-            ->and($serviceLocator->set('Bouh', $callback))
-            ->string($bouh = $serviceLocator->get('Bouh'))
+            ->if($services = new \fastorm\Services())
+            ->and($services->set('Bouh', $callback))
+            ->string($bouh = $services->get('Bouh'))
                 ->IsIdenticalTo('Bouh Wow');
     }
 
@@ -55,10 +55,10 @@ class ServiceLocator extends atoum
         };
 
         $this
-            ->if($serviceLocator = new \fastorm\ServiceLocator())
-            ->and($serviceLocator->set('Bouh', $callback))
-            ->object($bouh = $serviceLocator->get('Bouh'))
-            ->object($bouh2 = $serviceLocator->get('Bouh'))
+            ->if($services = new \fastorm\Services())
+            ->and($services->set('Bouh', $callback))
+            ->object($bouh = $services->get('Bouh'))
+            ->object($bouh2 = $services->get('Bouh'))
                 ->IsIdenticalTo($bouh);
     }
 
@@ -69,10 +69,10 @@ class ServiceLocator extends atoum
         };
 
         $this
-            ->if($serviceLocator = new \fastorm\ServiceLocator())
-            ->and($serviceLocator->set('Bouh', $callback, true))
-            ->object($bouh = $serviceLocator->get('Bouh'))
-            ->object($bouh2 = $serviceLocator->get('Bouh'))
+            ->if($services = new \fastorm\Services())
+            ->and($services->set('Bouh', $callback, true))
+            ->object($bouh = $services->get('Bouh'))
+            ->object($bouh2 = $services->get('Bouh'))
                 ->IsNotIdenticalTo($bouh);
     }
 
@@ -83,9 +83,9 @@ class ServiceLocator extends atoum
         };
 
         $this
-            ->if($serviceLocator = new \fastorm\ServiceLocator())
-            ->and($serviceLocator->set('Bouh', $callback))
-            ->boolean($serviceLocator->has('Bouh'))
+            ->if($services = new \fastorm\Services())
+            ->and($services->set('Bouh', $callback))
+            ->boolean($services->has('Bouh'))
                 ->IsTrue();
     }
 }

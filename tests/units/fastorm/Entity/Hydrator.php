@@ -25,8 +25,8 @@ class Hydrator extends atoum
             )
         );
 
-        $serviceLocator = new \fastorm\ServiceLocator();
-        $metadata = new \fastorm\Entity\Metadata($serviceLocator);
+        $services = new \fastorm\Services();
+        $metadata = new \fastorm\Entity\Metadata($services);
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -42,10 +42,10 @@ class Hydrator extends atoum
             'type'       => 'string'
         ));
 
-        $serviceLocator->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator($serviceLocator))
+            ->if($hydrator = new \fastorm\Entity\Hydrator($services))
             ->then($data = $hydrator->hydrate($data))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
@@ -79,8 +79,8 @@ class Hydrator extends atoum
             )
         );
 
-        $serviceLocator = new \fastorm\ServiceLocator();
-        $metadata       = new \fastorm\Entity\Metadata($serviceLocator);
+        $services = new \fastorm\Services();
+        $metadata = new \fastorm\Entity\Metadata($services);
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -96,10 +96,10 @@ class Hydrator extends atoum
             'type'       => 'string'
         ));
 
-        $serviceLocator->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator($serviceLocator))
+            ->if($hydrator = new \fastorm\Entity\Hydrator($services))
             ->then($data = $hydrator->hydrate($data))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
@@ -129,7 +129,7 @@ class Hydrator extends atoum
         );
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator(new \fastorm\ServiceLocator()))
+            ->if($hydrator = new \fastorm\Entity\Hydrator(new \fastorm\Services()))
             ->then($data = $hydrator->hydrate($data))
             ->string($data['db__table']->name)
                 ->isIdenticalTo('Robez-Masson')
