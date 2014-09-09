@@ -12,24 +12,14 @@ class UnitOfWork implements PropertyListenerInterface
     const STATE_MANAGED = 2;
     const STATE_DELETE  = 3;
 
-    protected static $instance           = null;
+    protected $services                  = null;
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
-    protected $entities                  = array();
 
-    protected function __construct()
+    public function __construct(ContainerInterface $services)
     {
-
-    }
-
-    public static function getInstance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
+        $this->services = $services;
     }
 
     public function manage($entity)
@@ -63,7 +53,7 @@ class UnitOfWork implements PropertyListenerInterface
 
     public function persist($entity)
     {
-        $oid = spl_object_hash($entity);
+        $oid   = spl_object_hash($entity);
         $state = self::STATE_NEW;
         if (isset($this->entitiesManaged[$oid]) === true) {
             $state = self::STATE_MANAGED;
@@ -138,38 +128,30 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
-    public function flush(MetadataRepository $metadataRepository = null, ConnectionPoolInterface $connectionPool = null)
+    public function flush()
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
-
-        if ($connectionPool === null) {
-            $connectionPool = ConnectionPool::getInstance();
-        }
-
         foreach ($this->entitiesShouldBePersisted as $oid => $state) {
             switch ($state) {
                 case self::STATE_MANAGED:
-                    $this->flushManaged($oid, $metadataRepository, $connectionPool);
+                    $this->flushManaged($oid);
                     break;
 
                 case self::STATE_NEW:
-                    $this->flushNew($oid, $metadataRepository, $connectionPool);
+                    $this->flushNew($oid);
                     break;
 
                 case self::STATE_DELETE:
-                    $this->flushDelete($oid, $metadataRepository, $connectionPool);
+                    $this->flushDelete($oid);
                     break;
             }
         }
     }
 
-    protected function flushManaged(
-        $oid,
-        MetadataRepository $metadataRepository,
-        ConnectionPoolInterface $connectionPool
-    ) {
+    protected function flushManaged($oid)
+    {
+        $metadataRepository = $this->services->get('MetadataRepository');
+        $connectionPool     = $this->services->get('ConnectionPool');
+
         if (isset($this->entitiesChanged[$oid]) === false) {
             return;
         }
@@ -207,8 +189,11 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function flushNew($oid, MetadataRepository $metadataRepository, ConnectionPoolInterface $connectionPool)
+    protected function flushNew($oid)
     {
+        $metadataRepository = $this->services->get('MetadataRepository');
+        $connectionPool     = $this->services->get('ConnectionPool');
+
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
             $entity,
@@ -232,11 +217,11 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function flushDelete(
-        $oid,
-        MetadataRepository $metadataRepository,
-        ConnectionPoolInterface $connectionPool
-    ) {
+    protected function flushDelete($oid)
+    {
+        $metadataRepository = $this->services->get('MetadataRepository');
+        $connectionPool     = $this->services->get('ConnectionPool');
+
         $entity = $this->entities[$oid];
         $metadataRepository->findMetadataForEntity(
             $entity,

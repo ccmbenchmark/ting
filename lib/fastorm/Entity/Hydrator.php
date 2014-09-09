@@ -2,6 +2,7 @@
 
 namespace fastorm\Entity;
 
+use fastorm\ContainerInterface;
 use fastorm\NotifyPropertyInterface;
 use fastorm\PropertyListenerInterface;
 use fastorm\UnitOfWork;
@@ -11,21 +12,13 @@ use fastorm\Entity\MetadataRepository;
 class Hydrator
 {
 
-    protected $metadataRepository = array();
+    protected $metadataRepository = null;
+    protected $unitOfWork         = null;
 
-    public function __construct(MetadataRepository $metadataRepository = null, UnitofWork $unitOfWork = null)
+    public function __construct(ContainerInterface $services)
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
-
-        $this->metadataRepository = $metadataRepository;
-
-        if ($unitOfWork === null) {
-            $unitOfWork = UnitOfWork::getInstance();
-        }
-
-        $this->unitOfWork = $unitOfWork;
+        $this->metadataRepository = $services->get('MetadataRepository');
+        $this->unitOfWork         = $services->get('UnitOfWork');
     }
 
     public function hydrate($columns = array())

@@ -2,20 +2,15 @@
 
 namespace tests\fixtures\model;
 
+use fastorm\ContainerInterface;
 use fastorm\Entity\Metadata;
 use fastorm\Entity\MetadataRepository;
 
 class BouhRepository extends \fastorm\Entity\Repository
 {
-    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
+    public static function initMetadata(ContainerInterface $services)
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
-
-        if ($metadata === null) {
-            $metadata = new Metadata();
-        }
+        $metadata = $services->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
@@ -38,6 +33,6 @@ class BouhRepository extends \fastorm\Entity\Repository
            'columnName' => 'boo_name'
         ));
 
-        $metadata->addInto($metadataRepository);
+        return $metadata;
     }
 }

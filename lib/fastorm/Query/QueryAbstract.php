@@ -3,8 +3,9 @@
 
 namespace fastorm\Query;
 
-use fastorm\Driver\DriverInterface;
 use fastorm\Entity\Collection;
+use fastorm\Driver\DriverInterface;
+use fastorm\Query\QueryException;
 
 abstract class QueryAbstract
 {
@@ -12,8 +13,8 @@ abstract class QueryAbstract
     const TYPE_AFFECTED = 2;
     const TYPE_INSERT   = 3;
 
-    protected $sql = '';
-    protected $params = array();
+    protected $sql       = '';
+    protected $params    = array();
     protected $queryType = self::TYPE_RESULT;
 
     /**
@@ -21,11 +22,21 @@ abstract class QueryAbstract
      */
     protected $driver = null;
 
-    final public function __construct($sql, $params = array())
+    public function __construct($args)
     {
-        $this->sql = $sql;
-        $this->params = $params;
+        if (isset($args['sql']) === false) {
+            throw new QueryException('Constructor array parameters must have "sql" key');
+        }
+
+        $this->sql = $args['sql'];
+
+        if (isset($args['params']) === true) {
+            $this->params = $args['params'];
+        }
+
         $this->setQueryType();
+
+        return $this;
     }
 
     /**
@@ -56,9 +67,7 @@ abstract class QueryAbstract
      * @return mixed
      * @throws QueryException
      */
-    abstract public function execute(
-        Collection $collection = null
-    );
+    abstract public function execute(Collection $collection = null);
 
     final private function setQueryType()
     {

@@ -9,7 +9,7 @@ class Metadata extends atoum
     public function testSetClassShouldRaiseExceptionWhenStartWithSlash()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->exception(function () use ($metadata) {
                     $metadata->setClass('\my\namespace\Bouh');
             })
@@ -19,7 +19,7 @@ class Metadata extends atoum
     public function testAddFieldWithInvalidParametersShouldThrowException()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->exception(function () use ($metadata) {
                 $metadata->addField(array('fieldName' => 'bouh'));
             })
@@ -30,7 +30,7 @@ class Metadata extends atoum
     public function testSetterWithPrimaryKeyShouldThrowExceptionIfPrimaryAlreadySetted()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->addField(array(
                 'primary'    => true,
                 'fieldName'  => 'bouhField',
@@ -50,7 +50,7 @@ class Metadata extends atoum
     public function testIfTableKnownShouldCallCallbackAndReturnTrue()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown('Bouh', function ($metadata) use (&$outerMetadata) {
                 $outerMetadata = $metadata;
@@ -63,7 +63,7 @@ class Metadata extends atoum
     public function testIfTableKnownShouldReturnFalse()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown(
                 'Bim',
@@ -76,7 +76,7 @@ class Metadata extends atoum
     public function testHasColumnShouldReturnTrue()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'boo_bouh')))
             ->boolean($metadata->hasColumn('boo_bouh'))
@@ -86,7 +86,7 @@ class Metadata extends atoum
     public function testHasColumnShouldReturnFalse()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
             ->boolean($metadata->hasColumn('boo_no'))
@@ -96,7 +96,7 @@ class Metadata extends atoum
     public function testCreateEntityShouldReturnObject()
     {
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setClass('mock\repository\BouhRepository'))
             ->object($bouh = $metadata->createEntity())
                 ->isInstanceOf('\mock\repository\Bouh');
@@ -104,7 +104,7 @@ class Metadata extends atoum
 
     public function testSetEntityProperty()
     {
-        $metadata = new \fastorm\Entity\Metadata();
+        $metadata = new \fastorm\Entity\Metadata(new \fastorm\Services());
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'fieldName'  => 'name',
@@ -124,7 +124,7 @@ class Metadata extends atoum
 
     public function testSetEntityPrimary()
     {
-        $metadata = new \fastorm\Entity\Metadata();
+        $metadata = new \fastorm\Entity\Metadata(new \fastorm\Services());
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'primary'    => true,
@@ -143,27 +143,15 @@ class Metadata extends atoum
                 ->isIdenticalTo(321);
     }
 
-    public function testAddIntoShouldCallMetadataRepositoryAdd()
-    {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository();
-
-        $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
-            ->then($metadata->setClass('Bouh'))
-            ->then($metadata->addInto($mockMetadataRepository))
-            ->mock($mockMetadataRepository)
-                ->call('add')
-                    ->withIdenticalArguments('Bouh', $metadata)->once();
-    }
-
     public function testConnectShouldCallConnectionPoolConnect()
     {
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
         $callback = function ($bouh) {
         };
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setConnection('bouh_connection'))
             ->then($metadata->setDatabase('bouh_database'))
             ->then($metadata->connect($mockConnectionPool, $callback))
@@ -176,8 +164,13 @@ class Metadata extends atoum
     {
         $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
 
+        $query = new \fastorm\Query\Query([
+            'sql'    => 'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
+            'params' => ['primary' => 'BOuH']
+        ]);
+
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -192,12 +185,7 @@ class Metadata extends atoum
                 $outerQuery = $query;
             }))
             ->object($outerQuery)
-                ->isCloneOf(
-                    new \fastorm\Query\Query(
-                        'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
-                        array('primary' => 'BOuH')
-                    )
-                );
+                ->isCloneOf($query);
 
     }
 
@@ -210,8 +198,18 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
+        $query = new \fastorm\Query\PreparedQuery([
+            'sql' => 'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
+            . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
+            'params' => [
+                'boo_id'        => 123,
+                'boo_firstname' => 'Sylvain',
+                'boo_name'      => 'Robez-Masson'
+            ]
+        ]);
+
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -230,17 +228,7 @@ class Metadata extends atoum
                 $outerQuery = $query;
             }))
             ->object($outerQuery)
-                ->isCloneOf(
-                    new \fastorm\Query\PreparedQuery(
-                        'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
-                        . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
-                        array(
-                            'boo_id'        => 123,
-                            'boo_firstname' => 'Sylvain',
-                            'boo_name'      => 'Robez-Masson'
-                        )
-                    )
-                );
+                ->isCloneOf($query);
     }
 
     public function testGenerateQueryForUpdateShouldCallCallbackWithQueryObject()
@@ -252,10 +240,15 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
+        $query = new \fastorm\Query\PreparedQuery([
+            'sql'    => 'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
+            'params' => ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
+        ]);
+
         $properties = array('name');
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -279,15 +272,7 @@ class Metadata extends atoum
                 }
             ))
             ->object($outerQuery)
-                ->isCloneOf(
-                    new \fastorm\Query\PreparedQuery(
-                        'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
-                        array(
-                            'boo_id'        => 123,
-                            'boo_name'      => 'Robez-Masson'
-                        )
-                    )
-                );
+                ->isCloneOf($query);
     }
 
     public function testGenerateQueryForDeleteShouldCallCallbackWithQueryObject()
@@ -297,8 +282,13 @@ class Metadata extends atoum
         $entity = new \tests\fixtures\model\Bouh();
         $entity->setId(123);
 
+        $query = new \fastorm\Query\PreparedQuery([
+            'sql'    => 'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
+            'params' => ['boo_id' => 123]
+        ]);
+
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata())
+            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -309,13 +299,6 @@ class Metadata extends atoum
                 $outerQuery = $query;
             }))
             ->object($outerQuery)
-                ->isCloneOf(
-                    new \fastorm\Query\PreparedQuery(
-                        'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
-                        array(
-                            'boo_id'        => 123
-                        )
-                    )
-                );
+                ->isCloneOf($query);
     }
 }

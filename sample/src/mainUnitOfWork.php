@@ -7,31 +7,31 @@ require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$metadataRepository = \fastorm\Entity\MetadataRepository::getInstance();
-$repositoriesNumber = $metadataRepository->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
+$services = new \fastorm\Services();
+$repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
 echo 'Load Repositories: ' . $repositoriesNumber . "\n";
 echo str_repeat("-", 40) . "\n";
 
-$connections = array(
-    'main' => array(
+$connections = [
+    'main' => [
         'namespace' => '\fastorm\Driver\Mysqli',
         'host'      => 'localhost',
         'user'      => 'world_sample',
         'password'  => 'world_sample',
-        'port'      => 3306
-    ),
-);
+        'port'      => 3306,
+    ],
+];
 
-$poolConnection = \fastorm\ConnectionPool::getInstance(array(
-    'connections' => $connections
-));
+$services = new \fastorm\Services();
+$repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
-$unitOfWork = \fastorm\UnitOfWork::getInstance();
+$services->get('ConnectionPool')->setConfig($connections);
+$unitOfWork = $services->get('UnitOfWork');
 
 try {
-    $cityRepository = \sample\src\model\CityRepository::getInstance();
+    $cityRepository = new \sample\src\model\CityRepository($services);
     $city = $cityRepository->get(3);
     var_dump($city);
 

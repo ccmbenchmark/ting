@@ -3,6 +3,7 @@
 namespace fastorm\Entity;
 
 use fastorm\ConnectionPoolInterface;
+use fastorm\ContainerInterface;
 use fastorm\Driver\DriverInterface;
 use fastorm\Exception;
 use fastorm\Query\PreparedQuery;
@@ -11,12 +12,18 @@ use fastorm\Query\Query;
 class Metadata
 {
 
+    protected $services       = null;
     protected $connectionName = null;
     protected $databaseName   = null;
     protected $class          = null;
     protected $table          = null;
     protected $fields         = array();
     protected $primary        = array();
+
+    public function __construct(ContainerInterface $services)
+    {
+        $this->services = $services;
+    }
 
     public function setConnection($connectionName)
     {
@@ -107,11 +114,6 @@ class Metadata
         $entity->$property($value);
     }
 
-    public function addInto(MetadataRepository $metadataRepository)
-    {
-        $metadataRepository->add($this->class, $this);
-    }
-
     public function connect(ConnectionPoolInterface $connectionPool, callable $callback)
     {
         $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
@@ -133,7 +135,10 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback(new Query($sql, array('primary' => $primaryValue)));
+        $callback($this->services->getWithArguments(
+            'Query',
+            ['sql' => $sql, 'params' => ['primary' => $primaryValue]]
+        ));
     }
 
     public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
@@ -161,7 +166,7 @@ class Metadata
                 }
             );
 
-        $callback(new PreparedQuery($sql, $values));
+        $callback($this->services->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 
     public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
@@ -202,7 +207,7 @@ class Metadata
                 }
             );
 
-        $callback(new PreparedQuery($sql, $values));
+        $callback($this->services->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 
     public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
@@ -224,6 +229,6 @@ class Metadata
                 }
             );
 
-        $callback(new PreparedQuery($sql, $values));
+        $callback($this->services->getWithArguments('PreparedQuery', ['sql' => $sql, 'params' => $values]));
     }
 }

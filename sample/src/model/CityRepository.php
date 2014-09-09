@@ -13,35 +13,35 @@ class CityRepository extends \fastorm\Entity\Repository
     public function getZCountryWithLotsPopulation()
     {
 
-        $query = new PreparedQuery(
-            'select cit_id, cit_name, cou_code, cit_district, cit_population
-            from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
-            array('name' => 'Z%', 'population' => 200000)
-        );
+        $query = $this->services
+            ->getWithArguments(
+                'PreparedQuery',
+                [
+                    'sql'    => 'select cit_id, cit_name, cou_code, cit_district, cit_population
+                        from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
+                    'params' => ['name' => 'Z%', 'population' => 200000]
+                ]);
 
-        return $this->executePrepared($query)->hydrator(new Hydrator());
+        return $this->executePrepared($query)->hydrator(new Hydrator($this->services));
     }
 
     public function getNumberOfCities()
     {
 
-        $query = new PreparedQuery(
-            "select COUNT(*) AS nb from T_CITY_CIT as a WHERE cit_population > :population",
-            ['population' => 20000]
-        );
+        $query = $this->services
+            ->getWithArguments(
+                'PreparedQuery',
+                [
+                    'sql'    => 'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
+                    'params' => ['population' => 20000]
+                ]);
 
         return $this->executePrepared($query);
     }
 
-    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
+    public static function initMetadata(\fastorm\ContainerInterface $services)
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
-
-        if ($metadata === null) {
-            $metadata = new Metadata();
-        }
+        $metadata = $services->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
@@ -79,6 +79,6 @@ class CityRepository extends \fastorm\Entity\Repository
             'type'       => 'int'
         ));
 
-        $metadata->addInto($metadataRepository);
+        return $metadata;
     }
 }

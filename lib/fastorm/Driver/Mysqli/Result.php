@@ -12,7 +12,7 @@ class Result implements \fastorm\Driver\ResultInterface
 
     public function __construct($result)
     {
-        $this->result = new \IteratorIterator($result);
+        $this->result = $result;
         $this->fields = $this->result->fetch_fields();
     }
 

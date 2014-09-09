@@ -7,15 +7,9 @@ use fastorm\Entity\MetadataRepository;
 
 class CountryRepository extends \fastorm\Entity\Repository
 {
-    public static function initMetadata(MetadataRepository $metadataRepository = null, Metadata $metadata = null)
+    public static function initMetadata(\fastorm\ContainerInterface $services)
     {
-        if ($metadataRepository === null) {
-            $metadataRepository = MetadataRepository::getInstance();
-        }
-
-        if ($metadata === null) {
-            $metadata = new Metadata();
-        }
+        $metadata = $services->get('Metadata');
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
@@ -48,6 +42,6 @@ class CountryRepository extends \fastorm\Entity\Repository
             'columnName' => 'cou_head_of_state',
         ));
 
-        $metadata->addInto($metadataRepository);
+        return $metadata;
     }
 }

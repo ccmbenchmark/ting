@@ -45,7 +45,7 @@ class Driver implements DriverInterface
             $this->connection = $connection;
         }
 
-        if ($this->driver === null) {
+        if ($driver === null) {
             $this->driver = new \mysqli_driver();
         } else {
             $this->driver = $driver;
