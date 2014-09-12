@@ -45,7 +45,10 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator($services))
+            ->if($hydrator = new \fastorm\Entity\Hydrator(
+                $services->get('MetadataRepository'),
+                $services->get('UnitOfWork')
+            ))
             ->then($data = $hydrator->hydrate($data))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
@@ -99,7 +102,10 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator($services))
+            ->if($hydrator = new \fastorm\Entity\Hydrator(
+                $services->get('MetadataRepository'),
+                $services->get('UnitOfWork')
+            ))
             ->then($data = $hydrator->hydrate($data))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
@@ -111,6 +117,9 @@ class Hydrator extends atoum
 
     public function testHydrateShouldHydrateIntoDbTable()
     {
+
+        $services = new \fastorm\Services();
+
         $data = array(
             array(
                 'name'     => 'fname',
@@ -129,7 +138,10 @@ class Hydrator extends atoum
         );
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator(new \fastorm\Services()))
+            ->if($hydrator = new \fastorm\Entity\Hydrator(
+                $services->get('MetadataRepository'),
+                $services->get('UnitOfWork')
+            ))
             ->then($data = $hydrator->hydrate($data))
             ->string($data['db__table']->name)
                 ->isIdenticalTo('Robez-Masson')

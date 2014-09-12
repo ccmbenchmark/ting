@@ -15,10 +15,10 @@ class Hydrator
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
 
-    public function __construct(ContainerInterface $services)
+    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork)
     {
-        $this->metadataRepository = $services->get('MetadataRepository');
-        $this->unitOfWork         = $services->get('UnitOfWork');
+        $this->metadataRepository = $metadaRepository;
+        $this->unitOfWork         = $unitOfWork;
     }
 
     public function hydrate($columns = array())
