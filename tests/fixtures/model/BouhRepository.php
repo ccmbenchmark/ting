@@ -3,14 +3,14 @@
 namespace tests\fixtures\model;
 
 use fastorm\ContainerInterface;
-use fastorm\Entity\Metadata;
+use fastorm\Entity\MetadataFactoryInterface;
 use fastorm\Entity\MetadataRepository;
 
 class BouhRepository extends \fastorm\Entity\Repository
 {
-    public static function initMetadata(ContainerInterface $services)
+    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
     {
-        $metadata = $services->get('Metadata');
+        $metadata = $metadataFactory->get();
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');
