@@ -12,14 +12,16 @@ class UnitOfWork implements PropertyListenerInterface
     const STATE_MANAGED = 2;
     const STATE_DELETE  = 3;
 
-    protected $services                  = null;
+    protected $connectionPool            = null;
+    protected $metadataRepository        = null;
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
 
-    public function __construct(ContainerInterface $services)
+    public function __construct(ConnectionPool $connectionPool, MetadataRepository $metadataRepository)
     {
-        $this->services = $services;
+        $this->connectionPool     = $connectionPool;
+        $this->metadataRepository = $metadataRepository;
     }
 
     public function manage($entity)
@@ -149,9 +151,6 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function flushManaged($oid)
     {
-        $metadataRepository = $this->services->get('MetadataRepository');
-        $connectionPool     = $this->services->get('ConnectionPool');
-
         if (isset($this->entitiesChanged[$oid]) === false) {
             return;
         }
@@ -168,11 +167,11 @@ class UnitOfWork implements PropertyListenerInterface
             return;
         }
 
-        $metadataRepository->findMetadataForEntity(
+        $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($connectionPool, $entity, $properties) {
+            function ($metadata) use ($entity, $properties) {
                 $metadata->connect(
-                    $connectionPool,
+                    $this->connectionPool,
                     function (DriverInterface $driver) use ($entity, $metadata, $properties) {
                         $metadata->generateQueryForUpdate(
                             $driver,
@@ -191,15 +190,12 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function flushNew($oid)
     {
-        $metadataRepository = $this->services->get('MetadataRepository');
-        $connectionPool     = $this->services->get('ConnectionPool');
-
         $entity = $this->entities[$oid];
-        $metadataRepository->findMetadataForEntity(
+        $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($connectionPool, $entity) {
+            function ($metadata) use ($entity) {
                 $metadata->connect(
-                    $connectionPool,
+                    $this->connectionPool,
                     function (DriverInterface $driver) use ($entity, $metadata) {
                         $metadata->generateQueryForInsert(
                             $driver,
@@ -219,15 +215,12 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function flushDelete($oid)
     {
-        $metadataRepository = $this->services->get('MetadataRepository');
-        $connectionPool     = $this->services->get('ConnectionPool');
-
         $entity = $this->entities[$oid];
-        $metadataRepository->findMetadataForEntity(
+        $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($connectionPool, $entity) {
+            function ($metadata) use ($entity) {
                 $metadata->connect(
-                    $connectionPool,
+                    $this->connectionPool,
                     function (DriverInterface $driver) use ($entity, $metadata) {
                         $metadata->generateQueryForDelete(
                             $driver,

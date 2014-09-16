@@ -10,7 +10,7 @@ class UnitOfWork extends atoum
 
     public function beforeTestMethod($method)
     {
-        $this->services = new \fastorm\Services();
+        $this->services       = new \fastorm\Services();
         $connectionPool = new \fastorm\ConnectionPool();
         $connectionPool->setConfig(
             [
@@ -37,7 +37,10 @@ class UnitOfWork extends atoum
         };
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->manage($mockEntity))
             ->object($outerUnitOfWork)
                 ->IsIdenticalTo($unitOfWork)
@@ -50,7 +53,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->boolean($unitOfWork->isManaged($mockEntity))
                 ->isFalse();
     }
@@ -60,7 +66,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->persist($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
@@ -73,7 +82,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isFalse();
     }
@@ -83,7 +95,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->manage($mockEntity))
             ->then($unitOfWork->persist($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
@@ -97,7 +112,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->propertyChanged($mockEntity, 'firstname', 'Sylvain', 'Sylvain'))
             ->boolean($unitOfWork->isPropertyChanged($mockEntity, 'firstname'))
                 ->isFalse();
@@ -108,7 +126,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->propertyChanged($mockEntity, 'firstname', 'Sylvain', 'Sylvain 2'))
             ->boolean($unitOfWork->isPropertyChanged($mockEntity, 'firstname'))
                 ->isTrue();
@@ -119,7 +140,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->persist($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
@@ -133,7 +157,10 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->remove($mockEntity))
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isTrue();
@@ -144,26 +171,31 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isFalse();
     }
 
     public function testFlushShouldCallFlushManaged()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services);
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataFactory    = new \mock\fastorm\Entity\MetadataFactory($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
         });
 
+        $this->calling($mockMetadataFactory)->get = $mockMetadata;
+
         $this->services->set('Metadata', function ($container) use ($mockMetadata) {
             return $mockMetadata;
         });
 
-
-        \tests\fixtures\model\BouhRepository::initMetadata($this->services);
+        \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
         $this->calling($mockMetadataRepository)->findMetadataForEntity =
             function ($entity, $callback) use ($mockMetadata) {
@@ -186,7 +218,10 @@ class UnitOfWork extends atoum
         $entity3 = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->manage($entity1))
             ->then($unitOfWork->manage($entity2))
             ->then($unitOfWork->manage($entity3))
@@ -213,8 +248,8 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushManagedButDoNothing()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services);
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
@@ -224,7 +259,7 @@ class UnitOfWork extends atoum
             return $mockMetadata;
         });
 
-        \tests\fixtures\model\BouhRepository::initMetadata($this->services);
+        \tests\fixtures\model\BouhRepository::initMetadata($this->services->get('MetadataFactory'));
 
         $outerOid = array();
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -243,7 +278,10 @@ class UnitOfWork extends atoum
         $entity2->setName('Bouh');
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->detach($entity1))
             ->then($unitOfWork->detach($entity2))
             ->then($unitOfWork->detach($entity3))
@@ -266,18 +304,21 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushNew()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services);
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataFactory    = new \mock\fastorm\Entity\MetadataFactory($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
         });
 
+        $this->calling($mockMetadataFactory)->get = $mockMetadata;
+
         $this->services->set('Metadata', function ($container) use ($mockMetadata) {
             return $mockMetadata;
         });
 
-        \tests\fixtures\model\BouhRepository::initMetadata($this->services);
+        \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
         $mockQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockQuery)->execute = 3;
@@ -299,7 +340,10 @@ class UnitOfWork extends atoum
         $entity3 = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($entity1->setName('Bouh 1'))
             ->then($entity2->setName('Bouh 2'))
             ->then($entity3->setName('Bouh 3'))
@@ -331,18 +375,21 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushDelete()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services);
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services);
+        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataFactory    = new \mock\fastorm\Entity\MetadataFactory($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
         });
 
+        $this->calling($mockMetadataFactory)->get = $mockMetadata;
+
         $this->services->set('Metadata', function ($container) use ($mockMetadata) {
             return $mockMetadata;
         });
 
-        \tests\fixtures\model\BouhRepository::initMetadata($this->services);
+        \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
         $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockPreparedQuery)->execute = 3;
@@ -364,7 +411,10 @@ class UnitOfWork extends atoum
         $entity3 = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork($this->services))
+            ->if($unitOfWork = new \fastorm\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository')
+            ))
             ->then($unitOfWork->remove($entity1))
             ->then($unitOfWork->remove($entity2))
             ->then($unitOfWork->remove($entity3))

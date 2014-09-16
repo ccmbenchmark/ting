@@ -21,13 +21,21 @@ class Repository
      */
     protected $connectionPool;
 
-    public function __construct(ContainerInterface $services)
-    {
-        $this->services = $services;
-        $this->connectionPool = $this->services->get('ConnectionPool');
+    public function __construct(
+        ConnectionPool $connectionPool,
+        MetadataRepository $metadataRepository,
+        MetadataFactoryInterface $metadataFactory,
+        Collection $collection,
+        Hydrator $hydrator
+    ) {
+        $this->connectionPool     = $connectionPool;
+        $this->metadataRepository = $metadataRepository;
+        $this->collection         = $collection;
+        $this->hydrator           = $hydrator;
+
         $class  = get_class($this);
-        $this->metadata = $class::initMetadata($this->services);
-        $this->services->get('MetadataRepository')->addMetadata($class, $this->metadata);
+        $this->metadata = $class::initMetadata($metadataFactory);
+        $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
     public function get(
@@ -37,11 +45,11 @@ class Repository
     ) {
 
         if ($hydrator === null) {
-            $hydrator = $this->services->get('Hydrator');
+            $hydrator = $this->hydrator;
         }
 
         if ($collection === null) {
-            $collection = $this->services->get('Collection');
+            $collection = $this->collection;
         }
 
         $this->metadata->connect(
@@ -64,7 +72,7 @@ class Repository
     public function execute(Query $query, Collection $collection = null)
     {
         if ($collection === null) {
-            $collection = $this->services->get('Collection');
+            $collection = $this->collection;
         }
 
         $this->metadata->connect(
@@ -80,7 +88,7 @@ class Repository
     public function executePrepared(PreparedQuery $query, $collection = null)
     {
         if ($collection === null) {
-            $collection = $this->services->get('Collection');
+            $collection = $this->collection;
         }
 
         $this->metadata->connect(
@@ -93,14 +101,14 @@ class Repository
         return $collection;
     }
 
-    public static function initMetadata(ContainerInterface $services)
+    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
     {
         throw new Exception('You should add initMetadata in your class repository');
 
         /**
          * Example for your repository :
          *
-            $metadata = $services->get('Metadata');
+            $metadata = $metadataFactory->get();
 
             $metadata->setClass(get_called_class());
             $metadata->addField(array(

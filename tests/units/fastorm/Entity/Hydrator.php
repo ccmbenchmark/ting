@@ -26,7 +26,7 @@ class Hydrator extends atoum
         );
 
         $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services);
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -83,7 +83,7 @@ class Hydrator extends atoum
         );
 
         $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services);
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 

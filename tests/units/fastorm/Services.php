@@ -16,14 +16,12 @@ class Services extends atoum
                 ->isInstanceOf('\fastorm\Entity\MetadataRepository')
             ->object($services->get('UnitOfWork'))
                 ->isInstanceOf('\fastorm\UnitOfWork')
-            ->object($services->get('Metadata'))
-                ->isInstanceOf('\fastorm\Entity\Metadata')
+            ->object($services->get('MetadataFactory'))
+                ->isInstanceOf('\fastorm\Entity\MetadataFactoryInterface')
             ->object($services->get('Collection'))
                 ->isInstanceOf('\fastorm\Entity\Collection')
-            ->object($services->getWithArguments('Query', ['sql' => '']))
-                ->isInstanceOf('\fastorm\Query\QueryAbstract')
-            ->object($services->getWithArguments('PreparedQuery', ['sql' => '']))
-                ->isInstanceOf('\fastorm\Query\QueryAbstract')
+            ->object($services->get('QueryFactory'))
+                ->isInstanceOf('\fastorm\Query\QueryFactoryInterface')
             ->object($services->get('Hydrator'))
                 ->isInstanceOf('\fastorm\Entity\Hydrator');
     }
@@ -60,6 +58,22 @@ class Services extends atoum
             ->object($bouh = $services->get('Bouh'))
             ->object($bouh2 = $services->get('Bouh'))
                 ->IsIdenticalTo($bouh);
+    }
+
+    public function testGetWithArgumentsShouldConstructObjectWithArguments()
+    {
+        $callback = function ($bouh, $arguments) use (&$outerArguments) {
+            $outerArguments = $arguments;
+        };
+
+        $arguments = ['name' => 'Bouh'];
+
+        $this
+            ->if($services = new \fastorm\Services())
+            ->and($services->set('Bouh', $callback))
+            ->and($services->getWithArguments('Bouh', $arguments))
+            ->array($arguments)
+                ->IsIdenticalTo($outerArguments);
     }
 
     public function testGetShouldReturnNewInstance()

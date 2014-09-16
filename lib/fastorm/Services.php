@@ -20,22 +20,22 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'MetadataRepository',
             function ($container) {
-                return new Entity\MetadataRepository($this);
+                return new Entity\MetadataRepository($this->get('MetadataFactory'));
             }
         );
 
         $this->container->offsetSet(
             'UnitOfWork',
             function ($container) {
-                return new UnitOfWork($this);
+                return new UnitOfWork($this->get('ConnectionPool'), $this->get('MetadataRepository'));
             }
         );
 
         $this->container->offsetSet(
-            'Metadata',
-            $this->container->factory(function ($container) {
-                return new Entity\Metadata($this);
-            })
+            'MetadataFactory',
+            function ($container) {
+                return new Entity\MetadataFactory($this->get('QueryFactory'));
+            }
         );
 
         $this->container->offsetSet(
@@ -46,17 +46,10 @@ class Services implements ContainerInterface
         );
 
         $this->container->offsetSet(
-            'Query',
-            $this->container->factory(function ($container, $args) {
-                return new Query\Query($args);
-            })
-        );
-
-        $this->container->offsetSet(
-            'PreparedQuery',
-            $this->container->factory(function ($container, $args) {
-                return new Query\PreparedQuery($args);
-            })
+            'QueryFactory',
+            function ($container) {
+                return new Query\QueryFactory();
+            }
         );
 
         $this->container->offsetSet(

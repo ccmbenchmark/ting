@@ -8,8 +8,9 @@ class Metadata extends atoum
 {
     public function testSetClassShouldRaiseExceptionWhenStartWithSlash()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->exception(function () use ($metadata) {
                     $metadata->setClass('\my\namespace\Bouh');
             })
@@ -18,8 +19,9 @@ class Metadata extends atoum
 
     public function testAddFieldWithInvalidParametersShouldThrowException()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->exception(function () use ($metadata) {
                 $metadata->addField(array('fieldName' => 'bouh'));
             })
@@ -29,8 +31,9 @@ class Metadata extends atoum
 
     public function testSetterWithPrimaryKeyShouldThrowExceptionIfPrimaryAlreadySetted()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->addField(array(
                 'primary'    => true,
                 'fieldName'  => 'bouhField',
@@ -49,8 +52,9 @@ class Metadata extends atoum
 
     public function testIfTableKnownShouldCallCallbackAndReturnTrue()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown('Bouh', function ($metadata) use (&$outerMetadata) {
                 $outerMetadata = $metadata;
@@ -62,8 +66,9 @@ class Metadata extends atoum
 
     public function testIfTableKnownShouldReturnFalse()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown(
                 'Bim',
@@ -75,8 +80,9 @@ class Metadata extends atoum
 
     public function testHasColumnShouldReturnTrue()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'boo_bouh')))
             ->boolean($metadata->hasColumn('boo_bouh'))
@@ -85,8 +91,9 @@ class Metadata extends atoum
 
     public function testHasColumnShouldReturnFalse()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
             ->boolean($metadata->hasColumn('boo_no'))
@@ -95,8 +102,9 @@ class Metadata extends atoum
 
     public function testCreateEntityShouldReturnObject()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setClass('mock\repository\BouhRepository'))
             ->object($bouh = $metadata->createEntity())
                 ->isInstanceOf('\mock\repository\Bouh');
@@ -104,7 +112,8 @@ class Metadata extends atoum
 
     public function testSetEntityProperty()
     {
-        $metadata = new \fastorm\Entity\Metadata(new \fastorm\Services());
+        $services = new \fastorm\Services();
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'fieldName'  => 'name',
@@ -124,7 +133,8 @@ class Metadata extends atoum
 
     public function testSetEntityPrimary()
     {
-        $metadata = new \fastorm\Entity\Metadata(new \fastorm\Services());
+        $services = new \fastorm\Services();
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'primary'    => true,
@@ -145,13 +155,14 @@ class Metadata extends atoum
 
     public function testConnectShouldCallConnectionPoolConnect()
     {
+        $services           = new \fastorm\Services();
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
         $this->calling($mockConnectionPool)->connect = true;
         $callback = function ($bouh) {
         };
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setConnection('bouh_connection'))
             ->then($metadata->setDatabase('bouh_database'))
             ->then($metadata->connect($mockConnectionPool, $callback))
@@ -162,6 +173,7 @@ class Metadata extends atoum
 
     public function testGenerateQueryForPrimaryShouldCallCallbackWithQueryObject()
     {
+        $services   = new \fastorm\Services();
         $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
 
         $query = new \fastorm\Query\Query([
@@ -170,7 +182,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -191,6 +203,7 @@ class Metadata extends atoum
 
     public function testGenerateQueryForInsertShouldCallCallbackWithQueryObject()
     {
+        $services   = new \fastorm\Services();
         $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -209,7 +222,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -233,6 +246,7 @@ class Metadata extends atoum
 
     public function testGenerateQueryForUpdateShouldCallCallbackWithQueryObject()
     {
+        $services   = new \fastorm\Services();
         $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -248,7 +262,7 @@ class Metadata extends atoum
         $properties = array('name');
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -277,6 +291,7 @@ class Metadata extends atoum
 
     public function testGenerateQueryForDeleteShouldCallCallbackWithQueryObject()
     {
+        $services   = new \fastorm\Services();
         $mockDriver = new \mock\fastorm\Driver\Mysqli\Driver();
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -288,7 +303,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \fastorm\Entity\Metadata(new \fastorm\Services()))
+            ->if($metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
