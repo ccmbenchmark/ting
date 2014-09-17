@@ -2,19 +2,19 @@
 
 namespace fastorm\Entity;
 
-use fastorm\ContainerInterface;
 use fastorm\Entity\Metadata;
 use fastorm\Entity\Repository;
+use fastorm\Query\QueryFactoryInterface;
 
 class MetadataRepository
 {
 
-    protected $metadataList = array();
-    protected $services     = null;
+    protected $metadataList    = array();
+    protected $metadataFactory = null;
 
-    public function __construct(ContainerInterface $services)
+    public function __construct(MetadataFactoryInterface $metadataFactory)
     {
-        $this->services = $services;
+        $this->metadataFactory = $metadataFactory;
     }
 
     public function findMetadataForTable($table, callable $callbackFound, callable $callbackNotFound)
@@ -64,7 +64,7 @@ class MetadataRepository
         $loaded = 0;
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata($this->services));
+            $this->addMetadata($repository, $repository::initMetadata($this->metadataFactory));
             $loaded++;
         }
 

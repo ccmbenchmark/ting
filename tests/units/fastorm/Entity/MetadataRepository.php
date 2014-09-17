@@ -9,11 +9,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
         $services = new \fastorm\Services();
-
-        $metadata = new \fastorm\Entity\Metadata($services);
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services);
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -37,11 +36,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackNotFound()
     {
         $services = new \fastorm\Services();
-
-        $metadata = new \fastorm\Entity\Metadata($services);
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services);
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \mock\tests\fixtures\model\Bouh2();
@@ -65,11 +63,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
         $services = new \fastorm\Services();
-
-        $metadata = new \fastorm\Entity\Metadata($services);
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services);
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -91,11 +88,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
         $services = new \fastorm\Services();
-
-        $metadata = new \fastorm\Entity\Metadata($services);
+        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services);
+        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -116,8 +112,9 @@ class MetadataRepository extends atoum
 
     public function testBatchLoadMetadataShouldLoad1Repository()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository(new \fastorm\Services()))
+            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory')))
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../../fixtures/model/*Repository.php'
@@ -127,8 +124,9 @@ class MetadataRepository extends atoum
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturn0()
     {
+        $services = new \fastorm\Services();
         $this
-            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository(new \fastorm\Services()))
+            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory')))
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 '/not/valid/path/*Repository.php'

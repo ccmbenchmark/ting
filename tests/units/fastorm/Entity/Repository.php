@@ -6,16 +6,6 @@ use \mageekguy\atoum;
 
 class Repository extends atoum
 {
-
-    public function testInitMetadataShouldRaiseException()
-    {
-        $this
-            ->exception(function () {
-                new \fastorm\Entity\Repository(new \fastorm\Services());
-            })
-                ->hasMessage('You should add initMetadata in your class repository');
-    }
-
     public function testExecuteShouldExecuteQuery()
     {
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
@@ -25,11 +15,7 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $services = new \fastorm\Services();
-        $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
-
+        $services  = new \fastorm\Services();
         $mockQuery = new \mock\fastorm\Query\Query(['sql' => 'SELECT * FROM bouh']);
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
@@ -39,7 +25,13 @@ class Repository extends atoum
         $collection = new \fastorm\Entity\Collection();
 
         $this
-            ->if($repository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($repository->execute($mockQuery, $collection))
             ->object($outerCollection)
                 ->isIdenticalTo($collection);
@@ -51,10 +43,6 @@ class Repository extends atoum
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
 
-        $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
-
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
@@ -66,7 +54,13 @@ class Repository extends atoum
                 $outerCollection = $collection;
             };
         $this
-            ->if($repository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($repository->execute($mockQuery))
             ->object($outerCollection)
                 ->isInstanceOf('\fastorm\Entity\Collection');
@@ -77,10 +71,6 @@ class Repository extends atoum
         $services           = new \fastorm\Services();
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
-
-        $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
@@ -101,7 +91,13 @@ class Repository extends atoum
         $collection = new \fastorm\Entity\Collection();
 
         $this
-            ->if($repository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($repository->executePrepared($mockQuery, $collection))
             ->object($outerCollection)
                 ->isIdenticalTo($collection);
@@ -112,10 +108,6 @@ class Repository extends atoum
         $services           = new \fastorm\Services();
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
-
-        $services->set('ConnectionPool', function ($conatainer) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
@@ -133,7 +125,13 @@ class Repository extends atoum
                 $outerCollection = $collection;
             };
         $this
-            ->if($repository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($repository->executePrepared($mockQuery))
             ->object($outerCollection)
                 ->isInstanceOf('\fastorm\Entity\Collection');
@@ -141,15 +139,11 @@ class Repository extends atoum
 
     public function testGet()
     {
-        $services            = new \fastorm\Services();
-        $mockConnectionPool  = new \mock\fastorm\ConnectionPool();
-        $driverFake          = new \mock\Fake\Mysqli();
-        $mockDriver          = new \mock\fastorm\Driver\Mysqli\Driver($driverFake);
-        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
-
-        $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
+        $services           = new \fastorm\Services();
+        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $driverFake         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($driverFake);
+        $mockMysqliResult   = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
 
         $this->calling($driverFake)->query = $mockMysqliResult;
 
@@ -188,7 +182,13 @@ class Repository extends atoum
         $bouh->setfirstname('Sylvain');
 
         $this
-            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->and($testBouh = $bouhRepository->get(3))
             ->integer($testBouh->getId())
                 ->isIdenticalTo($bouh->getId())
@@ -213,7 +213,13 @@ class Repository extends atoum
             };
 
         $this
-            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($bouhRepository->startTransaction())
             ->boolean($mockDriver->isTransactionOpened())
                 ->isTrue();
@@ -226,17 +232,19 @@ class Repository extends atoum
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
 
-        $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
-
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
         $this
-            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->commit())
             ->boolean($mockDriver->isTransactionOpened())
@@ -251,17 +259,19 @@ class Repository extends atoum
         $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
         $mockConnectionPool = new \mock\fastorm\ConnectionPool();
 
-        $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
-            return $mockConnectionPool;
-        });
-
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
         $this
-            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository($services))
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('MetadataFactory'),
+                $services->get('Collection'),
+                $services->get('Hydrator')
+            ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->rollback())
             ->boolean($mockDriver->isTransactionOpened())
