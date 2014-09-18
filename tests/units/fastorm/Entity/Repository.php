@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Entity;
+namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use \mageekguy\atoum;
 
@@ -8,21 +8,21 @@ class Repository extends atoum
 {
     public function testExecuteShouldExecuteQuery()
     {
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
-        $services  = new \fastorm\Services();
-        $mockQuery = new \mock\fastorm\Query\Query(['sql' => 'SELECT * FROM bouh']);
+        $services  = new \CCMBenchmark\Ting\Services();
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * FROM bouh']);
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
             };
 
-        $collection = new \fastorm\Entity\Collection();
+        $collection = new \CCMBenchmark\Ting\Entity\Collection();
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -39,16 +39,16 @@ class Repository extends atoum
 
     public function testExecuteShouldReturnACollectionIfNoParam()
     {
-        $services           = new \fastorm\Services();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query\Query(['sql' => 'SELECT * FROM bouh']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * FROM bouh']);
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
@@ -63,21 +63,23 @@ class Repository extends atoum
             ))
             ->then($repository->execute($mockQuery))
             ->object($outerCollection)
-                ->isInstanceOf('\fastorm\Entity\Collection');
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Collection');
     }
 
     public function testExecutePreparedShouldPrepareAndExecuteQuery()
     {
-        $services           = new \fastorm\Services();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
+            ['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']
+        );
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
                 return $mockQuery;
@@ -88,7 +90,7 @@ class Repository extends atoum
                 $outerCollection = $collection;
             };
 
-        $collection = new \fastorm\Entity\Collection();
+        $collection = new \CCMBenchmark\Ting\Entity\Collection();
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -105,16 +107,18 @@ class Repository extends atoum
 
     public function testExecutePreparedShouldReturnACollectionIfNoParam()
     {
-        $services           = new \fastorm\Services();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver();
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
+            ['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']
+        );
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
                 return $mockQuery;
@@ -134,15 +138,15 @@ class Repository extends atoum
             ))
             ->then($repository->executePrepared($mockQuery))
             ->object($outerCollection)
-                ->isInstanceOf('\fastorm\Entity\Collection');
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Collection');
     }
 
     public function testGet()
     {
-        $services           = new \fastorm\Services();
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $driverFake         = new \mock\Fake\Mysqli();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($driverFake);
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake);
         $mockMysqliResult   = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
 
         $this->calling($driverFake)->query = $mockMysqliResult;
@@ -198,10 +202,10 @@ class Repository extends atoum
 
     public function testStartTransactionShouldOpenTransaction()
     {
-        $services           = new \fastorm\Services();
+        $services           = new \CCMBenchmark\Ting\Services();
         $fakeDriver         = new \mock\Fake\Mysqli();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $services->set('ConnectionPool', function ($container) use ($mockConnectionPool) {
             return $mockConnectionPool;
@@ -227,10 +231,10 @@ class Repository extends atoum
 
     public function testCommitShouldCloseTransaction()
     {
-        $services           = new \fastorm\Services();
+        $services           = new \CCMBenchmark\Ting\Services();
         $fakeDriver         = new \mock\Fake\Mysqli();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {
@@ -254,10 +258,10 @@ class Repository extends atoum
 
     public function testRollbackShouldCloseTransaction()
     {
-        $services           = new \fastorm\Services();
+        $services           = new \CCMBenchmark\Ting\Services();
         $fakeDriver         = new \mock\Fake\Mysqli();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
-        $mockConnectionPool = new \mock\fastorm\ConnectionPool();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionName, $database, callable $callback) use ($mockDriver) {

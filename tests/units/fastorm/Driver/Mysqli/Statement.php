@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Driver\Mysqli;
+namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use \mageekguy\atoum;
 
@@ -9,7 +9,7 @@ class Statement extends atoum
     public function testExecuteShouldCallDriverStatementBindParams()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
         $params          = array(
             'firstname'   => 'Sylvain',
             'id'          => 3,
@@ -21,8 +21,8 @@ class Statement extends atoum
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->execute($driverStatement, $params, $paramsOrder, $collection))
             ->mock($driverStatement)
                 ->call('bind_param')
@@ -32,13 +32,13 @@ class Statement extends atoum
     public function testExecuteShouldCallDriverStatementExecute()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->execute($driverStatement, array(), array(), $collection))
             ->mock($driverStatement)
                 ->call('execute')
@@ -48,7 +48,7 @@ class Statement extends atoum
     public function testSetCollectionWithResult()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
         $result          = new \mock\tests\fixtures\FakeDriver\MysqliResult(array(
             array(
                 'prenom' => 'Sylvain',
@@ -87,14 +87,14 @@ class Statement extends atoum
         };
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->setCollectionWithResult($driverStatement, $collection))
             ->mock($collection)
                 ->call('set')
                     ->once()
             ->object($outerResult)
-                ->isCloneOf(new \fastorm\Driver\Mysqli\Result($result));
+                ->isCloneOf(new \CCMBenchmark\Ting\Driver\Mysqli\Result($result));
     }
 
     public function testSetCollectionWithResultWithQueryTypeInsertShouldReturnId()
@@ -103,9 +103,9 @@ class Statement extends atoum
         $driverStatement->insert_id = 123;
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_INSERT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_INSERT))
             ->integer($statement->setCollectionWithResult($driverStatement))
                 ->isIdenticalTo(123);
     }
@@ -116,7 +116,7 @@ class Statement extends atoum
         $driverStatement->affected_rows = 321;
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
             ->integer($statement->setCollectionWithResult($driverStatement))
                 ->isIdenticalTo(321);
     }
@@ -127,14 +127,14 @@ class Statement extends atoum
         $driverStatement->affected_rows = null;
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
             ->boolean($statement->setCollectionWithResult($driverStatement))
                 ->isFalse();
 
         $driverStatement->affected_rows = -1;
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
             ->boolean($statement->setCollectionWithResult($driverStatement))
                 ->isFalse();
     }
@@ -142,31 +142,31 @@ class Statement extends atoum
     public function testSetCollectionShouldRaiseQueryException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $driverStatement->errno = 123;
         $driverStatement->error = 'unknown error';
         $this->calling($driverStatement)->get_result = false;
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
             ->exception(function () use ($statement, $driverStatement, $collection) {
                 $statement->setCollectionWithResult($driverStatement, $collection);
             })
-                ->isInstanceOf('\fastorm\Driver\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
     }
 
     public function testCloseShouldCallDriverStatementClose()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_RESULT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
             ->then($statement->execute($driverStatement, array(), array(), $collection))
             ->then($statement->close())
             ->mock($driverStatement)
@@ -177,12 +177,12 @@ class Statement extends atoum
     public function testCloseBeforeExecuteShouldRaiseException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
             ->exception(function () use ($statement) {
                 $statement->close();
             })
@@ -192,7 +192,7 @@ class Statement extends atoum
     public function testSetQueryTypeWithInvalidTypeShouldRaisException()
     {
         $this
-            ->if($statement = new \fastorm\Driver\Mysqli\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
             ->exception(function () use ($statement) {
                 $statement->setQueryType(PHP_INT_MAX);
             })

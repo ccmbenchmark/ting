@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Query;
+namespace tests\units\CCMBenchmark\Ting\Query;
 
 use \mageekguy\atoum;
 
@@ -11,19 +11,19 @@ class Query extends atoum
     {
         $this
             ->exception(function () {
-                new \fastorm\Query\Query([]);
+                new \CCMBenchmark\Ting\Query\Query([]);
             })
-                ->isInstanceOf('\fastorm\Query\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException');
     }
 
     public function testExecuteShouldRaiseException()
     {
         $this
-            ->if($query = new \fastorm\Query\Query(['sql' => '']))
+            ->if($query = new \CCMBenchmark\Ting\Query\Query(['sql' => '']))
             ->exception(function () use ($query) {
                 $query->execute();
             })
-                ->isInstanceOf('\fastorm\Query\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException');
     }
 
     public function testExecuteShouldReturnCollection()
@@ -47,9 +47,9 @@ class Query extends atoum
         $this->calling($mockDriver)->query = $mockMysqliResult;
 
         $this
-            ->if($driver = new \mock\fastorm\Driver\Mysqli\Driver($mockDriver))
-            ->and($collection = new \fastorm\Entity\Collection())
-            ->and($query = new \fastorm\Query\Query(['sql' => 'SELECT * from Bouh']))
+            ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($collection = new \CCMBenchmark\Ting\Entity\Collection())
+            ->and($query = new \CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * from Bouh']))
             ->and($query->setDriver($driver))
             ->and($query->execute($collection))
             ->and($collection->rewind())

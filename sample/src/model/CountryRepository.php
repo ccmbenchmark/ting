@@ -2,12 +2,12 @@
 
 namespace sample\src\model;
 
-use fastorm\Entity\Metadata;
-use fastorm\Entity\MetadataRepository;
+use CCMBenchmark\Ting\Entity\Metadata;
+use CCMBenchmark\Ting\Entity\MetadataRepository;
 
-class CountryRepository extends \fastorm\Entity\Repository
+class CountryRepository extends \CCMBenchmark\Ting\Entity\Repository
 {
-    public static function initMetadata(\fastorm\ContainerInterface $services)
+    public static function initMetadata(\CCMBenchmark\Ting\ContainerInterface $services)
     {
         $metadata = $services->get('Metadata');
 

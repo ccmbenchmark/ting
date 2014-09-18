@@ -1,8 +1,8 @@
 <?php
 
-namespace tests\units\fastorm\Driver\Mysqli;
+namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
-use fastorm\Query\Query;
+use CCMBenchmark\Ting\Query\Query;
 use \mageekguy\atoum;
 
 class Driver extends atoum
@@ -11,7 +11,7 @@ class Driver extends atoum
     public function testForConnectionKeyShouldCallCallbackWithConnectionName()
     {
         $this
-            ->if(\fastorm\Driver\Mysqli\Driver::forConnectionKey(
+            ->if(\CCMBenchmark\Ting\Driver\Mysqli\Driver::forConnectionKey(
                 'BouhName',
                 'BouhDatabase',
                 function ($connectionKey) use (&$outerConnectionKey) {
@@ -25,8 +25,8 @@ class Driver extends atoum
     public function testShouldImplementDriverInterface()
     {
         $this
-            ->object(new \fastorm\Driver\Mysqli\Driver())
-            ->isInstanceOf('\fastorm\Driver\DriverInterface');
+            ->object(new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
+            ->isInstanceOf('\CCMBenchmark\Ting\Driver\DriverInterface');
     }
 
     public function testConnectShouldReturnSelf()
@@ -43,7 +43,7 @@ class Driver extends atoum
             };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->object($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
                 ->isIdenticalTo($driver);
     }
@@ -62,7 +62,7 @@ class Driver extends atoum
             };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->variable($mockDriver->hostname)
                 ->isIdenticalTo('hostname.test')
@@ -79,21 +79,21 @@ class Driver extends atoum
     public function testConnectWithWrongAuthOrPortShouldRaiseDriverException()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
             ->exception(function () use ($driver) {
                 $driver->connect('localhost', 'user.test', 'password.test', 1234);
             })
-                ->isInstanceOf('\fastorm\Driver\Exception');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception');
     }
 
     public function testConnectWithUnresolvableHostShouldRaiseDriverException()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
             ->exception(function () use ($driver) {
                 $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
-                ->isInstanceOf('\fastorm\Driver\Exception')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
                 ->error()
                     ->withType(E_WARNING)
                     ->exists();
@@ -109,7 +109,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('bouh'))
             ->variable($mockDriver->database)
@@ -126,7 +126,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('bouh'))
             ->then($driver->setDatabase('bouh'))
@@ -145,7 +145,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->object($driver->setDatabase('bouh'))
                 ->isIdenticalTo($driver);
@@ -162,12 +162,12 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->exception(function () use ($driver) {
                 $driver->setDatabase('bouh');
             })
-                ->isInstanceOf('\fastorm\Driver\Exception');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception');
     }
 
     public function testIfNotConnectedShouldCallCallback()
@@ -176,7 +176,7 @@ class Driver extends atoum
         $this->calling($mockDriver)->real_connect = false;
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
             ->exception(function () use ($driver) {
                 $driver->connect('hostname.test', 'user.test', 'password.test', 1234);
             })
@@ -198,7 +198,7 @@ class Driver extends atoum
         $this->calling($mockDriver)->real_connect = $mockDriver;
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->ifIsError(function () use (&$callable) {
                 $callable = true;
@@ -213,7 +213,7 @@ class Driver extends atoum
         $this->calling($mockDriver)->real_connect = $mockDriver;
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
                 'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
@@ -242,7 +242,7 @@ class Driver extends atoum
         $this->calling($mockDriver)->prepare = false;
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->exception(function () use ($driver) {
                 $driver->prepare(
@@ -261,7 +261,7 @@ class Driver extends atoum
                     }
                 );
             })
-                ->isInstanceOf('\fastorm\Driver\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
     }
 
     public function testExecuteShouldCallDriverQuery()
@@ -272,7 +272,7 @@ class Driver extends atoum
         $this->calling($driverFake)->query = $mockMysqliResult;
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->then($driver->execute('Empty query'))
             ->mock($driverFake)
                 ->call('query')
@@ -281,11 +281,11 @@ class Driver extends atoum
 
     public function testExecuteShouldRaiseExceptionIfValueNotDefined()
     {
-        $this->if($driver = new \fastorm\Driver\Mysqli\Driver())
+        $this->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
             ->exception(function () use ($driver) {
                 $driver->execute('SELECT * WHERE id = :id');
             })
-                ->isInstanceOf('\fastorm\Driver\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
     }
 
     public function testExecuteShouldBuildACorrectQuery()
@@ -295,7 +295,7 @@ class Driver extends atoum
 
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
                     return addcslashes($value, '"');
@@ -327,7 +327,7 @@ class Driver extends atoum
         $driverFake          = new \mock\Fake\Mysqli();
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and($driverFake->errno = 12)
             ->and($driverFake->error = 'You tried an incorrect query')
             ->exception(
@@ -335,7 +335,7 @@ class Driver extends atoum
                     $driver->setCollectionWithResult(false, Query::TYPE_RESULT);
                 }
             )
-                ->isInstanceOf('\fastorm\Driver\QueryException')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
         ;
     }
 
@@ -344,7 +344,7 @@ class Driver extends atoum
         $driverFake          = new \mock\Fake\Mysqli();
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and($driverFake->insert_id = 3)
             ->integer($driver->setCollectionWithResult(true, Query::TYPE_INSERT))
                 ->isEqualTo(3)
@@ -356,7 +356,7 @@ class Driver extends atoum
         $driverFake          = new \mock\Fake\Mysqli();
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and($driverFake->affected_rows = 12)
             ->integer($driver->setCollectionWithResult(true, Query::TYPE_AFFECTED))
                 ->isEqualTo(12)
@@ -368,7 +368,7 @@ class Driver extends atoum
         $driverFake          = new \mock\Fake\Mysqli();
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($driverFake))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and($driverFake->affected_rows = null)
             ->boolean($driver->setCollectionWithResult(true, Query::TYPE_AFFECTED))
                 ->isFalse()
@@ -384,7 +384,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"',
@@ -400,7 +400,7 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
 
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->object($driver->escapeFields(array('Bouh'), function ($escaped) use (&$outerEscaped) {
                 $outerEscaped = $escaped;
             }))
@@ -413,7 +413,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->boolean($driver->isTransactionOpened())
                 ->isFalse()
             ->then($driver->startTransaction())
@@ -425,12 +425,12 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->exception(function () use ($driver) {
                     $driver->startTransaction();
             })
-                ->isInstanceOf('\fastorm\Driver\Exception')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
         ;
     }
 
@@ -438,7 +438,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->then($driver->commit())
             ->boolean($driver->isTransactionOpened())
@@ -450,11 +450,11 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->exception(function () use ($driver) {
                     $driver->commit();
             })
-                ->isInstanceOf('\fastorm\Driver\Exception')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
         ;
     }
 
@@ -462,7 +462,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->then($driver->rollback())
             ->boolean($driver->isTransactionOpened())
@@ -474,11 +474,11 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
-            ->if($driver = new \fastorm\Driver\Mysqli\Driver($mockDriver))
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->exception(function () use ($driver) {
                     $driver->rollback();
             })
-                ->isInstanceOf('\fastorm\Driver\Exception')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
         ;
     }
 }

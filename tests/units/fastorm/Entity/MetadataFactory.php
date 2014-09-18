@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Entity;
+namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use \mageekguy\atoum;
 
@@ -8,21 +8,21 @@ class MetadataFactory extends atoum
 {
     public function testShouldImplementMetadataFactoryInterface()
     {
-        $services = new \fastorm\Services();
+        $services = new \CCMBenchmark\Ting\Services();
 
         $this
-            ->object(new \fastorm\Entity\MetadataFactory($services->get('QueryFactory')))
-            ->isInstanceOf('\fastorm\Entity\MetadataFactory');
+            ->object(new \CCMBenchmark\Ting\Entity\MetadataFactory($services->get('QueryFactory')))
+            ->isInstanceOf('\CCMBenchmark\Ting\Entity\MetadataFactory');
     }
 
     public function testGetReturnMetadataInstance()
     {
-        $services = new \fastorm\Services();
+        $services = new \CCMBenchmark\Ting\Services();
 
         $this
-            ->if($metadataFactory = new \fastorm\Entity\MetadataFactory($services->get('QueryFactory')))
+            ->if($metadataFactory = new \CCMBenchmark\Ting\Entity\MetadataFactory($services->get('QueryFactory')))
             ->and($metadata = $metadataFactory->get())
             ->object($metadata)
-                ->isInstanceOf('\fastorm\Entity\Metadata');
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Metadata');
     }
 }

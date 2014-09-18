@@ -1,5 +1,5 @@
 {
-    "name": "fastorm",
+    "name": "ccmbenchmark/ting",
     "type": "library",
     "license": "GPL-2.0",
     "require": {
@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4" : {
-            "fastorm\\": "lib/fastorm"
+            "CCMBenchmark\\Ting\\": "lib/CCMBenchmark/Ting"
         }
     }
 }

@@ -2,12 +2,12 @@
 
 namespace sample\src\model;
 
-use fastorm\Query\PreparedQuery;
-use fastorm\Entity\Hydrator;
-use fastorm\Entity\Metadata;
-use fastorm\Entity\MetadataRepository;
+use CCMBenchmark\Ting\Query\PreparedQuery;
+use CCMBenchmark\Ting\Entity\Hydrator;
+use CCMBenchmark\Ting\Entity\Metadata;
+use CCMBenchmark\Ting\Entity\MetadataRepository;
 
-class CityRepository extends \fastorm\Entity\Repository
+class CityRepository extends \CCMBenchmark\Ting\Entity\Repository
 {
 
     public function getZCountryWithLotsPopulation()
@@ -20,7 +20,8 @@ class CityRepository extends \fastorm\Entity\Repository
                     'sql'    => 'select cit_id, cit_name, cou_code, cit_district, cit_population
                         from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
                     'params' => ['name' => 'Z%', 'population' => 200000]
-                ]);
+                ]
+            );
 
         return $this->executePrepared($query)->hydrator(new Hydrator($this->services));
     }
@@ -34,12 +35,13 @@ class CityRepository extends \fastorm\Entity\Repository
                 [
                     'sql'    => 'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
                     'params' => ['population' => 20000]
-                ]);
+                ]
+            );
 
         return $this->executePrepared($query);
     }
 
-    public static function initMetadata(\fastorm\ContainerInterface $services)
+    public static function initMetadata(\CCMBenchmark\Ting\ContainerInterface $services)
     {
         $metadata = $services->get('Metadata');
 

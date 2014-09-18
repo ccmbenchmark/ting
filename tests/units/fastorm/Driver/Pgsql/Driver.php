@@ -1,9 +1,9 @@
 <?php
 
-namespace tests\units\fastorm\Driver\Pgsql;
+namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use fastorm\Entity\Collection;
-use fastorm\Query\Query;
+use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Query\Query;
 use \mageekguy\atoum;
 
 class Driver extends atoum
@@ -12,7 +12,7 @@ class Driver extends atoum
     public function testForConnectionKeyShouldCallCallbackWithConnectionNameAndDatabase()
     {
         $this
-            ->if(\fastorm\Driver\Pgsql\Driver::forConnectionKey(
+            ->if(\CCMBenchmark\Ting\Driver\Pgsql\Driver::forConnectionKey(
                 'BouhName',
                 'BouhDatabase',
                 function ($connectionKey) use (&$outerConnectionKey) {
@@ -26,14 +26,14 @@ class Driver extends atoum
     public function testShouldImplementDriverInterface()
     {
         $this
-            ->object(new \fastorm\Driver\Pgsql\Driver())
-            ->isInstanceOf('\fastorm\Driver\DriverInterface');
+            ->object(new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->isInstanceOf('\CCMBenchmark\Ting\Driver\DriverInterface');
     }
 
     public function testConnectShouldReturnSelf()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->object($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
                 ->isIdenticalTo($driver);
     }
@@ -46,7 +46,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
             ->string($outerDsn)
@@ -58,12 +58,12 @@ class Driver extends atoum
     public function testSetDatabaseWhenWrongAuthOrPortShouldRaiseDriverException()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->exception(function () use ($driver) {
                 $driver->setDatabase('bouh');
             })
-                ->isInstanceOf('\fastorm\Driver\Exception')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
                 ->error()
                     ->withType(E_WARNING)
                     ->exists();
@@ -78,7 +78,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('bouh'))
             ->then($driver->setDatabase('bouh'))
@@ -90,7 +90,7 @@ class Driver extends atoum
     {
         $this->function->pg_connect = true;
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->object($driver->setDatabase('bouh'))
                 ->isIdenticalTo($driver);
@@ -102,7 +102,7 @@ class Driver extends atoum
         $called = false;
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->ifIsNotConnected(function () use (&$called) {
                 $called = true;
             }))
@@ -117,7 +117,7 @@ class Driver extends atoum
         $called = false;
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
             ->then($driver->ifIsError(function () use (&$called) {
@@ -133,7 +133,7 @@ class Driver extends atoum
         $this->function->pg_prepare = true;
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
             ->then($driver->prepare(
@@ -159,7 +159,7 @@ class Driver extends atoum
         $this->function->pg_last_error = 'unknown error';
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
             ->exception(function () use ($driver) {
@@ -179,7 +179,7 @@ class Driver extends atoum
                     }
                 );
             })
-                ->isInstanceOf('\fastorm\Driver\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
     }
 
     public function testPrepareShouldNotTransformEscapedColon()
@@ -190,7 +190,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"',
@@ -206,7 +206,7 @@ class Driver extends atoum
         $this->function->pg_connect = true;
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->object($driver->escapeFields(array('Bouh'), function ($escaped) use (&$outerEscaped) {
                 $outerEscaped = $escaped;
             }))
@@ -222,7 +222,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->startTransaction())
             ->string($outerQuery)
                 ->isIdenticalTo('BEGIN');
@@ -235,7 +235,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->startTransaction())
             ->exception(function () use ($driver) {
                 $driver->startTransaction();
@@ -251,7 +251,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->startTransaction())
             ->then($driver->commit())
             ->string($outerQuery)
@@ -265,7 +265,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->exception(function () use ($driver) {
                 $driver->commit();
             })
@@ -280,7 +280,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->startTransaction())
             ->then($driver->rollback())
             ->string($outerQuery)
@@ -294,7 +294,7 @@ class Driver extends atoum
         };
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->exception(function () use ($driver) {
                 $driver->rollback();
             })
@@ -305,7 +305,7 @@ class Driver extends atoum
     public function testExecuteInsertShouldCallPgQueryAndReturnInsertId()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->and(
                 $this->function->pg_query_params =
                 function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
@@ -340,7 +340,7 @@ class Driver extends atoum
     public function testExecuteUpdateShouldCallPgQueryAndReturnAffectedRows()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->and(
                 $this->function->pg_query_params =
                 function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
@@ -367,7 +367,7 @@ class Driver extends atoum
     public function testSetCollectionShouldRaiseExceptionOnError()
     {
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->and(
                 $this->function->pg_query_params =
                 function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
@@ -386,7 +386,7 @@ class Driver extends atoum
                     );
                 }
             )
-                ->isInstanceOf('\fastorm\Driver\QueryException')
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
             ;
     }
 
@@ -394,7 +394,7 @@ class Driver extends atoum
     {
 
         $this
-            ->if($driver = new \fastorm\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->and(
                 $this->function->pg_query_params =
                 function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {

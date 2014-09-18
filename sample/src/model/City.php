@@ -2,8 +2,8 @@
 
 namespace sample\src\model;
 
-use fastorm\NotifyPropertyInterface;
-use fastorm\PropertyListenerInterface;
+use CCMBenchmark\Ting\NotifyPropertyInterface;
+use CCMBenchmark\Ting\PropertyListenerInterface;
 
 class City implements NotifyPropertyInterface
 {

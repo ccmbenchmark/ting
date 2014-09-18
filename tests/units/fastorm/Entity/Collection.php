@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Entity;
+namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use \mageekguy\atoum;
 
@@ -10,7 +10,7 @@ class Collection extends atoum
     public function testHydrateNullShouldReturnNull()
     {
         $this
-            ->if($collection = new \fastorm\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
             ->variable($collection->hydrate(null))
                 ->isNull();
     }
@@ -20,15 +20,15 @@ class Collection extends atoum
         $data = array('Bouh' => array());
 
         $this
-            ->if($collection = new \fastorm\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
             ->array($collection->hydrate($data))
                 ->isIdenticalTo($data);
     }
 
     public function testHydrateWithHydratorShouldCallHydratorHydrate()
     {
-        $services     = new \fastorm\Services();
-        $mockHydrator = new \mock\fastorm\Entity\Hydrator(
+        $services     = new \CCMBenchmark\Ting\Services();
+        $mockHydrator = new \mock\CCMBenchmark\Ting\Entity\Hydrator(
             $services->get('MetadataRepository'),
             $services->get('UnitOfWork')
         );
@@ -44,7 +44,7 @@ class Collection extends atoum
         );
 
         $this
-            ->if($collection = new \fastorm\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
             ->then($collection->hydrator($mockHydrator))
             ->then($collection->hydrate($data))
             ->mock($mockHydrator)
@@ -68,10 +68,10 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\fastorm\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
 
         $this
-            ->if($collection = new \fastorm\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
             ->then($collection->set($result))
             ->then($collection->rewind())
             ->mock($result)

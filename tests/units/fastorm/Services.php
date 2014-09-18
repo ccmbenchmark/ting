@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm;
+namespace tests\units\CCMBenchmark\Ting;
 
 use \mageekguy\atoum;
 
@@ -9,28 +9,28 @@ class Services extends atoum
     public function testConstructShouldInitAllDependencies()
     {
         $this
-            ->if($services = new \fastorm\Services())
+            ->if($services = new \CCMBenchmark\Ting\Services())
             ->object($services->get('ConnectionPool'))
-                ->isInstanceOf('\fastorm\ConnectionPoolInterface')
+                ->isInstanceOf('\CCMBenchmark\Ting\ConnectionPoolInterface')
             ->object($services->get('MetadataRepository'))
-                ->isInstanceOf('\fastorm\Entity\MetadataRepository')
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\MetadataRepository')
             ->object($services->get('UnitOfWork'))
-                ->isInstanceOf('\fastorm\UnitOfWork')
+                ->isInstanceOf('\CCMBenchmark\Ting\UnitOfWork')
             ->object($services->get('MetadataFactory'))
-                ->isInstanceOf('\fastorm\Entity\MetadataFactoryInterface')
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\MetadataFactoryInterface')
             ->object($services->get('Collection'))
-                ->isInstanceOf('\fastorm\Entity\Collection')
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Collection')
             ->object($services->get('QueryFactory'))
-                ->isInstanceOf('\fastorm\Query\QueryFactoryInterface')
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryFactoryInterface')
             ->object($services->get('Hydrator'))
-                ->isInstanceOf('\fastorm\Entity\Hydrator');
+                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Hydrator');
     }
 
     public function testShouldImplementsContainerInterface()
     {
         $this
-            ->object($services = new \fastorm\Services())
-            ->isInstanceOf('\fastorm\ContainerInterface');
+            ->object($services = new \CCMBenchmark\Ting\Services())
+            ->isInstanceOf('\CCMBenchmark\Ting\ContainerInterface');
     }
 
     public function testGetCallbackShouldBeSameCallbackUsedWithSet()
@@ -40,7 +40,7 @@ class Services extends atoum
         };
 
         $this
-            ->if($services = new \fastorm\Services())
+            ->if($services = new \CCMBenchmark\Ting\Services())
             ->and($services->set('Bouh', $callback))
             ->string($bouh = $services->get('Bouh'))
                 ->IsIdenticalTo('Bouh Wow');
@@ -53,7 +53,7 @@ class Services extends atoum
         };
 
         $this
-            ->if($services = new \fastorm\Services())
+            ->if($services = new \CCMBenchmark\Ting\Services())
             ->and($services->set('Bouh', $callback))
             ->object($bouh = $services->get('Bouh'))
             ->object($bouh2 = $services->get('Bouh'))
@@ -69,7 +69,7 @@ class Services extends atoum
         $arguments = ['name' => 'Bouh'];
 
         $this
-            ->if($services = new \fastorm\Services())
+            ->if($services = new \CCMBenchmark\Ting\Services())
             ->and($services->set('Bouh', $callback))
             ->and($services->getWithArguments('Bouh', $arguments))
             ->array($arguments)
@@ -83,7 +83,7 @@ class Services extends atoum
         };
 
         $this
-            ->if($services = new \fastorm\Services())
+            ->if($services = new \CCMBenchmark\Ting\Services())
             ->and($services->set('Bouh', $callback, true))
             ->object($bouh = $services->get('Bouh'))
             ->object($bouh2 = $services->get('Bouh'))
@@ -97,7 +97,7 @@ class Services extends atoum
         };
 
         $this
-            ->if($services = new \fastorm\Services())
+            ->if($services = new \CCMBenchmark\Ting\Services())
             ->and($services->set('Bouh', $callback))
             ->boolean($services->has('Bouh'))
                 ->IsTrue();

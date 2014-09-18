@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Entity;
+namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use \mageekguy\atoum;
 
@@ -25,8 +25,8 @@ class Hydrator extends atoum
             )
         );
 
-        $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -45,7 +45,7 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
@@ -82,8 +82,8 @@ class Hydrator extends atoum
             )
         );
 
-        $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -102,7 +102,7 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
@@ -118,7 +118,7 @@ class Hydrator extends atoum
     public function testHydrateShouldHydrateIntoDbTable()
     {
 
-        $services = new \fastorm\Services();
+        $services = new \CCMBenchmark\Ting\Services();
 
         $data = array(
             array(
@@ -138,7 +138,7 @@ class Hydrator extends atoum
         );
 
         $this
-            ->if($hydrator = new \fastorm\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))

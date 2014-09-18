@@ -2,11 +2,11 @@
 
 namespace tests\fixtures\model;
 
-use fastorm\ContainerInterface;
-use fastorm\Entity\MetadataFactoryInterface;
-use fastorm\Entity\MetadataRepository;
+use CCMBenchmark\Ting\ContainerInterface;
+use CCMBenchmark\Ting\Entity\MetadataFactoryInterface;
+use CCMBenchmark\Ting\Entity\MetadataRepository;
 
-class BouhRepository extends \fastorm\Entity\Repository
+class BouhRepository extends \CCMBenchmark\Ting\Entity\Repository
 {
     public static function initMetadata(MetadataFactoryInterface $metadataFactory)
     {
