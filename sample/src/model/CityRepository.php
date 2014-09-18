@@ -20,7 +20,8 @@ class CityRepository extends \CCMBenchmark\Ting\Entity\Repository
                     'sql'    => 'select cit_id, cit_name, cou_code, cit_district, cit_population
                         from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
                     'params' => ['name' => 'Z%', 'population' => 200000]
-                ]);
+                ]
+            );
 
         return $this->executePrepared($query)->hydrator(new Hydrator($this->services));
     }
@@ -34,7 +35,8 @@ class CityRepository extends \CCMBenchmark\Ting\Entity\Repository
                 [
                     'sql'    => 'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
                     'params' => ['population' => 20000]
-                ]);
+                ]
+            );
 
         return $this->executePrepared($query);
     }

@@ -77,7 +77,9 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
+            ['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']
+        );
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
                 return $mockQuery;
@@ -114,7 +116,9 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
+            ['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']
+        );
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
                 return $mockQuery;

@@ -11,7 +11,10 @@ require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../vendor/autoload.php';
 
 $services = new \CCMBenchmark\Ting\Services();
-$repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
+$repositoriesNumber =
+    $services
+        ->get('MetadataRepository')
+        ->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
 echo 'Load Repositories: ' . $repositoriesNumber . "\n";
@@ -97,7 +100,8 @@ try {
                     "INSERT INTO t_city_cit
                     (cit_name, cit_population) VALUES
                     (:name, :pop)",
-                'params' => ['name' => 'BOUH_TEST', 'pop' => 25000]])
+                'params' => ['name' => 'BOUH_TEST', 'pop' => 25000]]
+            )
         );
     $cityRepository->rollback();
     $nb = $cityRepository->getNumberOfCities();

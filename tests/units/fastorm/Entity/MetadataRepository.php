@@ -114,7 +114,11 @@ class MetadataRepository extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory')))
+            ->if(
+                $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository(
+                    $services->get('MetadataFactory')
+                )
+            )
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../../fixtures/model/*Repository.php'
@@ -126,7 +130,11 @@ class MetadataRepository extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory')))
+            ->if(
+                $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository(
+                    $services->get('MetadataFactory')
+                )
+            )
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 '/not/valid/path/*Repository.php'
