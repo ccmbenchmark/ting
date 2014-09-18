@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Driver\Pgsql;
+namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
 use \mageekguy\atoum;
 
@@ -14,10 +14,10 @@ class Statement extends atoum
         };
         $this->function->pg_field_table = 'Bouh';
 
-        $collection = new \mock\fastorm\Entity\Collection();
+        $collection = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->then($statement->setConnection('Awesome connection resource'))
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute('MyStatementName', array(), array(), $collection))
@@ -33,7 +33,7 @@ class Statement extends atoum
             return new \ArrayIterator();
         };
 
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
         $params          = array(
             'firstname'   => 'Sylvain',
             'id'          => 3,
@@ -44,7 +44,7 @@ class Statement extends atoum
 
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute('MyStatementName', $params, $paramsOrder, $collection))
             ->array($outerValues)
@@ -53,7 +53,7 @@ class Statement extends atoum
 
     public function testSetCollectionWithResult()
     {
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
         $result          = new \ArrayIterator(array(
             array(
                 'prenom' => 'Sylvain',
@@ -71,11 +71,11 @@ class Statement extends atoum
 
         $this->function->pg_field_table = 'Bouh';
 
-        $resultOk = new \fastorm\Driver\Pgsql\Result($result);
+        $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result($result);
         $resultOk->setQuery('SELECT prenom, nom FROM Bouh');
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->then($statement->setQuery('SELECT prenom, nom FROM Bouh'))
             ->then($statement->setCollectionWithResult($result, $collection))
             ->mock($collection)
@@ -100,8 +100,8 @@ class Statement extends atoum
         };
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
-            ->then($statement->setQueryType(\fastorm\Query\QueryAbstract::TYPE_INSERT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
+            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_INSERT))
             ->integer($statement->setCollectionWithResult(new \ArrayIterator()))
                 ->isIdenticalTo(123);
     }
@@ -111,27 +111,27 @@ class Statement extends atoum
         $this->function->pg_affected_rows = 321;
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->integer($statement->setCollectionWithResult(new \ArrayIterator()))
                 ->isIdenticalTo(321);
     }
 
     public function testSetCollectionShouldRaiseQueryException()
     {
-        $collection = new \mock\fastorm\Entity\Collection();
+        $collection = new \mock\CCMBenchmark\Ting\Entity\Collection();
         $this->function->pg_result_error = 'unknown error';
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->exception(function () use ($statement, $collection) {
                 $statement->setCollectionWithResult(false, $collection);
             })
-                ->isInstanceOf('\fastorm\Driver\QueryException');
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
     }
 
     public function testCloseShouldExecuteDeallocateQuery()
     {
-        $collection = new \mock\fastorm\Entity\Collection();
+        $collection = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $this->function->pg_execute = function ($connection, $statementName, $values) use (&$outerValues) {
             $outerValues = $values;
@@ -145,7 +145,7 @@ class Statement extends atoum
         $this->function->pg_field_table = 'Bouh';
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute('statementNameTest', array(), array(), $collection))
             ->then($statement->close())
@@ -156,12 +156,12 @@ class Statement extends atoum
     public function testCloseBeforeExecuteShouldRaiseException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\fastorm\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->exception(function () use ($statement) {
                 $statement->close();
             })
@@ -171,7 +171,7 @@ class Statement extends atoum
     public function testSetQueryTypeWithInvalidTypeShouldRaisException()
     {
         $this
-            ->if($statement = new \fastorm\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
             ->exception(function () use ($statement) {
                 $statement->setQueryType(PHP_INT_MAX);
             })

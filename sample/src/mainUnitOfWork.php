@@ -2,12 +2,12 @@
 
 namespace sample\src;
 
-// fastorm autoloader
+// ting autoloader
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$services = new \fastorm\Services();
+$services = new \CCMBenchmark\Ting\Services();
 $repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
@@ -16,7 +16,7 @@ echo str_repeat("-", 40) . "\n";
 
 $connections = [
     'main' => [
-        'namespace' => '\fastorm\Driver\Mysqli',
+        'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
         'host'      => 'localhost',
         'user'      => 'world_sample',
         'password'  => 'world_sample',
@@ -24,7 +24,7 @@ $connections = [
     ],
 ];
 
-$services = new \fastorm\Services();
+$services = new \CCMBenchmark\Ting\Services();
 $repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 $services->get('ConnectionPool')->setConfig($connections);

@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Query;
+namespace tests\units\CCMBenchmark\Ting\Query;
 
 use \mageekguy\atoum;
 
@@ -9,8 +9,8 @@ class PreparedQuery extends atoum
 
     public function testExecuteShouldCallDriverPrepare()
     {
-        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
-        $mockDriver    = new \mock\fastorm\Driver\Mysqli\Driver();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement();
+        $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
         $this->calling($mockStatement)->execute =
             function ($mockStatement, $params, $paramsOrder, $collection) use (&$outerParams) {
@@ -26,7 +26,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(
                 ['sql' => $sql, 'params' => ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]]
             ))
             ->then($query->setDriver($mockDriver)->prepare()->execute())
@@ -40,11 +40,11 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
             ->exception(function () use ($query) {
                     $query->execute();
             })
-            ->isInstanceOf('\fastorm\Query\QueryException')
+            ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
         ;
     }
 
@@ -52,7 +52,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
             ->object($query->setParams(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)))
                 ->isIdenticalTo($query)
         ;
@@ -61,9 +61,9 @@ class PreparedQuery extends atoum
     public function testSetDriverShouldReturnPreparedQuery()
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-        $mockDriver    = new \mock\fastorm\Driver\Mysqli\Driver();
+        $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
             ->object($query->setDriver($mockDriver))
             ->isIdenticalTo($query)
         ;
@@ -73,22 +73,22 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
             ->exception(function () use ($query) {
                 $query->prepare();
             })
-                ->isInstanceOf('\fastorm\Query\QueryException')
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
             ;
     }
 
     public function testPrepareShouldReturnSameObjectAtSecondCall()
     {
         $fakeDriver         = new \mock\Fake\Mysqli();
-        $mockDriver         = new \mock\fastorm\Driver\Mysqli\Driver($fakeDriver);
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
             ->then($query->setDriver($mockDriver))
             ->object($query->prepare())
                 ->isIdenticalTo($query->prepare())
@@ -99,18 +99,18 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
             ->exception(function () use ($query) {
                     $query->execute();
             })
-            ->isInstanceOf('\fastorm\Query\QueryException')
+            ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
         ;
     }
 
     public function testExecuteShouldPrepareQueryIfNot()
     {
-        $mockStatement = new \mock\fastorm\Driver\Mysqli\Statement();
-        $mockDriver    = new \mock\fastorm\Driver\Mysqli\Driver();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement();
+        $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
         $this->calling($mockStatement)->execute =
             function ($mockStatement, $params, $paramsOrder, $collection) use (&$outerParams) {
@@ -126,7 +126,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
-            ->if($query = new \fastorm\Query\PreparedQuery(
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(
                 ['sql' => $sql, 'params' => ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]]
             ))
             ->then($query->setDriver($mockDriver)->execute())

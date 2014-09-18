@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Entity;
+namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use \mageekguy\atoum;
 
@@ -8,11 +8,11 @@ class MetadataRepository extends atoum
 {
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
-        $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -35,11 +35,11 @@ class MetadataRepository extends atoum
 
     public function testFindMetadataForEntityShouldCallCallbackNotFound()
     {
-        $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \mock\tests\fixtures\model\Bouh2();
@@ -62,11 +62,11 @@ class MetadataRepository extends atoum
 
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
-        $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -87,11 +87,11 @@ class MetadataRepository extends atoum
 
     public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
-        $services = new \fastorm\Services();
-        $metadata = new \fastorm\Entity\Metadata($services->get('QueryFactory'));
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -112,9 +112,9 @@ class MetadataRepository extends atoum
 
     public function testBatchLoadMetadataShouldLoad1Repository()
     {
-        $services = new \fastorm\Services();
+        $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory')))
+            ->if($metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory')))
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../../fixtures/model/*Repository.php'
@@ -124,9 +124,9 @@ class MetadataRepository extends atoum
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturn0()
     {
-        $services = new \fastorm\Services();
+        $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadataRepository = new \fastorm\Entity\MetadataRepository($services->get('MetadataFactory')))
+            ->if($metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory')))
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 '/not/valid/path/*Repository.php'

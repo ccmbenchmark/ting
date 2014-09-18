@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Entity;
+namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use \mageekguy\atoum;
 
@@ -8,10 +8,10 @@ class RepositoryFactory extends atoum
 {
     public function testGet()
     {
-        $services = new \fastorm\Services();
+        $services = new \CCMBenchmark\Ting\Services();
 
         $this
-            ->if($repositoryFactory = new \fastorm\Entity\RepositoryFactory(
+            ->if($repositoryFactory = new \CCMBenchmark\Ting\Entity\RepositoryFactory(
                 $services->get('ConnectionPool'),
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),

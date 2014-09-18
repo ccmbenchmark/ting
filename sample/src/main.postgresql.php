@@ -2,12 +2,12 @@
 
 namespace sample\src;
 
-// fastorm autoloader
+// ting autoloader
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$services = new \fastorm\Services();
+$services = new \CCMBenchmark\Ting\Services();
 $repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
@@ -16,7 +16,7 @@ echo str_repeat("-", 40) . "\n";
 
 $connections = [
     'main' => [
-        'namespace' => '\fastorm\Driver\Pgsql',
+        'namespace' => '\CCMBenchmark\Ting\Driver\Pgsql',
         'host'      => 'localhost',
         'user'      => 'postgres',
         'password'  => 'p455w0rd',
@@ -41,7 +41,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3',
         'params' => ['code' => 'FRA']])
-    )->hydrator(new \fastorm\Entity\Hydrator($services));
+    )->hydrator(new \CCMBenchmark\Ting\Entity\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);

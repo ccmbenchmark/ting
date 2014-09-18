@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Driver\Mysqli;
+namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use \mageekguy\atoum;
 
@@ -10,13 +10,13 @@ class Result extends atoum
     public function testDataSeekShouldCallMysqliResultDataSeek()
     {
 
-        $mockMysqliResult = new \mock\fastorm\Driver\ResultInterface();
+        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
         $this->calling($mockMysqliResult)->data_seek = function ($index) {
             return true;
         };
 
         $this
-            ->if($result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
             ->then($result->dataSeek(789))
             ->mock($mockMysqliResult)
                 ->call('data_seek')
@@ -25,7 +25,7 @@ class Result extends atoum
 
     public function testFormat()
     {
-        $mockMysqliResult = new \mock\fastorm\Driver\ResultInterface();
+        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
         $this->calling($mockMysqliResult)->fetch_fields = function () {
             $fields = array();
             $stdClass = new \stdClass();
@@ -80,7 +80,7 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
             ->array(
                 $row = $result->format(
                     array(
@@ -141,10 +141,10 @@ class Result extends atoum
 
     public function testFormatShouldReturnNull()
     {
-        $mockMysqliResult = new \mock\fastorm\Driver\ResultInterface();
+        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
 
         $this
-            ->if($result = new \fastorm\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
             ->variable($result->format(null))
                 ->isNull();
     }
@@ -166,7 +166,7 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \mock\fastorm\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
             ->then($result->rewind())
             ->mock($result)
                 ->call('next')->once()

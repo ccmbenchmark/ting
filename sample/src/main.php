@@ -2,15 +2,15 @@
 
 namespace sample\src;
 
-// fastorm autoloader
-use fastorm\Exception;
+// ting autoloader
+use CCMBenchmark\Ting\Exception;
 use sample\src\model\City;
 
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$services = new \fastorm\Services();
+$services = new \CCMBenchmark\Ting\Services();
 $repositoriesNumber = $services->get('MetadataRepository')->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
@@ -19,7 +19,7 @@ echo str_repeat("-", 40) . "\n";
 
 $connections = [
     'main' => [
-        'namespace' => '\fastorm\Driver\Mysqli',
+        'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
         'host'      => 'localhost',
         'user'      => 'world_sample',
         'password'  => 'world_sample',
@@ -36,12 +36,12 @@ try {
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
-    $collection = $cityRepository->execute(new \fastorm\Query\Query(
+    $collection = $cityRepository->execute(new \CCMBenchmark\Ting\Query\Query(
         "select * from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
-    ))->hydrator(new \fastorm\Entity\Hydrator($services));
+    ))->hydrator(new \CCMBenchmark\Ting\Entity\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -58,12 +58,12 @@ try {
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
-    $collection = $cityRepository->executePrepared(new \fastorm\Query\PreparedQuery(
+    $collection = $cityRepository->executePrepared(new \CCMBenchmark\Ting\Query\PreparedQuery(
         "select * from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
-    ))->hydrator(new \fastorm\Entity\Hydrator($services));
+    ))->hydrator(new \CCMBenchmark\Ting\Entity\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);

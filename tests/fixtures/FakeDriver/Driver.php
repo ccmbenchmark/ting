@@ -2,10 +2,10 @@
 
 namespace tests\fixtures\FakeDriver;
 
-use fastorm\Driver\DriverInterface;
-use fastorm\Driver\StatementInterface;
-use fastorm\Entity\Collection;
-use fastorm\Query\QueryAbstract;
+use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Driver\StatementInterface;
+use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Query\QueryAbstract;
 
 class Driver implements DriverInterface
 {

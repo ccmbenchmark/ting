@@ -2,8 +2,8 @@
 
 namespace tests\fixtures\model;
 
-use fastorm\NotifyPropertyInterface;
-use fastorm\PropertyListenerInterface;
+use CCMBenchmark\Ting\NotifyPropertyInterface;
+use CCMBenchmark\Ting\PropertyListenerInterface;
 
 class Bouh implements NotifyPropertyInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm;
+namespace tests\units\CCMBenchmark\Ting;
 
 use \mageekguy\atoum;
 
@@ -10,8 +10,8 @@ class UnitOfWork extends atoum
 
     public function beforeTestMethod($method)
     {
-        $this->services       = new \fastorm\Services();
-        $connectionPool = new \fastorm\ConnectionPool();
+        $this->services       = new \CCMBenchmark\Ting\Services();
+        $connectionPool = new \CCMBenchmark\Ting\ConnectionPool();
         $connectionPool->setConfig(
             [
                 'main' => [
@@ -37,7 +37,7 @@ class UnitOfWork extends atoum
         };
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -53,7 +53,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -66,7 +66,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -82,7 +82,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -95,7 +95,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -112,7 +112,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -126,7 +126,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -140,7 +140,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -157,7 +157,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -171,7 +171,7 @@ class UnitOfWork extends atoum
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -181,9 +181,9 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushManaged()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
-        $mockMetadataFactory    = new \mock\fastorm\Entity\MetadataFactory($this->services->get('QueryFactory'));
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
@@ -204,7 +204,7 @@ class UnitOfWork extends atoum
 
 
         $outerOid = array();
-        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -218,7 +218,7 @@ class UnitOfWork extends atoum
         $entity3 = new \mock\tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -248,8 +248,8 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushManagedButDoNothing()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
@@ -278,7 +278,7 @@ class UnitOfWork extends atoum
         $entity2->setName('Bouh');
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -304,9 +304,9 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushNew()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
-        $mockMetadataFactory    = new \mock\fastorm\Entity\MetadataFactory($this->services->get('QueryFactory'));
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
@@ -320,7 +320,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
-        $mockQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -340,7 +340,7 @@ class UnitOfWork extends atoum
         $entity3 = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))
@@ -375,9 +375,9 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushDelete()
     {
-        $mockMetadataRepository = new \mock\fastorm\Entity\MetadataRepository($this->services->get('MetadataFactory'));
-        $mockMetadata           = new \mock\fastorm\Entity\Metadata($this->services->get('QueryFactory'));
-        $mockMetadataFactory    = new \mock\fastorm\Entity\MetadataFactory($this->services->get('QueryFactory'));
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository($this->services->get('MetadataFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
@@ -391,7 +391,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
-        $mockPreparedQuery = new \mock\fastorm\Query\PreparedQuery(['sql' => '']);
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $outerOid = array();
@@ -411,7 +411,7 @@ class UnitOfWork extends atoum
         $entity3 = new \tests\fixtures\model\Bouh();
 
         $this
-            ->if($unitOfWork = new \fastorm\UnitOfWork(
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
                 $this->services->get('ConnectionPool'),
                 $this->services->get('MetadataRepository')
             ))

@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm;
+namespace tests\units\CCMBenchmark\Ting;
 
 use \mageekguy\atoum;
 
@@ -9,7 +9,7 @@ class ConnectionPool extends atoum
     public function testConnectionShouldRaiseExceptionWhenConnectionNotFound()
     {
         $this
-            ->if($connectionPool = new \fastorm\ConnectionPool())
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
             ->and($connectionPool->setConfig(['connections' => []]))
             ->exception(function () use ($connectionPool) {
                 $connectionPool->connect(
@@ -25,7 +25,7 @@ class ConnectionPool extends atoum
     public function testConnectionShouldCallSetDatabase()
     {
         $this
-            ->if($connectionPool = new \fastorm\ConnectionPool())
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
             ->and($connectionPool->setConfig(
                 [
                     'bouh' => [
@@ -51,7 +51,7 @@ class ConnectionPool extends atoum
     public function testConnectionShouldCallCallbackWithConnection()
     {
         $this
-            ->if($connectionPool = new \fastorm\ConnectionPool())
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
             ->and($connectionPool->setConfig(
                 [
                     'bouh' => [

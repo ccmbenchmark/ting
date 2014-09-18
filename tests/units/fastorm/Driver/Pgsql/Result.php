@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\units\fastorm\Driver\Pgsql;
+namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
 use \mageekguy\atoum;
 
@@ -9,7 +9,7 @@ class Result extends atoum
     public function testSetQueryShouldRaiseExceptionOnColumnAsterisk()
     {
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->exception(function () use ($result) {
                 $result->setQuery('select t.* from table as t');
             })
@@ -19,7 +19,7 @@ class Result extends atoum
     public function testSetQueryShouldRaiseExceptionParseColumns()
     {
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->exception(function () use ($result) {
                 $result->setQuery('selectcolumn from table');
             })
@@ -34,7 +34,7 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->dataSeek(789))
             ->integer($outerIndex)
                 ->isIdenticalTo(789);
@@ -50,7 +50,7 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->setQuery('SELECT firstname as prenom, bouh.name as nom FROM T_BOUH_BOO as bouh'))
             ->then($row = $result->format(array('firstname' => 'Sylvain', 'name' => 'Robez-Masson')))
             ->string($row[0]['name'])
@@ -85,7 +85,7 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->setQuery('SELECT firstname, T_BOUH_BOO.name FROM T_BOUH_BOO'))
             ->then($row = $result->format(array('firstname' => 'Sylvain', 'name' => 'Robez-Masson')))
             ->string($row[0]['name'])
@@ -113,7 +113,7 @@ class Result extends atoum
     public function testFormatShouldReturnNull()
     {
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->variable($result->format(false))
                 ->isNull();
     }
@@ -124,7 +124,7 @@ class Result extends atoum
         $this->function->pg_fetch_array = array();
 
         $this
-            ->if($result = new \mock\fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->rewind())
             ->mock($result)
                 ->call('next')->once()
@@ -148,7 +148,7 @@ class Result extends atoum
         $this->function->pg_fetch_array = false;
 
         $this
-            ->if($result = new \fastorm\Driver\Pgsql\Result('result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->rewind())
             ->then($result->next())
             ->boolean($result->valid())
