@@ -24,6 +24,8 @@
 
 namespace CCMBenchmark\Ting;
 
+use Pimple\Container;
+
 class Services implements ContainerInterface
 {
 
@@ -31,7 +33,7 @@ class Services implements ContainerInterface
 
     public function __construct()
     {
-        $this->container = new \Pimple\Container();
+        $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
             function ($container) {

@@ -45,7 +45,7 @@ class MetadataRepository
         foreach ($this->metadataList as $metadata) {
             $found = $metadata->ifTableKnown(
                 $table,
-                function (\CCMBenchmark\Ting\Repository\Metadata $metadata) use ($callbackFound) {
+                function (Metadata $metadata) use ($callbackFound) {
                     $callbackFound($metadata);
                 }
             );
@@ -70,7 +70,7 @@ class MetadataRepository
         }
     }
 
-    public function addMetadata($repositoryClass, \CCMBenchmark\Ting\Repository\Metadata $metadata)
+    public function addMetadata($repositoryClass, Metadata $metadata)
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;
