@@ -22,9 +22,10 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Entity;
+namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPool;
+use CCMBenchmark\Ting\MetadataRepository;
 
 class RepositoryFactory
 {

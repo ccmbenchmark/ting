@@ -24,20 +24,7 @@
 
 namespace CCMBenchmark\Ting\Entity;
 
-use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-
-class MetadataFactory implements MetadataFactoryInterface
+interface PropertyListenerInterface
 {
-
-    protected $queryFactory = null;
-
-    public function __construct(QueryFactoryInterface $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
-    }
-
-    public function get()
-    {
-        return new Metadata($this->queryFactory);
-    }
+    public function propertyChanged($entity, $propertyName, $oldValue, $newValue);
 }

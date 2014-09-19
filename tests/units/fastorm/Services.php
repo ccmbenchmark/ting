@@ -35,17 +35,17 @@ class Services extends atoum
             ->object($services->get('ConnectionPool'))
                 ->isInstanceOf('\CCMBenchmark\Ting\ConnectionPoolInterface')
             ->object($services->get('MetadataRepository'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\MetadataRepository')
+                ->isInstanceOf('\CCMBenchmark\Ting\MetadataRepository')
             ->object($services->get('UnitOfWork'))
                 ->isInstanceOf('\CCMBenchmark\Ting\UnitOfWork')
             ->object($services->get('MetadataFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\MetadataFactoryInterface')
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\MetadataFactoryInterface')
             ->object($services->get('Collection'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Collection')
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Collection')
             ->object($services->get('QueryFactory'))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryFactoryInterface')
             ->object($services->get('Hydrator'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Hydrator');
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Hydrator');
     }
 
     public function testShouldImplementsContainerInterface()

@@ -22,12 +22,29 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+use \mageekguy\atoum;
 
-interface MetadataFactoryInterface
+class MetadataFactory extends atoum
 {
-    public function __construct(QueryFactoryInterface $queryFactory);
-    public function get();
+    public function testShouldImplementMetadataFactoryInterface()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->object(new \CCMBenchmark\Ting\Repository\MetadataFactory($services->get('QueryFactory')))
+            ->isInstanceOf('\CCMBenchmark\Ting\Repository\MetadataFactory');
+    }
+
+    public function testGetReturnMetadataInstance()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if($metadataFactory = new \CCMBenchmark\Ting\Repository\MetadataFactory($services->get('QueryFactory')))
+            ->and($metadata = $metadataFactory->get())
+            ->object($metadata)
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Metadata');
+    }
 }

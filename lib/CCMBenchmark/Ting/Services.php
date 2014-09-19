@@ -24,6 +24,8 @@
 
 namespace CCMBenchmark\Ting;
 
+use Pimple\Container;
+
 class Services implements ContainerInterface
 {
 
@@ -31,7 +33,7 @@ class Services implements ContainerInterface
 
     public function __construct()
     {
-        $this->container = new \Pimple\Container();
+        $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
             function ($container) {
@@ -42,7 +44,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'MetadataRepository',
             function ($container) {
-                return new Entity\MetadataRepository($this->get('MetadataFactory'));
+                return new MetadataRepository($this->get('MetadataFactory'));
             }
         );
 
@@ -56,14 +58,14 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'MetadataFactory',
             function ($container) {
-                return new Entity\MetadataFactory($this->get('QueryFactory'));
+                return new Repository\MetadataFactory($this->get('QueryFactory'));
             }
         );
 
         $this->container->offsetSet(
             'Collection',
             $this->container->factory(function ($container) {
-                return new Entity\Collection();
+                return new Repository\Collection();
             })
         );
 
@@ -77,7 +79,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Hydrator',
             function ($container) {
-                return new Entity\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
+                return new Repository\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
             }
         );
     }

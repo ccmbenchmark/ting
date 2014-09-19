@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\Query;
 use \mageekguy\atoum;
 

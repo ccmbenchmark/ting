@@ -70,7 +70,7 @@ class Query extends atoum
 
         $this
             ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->and($collection = new \CCMBenchmark\Ting\Entity\Collection())
+            ->and($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->and($query = new \CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * from Bouh']))
             ->and($query->setDriver($driver))
             ->and($query->execute($collection))

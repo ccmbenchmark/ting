@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting;
 
 use \mageekguy\atoum;
 
@@ -31,10 +31,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -58,10 +58,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \mock\tests\fixtures\model\Bouh2();
@@ -85,10 +85,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -110,10 +110,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -137,13 +137,13 @@ class MetadataRepository extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if(
-                $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository(
+                $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
                     $services->get('MetadataFactory')
                 )
             )
             ->variable($return = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
-                __DIR__ . '/../../../fixtures/model/*Repository.php'
+                __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
                 ->isIdenticalTo(1);
     }
@@ -153,7 +153,7 @@ class MetadataRepository extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if(
-                $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository(
+                $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
                     $services->get('MetadataFactory')
                 )
             )

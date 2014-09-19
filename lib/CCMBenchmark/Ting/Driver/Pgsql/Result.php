@@ -25,8 +25,9 @@
 namespace CCMBenchmark\Ting\Driver\Pgsql;
 
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Driver\ResultInterface;
 
-class Result implements \CCMBenchmark\Ting\Driver\ResultInterface
+class Result implements ResultInterface
 {
 
     protected $result          = null;

@@ -25,7 +25,8 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Entity\MetadataRepository;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 
 class UnitOfWork implements PropertyListenerInterface

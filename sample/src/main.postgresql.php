@@ -68,7 +68,7 @@ try {
             where co.cou_code = :code limit 3',
             'params' => ['code' => 'FRA']]
         )
-    )->hydrator(new \CCMBenchmark\Ting\Entity\Hydrator($services));
+    )->hydrator(new \CCMBenchmark\Ting\Repository\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);

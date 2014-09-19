@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use \mageekguy\atoum;
 
@@ -44,7 +44,7 @@ class Repository extends atoum
                 $outerCollection = $collection;
             };
 
-        $collection = new \CCMBenchmark\Ting\Entity\Collection();
+        $collection = new \CCMBenchmark\Ting\Repository\Collection();
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -85,7 +85,7 @@ class Repository extends atoum
             ))
             ->then($repository->execute($mockQuery))
             ->object($outerCollection)
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Collection');
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Collection');
     }
 
     public function testExecutePreparedShouldPrepareAndExecuteQuery()
@@ -112,7 +112,7 @@ class Repository extends atoum
                 $outerCollection = $collection;
             };
 
-        $collection = new \CCMBenchmark\Ting\Entity\Collection();
+        $collection = new \CCMBenchmark\Ting\Repository\Collection();
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -160,7 +160,7 @@ class Repository extends atoum
             ))
             ->then($repository->executePrepared($mockQuery))
             ->object($outerCollection)
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Collection');
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Collection');
     }
 
     public function testGet()

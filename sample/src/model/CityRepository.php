@@ -25,11 +25,10 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Query\PreparedQuery;
-use CCMBenchmark\Ting\Entity\Hydrator;
-use CCMBenchmark\Ting\Entity\Metadata;
-use CCMBenchmark\Ting\Entity\MetadataRepository;
+use CCMBenchmark\Ting\Repository\Hydrator;
+use CCMBenchmark\Ting\Repository\Metadata;
 
-class CityRepository extends \CCMBenchmark\Ting\Entity\Repository
+class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
 
     public function getZCountryWithLotsPopulation()

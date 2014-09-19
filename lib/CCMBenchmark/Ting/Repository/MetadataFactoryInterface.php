@@ -22,9 +22,12 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting;
+namespace CCMBenchmark\Ting\Repository;
 
-interface NotifyPropertyInterface
+use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+
+interface MetadataFactoryInterface
 {
-    public function addPropertyListener(PropertyListenerInterface $listener);
+    public function __construct(QueryFactoryInterface $queryFactory);
+    public function get();
 }

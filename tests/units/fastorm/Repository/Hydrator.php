@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use \mageekguy\atoum;
 
@@ -48,7 +48,7 @@ class Hydrator extends atoum
         );
 
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -67,7 +67,7 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
@@ -105,7 +105,7 @@ class Hydrator extends atoum
         );
 
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -124,7 +124,7 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
@@ -160,7 +160,7 @@ class Hydrator extends atoum
         );
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))

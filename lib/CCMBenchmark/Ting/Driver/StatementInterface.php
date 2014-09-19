@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 
 interface StatementInterface
 {

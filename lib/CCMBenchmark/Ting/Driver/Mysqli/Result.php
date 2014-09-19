@@ -24,7 +24,9 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
-class Result implements \CCMBenchmark\Ting\Driver\ResultInterface
+use CCMBenchmark\Ting\Driver\ResultInterface;
+
+class Result implements ResultInterface
 {
 
     protected $result = null;
