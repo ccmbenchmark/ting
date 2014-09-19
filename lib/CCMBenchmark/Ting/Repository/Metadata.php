@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Entity;
+namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;

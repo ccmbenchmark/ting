@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use \mageekguy\atoum;
 
@@ -32,7 +32,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->exception(function () use ($metadata) {
                     $metadata->setClass('\my\namespace\Bouh');
             })
@@ -43,7 +43,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->exception(function () use ($metadata) {
                 $metadata->addField(array('fieldName' => 'bouh'));
             })
@@ -55,7 +55,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->addField(array(
                 'primary'    => true,
                 'fieldName'  => 'bouhField',
@@ -76,7 +76,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown('Bouh', function ($metadata) use (&$outerMetadata) {
                 $outerMetadata = $metadata;
@@ -90,7 +90,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown(
                 'Bim',
@@ -104,7 +104,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'boo_bouh')))
             ->boolean($metadata->hasColumn('boo_bouh'))
@@ -115,7 +115,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('Bouh'))
             ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh')))
             ->boolean($metadata->hasColumn('boo_no'))
@@ -126,7 +126,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setClass('mock\repository\BouhRepository'))
             ->object($bouh = $metadata->createEntity())
                 ->isInstanceOf('\mock\repository\Bouh');
@@ -135,7 +135,7 @@ class Metadata extends atoum
     public function testSetEntityProperty()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'fieldName'  => 'name',
@@ -156,7 +156,7 @@ class Metadata extends atoum
     public function testSetEntityPrimary()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
             'primary'    => true,
@@ -184,7 +184,7 @@ class Metadata extends atoum
         };
 
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setConnection('bouh_connection'))
             ->then($metadata->setDatabase('bouh_database'))
             ->then($metadata->connect($mockConnectionPool, $callback))
@@ -204,7 +204,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -244,7 +244,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -284,7 +284,7 @@ class Metadata extends atoum
         $properties = array('name');
 
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,
@@ -325,7 +325,7 @@ class Metadata extends atoum
         ]);
 
         $this
-            ->if($metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory')))
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setTable('T_BOUH_BO'))
             ->then($metadata->addField(array(
                 'primary'    => true,

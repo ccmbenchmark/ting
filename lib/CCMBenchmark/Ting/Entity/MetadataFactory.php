@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Entity;
 
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class MetadataFactory implements MetadataFactoryInterface
 {

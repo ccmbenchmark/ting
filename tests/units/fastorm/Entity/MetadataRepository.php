@@ -31,7 +31,7 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
         $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
@@ -58,7 +58,7 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('tests\fixtures\model\BouhRepository');
 
         $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
@@ -85,7 +85,7 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
         $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));
@@ -110,7 +110,7 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Entity\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
         $metadataRepository = new \CCMBenchmark\Ting\Entity\MetadataRepository($services->get('MetadataFactory'));

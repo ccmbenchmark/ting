@@ -45,6 +45,6 @@ class MetadataFactory extends atoum
             ->if($metadataFactory = new \CCMBenchmark\Ting\Entity\MetadataFactory($services->get('QueryFactory')))
             ->and($metadata = $metadataFactory->get())
             ->object($metadata)
-                ->isInstanceOf('\CCMBenchmark\Ting\Entity\Metadata');
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Metadata');
     }
 }

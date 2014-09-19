@@ -206,7 +206,7 @@ class UnitOfWork extends atoum
         $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
-        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata(
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata(
             $this->services->get('QueryFactory')
         );
         $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory(
@@ -279,7 +279,7 @@ class UnitOfWork extends atoum
         $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
-        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
 
         $this->services->set('MetadataRepository', function ($container) use ($mockMetadataRepository) {
             return $mockMetadataRepository;
@@ -337,7 +337,7 @@ class UnitOfWork extends atoum
         $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
-        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
         $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory(
             $this->services->get('QueryFactory')
         );
@@ -412,7 +412,7 @@ class UnitOfWork extends atoum
         $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
-        $mockMetadata           = new \mock\CCMBenchmark\Ting\Entity\Metadata($this->services->get('QueryFactory'));
+        $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
         $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory(
             $this->services->get('QueryFactory')
         );

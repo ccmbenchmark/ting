@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Entity;
 
-use CCMBenchmark\Ting\Entity\Metadata;
+use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Entity\Repository;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 
@@ -45,7 +45,7 @@ class MetadataRepository
         foreach ($this->metadataList as $metadata) {
             $found = $metadata->ifTableKnown(
                 $table,
-                function (Metadata $metadata) use ($callbackFound) {
+                function (\CCMBenchmark\Ting\Repository\Metadata $metadata) use ($callbackFound) {
                     $callbackFound($metadata);
                 }
             );
@@ -70,7 +70,7 @@ class MetadataRepository
         }
     }
 
-    public function addMetadata($repositoryClass, Metadata $metadata)
+    public function addMetadata($repositoryClass, \CCMBenchmark\Ting\Repository\Metadata $metadata)
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;

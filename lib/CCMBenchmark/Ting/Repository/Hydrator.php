@@ -28,7 +28,7 @@ use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\NotifyPropertyInterface;
 use CCMBenchmark\Ting\PropertyListenerInterface;
 use CCMBenchmark\Ting\UnitOfWork;
-use CCMBenchmark\Ting\Entity\Metadata;
+use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Entity\MetadataRepository;
 
 class Hydrator
