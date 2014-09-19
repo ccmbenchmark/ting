@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
-use CCMBenchmark\Ting\Entity\Hydrator;
+use CCMBenchmark\Ting\Repository\Hydrator;
 
 class Collection implements \Iterator
 {

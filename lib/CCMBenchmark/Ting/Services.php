@@ -77,7 +77,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Hydrator',
             function ($container) {
-                return new Entity\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
+                return new Repository\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
             }
         );
     }

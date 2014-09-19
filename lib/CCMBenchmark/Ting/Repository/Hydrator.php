@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Entity;
+namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\NotifyPropertyInterface;

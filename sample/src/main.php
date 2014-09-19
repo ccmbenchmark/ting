@@ -66,7 +66,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
-    ))->hydrator(new \CCMBenchmark\Ting\Entity\Hydrator($services));
+    ))->hydrator(new \CCMBenchmark\Ting\Repository\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -88,7 +88,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         array('code' => 'FRA')
-    ))->hydrator(new \CCMBenchmark\Ting\Entity\Hydrator($services));
+    ))->hydrator(new \CCMBenchmark\Ting\Repository\Hydrator($services));
 
     foreach ($collection as $result) {
         var_dump($result);

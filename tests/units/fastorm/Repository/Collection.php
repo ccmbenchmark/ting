@@ -50,7 +50,7 @@ class Collection extends atoum
     public function testHydrateWithHydratorShouldCallHydratorHydrate()
     {
         $services     = new \CCMBenchmark\Ting\Services();
-        $mockHydrator = new \mock\CCMBenchmark\Ting\Entity\Hydrator(
+        $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator(
             $services->get('MetadataRepository'),
             $services->get('UnitOfWork')
         );

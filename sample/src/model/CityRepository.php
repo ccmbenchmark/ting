@@ -25,7 +25,7 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Query\PreparedQuery;
-use CCMBenchmark\Ting\Entity\Hydrator;
+use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Entity\Metadata;
 use CCMBenchmark\Ting\Entity\MetadataRepository;
 

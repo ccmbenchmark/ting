@@ -32,6 +32,7 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;
 use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\Hydrator;
 
 class Repository
 {

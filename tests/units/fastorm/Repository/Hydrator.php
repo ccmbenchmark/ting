@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use \mageekguy\atoum;
 
@@ -67,7 +67,7 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
@@ -124,7 +124,7 @@ class Hydrator extends atoum
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
@@ -160,7 +160,7 @@ class Hydrator extends atoum
         );
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Entity\Hydrator(
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
