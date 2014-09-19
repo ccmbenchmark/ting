@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Entity;
 
 use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Entity\Repository;
+use CCMBenchmark\Ting\Repository\Repository;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 

@@ -28,7 +28,7 @@ use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 use CCMBenchmark\Ting\Entity\MetadataRepository;
 
-class BouhRepository extends \CCMBenchmark\Ting\Entity\Repository
+class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
     public static function initMetadata(MetadataFactoryInterface $metadataFactory)
     {

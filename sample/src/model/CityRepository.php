@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Entity\MetadataRepository;
 
-class CityRepository extends \CCMBenchmark\Ting\Entity\Repository
+class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
 
     public function getZCountryWithLotsPopulation()

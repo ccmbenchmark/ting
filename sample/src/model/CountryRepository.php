@@ -27,7 +27,7 @@ namespace sample\src\model;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Entity\MetadataRepository;
 
-class CountryRepository extends \CCMBenchmark\Ting\Entity\Repository
+class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
     public static function initMetadata(\CCMBenchmark\Ting\ContainerInterface $services)
     {

@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use \mageekguy\atoum;
 
@@ -33,7 +33,7 @@ class RepositoryFactory extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $this
-            ->if($repositoryFactory = new \CCMBenchmark\Ting\Entity\RepositoryFactory(
+            ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
                 $services->get('ConnectionPool'),
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
