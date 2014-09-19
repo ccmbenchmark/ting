@@ -27,7 +27,6 @@ namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Query\QueryException;
 
 abstract class QueryAbstract
 {

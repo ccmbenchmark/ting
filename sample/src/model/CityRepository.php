@@ -27,7 +27,6 @@ namespace sample\src\model;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\MetadataRepository;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {

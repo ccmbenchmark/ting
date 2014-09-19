@@ -26,7 +26,6 @@ namespace sample\src;
 
 // ting autoloader
 use CCMBenchmark\Ting\Exception;
-use sample\src\model\City;
 
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader

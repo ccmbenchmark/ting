@@ -24,9 +24,7 @@
 
 namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
-use CCMBenchmark\Ting\MetadataRepository;
 
 class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
 {

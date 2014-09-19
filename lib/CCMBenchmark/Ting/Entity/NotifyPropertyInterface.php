@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Entity;
 
-use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 
 interface NotifyPropertyInterface
 {
