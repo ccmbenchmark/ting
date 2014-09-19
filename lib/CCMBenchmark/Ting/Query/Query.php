@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 
 class Query extends QueryAbstract
 {

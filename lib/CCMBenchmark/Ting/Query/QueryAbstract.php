@@ -25,7 +25,7 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Query\QueryException;
 
@@ -85,7 +85,7 @@ abstract class QueryAbstract
     }
 
     /**
-     * @param Collection $collection
+     * @param \CCMBenchmark\Ting\Repository\Collection $collection
      * @return mixed
      * @throws QueryException
      */

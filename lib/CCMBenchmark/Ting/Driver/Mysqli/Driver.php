@@ -28,7 +28,7 @@ use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\QueryAbstract;
 
 class Driver implements DriverInterface

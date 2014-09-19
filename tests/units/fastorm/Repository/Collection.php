@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Entity;
+namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use \mageekguy\atoum;
 
@@ -32,7 +32,7 @@ class Collection extends atoum
     public function testHydrateNullShouldReturnNull()
     {
         $this
-            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->variable($collection->hydrate(null))
                 ->isNull();
     }
@@ -42,7 +42,7 @@ class Collection extends atoum
         $data = array('Bouh' => array());
 
         $this
-            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->array($collection->hydrate($data))
                 ->isIdenticalTo($data);
     }
@@ -66,7 +66,7 @@ class Collection extends atoum
         );
 
         $this
-            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->then($collection->hydrator($mockHydrator))
             ->then($collection->hydrate($data))
             ->mock($mockHydrator)
@@ -93,7 +93,7 @@ class Collection extends atoum
         $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
 
         $this
-            ->if($collection = new \CCMBenchmark\Ting\Entity\Collection())
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->then($collection->set($result))
             ->then($collection->rewind())
             ->mock($result)

@@ -27,7 +27,7 @@ namespace CCMBenchmark\Ting\Driver\Pgsql;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\QueryAbstract;
 
 class Statement implements StatementInterface
@@ -86,7 +86,7 @@ class Statement implements StatementInterface
      * @param $statementName
      * @param $params
      * @param $paramsOrder
-     * @param Collection $collection
+     * @param \CCMBenchmark\Ting\Repository\Collection $collection
      * @return bool|int
      */
     public function execute($statementName, $params, $paramsOrder, Collection $collection = null)

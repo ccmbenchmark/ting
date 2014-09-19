@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Entity;
 
 use CCMBenchmark\Ting\ConnectionPool;
+use CCMBenchmark\Ting\Repository\Collection;
 
 class RepositoryFactory
 {

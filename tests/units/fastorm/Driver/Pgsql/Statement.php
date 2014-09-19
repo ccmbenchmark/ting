@@ -36,7 +36,7 @@ class Statement extends atoum
         };
         $this->function->pg_field_table = 'Bouh';
 
-        $collection = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
@@ -55,7 +55,7 @@ class Statement extends atoum
             return new \ArrayIterator();
         };
 
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params          = array(
             'firstname'   => 'Sylvain',
             'id'          => 3,
@@ -75,7 +75,7 @@ class Statement extends atoum
 
     public function testSetCollectionWithResult()
     {
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $result          = new \ArrayIterator(array(
             array(
                 'prenom' => 'Sylvain',
@@ -140,7 +140,7 @@ class Statement extends atoum
 
     public function testSetCollectionShouldRaiseQueryException()
     {
-        $collection = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->function->pg_result_error = 'unknown error';
 
         $this
@@ -153,7 +153,7 @@ class Statement extends atoum
 
     public function testCloseShouldExecuteDeallocateQuery()
     {
-        $collection = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->function->pg_execute = function ($connection, $statementName, $values) use (&$outerValues) {
             $outerValues = $values;
@@ -178,7 +178,7 @@ class Statement extends atoum
     public function testCloseBeforeExecuteShouldRaiseException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 

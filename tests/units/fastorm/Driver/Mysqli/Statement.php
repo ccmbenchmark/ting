@@ -31,7 +31,7 @@ class Statement extends atoum
     public function testExecuteShouldCallDriverStatementBindParams()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params          = array(
             'firstname'   => 'Sylvain',
             'id'          => 3,
@@ -54,7 +54,7 @@ class Statement extends atoum
     public function testExecuteShouldCallDriverStatementExecute()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
@@ -70,7 +70,7 @@ class Statement extends atoum
     public function testSetCollectionWithResult()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $result          = new \mock\tests\fixtures\FakeDriver\MysqliResult(array(
             array(
                 'prenom' => 'Sylvain',
@@ -164,7 +164,7 @@ class Statement extends atoum
     public function testSetCollectionShouldRaiseQueryException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $driverStatement->errno = 123;
         $driverStatement->error = 'unknown error';
@@ -182,7 +182,7 @@ class Statement extends atoum
     public function testCloseShouldCallDriverStatementClose()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
@@ -199,7 +199,7 @@ class Statement extends atoum
     public function testCloseBeforeExecuteShouldRaiseException()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Entity\Collection();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 

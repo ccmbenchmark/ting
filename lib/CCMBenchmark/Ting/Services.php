@@ -63,7 +63,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Collection',
             $this->container->factory(function ($container) {
-                return new Entity\Collection();
+                return new Repository\Collection();
             })
         );
 

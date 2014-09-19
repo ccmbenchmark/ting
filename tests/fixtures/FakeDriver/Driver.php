@@ -26,7 +26,7 @@ namespace tests\fixtures\FakeDriver;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\QueryAbstract;
 
 class Driver implements DriverInterface

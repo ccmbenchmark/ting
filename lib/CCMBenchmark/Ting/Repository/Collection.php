@@ -22,9 +22,10 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Entity;
+namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
+use CCMBenchmark\Ting\Entity\Hydrator;
 
 class Collection implements \Iterator
 {

@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Entity\Collection;
+use CCMBenchmark\Ting\Repository\Collection;
 
 class PreparedQuery extends QueryAbstract
 {
@@ -71,7 +71,7 @@ class PreparedQuery extends QueryAbstract
     }
 
     /**
-     * @param Collection $collection
+     * @param \CCMBenchmark\Ting\Repository\Collection $collection
      * @return mixed
      * @throws QueryException
      */
