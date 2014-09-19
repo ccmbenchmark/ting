@@ -209,7 +209,7 @@ class UnitOfWork extends atoum
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata(
             $this->services->get('QueryFactory')
         );
-        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory(
+        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Repository\MetadataFactory(
             $this->services->get('QueryFactory')
         );
 
@@ -338,7 +338,7 @@ class UnitOfWork extends atoum
             $this->services->get('MetadataFactory')
         );
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
-        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory(
+        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Repository\MetadataFactory(
             $this->services->get('QueryFactory')
         );
 
@@ -413,7 +413,7 @@ class UnitOfWork extends atoum
             $this->services->get('MetadataFactory')
         );
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
-        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Entity\MetadataFactory(
+        $mockMetadataFactory    = new \mock\CCMBenchmark\Ting\Repository\MetadataFactory(
             $this->services->get('QueryFactory')
         );
 

@@ -33,6 +33,7 @@ use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Hydrator;
+use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 
 class Repository
 {
