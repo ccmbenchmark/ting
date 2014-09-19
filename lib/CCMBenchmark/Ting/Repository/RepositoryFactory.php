@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPool;
-use CCMBenchmark\Ting\Entity\MetadataRepository;
+use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;

@@ -25,11 +25,11 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ContainerInterface;
-use CCMBenchmark\Ting\NotifyPropertyInterface;
-use CCMBenchmark\Ting\PropertyListenerInterface;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Entity\MetadataRepository;
+use CCMBenchmark\Ting\MetadataRepository;
 
 class Hydrator
 {

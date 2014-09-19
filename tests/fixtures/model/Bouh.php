@@ -24,8 +24,8 @@
 
 namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\NotifyPropertyInterface;
-use CCMBenchmark\Ting\PropertyListenerInterface;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 
 class Bouh implements NotifyPropertyInterface
 {

@@ -22,9 +22,11 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting;
+namespace CCMBenchmark\Ting\Entity;
 
-interface PropertyListenerInterface
+use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
+
+interface NotifyPropertyInterface
 {
-    public function propertyChanged($entity, $propertyName, $oldValue, $newValue);
+    public function addPropertyListener(PropertyListenerInterface $listener);
 }

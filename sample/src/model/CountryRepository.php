@@ -25,7 +25,7 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Entity\MetadataRepository;
+use CCMBenchmark\Ting\MetadataRepository;
 
 class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
 {

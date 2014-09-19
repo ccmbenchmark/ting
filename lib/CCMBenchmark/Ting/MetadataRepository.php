@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Entity;
+namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\Repository;

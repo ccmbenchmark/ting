@@ -203,7 +203,7 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushManaged()
     {
-        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata(
@@ -276,7 +276,7 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushManagedButDoNothing()
     {
-        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
@@ -334,7 +334,7 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushNew()
     {
-        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));
@@ -409,7 +409,7 @@ class UnitOfWork extends atoum
 
     public function testFlushShouldCallFlushDelete()
     {
-        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\Entity\MetadataRepository(
+        $mockMetadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository(
             $this->services->get('MetadataFactory')
         );
         $mockMetadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($this->services->get('QueryFactory'));

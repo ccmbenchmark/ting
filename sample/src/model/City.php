@@ -24,8 +24,8 @@
 
 namespace sample\src\model;
 
-use CCMBenchmark\Ting\NotifyPropertyInterface;
-use CCMBenchmark\Ting\PropertyListenerInterface;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 
 class City implements NotifyPropertyInterface
 {

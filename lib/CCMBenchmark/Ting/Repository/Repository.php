@@ -28,7 +28,7 @@ use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Entity\MetadataRepository;
+use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;

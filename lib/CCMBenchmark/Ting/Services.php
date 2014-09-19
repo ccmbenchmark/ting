@@ -42,7 +42,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'MetadataRepository',
             function ($container) {
-                return new Entity\MetadataRepository($this->get('MetadataFactory'));
+                return new MetadataRepository($this->get('MetadataFactory'));
             }
         );
 
