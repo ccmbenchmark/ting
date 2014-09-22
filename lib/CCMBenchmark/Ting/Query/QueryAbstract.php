@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 
@@ -101,5 +102,14 @@ abstract class QueryAbstract
             $queryType = self::TYPE_INSERT;
         }
         $this->queryType = $queryType;
+    }
+
+    public function executeCallbackWithConnectionType(\Closure $callback)
+    {
+        if (in_array($this->queryType, [self::TYPE_AFFECTED, self::TYPE_INSERT])) {
+            $callback(ConnectionPoolInterface::CONNECTION_MASTER);
+        } else {
+            $callback(ConnectionPoolInterface::CONNECTION_SLAVE);
+        }
     }
 }
