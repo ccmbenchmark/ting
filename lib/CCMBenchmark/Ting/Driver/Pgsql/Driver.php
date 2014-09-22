@@ -44,9 +44,15 @@ class Driver implements DriverInterface
      */
     protected $transactionOpened = false;
 
-    public static function forConnectionKey($connectionName, $database, callable $callback)
+    public static function forConnectionKey($connectionConfig, $database, callable $callback)
     {
-        $callback($connectionName . '|' . $database);
+        $callback(
+            $connectionConfig['host'] . '|' .
+            $connectionConfig['port'] . '|' .
+            $connectionConfig['user'] . '|' .
+            $connectionConfig['password'] . '|' .
+            $database
+        );
     }
 
     public function connect($hostname, $username, $password, $port)

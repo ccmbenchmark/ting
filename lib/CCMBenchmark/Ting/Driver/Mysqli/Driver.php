@@ -74,9 +74,14 @@ class Driver implements DriverInterface
         }
     }
 
-    public static function forConnectionKey($connectionName, $database, callable $callback)
+    public static function forConnectionKey($connectionConfig, $database, callable $callback)
     {
-        $callback($connectionName);
+        $callback(
+            $connectionConfig['host'] . '|' .
+            $connectionConfig['port'] . '|' .
+            $connectionConfig['user'] . '|' .
+            $connectionConfig['password']
+        );
     }
 
     /**
