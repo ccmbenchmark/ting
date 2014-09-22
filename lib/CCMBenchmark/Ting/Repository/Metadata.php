@@ -134,9 +134,19 @@ class Metadata
         $entity->$property($value);
     }
 
-    public function connect(ConnectionPoolInterface $connectionPool, callable $callback)
+    public function connectMaster(ConnectionPoolInterface $connectionPool, callable $callback)
     {
-        $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
+        $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_MASTER, $callback);
+    }
+
+    public function connectSlave(ConnectionPoolInterface $connectionPool, callable $callback)
+    {
+        $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_SLAVE, $callback);
+    }
+
+    public function connect(ConnectionPoolInterface $connectionPool, $connexionType, callable $callback)
+    {
+        $connectionPool->connect($this->connectionName, $this->databaseName, $connexionType, $callback);
     }
 
     public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, callable $callback)

@@ -26,16 +26,24 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
+use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;
+use Pimple\Tests\Fixtures\Service;
 
 class Repository
 {
 
+    /**
+     * @var ContainerInterface
+     */
     protected $services = null;
+    /**
+     * @var Metadata
+     */
     protected $metadata = null;
 
     /**
@@ -74,7 +82,7 @@ class Repository
             $collection = $this->collection;
         }
 
-        $this->metadata->connect(
+        $this->metadata->connectSlave(
             $this->connectionPool,
             function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
                 $this->metadata->generateQueryForPrimary(
@@ -97,11 +105,18 @@ class Repository
             $collection = $this->collection;
         }
 
-        $this->metadata->connect(
-            $this->connectionPool,
-            function (DriverInterface $driver) use ($query, $collection) {
-                $query->setDriver($driver)->execute($collection);
-            }
+        $callback = function ($connectionType) use ($query, $collection) {
+            $this->metadata->connect(
+                $this->connectionPool,
+                $connectionType,
+                function (DriverInterface $driver) use ($query, $collection) {
+                    $query->setDriver($driver)->execute($collection);
+                }
+            );
+        };
+
+        $query->executeCallbackWithConnectionType(
+            $callback
         );
 
         return $collection;
@@ -113,11 +128,18 @@ class Repository
             $collection = $this->collection;
         }
 
-        $this->metadata->connect(
-            $this->connectionPool,
-            function (DriverInterface $driver) use ($query, $collection) {
-                $query->setDriver($driver)->prepare()->execute($collection);
-            }
+        $callback = function ($connectionType) use ($query, $collection) {
+            $this->metadata->connect(
+                $this->connectionPool,
+                $connectionType,
+                function (DriverInterface $driver) use ($query, $collection) {
+                    $query->setDriver($driver)->prepare()->execute($collection);
+                }
+            );
+        };
+
+        $query->executeCallbackWithConnectionType(
+            $callback
         );
 
         return $collection;
@@ -146,7 +168,7 @@ class Repository
 
     public function startTransaction()
     {
-        $this->metadata->connect(
+        $this->metadata->connectMaster(
             $this->connectionPool,
             function (DriverInterface $driver) {
                 $driver->startTransaction();
@@ -156,7 +178,7 @@ class Repository
 
     public function rollback()
     {
-        $this->metadata->connect(
+        $this->metadata->connectMaster(
             $this->connectionPool,
             function (DriverInterface $driver) {
                 $driver->rollback();
@@ -166,7 +188,7 @@ class Repository
 
     public function commit()
     {
-        $this->metadata->connect(
+        $this->metadata->connectMaster(
             $this->connectionPool,
             function (DriverInterface $driver) {
                 $driver->commit();
