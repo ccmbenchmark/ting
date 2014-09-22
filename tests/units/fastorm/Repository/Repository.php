@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Repository extends atoum
 {
@@ -33,7 +33,7 @@ class Repository extends atoum
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -66,7 +66,7 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -95,7 +95,7 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -134,7 +134,7 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -199,7 +199,7 @@ class Repository extends atoum
         };
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -234,7 +234,7 @@ class Repository extends atoum
         });
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -259,7 +259,7 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 
@@ -286,7 +286,7 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
 
         $this->calling($mockConnectionPool)->connect =
-            function ($connectionName, $database, callable $callback) use ($mockDriver) {
+            function ($connectionConfig, $database, $connectionType, callable $callback) use ($mockDriver) {
                 $callback($mockDriver);
             };
 

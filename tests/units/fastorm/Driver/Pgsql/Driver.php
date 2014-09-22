@@ -24,9 +24,9 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\Query;
-use \mageekguy\atoum;
+use CCMBenchmark\Ting\Repository\Collection;
+use mageekguy\atoum;
 
 class Driver extends atoum
 {
@@ -35,14 +35,19 @@ class Driver extends atoum
     {
         $this
             ->if(\CCMBenchmark\Ting\Driver\Pgsql\Driver::forConnectionKey(
-                'BouhName',
+                [
+                    'host'      => 'bouhHost',
+                    'user'      => 'bouhUser',
+                    'password'  => 'bouhPassword',
+                    'port'      => 5555
+                ],
                 'BouhDatabase',
                 function ($connectionKey) use (&$outerConnectionKey) {
                     $outerConnectionKey = $connectionKey;
                 }
             ))
             ->string($outerConnectionKey)
-                ->isIdenticalTo('BouhName|BouhDatabase');
+                ->isIdenticalTo('bouhHost|5555|bouhUser|bouhPassword|BouhDatabase');
     }
 
     public function testShouldImplementDriverInterface()

@@ -26,15 +26,20 @@ namespace tests\fixtures\FakeDriver;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Repository\Collection;
 
 class Driver implements DriverInterface
 {
 
-    public static function forConnectionKey($connectionName, $database, callable $callback)
+    public static function forConnectionKey($connectionConfig, $database, callable $callback)
     {
-        $callback($connectionName);
+        $callback(
+            $connectionConfig['host'] . '|' .
+            $connectionConfig['port'] . '|' .
+            $connectionConfig['user'] . '|' .
+            $connectionConfig['password']
+        );
     }
 
     public function connect($hostname, $username, $password, $port)

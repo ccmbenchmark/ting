@@ -25,7 +25,7 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use CCMBenchmark\Ting\Query\Query;
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Driver extends atoum
 {
@@ -34,14 +34,19 @@ class Driver extends atoum
     {
         $this
             ->if(\CCMBenchmark\Ting\Driver\Mysqli\Driver::forConnectionKey(
-                'BouhName',
+                [
+                    'host'      => 'bouhHost',
+                    'user'      => 'bouhUser',
+                    'password'  => 'bouhPassword',
+                    'port'      => 3306
+                ],
                 'BouhDatabase',
                 function ($connectionKey) use (&$outerConnectionKey) {
                     $outerConnectionKey = $connectionKey;
                 }
             ))
             ->string($outerConnectionKey)
-                ->isIdenticalTo('BouhName');
+                ->isIdenticalTo('bouhHost|3306|bouhUser|bouhPassword');
     }
 
     public function testShouldImplementDriverInterface()

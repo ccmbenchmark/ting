@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class UnitOfWork extends atoum
 {
@@ -38,10 +38,12 @@ class UnitOfWork extends atoum
             [
                 'main' => [
                     'namespace' => '\tests\fixtures\FakeDriver',
-                    'host'      => 'localhost.test',
-                    'user'      => 'test',
-                    'password'  => 'test',
-                    'port'      => 3306
+                    'master'    => [
+                        'host'      => 'localhost.test',
+                        'user'      => 'test',
+                        'password'  => 'test',
+                        'port'      => 3306
+                    ]
                 ]
             ]
         );

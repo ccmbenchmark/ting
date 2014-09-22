@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -22,9 +23,15 @@
  *
  **********************************************************************/
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/fixtures/model/Bouh.php';
-require __DIR__ . '/fixtures/model/BouhRepository.php';
-require __DIR__ . '/fixtures/FakeDriver/Driver.php';
-require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
-require __DIR__ . '/fixtures/FakeQuery/FakeQuery.php';
+namespace tests\fixtures\FakeQuery;
+
+use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Repository\Collection;
+
+class FakeQuery extends QueryAbstract
+{
+    public function execute(Collection $collection = null)
+    {
+
+    }
+}

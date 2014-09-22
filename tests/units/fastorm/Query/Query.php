@@ -24,19 +24,10 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Query extends atoum
 {
-
-    public function testConstructorShouldRaiseException()
-    {
-        $this
-            ->exception(function () {
-                new \CCMBenchmark\Ting\Query\Query([]);
-            })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException');
-    }
 
     public function testExecuteShouldRaiseException()
     {

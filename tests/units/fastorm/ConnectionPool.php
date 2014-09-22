@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class ConnectionPool extends atoum
 {
@@ -37,6 +37,7 @@ class ConnectionPool extends atoum
                 $connectionPool->connect(
                     'bouh',
                     'bouhDb',
+                    $connectionPool::CONNECTION_MASTER,
                     function () {
                     }
                 );
@@ -52,16 +53,19 @@ class ConnectionPool extends atoum
                 [
                     'bouh' => [
                         'namespace' => '\tests\fixtures\FakeDriver',
-                        'host'      => 'localhost.test',
-                        'user'      => 'test',
-                        'password'  => 'test',
-                        'port'      => 3306
+                        'master'    => [
+                            'host'      => 'localhost.test',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
                     ]
                 ]
             ))
             ->then($connectionPool->connect(
                 'bouh',
                 'bouhDb',
+                $connectionPool::CONNECTION_MASTER,
                 function ($connection) use (&$outerConnection) {
                     $outerConnection = $connection;
                 }
@@ -78,21 +82,106 @@ class ConnectionPool extends atoum
                 [
                     'bouh' => [
                         'namespace' => '\tests\fixtures\FakeDriver',
-                        'host'      => 'localhost.test',
-                        'user'      => 'test',
-                        'password'  => 'test',
-                        'port'      => 3306
+                        'master'    => [
+                            'host'      => 'localhost.test',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
                     ]
                 ]
             ))
             ->then($connectionPool->connect(
                 'bouh',
                 'bouhDb',
+                $connectionPool::CONNECTION_MASTER,
                 function ($connection) use (&$outerConnection) {
                     $outerConnection = $connection;
                 }
             ))
             ->object($outerConnection)
                 ->isInstanceOf('\tests\fixtures\FakeDriver\Driver');
+    }
+
+    public function testConnectionOnMasterIfNoSlave()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->then($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'localhost.test',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ]
+                ]
+            ))
+            ->array(
+                $connectionConfig = $connectionPool->retrieveApplicableConnectionConf(
+                    'bouh',
+                    $connectionPool::CONNECTION_MASTER
+                )
+            )
+                ->isIdenticalTo(
+                    [
+                        'host'      => 'localhost.test',
+                        'user'      => 'test',
+                        'password'  => 'test',
+                        'port'      => 3306
+                    ]
+                );
+    }
+
+    public function testConnectionOnSameSlaveIfManySlaves()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->then($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'localhost.test',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ],
+                        'slaves'    => [
+                            [
+                                'host'      => 'slave1',
+                                'user'      => 'test_slave1',
+                                'password'  => 'test_slave1',
+                                'port'      => 3306
+                            ],
+                            [
+                                'host'      => 'slave2',
+                                'user'      => 'test_slave2',
+                                'password'  => 'test_slave2',
+                                'port'      => 3306
+                            ]
+                        ]
+                    ]
+                ]
+            ))
+            ->then(
+                $connectionConfig = $connectionPool->retrieveApplicableConnectionConf(
+                    'bouh',
+                    $connectionPool::CONNECTION_SLAVE
+                )
+            )
+            ->array(
+                $connectionConfig2 = $connectionPool->retrieveApplicableConnectionConf(
+                    'bouh',
+
+                    $connectionPool::CONNECTION_SLAVE
+                )
+            )
+                ->isIdenticalTo(
+                    $connectionConfig
+                );
     }
 }
