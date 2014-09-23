@@ -176,7 +176,6 @@ class ConnectionPool extends atoum
             ->array(
                 $connectionConfig2 = $connectionPool->retrieveApplicableConnectionConf(
                     'bouh',
-
                     $connectionPool::CONNECTION_SLAVE
                 )
             )

@@ -59,5 +59,4 @@ class QueryAbstract extends atoum
                     ->isIdenticalTo(ConnectionPoolInterface::CONNECTION_SLAVE)
         ;
     }
-
 }
