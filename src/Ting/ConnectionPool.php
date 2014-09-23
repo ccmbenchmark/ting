@@ -52,7 +52,8 @@ class ConnectionPool implements ConnectionPoolInterface
 
         $driverClass = $this->connectionConfig[$connectionName]['namespace'] . '\\Driver';
 
-        $connectionConfig = $this->retrieveApplicableConnectionConf($connectionName, $database, $connectionType);
+        $this->setApplicableConnectionConf($connectionName, $connectionType);
+        $connectionConfig = $this->connectionsTypesToConfig[$connectionName][$connectionType];
 
         $driverClass::forConnectionKey(
             $connectionConfig,
@@ -85,7 +86,7 @@ class ConnectionPool implements ConnectionPoolInterface
         return $this;
     }
 
-    public function retrieveApplicableConnectionConf($connectionName, $connectionType)
+    private function setApplicableConnectionConf($connectionName, $connectionType)
     {
         if (
             $connectionType == self::CONNECTION_SLAVE
@@ -114,6 +115,5 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         $this->connectionsTypesToConfig[$connectionName][$connectionType] = $connectionConfig;
-        return $connectionConfig;
     }
 }
