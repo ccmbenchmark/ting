@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -22,17 +23,15 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Query;
+namespace tests\fixtures\FakeQuery;
 
-class QueryFactory implements QueryFactoryInterface
+use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Repository\Collection;
+
+class FakeQuery extends QueryAbstract
 {
-    public function get($params = [])
+    public function execute(Collection $collection = null)
     {
-        return new Query($params);
-    }
 
-    public function getPrepared($params = [])
-    {
-        return new PreparedQuery($params);
     }
 }

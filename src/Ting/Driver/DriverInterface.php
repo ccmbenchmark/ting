@@ -24,8 +24,8 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Repository\Collection;
 
 interface DriverInterface
 {
@@ -39,16 +39,16 @@ interface DriverInterface
     );
     public function prepare(
         $sql,
-        callable $callback,
+        \Closure $callback,
         $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     );
     public function setDatabase($database);
-    public function ifIsError(callable $callback);
-    public function ifIsNotConnected(callable $callback);
-    public function escapeFields($fields, callable $callback);
+    public function ifIsError(\Closure $callback);
+    public function ifIsNotConnected(\Closure $callback);
+    public function escapeFields($fields, \Closure $callback);
     public function startTransaction();
     public function rollback();
     public function commit();
-    public static function forConnectionKey($connectionName, $database, callable $callback);
+    public static function forConnectionKey($connectionName, $database, \Closure $callback);
 }

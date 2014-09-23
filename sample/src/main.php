@@ -26,6 +26,7 @@ namespace sample\src;
 
 // ting autoloader
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Query\PreparedQuery;
 
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
@@ -44,10 +45,26 @@ echo str_repeat("-", 40) . "\n";
 $connections = [
     'main' => [
         'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
-        'host'      => 'localhost',
-        'user'      => 'world_sample',
-        'password'  => 'world_sample',
-        'port'      => 3306,
+        'master' => [
+            'host'      => 'localhost',
+            'user'      => 'world_sample',
+            'password'  => 'world_sample',
+            'port'      => 3306,
+        ],
+        'slaves' => [
+            [
+                'host'      => 'localhost',
+                'user'      => 'world_sample',
+                'password'  => 'world_sample',
+                'port'      => 3306,
+            ],
+            [
+                'host'      => 'localhost',
+                'user'      => 'world_sample',
+                'password'  => 'world_sample',
+                'port'      => 3306,
+            ]
+        ]
     ]
 ];
 
@@ -55,7 +72,7 @@ $services->get('ConnectionPool')->setConfig($connections);
 
 echo 'City1'."\n";
 try {
-    $cityRepository = new \sample\src\model\CityRepository($services);
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
@@ -64,8 +81,10 @@ try {
         "select * from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
-        array('code' => 'FRA')
-    ))->hydrator(new \CCMBenchmark\Ting\Repository\Hydrator($services));
+        ['code' => 'FRA']
+    ))->hydrator(
+        $services->get('Hydrator')
+    );
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -77,7 +96,7 @@ try {
 
 echo 'City2'."\n";
 try {
-    $cityRepository = new \sample\src\model\CityRepository($services);
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
@@ -86,8 +105,10 @@ try {
         "select * from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
-        array('code' => 'FRA')
-    ))->hydrator(new \CCMBenchmark\Ting\Repository\Hydrator($services));
+        ['code' => 'FRA']
+    ))->hydrator(
+        $services->get('Hydrator')
+    );
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -98,7 +119,7 @@ try {
 }
 
 try {
-    $cityRepository = new \sample\src\model\CityRepository($services);
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $collection = $cityRepository->getZCountryWithLotsPopulation();
 
     foreach ($collection as $result) {
@@ -110,18 +131,16 @@ try {
 }
 
 try {
-    $cityRepository = new \sample\src\model\CityRepository($services);
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $nb = $cityRepository->getNumberOfCities();
     var_dump(['initial' => $nb->rewind()->current()]);
     $cityRepository->startTransaction();
         $cityRepository->executePrepared(
-            $services->getWithArguments(
-                'PreparedQuery',
-                ['sql' =>
-                    "INSERT INTO t_city_cit
+            new PreparedQuery(
+                "INSERT INTO t_city_cit
                     (cit_name, cit_population) VALUES
                     (:name, :pop)",
-                'params' => ['name' => 'BOUH_TEST', 'pop' => 25000]]
+                ['name' => 'BOUH_TEST', 'pop' => 25000]
             )
         );
     $cityRepository->rollback();

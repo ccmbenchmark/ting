@@ -96,7 +96,7 @@ class Metadata
 
     }
 
-    public function ifTableKnown($table, callable $callback)
+    public function ifTableKnown($table, \Closure $callback)
     {
         if ($this->table === $table) {
             $callback($this);
@@ -134,12 +134,22 @@ class Metadata
         $entity->$property($value);
     }
 
-    public function connect(ConnectionPoolInterface $connectionPool, callable $callback)
+    public function connectMaster(ConnectionPoolInterface $connectionPool, \Closure $callback)
     {
-        $connectionPool->connect($this->connectionName, $this->databaseName, $callback);
+        $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_MASTER, $callback);
     }
 
-    public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, callable $callback)
+    public function connectSlave(ConnectionPoolInterface $connectionPool, \Closure $callback)
+    {
+        $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_SLAVE, $callback);
+    }
+
+    public function connect(ConnectionPoolInterface $connectionPool, $connexionType, \Closure $callback)
+    {
+        $connectionPool->connect($this->connectionName, $this->databaseName, $connexionType, $callback);
+    }
+
+    public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, \Closure $callback)
     {
         $fields = array_keys($this->fields);
         array_unshift($fields, $this->table);
@@ -155,10 +165,10 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback($this->queryFactory->get(['sql' => $sql, 'params' => ['primary' => $primaryValue]]));
+        $callback($this->queryFactory->get($sql, ['primary' => $primaryValue]));
     }
 
-    public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
+    public function generateQueryForInsert(DriverInterface $driver, $entity, \Closure $callback)
     {
 
         $columns = array();
@@ -183,10 +193,10 @@ class Metadata
                 }
             );
 
-        $callback($this->queryFactory->getPrepared(['sql' => $sql, 'params' => $values]));
+        $callback($this->queryFactory->getPrepared($sql, $values));
     }
 
-    public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
+    public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, \Closure $callback)
     {
         $values  = array();
         $columns = array();
@@ -224,10 +234,10 @@ class Metadata
                 }
             );
 
-        $callback($this->queryFactory->getPrepared(['sql' => $sql, 'params' => $values]));
+        $callback($this->queryFactory->getPrepared($sql, $values));
     }
 
-    public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
+    public function generateQueryForDelete(DriverInterface $driver, $entity, \Closure $callback)
     {
         $values  = array();
         $columns = array();
@@ -246,6 +256,6 @@ class Metadata
                 }
             );
 
-        $callback($this->queryFactory->getPrepared(['sql' => $sql, 'params' => $values]));
+        $callback($this->queryFactory->getPrepared($sql, $values));
     }
 }

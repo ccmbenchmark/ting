@@ -1,3 +1,4 @@
 sample/src/benchmark
 vendor/
 /composer.lock
+coverage*

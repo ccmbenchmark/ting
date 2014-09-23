@@ -25,8 +25,9 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Repository\Collection;
 
 abstract class QueryAbstract
 {
@@ -43,16 +44,12 @@ abstract class QueryAbstract
      */
     protected $driver = null;
 
-    public function __construct($args)
+    public function __construct($sql, array $params = null)
     {
-        if (isset($args['sql']) === false) {
-            throw new QueryException('Constructor array parameters must have "sql" key');
-        }
+        $this->sql = $sql;
 
-        $this->sql = $args['sql'];
-
-        if (isset($args['params']) === true) {
-            $this->params = $args['params'];
+        if ($params !== null) {
+            $this->params = $params;
         }
 
         $this->setQueryType();
@@ -101,5 +98,14 @@ abstract class QueryAbstract
             $queryType = self::TYPE_INSERT;
         }
         $this->queryType = $queryType;
+    }
+
+    public function executeCallbackWithConnectionType(\Closure $callback)
+    {
+        if (in_array($this->queryType, [self::TYPE_AFFECTED, self::TYPE_INSERT])) {
+            $callback(ConnectionPoolInterface::CONNECTION_MASTER);
+        } else {
+            $callback(ConnectionPoolInterface::CONNECTION_SLAVE);
+        }
     }
 }

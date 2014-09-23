@@ -24,7 +24,8 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use \mageekguy\atoum;
+use CCMBenchmark\Ting\ConnectionPoolInterface;
+use mageekguy\atoum;
 
 class Metadata extends atoum
 {
@@ -187,10 +188,61 @@ class Metadata extends atoum
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->then($metadata->setConnection('bouh_connection'))
             ->then($metadata->setDatabase('bouh_database'))
-            ->then($metadata->connect($mockConnectionPool, $callback))
+            ->then($metadata->connect($mockConnectionPool, ConnectionPoolInterface::CONNECTION_MASTER, $callback))
             ->mock($mockConnectionPool)
                 ->call('connect')
-                    ->withIdenticalArguments('bouh_connection', 'bouh_database', $callback)->once();
+                    ->withIdenticalArguments(
+                        'bouh_connection',
+                        'bouh_database',
+                        ConnectionPoolInterface::CONNECTION_MASTER,
+                        $callback
+                    )->once();
+    }
+
+    public function testConnectMasterShouldCallConnectWithMasterValue()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+        $callback = function ($bouh) {
+        };
+
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->then($metadata->setConnection('bouh_connection'))
+            ->then($metadata->setDatabase('bouh_database'))
+            ->then($metadata->connectMaster($mockConnectionPool, $callback))
+            ->mock($mockConnectionPool)
+                ->call('connect')
+                    ->withIdenticalArguments(
+                        'bouh_connection',
+                        'bouh_database',
+                        ConnectionPoolInterface::CONNECTION_MASTER,
+                        $callback
+                    )->once();
+    }
+
+    public function testConnectMasterShouldCallConnectWithSlaveValue()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+        $callback = function ($bouh) {
+        };
+
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->then($metadata->setConnection('bouh_connection'))
+            ->then($metadata->setDatabase('bouh_database'))
+            ->then($metadata->connectSlave($mockConnectionPool, $callback))
+            ->mock($mockConnectionPool)
+                ->call('connect')
+                    ->withIdenticalArguments(
+                        'bouh_connection',
+                        'bouh_database',
+                        ConnectionPoolInterface::CONNECTION_SLAVE,
+                        $callback
+                    )->once();
     }
 
     public function testGenerateQueryForPrimaryShouldCallCallbackWithQueryObject()
@@ -198,10 +250,10 @@ class Metadata extends atoum
         $services   = new \CCMBenchmark\Ting\Services();
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
-        $query = new \CCMBenchmark\Ting\Query\Query([
-            'sql'    => 'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
-            'params' => ['primary' => 'BOuH']
-        ]);
+        $query = new \CCMBenchmark\Ting\Query\Query(
+            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
+            ['primary' => 'BOuH']
+        );
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
@@ -233,15 +285,15 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery([
-            'sql' => 'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
+        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
+            'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
             . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
-            'params' => [
+            [
                 'boo_id'        => 123,
                 'boo_firstname' => 'Sylvain',
                 'boo_name'      => 'Robez-Masson'
             ]
-        ]);
+        );
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
@@ -276,10 +328,10 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery([
-            'sql'    => 'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
-            'params' => ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
-        ]);
+        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
+            'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
+            ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
+        );
 
         $properties = array('name');
 
@@ -319,10 +371,10 @@ class Metadata extends atoum
         $entity = new \tests\fixtures\model\Bouh();
         $entity->setId(123);
 
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery([
-            'sql'    => 'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
-            'params' => ['boo_id' => 123]
-        ]);
+        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
+            'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
+            ['boo_id' => 123]
+        );
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))

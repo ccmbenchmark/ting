@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class UnitOfWork extends atoum
 {
@@ -38,10 +38,12 @@ class UnitOfWork extends atoum
             [
                 'main' => [
                     'namespace' => '\tests\fixtures\FakeDriver',
-                    'host'      => 'localhost.test',
-                    'user'      => 'test',
-                    'password'  => 'test',
-                    'port'      => 3306
+                    'master'    => [
+                        'host'      => 'localhost.test',
+                        'user'      => 'test',
+                        'password'  => 'test',
+                        'port'      => 3306
+                    ]
                 ]
             ]
         );
@@ -232,7 +234,7 @@ class UnitOfWork extends atoum
 
 
         $outerOid = array();
-        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('');
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -354,7 +356,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('');
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -429,7 +431,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
-        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('');
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $outerOid = array();

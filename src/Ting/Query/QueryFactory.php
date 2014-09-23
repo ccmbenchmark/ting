@@ -24,8 +24,15 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-interface QueryFactoryInterface
+class QueryFactory implements QueryFactoryInterface
 {
-    public function get($params = []);
-    public function getPrepared($params = []);
+    public function get($sql, array $params = null)
+    {
+        return new Query($sql, $params);
+    }
+
+    public function getPrepared($sql, array $params = null)
+    {
+        return new PreparedQuery($sql, $params);
+    }
 }

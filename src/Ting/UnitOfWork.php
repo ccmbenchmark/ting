@@ -193,7 +193,7 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function ($metadata) use ($entity, $properties) {
-                $metadata->connect(
+                $metadata->connectMaster(
                     $this->connectionPool,
                     function (DriverInterface $driver) use ($entity, $metadata, $properties) {
                         $metadata->generateQueryForUpdate(
@@ -217,7 +217,7 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function ($metadata) use ($entity) {
-                $metadata->connect(
+                $metadata->connectMaster(
                     $this->connectionPool,
                     function (DriverInterface $driver) use ($entity, $metadata) {
                         $metadata->generateQueryForInsert(
@@ -242,7 +242,7 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function ($metadata) use ($entity) {
-                $metadata->connect(
+                $metadata->connectMaster(
                     $this->connectionPool,
                     function (DriverInterface $driver) use ($entity, $metadata) {
                         $metadata->generateQueryForDelete(

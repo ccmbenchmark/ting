@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class ConnectionPool extends atoum
 {
@@ -37,6 +37,7 @@ class ConnectionPool extends atoum
                 $connectionPool->connect(
                     'bouh',
                     'bouhDb',
+                    $connectionPool::CONNECTION_MASTER,
                     function () {
                     }
                 );
@@ -52,16 +53,19 @@ class ConnectionPool extends atoum
                 [
                     'bouh' => [
                         'namespace' => '\tests\fixtures\FakeDriver',
-                        'host'      => 'localhost.test',
-                        'user'      => 'test',
-                        'password'  => 'test',
-                        'port'      => 3306
+                        'master'    => [
+                            'host'      => 'localhost.test',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
                     ]
                 ]
             ))
             ->then($connectionPool->connect(
                 'bouh',
                 'bouhDb',
+                $connectionPool::CONNECTION_MASTER,
                 function ($connection) use (&$outerConnection) {
                     $outerConnection = $connection;
                 }
@@ -78,16 +82,19 @@ class ConnectionPool extends atoum
                 [
                     'bouh' => [
                         'namespace' => '\tests\fixtures\FakeDriver',
-                        'host'      => 'localhost.test',
-                        'user'      => 'test',
-                        'password'  => 'test',
-                        'port'      => 3306
+                        'master'    => [
+                            'host'      => 'localhost.test',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
                     ]
                 ]
             ))
             ->then($connectionPool->connect(
                 'bouh',
                 'bouhDb',
+                $connectionPool::CONNECTION_MASTER,
                 function ($connection) use (&$outerConnection) {
                     $outerConnection = $connection;
                 }

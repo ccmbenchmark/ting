@@ -26,7 +26,7 @@ namespace sample\src\model;
 
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Repository\Hydrator;
-use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
@@ -34,37 +34,29 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
     public function getZCountryWithLotsPopulation()
     {
 
-        $query = $this->services
-            ->getWithArguments(
-                'PreparedQuery',
-                [
-                    'sql'    => 'select cit_id, cit_name, cou_code, cit_district, cit_population
-                        from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
-                    'params' => ['name' => 'Z%', 'population' => 200000]
-                ]
-            );
+        $query = new PreparedQuery(
+            'select cit_id, cit_name, cou_code, cit_district, cit_population
+                    from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
+            ['name' => 'Z%', 'population' => 200000]
+        );
 
-        return $this->executePrepared($query)->hydrator(new Hydrator($this->services));
+        return $this->executePrepared($query)->hydrator(new Hydrator($this->metadataRepository, $this->unitOfWork));
     }
 
     public function getNumberOfCities()
     {
 
-        $query = $this->services
-            ->getWithArguments(
-                'PreparedQuery',
-                [
-                    'sql'    => 'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
-                    'params' => ['population' => 20000]
-                ]
-            );
+        $query = new PreparedQuery(
+            'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
+            ['population' => 20000]
+        );
 
         return $this->executePrepared($query);
     }
 
-    public static function initMetadata(\CCMBenchmark\Ting\ContainerInterface $services)
+    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
     {
-        $metadata = $services->get('Metadata');
+        $metadata = $metadataFactory->get();
 
         $metadata->setClass(get_class());
         $metadata->setConnection('main');

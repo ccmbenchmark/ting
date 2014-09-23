@@ -28,6 +28,9 @@ namespace CCMBenchmark\Ting;
 
 interface ConnectionPoolInterface
 {
+    const CONNECTION_MASTER = 1;
+    const CONNECTION_SLAVE  = 2;
+
     public function setConfig($config);
-    public function connect($connectionName, $database, callable $callback);
+    public function connect($connectionName, $database, $connectionType, \Closure $callback);
 }
