@@ -32,5 +32,5 @@ interface ConnectionPoolInterface
     const CONNECTION_SLAVE  = 2;
 
     public function setConfig($config);
-    public function connect($connectionName, $database, $connectionType, callable $callback);
+    public function connect($connectionName, $database, $connectionType, \Closure $callback);
 }

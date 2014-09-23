@@ -40,11 +40,11 @@ class ConnectionPool implements ConnectionPoolInterface
      * @param $connectionName
      * @param $database
      * @param $connectionType
-     * @param callable $callback
+     * @param \Closure $callback
      * @return $this
      * @throws Exception
      */
-    public function connect($connectionName, $database, $connectionType, callable $callback)
+    public function connect($connectionName, $database, $connectionType, \Closure $callback)
     {
         if (isset($this->connectionConfig[$connectionName]) === false) {
             throw new Exception('Connection not found: ' . $connectionName);

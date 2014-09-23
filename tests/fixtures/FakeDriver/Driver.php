@@ -32,7 +32,7 @@ use CCMBenchmark\Ting\Repository\Collection;
 class Driver implements DriverInterface
 {
 
-    public static function forConnectionKey($connectionConfig, $database, callable $callback)
+    public static function forConnectionKey($connectionConfig, $database, \Closure $callback)
     {
         $callback(
             $connectionConfig['host'] . '|' .
@@ -58,7 +58,7 @@ class Driver implements DriverInterface
 
     public function prepare(
         $sql,
-        callable $callback,
+        \Closure $callback,
         $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
@@ -70,17 +70,17 @@ class Driver implements DriverInterface
         $this->database = $database;
     }
 
-    public function ifIsError(callable $callback)
+    public function ifIsError(\Closure $callback)
     {
 
     }
 
-    public function ifIsNotConnected(callable $callback)
+    public function ifIsNotConnected(\Closure $callback)
     {
 
     }
 
-    public function escapeFields($fields, callable $callback)
+    public function escapeFields($fields, \Closure $callback)
     {
 
     }

@@ -74,7 +74,7 @@ class Driver implements DriverInterface
         }
     }
 
-    public static function forConnectionKey($connectionConfig, $database, callable $callback)
+    public static function forConnectionKey($connectionConfig, $database, \Closure $callback)
     {
         $callback(
             $connectionConfig['host'] . '|' .
@@ -122,7 +122,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function ifIsError(callable $callback)
+    public function ifIsError(\Closure $callback)
     {
         if ($this->connection->error !== '') {
             $callback($this->connection->error);
@@ -195,7 +195,7 @@ class Driver implements DriverInterface
      */
     public function prepare(
         $sql,
-        callable $callback,
+        \Closure $callback,
         $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
@@ -229,7 +229,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function ifIsNotConnected(callable $callback)
+    public function ifIsNotConnected(\Closure $callback)
     {
         if ($this->connected === false) {
             $callback();
@@ -238,7 +238,7 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function escapeFields($fields, callable $callback)
+    public function escapeFields($fields, \Closure $callback)
     {
         foreach ($fields as &$field) {
             $field = '`' . $field . '`';

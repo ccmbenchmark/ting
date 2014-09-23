@@ -38,7 +38,7 @@ class MetadataRepository
         $this->metadataFactory = $metadataFactory;
     }
 
-    public function findMetadataForTable($table, callable $callbackFound, callable $callbackNotFound)
+    public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound)
     {
         $found = false;
         foreach ($this->metadataList as $metadata) {
@@ -59,7 +59,7 @@ class MetadataRepository
         }
     }
 
-    public function findMetadataForEntity($entity, callable $callbackFound, callable $callbackNotFound = null)
+    public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         $repository = get_class($entity) . 'Repository';
         if (isset($this->metadataList[$repository]) === true) {

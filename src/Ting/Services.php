@@ -98,7 +98,7 @@ class Services implements ContainerInterface
         );
     }
 
-    public function set($id, callable $callable, $factory = false)
+    public function set($id, \Closure $callable, $factory = false)
     {
         if ($factory === true) {
             $callable = $this->container->factory($callable);
