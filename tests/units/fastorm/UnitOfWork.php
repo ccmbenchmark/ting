@@ -234,7 +234,7 @@ class UnitOfWork extends atoum
 
 
         $outerOid = array();
-        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('');
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $this->calling($mockMetadata)->generateQueryForUpdate =
@@ -356,7 +356,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('');
         $this->calling($mockQuery)->execute = 3;
 
         $outerOid = array();
@@ -431,7 +431,7 @@ class UnitOfWork extends atoum
 
         \tests\fixtures\model\BouhRepository::initMetadata($mockMetadataFactory);
 
-        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(['sql' => '']);
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('');
         $this->calling($mockPreparedQuery)->execute = 3;
 
         $outerOid = array();

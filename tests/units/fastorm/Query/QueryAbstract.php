@@ -29,15 +29,6 @@ use mageekguy\atoum;
 
 class QueryAbstract extends atoum
 {
-    public function testConstructorShouldRaiseException()
-    {
-        $this
-            ->exception(function () {
-                new \tests\fixtures\FakeQuery\FakeQuery([]);
-            })
-            ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException');
-    }
-
     public function testExecuteCallbackWithConnectionTypeShouldCallCallbackWithCorrectParameter()
     {
         $this
@@ -47,27 +38,21 @@ class QueryAbstract extends atoum
                 }
             )
             ->and($query = new \tests\fixtures\FakeQuery\FakeQuery(
-                [
-                    'sql' => 'UPDATE "table" SET "name" = :name',
-                    'params' => ['name' => 'value']
-                ]
+                'UPDATE "table" SET "name" = :name',
+                ['name' => 'value']
             ))
                 ->then($query->executeCallbackWithConnectionType($callback))
                 ->integer($outerConnectionParameter)
                     ->isIdenticalTo(ConnectionPoolInterface::CONNECTION_MASTER)
             ->and($query = new \tests\fixtures\FakeQuery\FakeQuery(
-                [
-                    'sql' => 'INSERT INTO "table" ("name") VALUES (:name)',
-                    'params' => ['name' => 'value']
-                ]
+                'INSERT INTO "table" ("name") VALUES (:name)',
+                ['name' => 'value']
             ))
                 ->then($query->executeCallbackWithConnectionType($callback))
                 ->integer($outerConnectionParameter)
                     ->isIdenticalTo(ConnectionPoolInterface::CONNECTION_MASTER)
             ->and($query = new \tests\fixtures\FakeQuery\FakeQuery(
-                [
-                    'sql' => 'SELECT * FROM "table"'
-                ]
+                'SELECT * FROM "table"'
             ))
                 ->then($query->executeCallbackWithConnectionType($callback))
                 ->integer($outerConnectionParameter)

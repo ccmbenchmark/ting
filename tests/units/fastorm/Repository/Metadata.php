@@ -250,10 +250,10 @@ class Metadata extends atoum
         $services   = new \CCMBenchmark\Ting\Services();
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
-        $query = new \CCMBenchmark\Ting\Query\Query([
-            'sql'    => 'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
-            'params' => ['primary' => 'BOuH']
-        ]);
+        $query = new \CCMBenchmark\Ting\Query\Query(
+            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
+            ['primary' => 'BOuH']
+        );
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
@@ -285,15 +285,15 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery([
-            'sql' => 'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
+        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
+            'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
             . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
-            'params' => [
+            [
                 'boo_id'        => 123,
                 'boo_firstname' => 'Sylvain',
                 'boo_name'      => 'Robez-Masson'
             ]
-        ]);
+        );
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
@@ -328,10 +328,10 @@ class Metadata extends atoum
         $entity->setFirstname('Sylvain');
         $entity->setName('Robez-Masson');
 
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery([
-            'sql'    => 'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
-            'params' => ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
-        ]);
+        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
+            'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
+            ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
+        );
 
         $properties = array('name');
 
@@ -371,10 +371,10 @@ class Metadata extends atoum
         $entity = new \tests\fixtures\model\Bouh();
         $entity->setId(123);
 
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery([
-            'sql'    => 'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
-            'params' => ['boo_id' => 123]
-        ]);
+        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
+            'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
+            ['boo_id' => 123]
+        );
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))

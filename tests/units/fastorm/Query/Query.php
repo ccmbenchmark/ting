@@ -32,7 +32,7 @@ class Query extends atoum
     public function testExecuteShouldRaiseException()
     {
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\Query(['sql' => '']))
+            ->if($query = new \CCMBenchmark\Ting\Query\Query(''))
             ->exception(function () use ($query) {
                 $query->execute();
             })
@@ -62,7 +62,7 @@ class Query extends atoum
         $this
             ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->and($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->and($query = new \CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * from Bouh']))
+            ->and($query = new \CCMBenchmark\Ting\Query\Query('SELECT * from Bouh'))
             ->and($query->setDriver($driver))
             ->and($query->execute($collection))
             ->and($collection->rewind())

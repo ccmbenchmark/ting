@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class PreparedQuery extends atoum
 {
@@ -49,7 +49,8 @@ class PreparedQuery extends atoum
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-                ['sql' => $sql, 'params' => ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]]
+                $sql,
+                ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]
             ))
             ->then($query->setDriver($mockDriver)->prepare()->execute())
             ->string($outerSql)
@@ -62,7 +63,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                     $query->execute();
             })
@@ -74,7 +75,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
             ->object($query->setParams(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)))
                 ->isIdenticalTo($query)
         ;
@@ -85,7 +86,7 @@ class PreparedQuery extends atoum
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
             ->object($query->setDriver($mockDriver))
             ->isIdenticalTo($query)
         ;
@@ -95,7 +96,7 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                 $query->prepare();
             })
@@ -110,7 +111,7 @@ class PreparedQuery extends atoum
 
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
             ->then($query->setDriver($mockDriver))
             ->object($query->prepare())
                 ->isIdenticalTo($query->prepare())
@@ -121,7 +122,8 @@ class PreparedQuery extends atoum
     {
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(['sql' => $sql]))
+
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
             ->exception(function () use ($query) {
                     $query->execute();
             })
@@ -149,7 +151,8 @@ class PreparedQuery extends atoum
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-                ['sql' => $sql, 'params' => ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]]
+                $sql,
+                ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]
             ))
             ->then($query->setDriver($mockDriver)->execute())
             ->string($outerSql)
