@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Services extends atoum
 {
@@ -45,7 +45,9 @@ class Services extends atoum
             ->object($services->get('QueryFactory'))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryFactoryInterface')
             ->object($services->get('Hydrator'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Hydrator');
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Hydrator')
+            ->object($services->get('RepositoryFactory'))
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\RepositoryFactory');
     }
 
     public function testShouldImplementsContainerInterface()
