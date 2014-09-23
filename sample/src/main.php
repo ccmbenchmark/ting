@@ -81,12 +81,9 @@ try {
         "select * from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
-        array('code' => 'FRA')
+        ['code' => 'FRA']
     ))->hydrator(
-        new \CCMBenchmark\Ting\Repository\Hydrator(
-            $services->get('MetadataRepository'),
-            $services->get('UnitOfWork')
-        )
+        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {
@@ -105,17 +102,12 @@ try {
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->executePrepared(new \CCMBenchmark\Ting\Query\PreparedQuery(
-        [
-            'sql' => "select * from t_city_cit as c
-            inner join t_country_cou as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 3",
-            'params' => array('code' => 'FRA')
-        ]
+        "select * from t_city_cit as c
+        inner join t_country_cou as co on (c.cou_code = co.cou_code)
+        where co.cou_code = :code limit 3",
+        ['code' => 'FRA']
     ))->hydrator(
-        new \CCMBenchmark\Ting\Repository\Hydrator(
-            $services->get('MetadataRepository'),
-            $services->get('UnitOfWork')
-        )
+        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {
@@ -145,13 +137,10 @@ try {
     $cityRepository->startTransaction();
         $cityRepository->executePrepared(
             new PreparedQuery(
-                [
-                    'sql' =>
-                        "INSERT INTO t_city_cit
-                        (cit_name, cit_population) VALUES
-                        (:name, :pop)",
-                    'params' => ['name' => 'BOUH_TEST', 'pop' => 25000]
-                ]
+                "INSERT INTO t_city_cit
+                    (cit_name, cit_population) VALUES
+                    (:name, :pop)",
+                ['name' => 'BOUH_TEST', 'pop' => 25000]
             )
         );
     $cityRepository->rollback();
