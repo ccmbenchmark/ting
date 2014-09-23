@@ -82,6 +82,20 @@ class Services implements ContainerInterface
                 return new Repository\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
             }
         );
+
+        $this->container->offsetSet(
+            'RepositoryFactory',
+            function () {
+                return new Repository\RepositoryFactory(
+                    $this->get('ConnectionPool'),
+                    $this->get('MetadataRepository'),
+                    $this->get('MetadataFactory'),
+                    $this->get('Collection'),
+                    $this->get('Hydrator'),
+                    $this->get('UnitOfWork')
+                );
+            }
+        );
     }
 
     public function set($id, callable $callable, $factory = false)
