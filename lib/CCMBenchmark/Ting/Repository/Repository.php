@@ -111,18 +111,16 @@ class Repository
             $collection = $this->collection;
         }
 
-        $callback = function ($connectionType) use ($query, $collection) {
-            $this->metadata->connect(
-                $this->connectionPool,
-                $connectionType,
-                function (DriverInterface $driver) use ($query, $collection) {
-                    $query->setDriver($driver)->execute($collection);
-                }
-            );
-        };
-
         $query->executeCallbackWithConnectionType(
-            $callback
+            function ($connectionType) use ($query, $collection) {
+                $this->metadata->connect(
+                    $this->connectionPool,
+                    $connectionType,
+                    function (DriverInterface $driver) use ($query, $collection) {
+                        $query->setDriver($driver)->execute($collection);
+                    }
+                );
+            }
         );
 
         return $collection;
