@@ -36,49 +36,49 @@ class Services implements ContainerInterface
         $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
-            function ($container) {
+            function () {
                 return new ConnectionPool();
             }
         );
 
         $this->container->offsetSet(
             'MetadataRepository',
-            function ($container) {
+            function () {
                 return new MetadataRepository($this->get('MetadataFactory'));
             }
         );
 
         $this->container->offsetSet(
             'UnitOfWork',
-            function ($container) {
+            function () {
                 return new UnitOfWork($this->get('ConnectionPool'), $this->get('MetadataRepository'));
             }
         );
 
         $this->container->offsetSet(
             'MetadataFactory',
-            function ($container) {
+            function () {
                 return new Repository\MetadataFactory($this->get('QueryFactory'));
             }
         );
 
         $this->container->offsetSet(
             'Collection',
-            $this->container->factory(function ($container) {
+            $this->container->factory(function () {
                 return new Repository\Collection();
             })
         );
 
         $this->container->offsetSet(
             'QueryFactory',
-            function ($container) {
+            function () {
                 return new Query\QueryFactory();
             }
         );
 
         $this->container->offsetSet(
             'Hydrator',
-            function ($container) {
+            function () {
                 return new Repository\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
             }
         );
@@ -121,6 +121,9 @@ class Services implements ContainerInterface
     public function getWithArguments($id, $params)
     {
         $callback = $this->container->raw($id);
-        return $callback($this->container, $params);
+        if ($callback instanceof \Closure) {
+            return $callback($this->container, $params);
+        }
+        throw new Exception('Calling getWithArguments on non callback dependency.');
     }
 }
