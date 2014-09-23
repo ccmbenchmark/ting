@@ -165,7 +165,7 @@ class Metadata
                 $sql .= ' WHERE ' . $fields[0] . ' = :primary';
             });
 
-        $callback($this->queryFactory->get(['sql' => $sql, 'params' => ['primary' => $primaryValue]]));
+        $callback($this->queryFactory->get($sql, ['primary' => $primaryValue]));
     }
 
     public function generateQueryForInsert(DriverInterface $driver, $entity, callable $callback)
@@ -193,7 +193,7 @@ class Metadata
                 }
             );
 
-        $callback($this->queryFactory->getPrepared(['sql' => $sql, 'params' => $values]));
+        $callback($this->queryFactory->getPrepared($sql, $values));
     }
 
     public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, callable $callback)
@@ -234,7 +234,7 @@ class Metadata
                 }
             );
 
-        $callback($this->queryFactory->getPrepared(['sql' => $sql, 'params' => $values]));
+        $callback($this->queryFactory->getPrepared($sql, $values));
     }
 
     public function generateQueryForDelete(DriverInterface $driver, $entity, callable $callback)
@@ -256,6 +256,6 @@ class Metadata
                 }
             );
 
-        $callback($this->queryFactory->getPrepared(['sql' => $sql, 'params' => $values]));
+        $callback($this->queryFactory->getPrepared($sql, $values));
     }
 }

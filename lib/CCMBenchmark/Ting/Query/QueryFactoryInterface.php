@@ -26,6 +26,6 @@ namespace CCMBenchmark\Ting\Query;
 
 interface QueryFactoryInterface
 {
-    public function get(array $params = []);
-    public function getPrepared(array $params = []);
+    public function get($sql, array $params = null);
+    public function getPrepared($sql, array $params = null);
 }
