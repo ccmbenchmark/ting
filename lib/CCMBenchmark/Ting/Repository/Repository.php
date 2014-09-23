@@ -25,14 +25,13 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPool;
-use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;
-use Pimple\Tests\Fixtures\Service;
+use CCMBenchmark\Ting\UnitOfWork;
 
 class Repository
 {
@@ -51,17 +50,24 @@ class Repository
      */
     protected $connectionPool;
 
+    /**
+     * @var UnitOfWork
+     */
+    protected $unitOfWork;
+
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         MetadataFactoryInterface $metadataFactory,
         Collection $collection,
-        Hydrator $hydrator
+        Hydrator $hydrator,
+        UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
         $this->collection         = $collection;
         $this->hydrator           = $hydrator;
+        $this->unitOfWork         = $unitOfWork;
 
         $class  = get_class($this);
         $this->metadata = $class::initMetadata($metadataFactory);

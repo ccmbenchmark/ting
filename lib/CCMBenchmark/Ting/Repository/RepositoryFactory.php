@@ -26,21 +26,53 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\UnitOfWork;
 
 class RepositoryFactory
 {
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    /**
+     * @var MetadataRepository
+     */
+    protected $metadataRepository;
+
+    /**
+     * @var MetadataFactoryInterface
+     */
+    protected $metadataFactory;
+
+    /**
+     * @var Collection
+     */
+    protected $collection;
+
+    /**
+     * @var Hydrator
+     */
+    protected $hydrator;
+
+    /**
+     * @var UnitOfWork
+     */
+    protected $unitOfWork;
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         MetadataFactoryInterface $metadataFactory,
         Collection $collection,
-        Hydrator $hydrator
+        Hydrator $hydrator,
+        UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
         $this->metadataFactory    = $metadataFactory;
         $this->collection         = $collection;
         $this->hydrator           = $hydrator;
+        $this->unitOfWork         = $unitOfWork;
     }
 
     public function get($repositoryName)
@@ -50,7 +82,8 @@ class RepositoryFactory
             $this->metadataRepository,
             $this->metadataFactory,
             $this->collection,
-            $this->hydrator
+            $this->hydrator,
+            $this->unitOfWork
         );
     }
 }

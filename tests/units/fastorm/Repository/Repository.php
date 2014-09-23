@@ -38,7 +38,7 @@ class Repository extends atoum
             };
 
         $services  = new \CCMBenchmark\Ting\Services();
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * FROM bouh']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
@@ -52,7 +52,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($repository->execute($mockQuery, $collection))
             ->object($outerCollection)
@@ -70,7 +71,7 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query(['sql' => 'SELECT * FROM bouh']);
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('SELECT * FROM bouh');
         $this->calling($mockQuery)->execute =
             function ($collection) use (&$outerCollection) {
                 $outerCollection = $collection;
@@ -81,7 +82,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($repository->execute($mockQuery))
             ->object($outerCollection)
@@ -100,7 +102,7 @@ class Repository extends atoum
             };
 
         $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
-            ['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']
+            'SELECT * FROM bouh WHERE truc = :bidule'
         );
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
@@ -120,7 +122,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($repository->executePrepared($mockQuery, $collection))
             ->object($outerCollection)
@@ -139,7 +142,7 @@ class Repository extends atoum
             };
 
         $mockQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
-            ['sql' => 'SELECT * FROM bouh WHERE truc = :bidule']
+            'SELECT * FROM bouh WHERE truc = :bidule'
         );
         $this->calling($mockQuery)->prepare =
             function () use ($mockQuery) {
@@ -156,7 +159,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($repository->executePrepared($mockQuery))
             ->object($outerCollection)
@@ -213,7 +217,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->and($testBouh = $bouhRepository->get(3))
             ->integer($testBouh->getId())
@@ -244,7 +249,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($bouhRepository->startTransaction())
             ->boolean($mockDriver->isTransactionOpened())
@@ -269,7 +275,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->commit())
@@ -296,7 +303,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('Collection'),
-                $services->get('Hydrator')
+                $services->get('Hydrator'),
+                $services->get('UnitOfWork')
             ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->rollback())
