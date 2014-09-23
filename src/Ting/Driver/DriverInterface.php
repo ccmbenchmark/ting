@@ -24,8 +24,8 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Repository\Collection;
 
 interface DriverInterface
 {

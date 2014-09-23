@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4" : {
-            "CCMBenchmark\\Ting\\": "lib/CCMBenchmark/Ting"
+            "CCMBenchmark\\": "src/"
         }
     }
 }

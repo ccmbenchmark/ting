@@ -25,11 +25,11 @@
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Repository\Collection;
 
 class Driver implements DriverInterface
 {
