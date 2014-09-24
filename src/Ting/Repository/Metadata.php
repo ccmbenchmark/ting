@@ -144,9 +144,9 @@ class Metadata
         $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_SLAVE, $callback);
     }
 
-    public function connect(ConnectionPoolInterface $connectionPool, $connexionType, \Closure $callback)
+    public function connect(ConnectionPoolInterface $connectionPool, $connectionType, \Closure $callback)
     {
-        $connectionPool->connect($this->connectionName, $this->databaseName, $connexionType, $callback);
+        $connectionPool->connect($this->connectionName, $this->databaseName, $connectionType, $callback);
     }
 
     public function generateQueryForPrimary(DriverInterface $driver, $primaryValue, \Closure $callback)
