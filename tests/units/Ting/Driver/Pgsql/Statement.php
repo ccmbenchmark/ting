@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Statement extends atoum
 {

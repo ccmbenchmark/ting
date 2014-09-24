@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Statement extends atoum
 {
