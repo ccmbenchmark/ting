@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\ConnectionPool;
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
@@ -77,7 +78,8 @@ class Repository
     public function get(
         $primaryKeyValue,
         Hydrator $hydrator = null,
-        Collection $collection = null
+        Collection $collection = null,
+        $connectionType = null
     ) {
 
         if ($hydrator === null) {
@@ -88,45 +90,60 @@ class Repository
             $collection = $this->collection;
         }
 
-        $this->metadata->connectSlave(
-            $this->connectionPool,
-            function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
-                $this->metadata->generateQueryForPrimary(
-                    $driver,
-                    $primaryKeyValue,
-                    function (Query $query) use ($driver, $collection) {
-                        $query->setDriver($driver)->execute($collection);
-                    }
-                );
-            }
-        );
+        $callback = function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
+            $this->metadata->generateQueryForPrimary(
+                $driver,
+                $primaryKeyValue,
+                function (Query $query) use ($driver, $collection) {
+                    $query->setDriver($driver)->execute($collection);
+                }
+            );
+        };
+
+        if ($connectionType === ConnectionPoolInterface::CONNECTION_SLAVE || $connectionType === null) {
+            $this->metadata->connectSlave(
+                $this->connectionPool,
+                $callback
+            );
+        } else {
+            $this->metadata->connectMaster(
+                $this->connectionPool,
+                $callback
+            );
+        }
+
 
         $collection->hydrator($hydrator);
         return current($collection->rewind()->current());
     }
 
-    public function execute(Query $query, Collection $collection = null)
+    public function execute(Query $query, Collection $collection = null, $connectionType = null)
     {
         if ($collection === null) {
             $collection = $this->collection;
         }
 
-        $query->executeCallbackWithConnectionType(
-            function ($connectionType) use ($query, $collection) {
-                $this->metadata->connect(
-                    $this->connectionPool,
-                    $connectionType,
-                    function (DriverInterface $driver) use ($query, $collection) {
-                        $query->setDriver($driver)->execute($collection);
-                    }
-                );
-            }
-        );
+        $callback = function ($connectionType) use ($query, $collection) {
+            $this->metadata->connect(
+                $this->connectionPool,
+                $connectionType,
+                function (DriverInterface $driver) use ($query, $collection) {
+                    $query->setDriver($driver)->execute($collection);
+                }
+            );
+        };
+        if ($connectionType === null) {
+            $query->executeCallbackWithConnectionType(
+                $callback
+            );
+        } else {
+            $callback($connectionType);
+        }
 
         return $collection;
     }
 
-    public function executePrepared(PreparedQuery $query, $collection = null)
+    public function executePrepared(PreparedQuery $query, $collection = null, $connectionType = null)
     {
         if ($collection === null) {
             $collection = $this->collection;
@@ -142,9 +159,13 @@ class Repository
             );
         };
 
-        $query->executeCallbackWithConnectionType(
-            $callback
-        );
+        if ($connectionType === null) {
+            $query->executeCallbackWithConnectionType(
+                $callback
+            );
+        } else {
+            $callback($connectionType);
+        }
 
         return $collection;
     }

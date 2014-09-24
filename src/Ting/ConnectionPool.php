@@ -109,7 +109,7 @@ class ConnectionPool implements ConnectionPoolInterface
             }
         } else {
             /**
-             * In this case : we only have a master or the connexionType has been set to master
+             * In this case : we only have a master or the connectionType has been set to master
              */
             $connectionConfig = $this->connectionConfig[$connectionName]['master'];
         }
