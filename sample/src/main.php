@@ -60,7 +60,7 @@ $connections = [
                 'port'      => 3306,
             ],
             [
-                'host'      => '127.0.1.1',
+                'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
                 'user'      => 'world_sample',
                 'password'  => 'world_sample',
                 'port'      => 3306,
