@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class Collection extends atoum
 {

@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use \mageekguy\atoum;
+use mageekguy\atoum;
 
 class MetadataRepository extends atoum
 {
