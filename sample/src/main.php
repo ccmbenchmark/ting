@@ -25,6 +25,7 @@
 namespace sample\src;
 
 // ting autoloader
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 
@@ -53,13 +54,13 @@ $connections = [
         ],
         'slaves' => [
             [
-                'host'      => 'localhost',
+                'host'      => '127.0.0.1',
                 'user'      => 'world_sample',
                 'password'  => 'world_sample',
                 'port'      => 3306,
             ],
             [
-                'host'      => 'localhost',
+                'host'      => '127.0.1.1',
                 'user'      => 'world_sample',
                 'password'  => 'world_sample',
                 'port'      => 3306,
@@ -77,12 +78,14 @@ try {
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
-    $collection = $cityRepository->execute(new \CCMBenchmark\Ting\Query\Query(
-        "select * from t_city_cit as c
-        inner join t_country_cou as co on (c.cou_code = co.cou_code)
-        where co.cou_code = :code limit 3",
-        ['code' => 'FRA']
-    ))->hydrator(
+    $collection = $cityRepository->execute(
+        new \CCMBenchmark\Ting\Query\Query(
+            "select * from t_city_cit as c
+            inner join t_country_cou as co on (c.cou_code = co.cou_code)
+            where co.cou_code = :code limit 3",
+            ['code' => 'FRA']
+        )
+    )->hydrator(
         $services->get('Hydrator')
     );
 
@@ -107,6 +110,31 @@ try {
         where co.cou_code = :code limit 3",
         ['code' => 'FRA']
     ))->hydrator(
+        $services->get('Hydrator')
+    );
+
+    foreach ($collection as $result) {
+        var_dump($result);
+        echo str_repeat("-", 40) . "\n";
+    }
+} catch (Exception $e) {
+    var_dump($e->getMessage());
+}
+
+echo 'City3'."\n";
+try {
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
+
+    $collection = $cityRepository->executePrepared(
+        new \CCMBenchmark\Ting\Query\PreparedQuery(
+            "select * from t_city_cit as c
+            inner join t_country_cou as co on (c.cou_code = co.cou_code)
+            where co.cou_code = :code limit 3",
+            ['code' => 'FRA']
+        ),
+        null,
+        ConnectionPoolInterface::CONNECTION_MASTER
+    )->hydrator(
         $services->get('Hydrator')
     );
 
