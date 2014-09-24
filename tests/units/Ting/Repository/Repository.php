@@ -24,6 +24,9 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\ConnectionPoolInterface;
+use CCMBenchmark\Ting\Query\PreparedQuery;
+use CCMBenchmark\Ting\Query\Query;
 use mageekguy\atoum;
 
 class Repository extends atoum
@@ -225,6 +228,158 @@ class Repository extends atoum
                 ->isIdenticalTo($bouh->getId())
             ->string($testBouh->getFirstname())
                 ->isIdenticalTo($bouh->getFirstname());
+    }
+
+    public function testGetOnMaster()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockMetadataFactory= new \mock\CCMBenchmark\Ting\Repository\MetadataFactory($services->get('QueryFactory'));
+        $mockMetadata       = new \mock\CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockMysqliResult   = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+
+        $this->calling($mockMetadataFactory)->get = function () use ($mockMetadata) {
+            return $mockMetadata;
+        };
+
+        $this->calling($mockConnectionPool)->connect =
+            function ($connectionConfig, $database, $connectionType, \Closure $callback) use ($mockDriver) {
+                $callback($mockDriver);
+            };
+
+
+
+        $this->calling($fakeDriver)->query = $mockMysqliResult;
+
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = array();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'boo_id';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $this->calling($mockMysqliResult)->fetch_array = function ($type) {
+            return array(3, 'Sylvain');
+        };
+
+        $this
+            ->if(
+                $bouhRepository = new \tests\fixtures\model\BouhRepository(
+                    $mockConnectionPool,
+                    $services->get('MetadataRepository'),
+                    $mockMetadataFactory,
+                    $services->get('Collection'),
+                    $services->get('Hydrator'),
+                    $services->get('UnitOfWork')
+                )
+            )
+            ->and($bouhRepository->get(3, null, null, ConnectionPoolInterface::CONNECTION_MASTER))
+                ->mock($mockMetadata)
+                    ->call('connectMaster')
+                    ->once();
+        ;
+    }
+
+    public function testExecuteWithConnectionTypeShouldCallMetadataConnectWithConnectionType()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockMetadataFactory= new \mock\CCMBenchmark\Ting\Repository\MetadataFactory($services->get('QueryFactory'));
+        $mockMetadata       = new \mock\CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+
+        $this->calling($mockMetadataFactory)->get = function () use ($mockMetadata) {
+            return $mockMetadata;
+        };
+
+        $this->calling($mockMetadata)->connect = function (
+            ConnectionPoolInterface $connectionPool,
+            $connectionType,
+            \Closure $callback
+        ) use (
+            &$outerConnectionType
+        ) {
+            $outerConnectionType = $connectionType;
+        };
+
+        $this
+            ->if(
+                $bouhRepository = new \tests\fixtures\model\BouhRepository(
+                    $services->get('ConnectionPool'),
+                    $services->get('MetadataRepository'),
+                    $mockMetadataFactory,
+                    $services->get('Collection'),
+                    $services->get('Hydrator'),
+                    $services->get('UnitOfWork')
+                )
+            )->and($query = new Query(''))
+            ->and(
+                $bouhRepository->execute(
+                    $query,
+                    $services->get('Collection'),
+                    ConnectionPoolInterface::CONNECTION_MASTER
+                )
+            )
+                ->integer($outerConnectionType)
+                    ->isEqualTo(ConnectionPoolInterface::CONNECTION_MASTER)
+        ;
+    }
+
+    public function testExecutePreparedWithConnectionTypeShouldCallMetadataConnectWithConnectionType()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockMetadataFactory= new \mock\CCMBenchmark\Ting\Repository\MetadataFactory($services->get('QueryFactory'));
+        $mockMetadata       = new \mock\CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+
+        $this->calling($mockMetadataFactory)->get = function () use ($mockMetadata) {
+            return $mockMetadata;
+        };
+
+        $this->calling($mockMetadata)->connect = function (
+            ConnectionPoolInterface $connectionPool,
+            $connectionType,
+            \Closure $callback
+        ) use (
+            &$outerConnectionType
+        ) {
+            $outerConnectionType = $connectionType;
+        };
+
+        $this
+            ->if(
+                $bouhRepository = new \tests\fixtures\model\BouhRepository(
+                    $services->get('ConnectionPool'),
+                    $services->get('MetadataRepository'),
+                    $mockMetadataFactory,
+                    $services->get('Collection'),
+                    $services->get('Hydrator'),
+                    $services->get('UnitOfWork')
+                )
+            )->and($query = new PreparedQuery(''))
+            ->and(
+                $bouhRepository->executePrepared(
+                    $query,
+                    $services->get('Collection'),
+                    ConnectionPoolInterface::CONNECTION_MASTER
+                )
+            )
+                ->integer($outerConnectionType)
+                    ->isEqualTo(ConnectionPoolInterface::CONNECTION_MASTER)
+        ;
     }
 
     public function testStartTransactionShouldOpenTransaction()
