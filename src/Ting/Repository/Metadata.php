@@ -232,7 +232,9 @@ class Metadata
             $primariesValue[$primary['columnName']] = $entity->$propertyName();
         }
 
-        $this->generateWhereCondition($driver, $primariesValue,
+        $this->generateWhereCondition(
+            $driver,
+            $primariesValue,
             function ($whereCondition, $primariesValue) use ($values, $sql, $callback) {
                 $callback(
                     $this->queryFactory->getPrepared($sql . $whereCondition, array_merge($values, $primariesValue))
