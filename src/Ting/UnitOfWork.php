@@ -182,7 +182,7 @@ class UnitOfWork implements PropertyListenerInterface
         $properties = array();
         foreach ($this->entitiesChanged[$oid] as $property => $values) {
             if ($values[0] !== $values[1]) {
-                $properties[] = $property;
+                $properties[$property] = $values;
             }
         }
 
