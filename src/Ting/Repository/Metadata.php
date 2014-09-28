@@ -118,7 +118,7 @@ class Metadata
     public function setEntityPrimary($entity, $value)
     {
         if (count($this->primaries) > 1) {
-            throw new Exception('setEntityPrimary can\'be called on multiprimary model');
+            throw new Exception('setEntityPrimary can\'be called on multicolumn primary');
         }
 
         $property = 'set' . reset($this->primaries)['fieldName'];
