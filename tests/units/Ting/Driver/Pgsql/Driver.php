@@ -164,7 +164,7 @@ class Driver extends atoum
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
             ->then($driver->prepare(
-                'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
+                'SELECT 1 FROM bouh WHERE first = :first AND second = :#second',
                 function (
                     $statement,
                     $paramsOrder,
@@ -176,7 +176,7 @@ class Driver extends atoum
                 }
             ))
             ->array($outerParamsOrder)
-                ->isIdenticalTo(array('first' => null, 'second' => null));
+                ->isIdenticalTo(array('first' => null, '#second' => null));
     }
 
     public function testPrepareShouldRaiseQueryException()
