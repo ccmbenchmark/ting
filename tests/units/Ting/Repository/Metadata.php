@@ -283,6 +283,41 @@ class Metadata extends atoum
 
     }
 
+    public function testGenerateQueryForMultiColumnsPrimaryShouldCallCallbackWithQueryObject()
+    {
+        $services   = new \CCMBenchmark\Ting\Services();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+
+        $query = new \CCMBenchmark\Ting\Query\Query(
+            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :#id AND `bo_name` = :#bo_name',
+            ['#id' => 3, '#bo_name' => 'Bouh']
+        );
+
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->then($metadata->setTable('T_BOUH_BO'))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'id',
+                'columnName' => 'id'
+            )))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'name',
+                'columnName' => 'bo_name'
+            )))
+            ->then($metadata->generateQueryForPrimary(
+                $mockDriver,
+                ['id' => 3, 'name' => 'Bouh'],
+                function ($query) use (&$outerQuery) {
+                    $outerQuery = $query;
+                }
+            ))
+            ->object($outerQuery)
+                ->isCloneOf($query);
+
+    }
+
     public function testGenerateQueryForInsertShouldCallCallbackWithQueryObject()
     {
         $services   = new \CCMBenchmark\Ting\Services();

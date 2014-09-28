@@ -163,6 +163,12 @@ class Metadata
         $conditions = [];
         if (is_array($primariesValue) === false) {
             $conditions[reset($this->primaries)['columnName']] = $primariesValue;
+        } else {
+            foreach ($this->primaries as $primary) {
+                if (isset($primariesValue[$primary['fieldName']]) === true) {
+                    $conditions[$primary['columnName']] = $primariesValue[$primary['fieldName']];
+                }
+            }
         }
 
         $this->generateWhereCondition($driver, $conditions, function ($whereCondition, $values) use ($sql, $callback) {
