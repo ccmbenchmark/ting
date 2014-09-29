@@ -138,7 +138,7 @@ class Driver implements DriverInterface
         Collection $collection = null
     ) {
         $sql = preg_replace_callback(
-            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
+            '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use ($params) {
                 if (!array_key_exists($match[1], $params)) {
                     throw new QueryException('Value has not been setted for param ' . $match[1]);
@@ -163,6 +163,7 @@ class Driver implements DriverInterface
             },
             $sql
         );
+
         $result = $this->connection->query($sql);
 
         return $this->setCollectionWithResult($result, $queryType, $collection);
@@ -211,7 +212,7 @@ class Driver implements DriverInterface
         StatementInterface $statement = null
     ) {
         $sql = preg_replace_callback(
-            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
+            '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
                 return '?';

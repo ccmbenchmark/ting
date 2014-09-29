@@ -52,27 +52,6 @@ class Metadata extends atoum
                 ->hasMessage('Field configuration must have fieldName and columnName properties');
     }
 
-    public function testSetterWithPrimaryKeyShouldThrowExceptionIfPrimaryAlreadySetted()
-    {
-        $services = new \CCMBenchmark\Ting\Services();
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'bouhField',
-                'columnName' => 'bouhColumn'
-            )))
-            ->exception(function () use ($metadata) {
-                $metadata->addField(array(
-                    'primary'    => true,
-                    'fieldName'  => 'bouhSecondField',
-                    'columnName' => 'bouhSecondColumn'
-                ));
-            })
-                ->hasDefaultCode()
-                ->hasMessage('Primary key has already been setted.');
-    }
-
     public function testIfTableKnownShouldCallCallbackAndReturnTrue()
     {
         $services = new \CCMBenchmark\Ting\Services();
@@ -176,6 +155,35 @@ class Metadata extends atoum
                 ->isIdenticalTo(321);
     }
 
+    public function testSetEntityPrimaryOnMultiColumnPrimaryShouldRaiseException()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $metadata->setClass('mock\repository\BouhRepository');
+        $metadata->addField(array(
+            'primary'    => true,
+            'fieldName'  => 'id',
+            'columnName' => 'boo_id'
+        ));
+
+        $metadata->addField(array(
+            'primary'    => true,
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->setId = function ($id) {
+            $this->id = $id;
+        };
+
+        $this
+            ->exception(function () use ($metadata, $bouh) {
+                $metadata->setEntityPrimary($bouh, 321);
+            })
+                ->hasMessage('setEntityPrimary can\'be called on multicolumn primary');
+    }
+
     public function testConnectShouldCallConnectionPoolConnect()
     {
         $services           = new \CCMBenchmark\Ting\Services();
@@ -251,8 +259,8 @@ class Metadata extends atoum
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
         $query = new \CCMBenchmark\Ting\Query\Query(
-            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :primary',
-            ['primary' => 'BOuH']
+            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :#id',
+            ['#id' => 'BOuH']
         );
 
         $this
@@ -270,6 +278,41 @@ class Metadata extends atoum
             ->then($metadata->generateQueryForPrimary($mockDriver, 'BOuH', function ($query) use (&$outerQuery) {
                 $outerQuery = $query;
             }))
+            ->object($outerQuery)
+                ->isCloneOf($query);
+
+    }
+
+    public function testGenerateQueryForMultiColumnsPrimaryShouldCallCallbackWithQueryObject()
+    {
+        $services   = new \CCMBenchmark\Ting\Services();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+
+        $query = new \CCMBenchmark\Ting\Query\Query(
+            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :#id AND `bo_name` = :#bo_name',
+            ['#id' => 3, '#bo_name' => 'Bouh']
+        );
+
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->then($metadata->setTable('T_BOUH_BO'))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'id',
+                'columnName' => 'id'
+            )))
+            ->then($metadata->addField(array(
+                'primary'    => true,
+                'fieldName'  => 'name',
+                'columnName' => 'bo_name'
+            )))
+            ->then($metadata->generateQueryForPrimary(
+                $mockDriver,
+                ['id' => 3, 'name' => 'Bouh'],
+                function ($query) use (&$outerQuery) {
+                    $outerQuery = $query;
+                }
+            ))
             ->object($outerQuery)
                 ->isCloneOf($query);
 
@@ -329,11 +372,11 @@ class Metadata extends atoum
         $entity->setName('Robez-Masson');
 
         $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-            'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :boo_id',
-            ['boo_id' => 123, 'boo_name' => 'Robez-Masson']
+            'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :#boo_id',
+            ['#boo_id' => 123, 'boo_name' => 'Robez-Masson']
         );
 
-        $properties = array('name');
+        $properties = ['name' => ['toto', 'Robez-Masson']];
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
@@ -372,8 +415,8 @@ class Metadata extends atoum
         $entity->setId(123);
 
         $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-            'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :boo_id',
-            ['boo_id' => 123]
+            'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :#boo_id',
+            ['#boo_id' => 123]
         );
 
         $this

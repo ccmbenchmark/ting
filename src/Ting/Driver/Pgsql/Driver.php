@@ -187,7 +187,7 @@ class Driver implements DriverInterface
     private function convertParameters($sql, &$paramsOrder)
     {
         $sql = preg_replace_callback(
-            '/(?<!\\\):([a-zA-Z0-9_-]+)/',
+            '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
                 return '$' . count($paramsOrder);

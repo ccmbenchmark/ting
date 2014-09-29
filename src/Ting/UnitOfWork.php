@@ -182,7 +182,7 @@ class UnitOfWork implements PropertyListenerInterface
         $properties = array();
         foreach ($this->entitiesChanged[$oid] as $property => $values) {
             if ($values[0] !== $values[1]) {
-                $properties[] = $property;
+                $properties[$property] = $values;
             }
         }
 
@@ -225,7 +225,11 @@ class UnitOfWork implements PropertyListenerInterface
                             $entity,
                             function (PreparedQuery $query) use ($driver, $entity, $metadata) {
                                 $id = $query->setDriver($driver)->execute();
-                                $metadata->setEntityPrimary($entity, $id);
+                                try {
+                                    $metadata->setEntityPrimary($entity, $id);
+                                } catch (Exception $e) {
+                                    // multi column primary entity
+                                }
                                 $this->detach($entity);
                                 $this->manage($entity);
                             }

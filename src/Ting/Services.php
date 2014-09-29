@@ -117,13 +117,4 @@ class Services implements ContainerInterface
     {
         return $this->container->offsetExists($id);
     }
-
-    public function getWithArguments($id, $params)
-    {
-        $callback = $this->container->raw($id);
-        if ($callback instanceof \Closure) {
-            return $callback($this->container, $params);
-        }
-        throw new Exception('Calling getWithArguments on non callback dependency.');
-    }
 }

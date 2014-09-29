@@ -42,11 +42,27 @@ echo str_repeat("-", 40) . "\n";
 $connections = [
     'main' => [
         'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
-        'host'      => 'localhost',
-        'user'      => 'world_sample',
-        'password'  => 'world_sample',
-        'port'      => 3306,
-    ],
+        'master' => [
+            'host'      => 'localhost',
+            'user'      => 'world_sample',
+            'password'  => 'world_sample',
+            'port'      => 3306,
+        ],
+        'slaves' => [
+            [
+                'host'      => '127.0.0.1',
+                'user'      => 'world_sample',
+                'password'  => 'world_sample',
+                'port'      => 3306,
+            ],
+            [
+                'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
+                'user'      => 'world_sample',
+                'password'  => 'world_sample',
+                'port'      => 3306,
+            ]
+        ]
+    ]
 ];
 
 $services = new \CCMBenchmark\Ting\Services();
@@ -59,7 +75,7 @@ $services->get('ConnectionPool')->setConfig($connections);
 $unitOfWork = $services->get('UnitOfWork');
 
 try {
-    $cityRepository = new \sample\src\model\CityRepository($services);
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $city = $cityRepository->get(3);
     var_dump($city);
 
@@ -86,6 +102,17 @@ try {
 
     $unitOfWork->remove($city2);
     $unitOfWork->flush();
+} catch (Exception $e) {
+    var_dump($e->getMessage());
+}
+
+try {
+    $countryLanguageRepository =
+        $services->get('RepositoryFactory')->get('\sample\src\model\CountryLanguageRepository');
+
+    $countryLanguage = $countryLanguageRepository->get(['code' => 'AGO', 'language' => 'Kongo']);
+    var_dump($countryLanguage);
+
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }

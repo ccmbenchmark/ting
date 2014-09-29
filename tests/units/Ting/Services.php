@@ -84,22 +84,6 @@ class Services extends atoum
                 ->IsIdenticalTo($bouh);
     }
 
-    public function testGetWithArgumentsShouldConstructObjectWithArguments()
-    {
-        $callback = function ($bouh, $arguments) use (&$outerArguments) {
-            $outerArguments = $arguments;
-        };
-
-        $arguments = ['name' => 'Bouh'];
-
-        $this
-            ->if($services = new \CCMBenchmark\Ting\Services())
-            ->and($services->set('Bouh', $callback))
-            ->and($services->getWithArguments('Bouh', $arguments))
-            ->array($arguments)
-                ->IsIdenticalTo($outerArguments);
-    }
-
     public function testGetShouldReturnNewInstance()
     {
         $callback = function ($bouh) {
