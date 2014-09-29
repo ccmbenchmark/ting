@@ -35,6 +35,7 @@ class City implements NotifyPropertyInterface
     protected $countryCode = null;
     protected $district    = null;
     protected $population  = null;
+    protected $dt          = null;
 
     public function addPropertyListener(PropertyListenerInterface $listener)
     {
@@ -105,5 +106,16 @@ class City implements NotifyPropertyInterface
     public function getPopulation()
     {
         return (int) $this->population;
+    }
+
+    public function setDt($dt)
+    {
+        $this->propertyChanged('dt', $this->dt, $dt);
+        $this->dt = \DateTime::createFromFormat('Y-m-d H:i:s', $dt);
+    }
+
+    public function getDt()
+    {
+        return clone $this->dt;
     }
 }

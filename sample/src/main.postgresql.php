@@ -64,7 +64,7 @@ try {
     $collection = $cityRepository->execute(
         new Query(
             'select
-                cit_id, cit_name, c.cou_code, cit_district, cit_population,
+                cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
                 co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
             from t_city_cit as c
             inner join t_country_cou as co on (c.cou_code = co.cou_code)
