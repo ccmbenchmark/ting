@@ -177,18 +177,26 @@ class Repository
         /**
          * Example for your repository :
          *
-            $metadata = $metadataFactory->get();
-
-            $metadata->setClass(get_called_class());
-            $metadata->addField(array(
-               'primary'    => true,
-               'fieldName'  => 'aField',
-               'columnName' => 'COLUMN_NAME',
-               'type'       => 'int'
-            ));
-
-            return $metadata;
-        */
+         *  $metadata = $metadataFactory->get();
+         *
+         *  $metadata->setClass(get_called_class());
+         *  $metadata->addField(array(
+         *     'primary'    => true,
+         *     'fieldName'  => 'aField',
+         *     'columnName' => 'COLUMN_NAME',
+         *     'type'       => 'int'
+         *  ));
+         *
+         * return $metadata;
+         *
+         * Supported types:
+         *
+         * int
+         * datetime
+         * string
+         * float
+         *
+         */
     }
 
     public function startTransaction()

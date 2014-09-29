@@ -144,7 +144,13 @@ class Driver implements DriverInterface
                     throw new QueryException('Value has not been setted for param ' . $match[1]);
                 }
                 $value = $params[$match[1]];
+                
                 switch (gettype($value)) {
+                    case "object":
+                        if ($value instanceof \DateTime) {
+                            return '"' . $value->format('Y-m-d H:i:s') .'"';
+                        }
+                        break;
                     case "integer":
                         // integer and double doesn't need quotes
                     case "double":
@@ -191,7 +197,12 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\QueryException
+     * @param $sql
+     * @param callable $callback
+     * @param int $queryType
+     * @param StatementInterface $statement
+     * @return $this
+     * @throws Exception
      */
     public function prepare(
         $sql,

@@ -349,16 +349,21 @@ class Driver extends atoum
             ->and($this->function->pg_fetch_row = [12])
             ->integer(
                 $driver->execute(
-                    'INSERT INTO T_CITY_CIT (id, name, age) VALUES (:id, :name, :age)',
-                    ['id' => 12, 'name' => 'L\'étang du lac', 'age' => 12.6],
+                    'INSERT INTO T_CITY_CIT (id, name, age, last_modified) VALUES (:id, :name, :age, :date)',
+                    [
+                        'id' => 12,
+                        'name' => 'L\'étang du lac',
+                        'age' => 12.6,
+                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+                    ],
                     Query::TYPE_INSERT
                 )
             )
                 ->isIdenticalTo(12)
             ->string($outerQuery)
-                ->isIdenticalTo('INSERT INTO T_CITY_CIT (id, name, age) VALUES ($1, $2, $3)')
+                ->isIdenticalTo('INSERT INTO T_CITY_CIT (id, name, age, last_modified) VALUES ($1, $2, $3, $4)')
             ->array($outerParams)
-                ->isIdenticalTo([12, 'L\'étang du lac', 12.6])
+                ->isIdenticalTo([12, 'L\'étang du lac', 12.6, "2014-03-01 14:02:05"])
             ->string($outerQueryLastVal)
                 ->isIdenticalTo('SELECT lastval()')
             ;

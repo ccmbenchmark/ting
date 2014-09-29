@@ -71,6 +71,12 @@ class Statement implements StatementInterface
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
             switch (gettype($params[$key])) {
+                case "object":
+                    if ($params[$key] instanceof \DateTime) {
+                        $params[$key] = $params[$key]->format('Y-m-d H:i:s');
+                        $type = "s";
+                    }
+                    break;
                 case "integer":
                     $type = "i";
                     break;

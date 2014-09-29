@@ -336,13 +336,20 @@ class Driver extends atoum
             )
             ->then(
                 $driver->execute(
-                    'SELECT population FROM T_CITY_CIT WHERE id = :id AND name = :name AND age = :age',
-                    ['id' => 12, 'name' => 'L\'étang du lac', 'age' => 12.6]
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id
+                    AND name = :name AND age = :age AND last_modified = :date',
+                    [
+                        'id' => 12,
+                        'name' => 'L\'étang du lac',
+                        'age' => 12.6,
+                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+                    ]
                 )
             )
             ->string($outerSql)
                 ->isEqualTo(
-                    'SELECT population FROM T_CITY_CIT WHERE id = 12 AND name = "L\'étang du lac" AND age = 12.6'
+                    'SELECT population FROM T_CITY_CIT WHERE id = 12
+                    AND name = "L\'étang du lac" AND age = 12.6 AND last_modified = "2014-03-01 14:02:05"'
                 )
             ->mock($driverFake)
                 ->call('query')

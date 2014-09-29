@@ -95,6 +95,9 @@ class Driver implements DriverInterface
 
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
+            if ($params[$key] instanceof \DateTime) {
+                $params[$key] = $params[$key]->format('Y-m-d H:i:s');
+            }
             $values[] = &$params[$key];
         }
 

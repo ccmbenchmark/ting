@@ -60,9 +60,11 @@ class Statement extends atoum
             'firstname'   => 'Sylvain',
             'id'          => 3,
             'old'         => 32.1,
-            'description' => 'A very long description'
+            'description' => 'A very long description',
+            'date'        => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
         );
-        $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null);
+
+        $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null);
 
 
         $this
@@ -70,7 +72,7 @@ class Statement extends atoum
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute('MyStatementName', $params, $paramsOrder, $collection))
             ->array($outerValues)
-                ->isIdenticalTo(array('Sylvain', 3, 'A very long description', 32.1));
+                ->isIdenticalTo(array('Sylvain', 3, 'A very long description', 32.1, '2014-03-01 14:02:05'));
     }
 
     public function testSetCollectionWithResult()

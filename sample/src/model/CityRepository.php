@@ -35,7 +35,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
     {
 
         $query = new PreparedQuery(
-            'select cit_id, cit_name, cou_code, cit_district, cit_population
+            'select cit_id, cit_name, cou_code, cit_district, cit_population, last_modified
                     from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
             ['name' => 'Z%', 'population' => 200000]
         );
@@ -92,6 +92,12 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
             'fieldName'  => 'population',
             'columnName' => 'cit_population',
             'type'       => 'int'
+        ));
+
+        $metadata->addField(array(
+            'fieldName'  => 'dt',
+            'columnName' => 'last_modified',
+            'type'       => 'datetime'
         ));
 
         return $metadata;

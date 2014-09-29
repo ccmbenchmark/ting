@@ -94,6 +94,9 @@ class Statement implements StatementInterface
         $this->statementName = $statementName;
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
+            if ($params[$key] instanceof \DateTime) {
+                $params[$key] = $params[$key]->format('Y-m-d H:i:s');
+            }
             $values[] = &$params[$key];
         }
 
@@ -102,7 +105,10 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\QueryException
+     * @param $resultResource
+     * @param Collection $collection
+     * @return bool
+     * @throws QueryException
      */
     public function setCollectionWithResult($resultResource, Collection $collection = null)
     {
