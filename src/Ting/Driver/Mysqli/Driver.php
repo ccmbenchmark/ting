@@ -148,7 +148,7 @@ class Driver implements DriverInterface
                 switch (gettype($value)) {
                     case "object":
                         if ($value instanceof \DateTime) {
-                            return '"' . $value->format('Y-m-d H:i:s') .'"';
+                            return '"' . $value->format('Y-m-d H:i:s') . '"';
                         }
                         break;
                     case "integer":
