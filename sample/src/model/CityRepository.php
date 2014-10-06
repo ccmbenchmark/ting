@@ -64,10 +64,11 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata->setTable('t_city_cit');
 
         $metadata->addField(array(
-            'primary'    => true,
-            'fieldName'  => 'id',
-            'columnName' => 'cit_id',
-            'type'       => 'int'
+            'primary'       => true,
+            'autoincrement' => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'cit_id',
+            'type'          => 'int'
         ));
 
         $metadata->addField(array(

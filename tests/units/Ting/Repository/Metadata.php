@@ -133,15 +133,16 @@ class Metadata extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
-    public function testSetEntityPrimary()
+    public function testSetEntityPropertyForAutoIncrement()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
         $metadata->setClass('mock\repository\BouhRepository');
         $metadata->addField(array(
-            'primary'    => true,
-            'fieldName'  => 'id',
-            'columnName' => 'boo_id'
+            'primary'       => true,
+            'autoincrement' => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'boo_id'
         ));
 
         $bouh = $metadata->createEntity();
@@ -150,12 +151,12 @@ class Metadata extends atoum
         };
 
         $this
-            ->if($metadata->setEntityPrimary($bouh, 321))
+            ->if($metadata->setEntityPropertyForAutoIncrement($bouh, 321))
             ->integer($bouh->id)
                 ->isIdenticalTo(321);
     }
 
-    public function testSetEntityPrimaryOnMultiColumnPrimaryShouldRaiseException()
+    public function testSetEntityPropertyForAutoIncrementWithoutAutoIncrementColumnShouldReturnFalse()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
@@ -166,22 +167,14 @@ class Metadata extends atoum
             'columnName' => 'boo_id'
         ));
 
-        $metadata->addField(array(
-            'primary'    => true,
-            'fieldName'  => 'name',
-            'columnName' => 'boo_name'
-        ));
-
         $bouh = $metadata->createEntity();
         $this->calling($bouh)->setId = function ($id) {
             $this->id = $id;
         };
 
         $this
-            ->exception(function () use ($metadata, $bouh) {
-                $metadata->setEntityPrimary($bouh, 321);
-            })
-                ->hasMessage('setEntityPrimary can\'be called on multicolumn primary');
+            ->boolean($metadata->setEntityPropertyForAutoIncrement($bouh, 321))
+                ->isFalse();
     }
 
     public function testConnectShouldCallConnectionPoolConnect()

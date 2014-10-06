@@ -388,7 +388,7 @@ class UnitOfWork extends atoum
             ->then($unitOfWork->persist($entity3))
             ->then($unitOfWork->flush($mockMetadataRepository))
             ->mock($mockMetadata)
-                ->call('setEntityPrimary')->exactly(3)
+                ->call('setEntityPropertyForAutoIncrement')->exactly(3)
             ->boolean($unitOfWork->isManaged($entity1))
                 ->isTrue()
             ->boolean($unitOfWork->isManaged($entity2))
