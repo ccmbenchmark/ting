@@ -39,6 +39,7 @@ class Metadata
     protected $table          = null;
     protected $fields         = [];
     protected $primaries      = [];
+    protected $autoincrement  = null;
 
     public function __construct(QueryFactoryInterface $queryFactory)
     {
@@ -84,6 +85,10 @@ class Metadata
 
         if (isset($params['primary']) === true && $params['primary'] === true) {
             $this->primaries[$params['columnName']] = $params;
+
+            if (isset($params['autoincrement']) === true && $params['autoincrement'] === true) {
+                $this->autoincrement = $params;
+            }
         }
 
         $this->fields[$params['columnName']] = $params;
@@ -115,13 +120,13 @@ class Metadata
         return new $class;
     }
 
-    public function setEntityPrimary($entity, $value)
+    public function setEntityPropertyForAutoIncrement($entity, $value)
     {
-        if (count($this->primaries) > 1) {
-            throw new Exception('setEntityPrimary can\'be called on multicolumn primary');
+        if ($this->autoincrement === null) {
+            return false;
         }
 
-        $property = 'set' . reset($this->primaries)['fieldName'];
+        $property = 'set' . $this->autoincrement['fieldName'];
         $entity->$property($value);
         return $this;
     }
