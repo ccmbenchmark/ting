@@ -81,7 +81,7 @@ abstract class QueryAbstract
     }
 
     /**
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
+     * @param Collection $collection
      * @return mixed
      * @throws QueryException
      */
