@@ -96,6 +96,13 @@ class Services implements ContainerInterface
                 );
             }
         );
+
+        $this->container->offsetSet(
+            'Cache',
+            function () {
+                return new Cache\Memcached();
+            }
+        );
     }
 
     public function set($id, \Closure $callable, $factory = false)
