@@ -38,9 +38,10 @@ class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField(array(
-           'primary'    => true,
-           'fieldName'  => 'id',
-           'columnName' => 'boo_id'
+           'primary'       => true,
+           'autoincrement' => true,
+           'fieldName'     => 'id',
+           'columnName'    => 'boo_id'
         ));
 
         $metadata->addField(array(
