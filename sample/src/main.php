@@ -68,8 +68,22 @@ $connections = [
         ]
     ]
 ];
+$memcached = [
+    'servers' => [
+        ['host' => '127.0.0.1', 'port' => 11211]
+    ],
+    'options' => [
+        \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
+        //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
+        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP
+    ],
+    'persistentId' => 'ting.test'
+];
 
 $services->get('ConnectionPool')->setConfig($connections);
+$services->get('Cache')->setConfig($memcached);
+$services->get('Cache')->store('key', 'storedInCacheValue', 10);
+var_dump($services->get('Cache')->get('key'));
 
 echo 'City1'."\n";
 try {
