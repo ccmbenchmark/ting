@@ -37,8 +37,7 @@ class RepositoryFactory extends atoum
                 $services->get('ConnectionPool'),
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->and($repository = $repositoryFactory->get('\mock\tests\fixtures\model\BouhRepository'))

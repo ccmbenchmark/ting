@@ -29,22 +29,34 @@ use mageekguy\atoum;
 class Collection extends atoum
 {
 
-    public function testHydrateNullShouldReturnNull()
+    public function testCollectionShouldDoNothingWithoutHydrator()
     {
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = array();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'nom';
+            $stdClass->orgname  = 'lastname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->variable($collection->hydrate(null))
-                ->isNull();
-    }
-
-    public function testHydrateShouldDoNothingWithoutHydrator()
-    {
-        $data = array('Bouh' => array());
-
-        $this
-            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->array($collection->hydrate($data))
-                ->isIdenticalTo($data);
+            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
+            ->array($collection->current())
+                ->isIdenticalTo(['prenom' => 'Sylvain', 'nom' => 'Robez-Masson']);
     }
 
     public function testHydrateWithHydratorShouldCallHydratorHydrate()
@@ -55,10 +67,24 @@ class Collection extends atoum
             $services->get('UnitOfWork')
         );
 
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = array();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
         $data = array(
             array(
-                'name'     => 'name',
-                'orgName'  => 'BOO_NAME',
+                'name'     => 'prenom',
+                'orgName'  => 'firstname',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
@@ -66,17 +92,16 @@ class Collection extends atoum
         );
 
         $this
-            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->then($collection->hydrator($mockHydrator))
-            ->then($collection->hydrate($data))
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection($mockHydrator))
+            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
             ->mock($mockHydrator)
                 ->call('hydrate')
-                    ->withIdenticalArguments($data)->once();
+                    ->withIdenticalArguments($data, $collection)->once();
     }
 
     public function testIterator()
     {
-        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['value'], ['value2']]);
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
             $fields = array();
             $stdClass = new \stdClass();
@@ -94,22 +119,25 @@ class Collection extends atoum
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->then($collection->set($result))
-            ->then($collection->rewind())
-            ->mock($result)
-                ->call('rewind')->once()
-                ->call('next')->once()
-            ->then($collection->key())
-            ->mock($result)
-                ->call('key')->once()
-            ->then($collection->next())
-            ->mock($result)
-                ->call('next')->twice()
-            ->then($collection->valid())
-            ->mock($result)
-                ->call('valid')->once()
-            ->then($collection->current())
-            ->mock($result)
-                ->call('current')->once();
+            ->and($collection->set($result))
+            ->and($collection->rewind())
+            ->boolean($collection->valid())
+                ->isTrue()
+            ->array($collection->current())
+                ->isEqualTo(['prenom' => 'Sylvain'])
+            ->integer($collection->key())
+                ->isEqualTo(0)
+            ->and($collection->next())
+            ->boolean($collection->valid())
+                ->isFalse();
+    }
+
+    public function testAddWithKey()
+    {
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->and($collection->add(['Bouh'], 'MyKey'))
+            ->string($collection->key())
+                ->isIdenticalTo('MyKey');
     }
 }

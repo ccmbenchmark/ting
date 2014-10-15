@@ -67,20 +67,13 @@ class Query extends atoum
             ->and($query->execute($collection))
             ->and($collection->rewind())
             ->array($collection->current())
-                ->isIdenticalTo([[
-                    'name'     => 'prenom',
-                    'orgName'  => 'firstname',
-                    'table'    => 'bouh',
-                    'orgTable' => 'T_BOUH_BOO',
-                    'value'    => 'truc'
-                ]])
-            ->array($collection->next()->current())
-                ->isIdenticalTo([[
-                    'name'     => 'prenom',
-                    'orgName'  => 'firstname',
-                    'table'    => 'bouh',
-                    'orgTable' => 'T_BOUH_BOO',
-                    'value'    => 'bouh'
-                ]]);
+                ->isIdenticalTo([
+                    'prenom' => 'truc'
+                ])
+            ->and($collection->next())
+            ->array($collection->current())
+                ->isIdenticalTo([
+                    'prenom' => 'bouh'
+                ]);
     }
 }

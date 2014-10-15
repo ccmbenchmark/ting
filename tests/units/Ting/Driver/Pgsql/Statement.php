@@ -28,13 +28,16 @@ use mageekguy\atoum;
 
 class Statement extends atoum
 {
+
     public function testExecuteShouldCallTheRightConnection()
     {
         $this->function->pg_execute = function ($connection, $statementName, $values) use (&$outerConnection) {
             $outerConnection = $connection;
-            return new \ArrayIterator();
+            return [];
         };
         $this->function->pg_field_table = 'Bouh';
+        $this->function->pg_result_seek = 0;
+        $this->function->pg_fetch_array = false;
 
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
@@ -52,8 +55,10 @@ class Statement extends atoum
         $this->function->pg_field_table = 'Bouh';
         $this->function->pg_execute     = function ($connection, $statementName, $values) use (&$outerValues) {
             $outerValues = $values;
-            return new \ArrayIterator();
+            return [];
         };
+        $this->function->pg_result_seek = 0;
+        $this->function->pg_fetch_array = false;
 
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params          = array(
@@ -159,8 +164,10 @@ class Statement extends atoum
 
         $this->function->pg_execute = function ($connection, $statementName, $values) use (&$outerValues) {
             $outerValues = $values;
-            return new \ArrayIterator();
+            return [];
         };
+        $this->function->pg_result_seek = 0;
+        $this->function->pg_fetch_array = false;
 
         $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;

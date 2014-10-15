@@ -61,6 +61,10 @@ class MysqliResult implements \Iterator
 
     public function current()
     {
+        if (isset($this->data[$this->offset]) === false) {
+            return null;
+        }
+
         return $this->data[$this->offset];
     }
 
@@ -71,7 +75,7 @@ class MysqliResult implements \Iterator
 
     public function next()
     {
-        $this->offset++;
+        ++$this->offset;
     }
 
     public function valid()
