@@ -75,7 +75,7 @@ echo 'City1'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    var_dump($cityRepository->get(3));
+    //var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->execute(
@@ -85,8 +85,6 @@ try {
             where co.cou_code = :code limit 3",
             ['code' => 'FRA']
         )
-    )->hydrator(
-        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {
@@ -109,9 +107,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         ['code' => 'FRA']
-    ))->hydrator(
-        $services->get('Hydrator')
-    );
+    ));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -134,8 +130,6 @@ try {
         ),
         null,
         ConnectionPoolInterface::CONNECTION_MASTER
-    )->hydrator(
-        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {

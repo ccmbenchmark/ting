@@ -25,7 +25,7 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Query\PreparedQuery;
-use CCMBenchmark\Ting\Repository\Hydrator;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
@@ -40,7 +40,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
             ['name' => 'Z%', 'population' => 200000]
         );
 
-        return $this->executePrepared($query)->hydrator(new Hydrator($this->metadataRepository, $this->unitOfWork));
+        return $this->executePrepared($query, new Collection());
     }
 
     public function getNumberOfCities()

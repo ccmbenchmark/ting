@@ -71,8 +71,6 @@ try {
             where co.cou_code = :code limit 3',
             ['code' => 'FRA']
         )
-    )->hydrator(
-        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {
