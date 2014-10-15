@@ -34,9 +34,8 @@ class Query extends QueryAbstract
      * @return mixed
      * @throws QueryException
      */
-    public function execute(
-        Collection $collection = null
-    ) {
+    public function execute(Collection $collection = null)
+    {
         if ($this->driver === null) {
             throw new QueryException('You have to set the driver before to call execute');
         }
