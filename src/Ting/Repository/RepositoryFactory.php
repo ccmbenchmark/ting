@@ -63,15 +63,13 @@ class RepositoryFactory
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         MetadataFactoryInterface $metadataFactory,
-        Collection $collection,
-        Hydrator $hydrator,
+        CollectionFactory $collectionFactory,
         UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
         $this->metadataFactory    = $metadataFactory;
-        $this->collection         = $collection;
-        $this->hydrator           = $hydrator;
+        $this->collectionFactory  = $collectionFactory;
         $this->unitOfWork         = $unitOfWork;
     }
 
@@ -81,8 +79,7 @@ class RepositoryFactory
             $this->connectionPool,
             $this->metadataRepository,
             $this->metadataFactory,
-            $this->collection,
-            $this->hydrator,
+            $this->collectionFactory,
             $this->unitOfWork
         );
     }

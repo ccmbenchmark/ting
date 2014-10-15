@@ -27,7 +27,7 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
-class Hydrator
+class Hydrator implements HydratorInterface
 {
 
     protected $metadataRepository = null;
@@ -39,7 +39,7 @@ class Hydrator
         $this->unitOfWork         = $unitOfWork;
     }
 
-    public function hydrate($columns = array())
+    public function hydrate(array $columns, Collection $collection)
     {
         $result       = array();
         $metadataList = array();
@@ -77,6 +77,8 @@ class Hydrator
         foreach ($result as $entity) {
             $this->unitOfWork->manage($entity);
         }
+
+        $collection->add($result);
 
         return $result;
     }

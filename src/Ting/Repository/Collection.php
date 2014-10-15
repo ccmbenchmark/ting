@@ -29,31 +29,36 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class Collection implements \Iterator
 {
 
-    protected $result   = null;
+    protected $rows     = [];
     protected $hydrator = null;
+
+    public function __construct(HydratorInterface $hydrator = null)
+    {
+        $this->hydrator = $hydrator;
+    }
 
     public function set(ResultInterface $result)
     {
-        $this->result = $result;
+        foreach ($result as $row) {
+            if ($this->hydrator === null) {
+                $data = [];
+                foreach ($row as $column) {
+                    $data[$column['name']] = $column['value'];
+                }
+                $this->add($data);
+            } else {
+                $this->hydrator->hydrate($row, $this);
+            }
+        }
     }
 
-    public function hydrate($data)
+    public function add($data, $key = null)
     {
-        if ($data === null) {
-            return null;
+        if ($key === null) {
+            $this->rows[] = $data;
+        } else {
+            $this->rows[$key] = $data;
         }
-
-        if ($this->hydrator !== null) {
-            return $this->hydrator->hydrate($data);
-        }
-
-        return $data;
-    }
-
-    public function hydrator(Hydrator $hydrator)
-    {
-        $this->hydrator = $hydrator;
-        return $this;
     }
 
     /**
@@ -61,28 +66,31 @@ class Collection implements \Iterator
      */
     public function rewind()
     {
-        $this->result->rewind();
+        reset($this->rows);
         return $this;
     }
 
     public function current()
     {
-        return $this->hydrate($this->result->current());
+        return current($this->rows);
     }
 
     public function key()
     {
-        return $this->result->key();
+        return key($this->rows);
     }
 
     public function next()
     {
-        $this->result->next();
-        return $this;
+        return next($this->rows);
     }
 
     public function valid()
     {
-        return $this->result->valid();
+        if (current($this->rows) === false) {
+            return false;
+        }
+
+        return true;
     }
 }

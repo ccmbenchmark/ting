@@ -30,5 +30,5 @@ use CCMBenchmark\Ting\UnitOfWork;
 interface HydratorInterface
 {
     public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
-    public function hydrate(array $columns = array(), Collection $collection);
+    public function hydrate(array $columns, Collection $collection);
 }

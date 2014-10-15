@@ -54,40 +54,30 @@ class Repository
     /**
      * @var UnitOfWork
      */
+
     protected $unitOfWork;
 
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         MetadataFactoryInterface $metadataFactory,
-        Collection $collection,
-        Hydrator $hydrator,
+        CollectionFactory $collectionFactory,
         UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
-        $this->collection         = $collection;
-        $this->hydrator           = $hydrator;
+        $this->collectionFactory  = $collectionFactory;
         $this->unitOfWork         = $unitOfWork;
 
-        $class  = get_class($this);
+        $class = get_class($this);
         $this->metadata = $class::initMetadata($metadataFactory);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
-    public function get(
-        $primaryKeyValue,
-        Hydrator $hydrator = null,
-        Collection $collection = null,
-        $connectionType = null
-    ) {
-
-        if ($hydrator === null) {
-            $hydrator = $this->hydrator;
-        }
-
+    public function get($primaryKeyValue, Collection $collection = null, $connectionType = null)
+    {
         if ($collection === null) {
-            $collection = $this->collection;
+            $collection = $this->collectionFactory->get();
         }
 
         $callback = function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
@@ -111,16 +101,15 @@ class Repository
                 $callback
             );
         }
+        $collection->rewind();
 
-
-        $collection->hydrator($hydrator);
-        return current($collection->rewind()->current());
+        return current($collection->current());
     }
 
     public function execute(Query $query, Collection $collection = null, $connectionType = null)
     {
         if ($collection === null) {
-            $collection = $this->collection;
+            $collection = $this->collectionFactory->get();
         }
 
         $callback = function ($connectionType) use ($query, $collection) {
@@ -143,10 +132,10 @@ class Repository
         return $collection;
     }
 
-    public function executePrepared(PreparedQuery $query, $collection = null, $connectionType = null)
+    public function executePrepared(PreparedQuery $query, Collection $collection = null, $connectionType = null)
     {
         if ($collection === null) {
-            $collection = $this->collection;
+            $collection = $this->collectionFactory->get();
         }
 
         $callback = function ($connectionType) use ($query, $collection) {
