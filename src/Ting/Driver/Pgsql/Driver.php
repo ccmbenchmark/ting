@@ -127,17 +127,16 @@ class Driver implements DriverInterface
         }
 
         if ($resultResource === false) {
-            throw new QueryException(pg_result_error($this->connection));
+            throw new QueryException('pg_result_error($this->connection)');
         }
 
         $result = new Result($resultResource);
         $result->setQuery($query);
 
-        if ($collection === null) {
-            $collection = new Collection();
+        if ($collection !== null) {
+            $collection->set($result);
         }
 
-        $collection->set($result);
         return true;
     }
 
