@@ -75,7 +75,7 @@ echo 'City1'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    //var_dump($cityRepository->get(3));
+    var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
     $collection = $cityRepository->execute(

@@ -127,7 +127,7 @@ class Driver implements DriverInterface
         }
 
         if ($resultResource === false) {
-            throw new QueryException('pg_result_error($this->connection)');
+            throw new QueryException(pg_result_error($this->connection));
         }
 
         $result = new Result($resultResource);
