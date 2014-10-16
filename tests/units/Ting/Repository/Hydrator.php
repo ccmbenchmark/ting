@@ -65,13 +65,14 @@ class Hydrator extends atoum
         ));
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+        $collection = $services->get('CollectionFactory')->get();
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
-            ->then($data = $hydrator->hydrate($data))
+            ->then($data = $hydrator->hydrate($data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
@@ -122,13 +123,14 @@ class Hydrator extends atoum
         ));
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+        $collection = $services->get('CollectionFactory')->get();
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
-            ->then($data = $hydrator->hydrate($data))
+            ->then($data = $hydrator->hydrate($data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
@@ -159,12 +161,14 @@ class Hydrator extends atoum
             )
         );
 
+        $collection = $services->get('CollectionFactory')->get();
+
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
                 $services->get('MetadataRepository'),
                 $services->get('UnitOfWork')
             ))
-            ->then($data = $hydrator->hydrate($data))
+            ->then($data = $hydrator->hydrate($data, $collection))
             ->string($data['db__table']->name)
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['db__table']->fname)

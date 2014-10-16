@@ -54,8 +54,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($repository->execute($mockQuery, $collection))
@@ -84,8 +83,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($repository->execute($mockQuery))
@@ -124,8 +122,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($repository->executePrepared($mockQuery, $collection))
@@ -161,8 +158,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($repository->executePrepared($mockQuery))
@@ -201,9 +197,8 @@ class Repository extends atoum
             return $fields;
         };
 
-        $this->calling($mockMysqliResult)->fetch_array = function ($type) {
-            return array(3, 'Sylvain');
-        };
+        $this->calling($mockMysqliResult)->fetch_array[1] = [3, 'Sylvain'];
+        $this->calling($mockMysqliResult)->fetch_array[2] = null;
 
         $this->calling($mockConnectionPool)->connect =
             function ($connectionConfig, $database, $connectionType, \Closure $callback) use ($mockDriver) {
@@ -219,8 +214,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->and($testBouh = $bouhRepository->get(3))
@@ -249,8 +243,6 @@ class Repository extends atoum
                 $callback($mockDriver);
             };
 
-
-
         $this->calling($fakeDriver)->query = $mockMysqliResult;
 
         $this->calling($mockMysqliResult)->fetch_fields = function () {
@@ -274,9 +266,8 @@ class Repository extends atoum
             return $fields;
         };
 
-        $this->calling($mockMysqliResult)->fetch_array = function ($type) {
-            return array(3, 'Sylvain');
-        };
+        $this->calling($mockMysqliResult)->fetch_array[1] = [3, 'Sylvain'];
+        $this->calling($mockMysqliResult)->fetch_array[2] = null;
 
         $this
             ->if(
@@ -284,12 +275,11 @@ class Repository extends atoum
                     $mockConnectionPool,
                     $services->get('MetadataRepository'),
                     $mockMetadataFactory,
-                    $services->get('Collection'),
-                    $services->get('Hydrator'),
+                    $services->get('CollectionFactory'),
                     $services->get('UnitOfWork')
                 )
             )
-            ->and($bouhRepository->get(3, null, null, ConnectionPoolInterface::CONNECTION_MASTER))
+            ->and($bouhRepository->get(3, null, ConnectionPoolInterface::CONNECTION_MASTER))
                 ->mock($mockMetadata)
                     ->call('connectMaster')
                     ->once();
@@ -322,15 +312,14 @@ class Repository extends atoum
                     $services->get('ConnectionPool'),
                     $services->get('MetadataRepository'),
                     $mockMetadataFactory,
-                    $services->get('Collection'),
-                    $services->get('Hydrator'),
+                    $services->get('CollectionFactory'),
                     $services->get('UnitOfWork')
                 )
             )->and($query = new Query(''))
             ->and(
                 $bouhRepository->execute(
                     $query,
-                    $services->get('Collection'),
+                    null,
                     ConnectionPoolInterface::CONNECTION_MASTER
                 )
             )
@@ -365,15 +354,14 @@ class Repository extends atoum
                     $services->get('ConnectionPool'),
                     $services->get('MetadataRepository'),
                     $mockMetadataFactory,
-                    $services->get('Collection'),
-                    $services->get('Hydrator'),
+                    $services->get('CollectionFactory'),
                     $services->get('UnitOfWork')
                 )
             )->and($query = new PreparedQuery(''))
             ->and(
                 $bouhRepository->executePrepared(
                     $query,
-                    $services->get('Collection'),
+                    null,
                     ConnectionPoolInterface::CONNECTION_MASTER
                 )
             )
@@ -403,8 +391,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($bouhRepository->startTransaction())
@@ -429,8 +416,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($bouhRepository->startTransaction())
@@ -457,8 +443,7 @@ class Repository extends atoum
                 $mockConnectionPool,
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
-                $services->get('Collection'),
-                $services->get('Hydrator'),
+                $services->get('CollectionFactory'),
                 $services->get('UnitOfWork')
             ))
             ->then($bouhRepository->startTransaction())

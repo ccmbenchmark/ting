@@ -116,6 +116,10 @@ class City implements NotifyPropertyInterface
 
     public function getDt()
     {
-        return clone $this->dt;
+        if (is_object($this->dt) === true) {
+            return clone $this->dt;
+        }
+
+        return $this->dt;
     }
 }

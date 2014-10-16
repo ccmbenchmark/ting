@@ -22,26 +22,13 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Repository;
+namespace CCMBenchmark\Ting\Repository;
 
-use mageekguy\atoum;
+use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\UnitOfWork;
 
-class RepositoryFactory extends atoum
+interface HydratorInterface
 {
-    public function testGet()
-    {
-        $services = new \CCMBenchmark\Ting\Services();
-
-        $this
-            ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
-                $services->get('ConnectionPool'),
-                $services->get('MetadataRepository'),
-                $services->get('MetadataFactory'),
-                $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
-            ))
-            ->and($repository = $repositoryFactory->get('\mock\tests\fixtures\model\BouhRepository'))
-            ->object($repository)
-                ->isInstanceOf('\mock\tests\fixtures\model\BouhRepository');
-    }
+    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
+    public function hydrate(array $columns, Collection $collection);
 }

@@ -133,11 +133,10 @@ class Driver implements DriverInterface
         $result = new Result($resultResource);
         $result->setQuery($query);
 
-        if ($collection === null) {
-            $collection = new Collection();
+        if ($collection !== null) {
+            $collection->set($result);
         }
 
-        $collection->set($result);
         return true;
     }
 
