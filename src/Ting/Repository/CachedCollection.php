@@ -26,19 +26,10 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
-class CachedCollection implements CollectionInterface, \Iterator
+class CachedCollection extends Collection
 {
 
-    protected $hydrator = null;
-    protected $rows     = [];
     protected $internalRows = [];
-    protected $length   = 0;
-    protected $current  = 0;
-
-    public function __construct(HydratorInterface $hydrator = null)
-    {
-        $this->hydrator = $hydrator;
-    }
 
     public function set(ResultInterface $result)
     {
@@ -53,15 +44,6 @@ class CachedCollection implements CollectionInterface, \Iterator
                 $this->hydrator->hydrate($row, $this);
             }
             $this->internalRows[] = $row;
-        }
-    }
-
-    public function add($data, $key = null)
-    {
-        if ($key === null) {
-            $this->rows[] = $data;
-        } else {
-            $this->rows[$key] = $data;
         }
     }
 
@@ -86,36 +68,4 @@ class CachedCollection implements CollectionInterface, \Iterator
         }
     }
 
-    /**
-    * Iterator
-    */
-    public function rewind()
-    {
-        reset($this->rows);
-        return $this;
-    }
-
-    public function current()
-    {
-        return current($this->rows);
-    }
-
-    public function key()
-    {
-        return key($this->rows);
-    }
-
-    public function next()
-    {
-        return next($this->rows);
-    }
-
-    public function valid()
-    {
-        if (current($this->rows) === false) {
-            return false;
-        }
-
-        return true;
-    }
 }
