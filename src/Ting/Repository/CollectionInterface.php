@@ -24,11 +24,22 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\UnitOfWork;
+use CCMBenchmark\Ting\Driver\ResultInterface;
 
-interface HydratorInterface
+interface CollectionInterface
 {
-    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
-    public function hydrate(array $columns, CollectionInterface $collection);
+    public function set(ResultInterface $result);
+
+    /**
+     * Iterator
+     */
+    public function rewind();
+
+    public function current();
+
+    public function key();
+
+    public function next();
+
+    public function valid();
 }

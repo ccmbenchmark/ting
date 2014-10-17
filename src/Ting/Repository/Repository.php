@@ -24,14 +24,17 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\Query\CachedQuery;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;
+use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class Repository
@@ -57,17 +60,24 @@ class Repository
 
     protected $unitOfWork;
 
+    /**
+     * @var CacheInterface
+     */
+    protected $cache;
+
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         MetadataFactoryInterface $metadataFactory,
         CollectionFactory $collectionFactory,
-        UnitOfWork $unitOfWork
+        UnitOfWork $unitOfWork,
+        CacheInterface $cache
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
         $this->collectionFactory  = $collectionFactory;
         $this->unitOfWork         = $unitOfWork;
+        $this->cache              = $cache;
 
         $class = get_class($this);
         $this->metadata = $class::initMetadata($metadataFactory);
@@ -106,7 +116,16 @@ class Repository
         return current($collection->current());
     }
 
-    public function execute(Query $query, Collection $collection = null, $connectionType = null)
+    public function executeFromCache(CachedQuery $query, $ttl, $version = 0)
+    {
+            $query
+            ->setTtl($ttl)
+            ->setVersion($version)
+            ->setCacheDriver($this->cache);
+        return $this->execute($query, $this->collectionFactory->getCollectionForCache());
+    }
+
+    public function execute(QueryInterface $query, CollectionInterface $collection = null, $connectionType = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();

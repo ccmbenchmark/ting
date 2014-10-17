@@ -22,38 +22,54 @@
  *
  **********************************************************************/
 
-
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
+
+use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
-abstract class QueryAbstract
+class CachedQuery implements QueryInterface
 {
-    const TYPE_RESULT   = 1;
-    const TYPE_AFFECTED = 2;
-    const TYPE_INSERT   = 3;
-
-    protected $sql       = '';
-    protected $params    = array();
-    protected $queryType = self::TYPE_RESULT;
+    protected $sql      = null;
+    protected $params   = array();
+    protected $ttl      = 0;
+    /**
+     * @var CacheInterface
+     */
+    protected $cache    = null;
+    /**
+     * @var Query
+     */
+    protected $query    = null;
 
     /**
-     * @var DriverInterface $driver
+     * @var int version number used in keys.
      */
-    protected $driver = null;
+    protected $version  = 0;
 
     public function __construct($sql, array $params = null)
     {
-        $this->sql = $sql;
+        $this->query = new Query($sql, $params);
+    }
 
-        if ($params !== null) {
-            $this->params = $params;
-        }
+    public function setCacheDriver(CacheInterface $cacheDriver)
+    {
+        $this->cache = $cacheDriver;
 
-        $this->setQueryType();
+        return $this;
+    }
+
+    public function setTtl($ttl)
+    {
+        $this->ttl = (int)$ttl;
+
+        return $this;
+    }
+
+    public function setVersion($version)
+    {
+        $this->version = $version;
 
         return $this;
     }
@@ -66,6 +82,7 @@ abstract class QueryAbstract
     public function setParams(array $params)
     {
         $this->params = $params;
+        $this->query->setParams($params);
 
         return $this;
     }
@@ -76,37 +93,36 @@ abstract class QueryAbstract
      */
     public function setDriver(DriverInterface $driver)
     {
-        $this->driver = $driver;
+        $this->query->setDriver($driver);
 
         return $this;
     }
 
     /**
-     * @param Collection $collection
+     * @param CollectionInterface $collection
      * @return mixed
      * @throws QueryException
      */
-    abstract public function execute(CollectionInterface $collection = null);
-
-    final private function setQueryType()
+    public function execute(CollectionInterface $collection = null)
     {
-        $queryType = self::TYPE_RESULT;
-        $sqlCompare = trim(strtoupper($this->sql));
-        /* @todo We REALLY need to do this better :  we don't like playing riddle */
-        if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
-            $queryType = self::TYPE_AFFECTED;
-        } elseif (strpos($sqlCompare, 'INSERT') === 0 || strpos($sqlCompare, 'REPLACE' === 0)) {
-            $queryType = self::TYPE_INSERT;
+        ksort($this->params);
+        // TODO : add connectionName before hashing
+        $key = sha1($this->sql . serialize($this->params)) . '-' . $this->version;
+
+        if ($values = $this->cache->get($key)) {
+            echo 'Cache'."\n";
+            $collection->fromArray($values);
+        } else {
+            echo 'Pas cache'."\n";
+            $this->query->execute($collection);
+            $this->cache->store($key, $collection->toArray(), $this->ttl);
         }
-        $this->queryType = $queryType;
+
+        return $collection;
     }
 
     public function executeCallbackWithConnectionType(\Closure $callback)
     {
-        if (in_array($this->queryType, [self::TYPE_AFFECTED, self::TYPE_INSERT])) {
-            $callback(ConnectionPoolInterface::CONNECTION_MASTER);
-        } else {
-            $callback(ConnectionPoolInterface::CONNECTION_SLAVE);
-        }
+        $this->query->executeCallbackWithConnectionType($callback);
     }
 }

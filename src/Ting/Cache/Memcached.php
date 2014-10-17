@@ -31,6 +31,7 @@ class Memcached implements CacheInterface
     protected $connected    = false;
     protected $connection   = null;
     protected $config       = [];
+    protected $keyPrefix    = '';
 
     public function __construct($connection = null)
     {
@@ -43,6 +44,9 @@ class Memcached implements CacheInterface
     public function setConfig(array $config)
     {
         $this->config = $config;
+        if (isset($this->config['keyPrefix'])) {
+            $this->keyPrefix = $this->config['keyPrefix'];
+        }
     }
 
     private function connect()
@@ -70,42 +74,58 @@ class Memcached implements CacheInterface
     public function get($key)
     {
         $this->connect();
-        return $this->connection->get($key);
+        return $this->connection->get($this->keyPrefix . $key);
     }
 
     public function getMulti(array $keys)
     {
         $this->connect();
+
+        $keys = array_map(function ($key) {
+                return $this->keyPrefix . $key;
+        }, $keys);
+
         return $this->connection->getMulti($keys);
     }
 
     public function store($key, $value, $ttl)
     {
         $this->connect();
-        return $this->connection->set($key, $value, $ttl);
+        return $this->connection->set($this->keyPrefix . $key, $value, $ttl);
     }
 
     public function storeMulti($values, $ttl)
     {
         $this->connect();
+
+        array_walk(
+            $values,
+            function ($value, &$key) {
+                $key = $this->keyPrefix . $key;
+            }
+        );
+
         return $this->connection->setMulti($values, $ttl);
     }
 
     public function delete($key)
     {
         $this->connect();
-        return $this->connection->delete($key);
+        return $this->connection->delete($this->keyPrefix . $key);
     }
 
     public function deleteMulti(array $keys)
     {
         $this->connect();
+        $keys = array_map(function ($key) {
+                return $this->keyPrefix . $key;
+        }, $keys);
         return $this->connection->deleteMulti($keys);
     }
 
     public function replace($key, $value, $ttl)
     {
         $this->connect();
-        return $this->connection->replace($key, $value, $ttl);
+        return $this->connection->replace($this->keyPrefix . $key, $value, $ttl);
     }
 }

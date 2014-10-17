@@ -22,13 +22,11 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace tests\units\CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\UnitOfWork;
+use mageekguy\atoum;
 
-interface HydratorInterface
+class CachedQuery extends atoum
 {
-    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
-    public function hydrate(array $columns, CollectionInterface $collection);
+
 }

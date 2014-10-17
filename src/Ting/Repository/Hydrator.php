@@ -39,7 +39,7 @@ class Hydrator implements HydratorInterface
         $this->unitOfWork         = $unitOfWork;
     }
 
-    public function hydrate(array $columns, Collection $collection)
+    public function hydrate(array $columns, CollectionInterface $collection)
     {
         $result       = array();
         $metadataList = array();

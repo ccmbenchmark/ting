@@ -26,11 +26,11 @@
 namespace tests\fixtures\FakeQuery;
 
 use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class FakeQuery extends QueryAbstract
 {
-    public function execute(Collection $collection = null)
+    public function execute(CollectionInterface $collection = null)
     {
 
     }

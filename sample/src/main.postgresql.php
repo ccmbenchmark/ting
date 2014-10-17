@@ -68,7 +68,7 @@ try {
                 co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
             from t_city_cit as c
             inner join t_country_cou as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 3',
+            where co.cou_code = :code limit 1',
             ['code' => 'FRA']
         )
     );

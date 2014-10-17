@@ -91,7 +91,8 @@ class Services implements ContainerInterface
                     $this->get('MetadataRepository'),
                     $this->get('MetadataFactory'),
                     $this->get('CollectionFactory'),
-                    $this->get('UnitOfWork')
+                    $this->get('UnitOfWork'),
+                    $this->get('Cache')
                 );
             }
         );

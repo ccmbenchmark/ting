@@ -38,4 +38,9 @@ class CollectionFactory implements CollectionFactoryInterface
     {
         return new Collection($this->hydrator);
     }
+
+    public function getCollectionForCache()
+    {
+        return new CachedCollection($this->hydrator);
+    }
 }
