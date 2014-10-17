@@ -99,8 +99,6 @@ try {
             where co.cou_code = :code limit 3",
             ['code' => 'FRA']
         )
-    )->hydrator(
-        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {
@@ -123,9 +121,7 @@ try {
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
         ['code' => 'FRA']
-    ))->hydrator(
-        $services->get('Hydrator')
-    );
+    ));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -148,8 +144,6 @@ try {
         ),
         null,
         ConnectionPoolInterface::CONNECTION_MASTER
-    )->hydrator(
-        $services->get('Hydrator')
     );
 
     foreach ($collection as $result) {

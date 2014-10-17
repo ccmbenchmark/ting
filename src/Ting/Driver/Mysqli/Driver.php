@@ -144,7 +144,7 @@ class Driver implements DriverInterface
                     throw new QueryException('Value has not been setted for param ' . $match[1]);
                 }
                 $value = $params[$match[1]];
-                
+
                 switch (gettype($value)) {
                     case "object":
                         if ($value instanceof \DateTime) {
@@ -189,11 +189,10 @@ class Driver implements DriverInterface
             throw new QueryException($this->connection->error, $this->connection->errno);
         }
 
-        if ($collection == null) {
-            $collection = new Collection();
+        if ($collection !== null) {
+            $collection->set(new Result($result));
         }
 
-        $collection->set(new Result($result));
         return true;
     }
 

@@ -225,11 +225,7 @@ class UnitOfWork implements PropertyListenerInterface
                             $entity,
                             function (PreparedQuery $query) use ($driver, $entity, $metadata) {
                                 $id = $query->setDriver($driver)->execute();
-                                try {
-                                    $metadata->setEntityPrimary($entity, $id);
-                                } catch (Exception $e) {
-                                    // multi column primary entity
-                                }
+                                $metadata->setEntityPropertyForAutoIncrement($entity, $id);
                                 $this->detach($entity);
                                 $this->manage($entity);
                             }

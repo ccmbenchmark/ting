@@ -63,9 +63,9 @@ class Services implements ContainerInterface
         );
 
         $this->container->offsetSet(
-            'Collection',
+            'CollectionFactory',
             $this->container->factory(function () {
-                return new Repository\Collection();
+                return new Repository\CollectionFactory($this->get('Hydrator'));
             })
         );
 
@@ -90,8 +90,7 @@ class Services implements ContainerInterface
                     $this->get('ConnectionPool'),
                     $this->get('MetadataRepository'),
                     $this->get('MetadataFactory'),
-                    $this->get('Collection'),
-                    $this->get('Hydrator'),
+                    $this->get('CollectionFactory'),
                     $this->get('UnitOfWork')
                 );
             }

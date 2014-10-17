@@ -22,26 +22,10 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Repository;
+namespace CCMBenchmark\Ting\Repository;
 
-use mageekguy\atoum;
-
-class RepositoryFactory extends atoum
+interface CollectionFactoryInterface
 {
-    public function testGet()
-    {
-        $services = new \CCMBenchmark\Ting\Services();
-
-        $this
-            ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
-                $services->get('ConnectionPool'),
-                $services->get('MetadataRepository'),
-                $services->get('MetadataFactory'),
-                $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
-            ))
-            ->and($repository = $repositoryFactory->get('\mock\tests\fixtures\model\BouhRepository'))
-            ->object($repository)
-                ->isInstanceOf('\mock\tests\fixtures\model\BouhRepository');
-    }
+    public function __construct(HydratorInterface $hydrator);
+    public function get();
 }
