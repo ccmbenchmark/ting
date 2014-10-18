@@ -37,7 +37,7 @@ class Collection implements CollectionInterface, \Iterator
         $this->hydrator = $hydrator;
     }
 
-    public function set(ResultInterface $result)
+    public function set(\Iterator $result)
     {
         foreach ($result as $row) {
             if ($this->hydrator === null) {

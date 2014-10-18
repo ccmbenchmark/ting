@@ -28,7 +28,7 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 interface CollectionInterface
 {
-    public function set(ResultInterface $result);
+    public function set(\Iterator $result);
 
     /**
      * Iterator

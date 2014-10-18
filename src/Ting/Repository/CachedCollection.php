@@ -42,20 +42,10 @@ class CachedCollection extends Collection
         return $this->fromCache;
     }
 
-    public function set(ResultInterface $result)
+    public function set(\Iterator $result)
     {
-        foreach ($result as $row) {
-            if ($this->hydrator === null) {
-                $data = [];
-                foreach ($row as $column) {
-                    $data[$column['name']] = $column['value'];
-                }
-                $this->add($data);
-            } else {
-                $this->hydrator->hydrate($row, $this);
-            }
-            $this->internalRows[] = $row;
-        }
+        $this->internalRows = iterator_to_array($result);
+        parent::set($result);
     }
 
     public function toArray()
@@ -65,18 +55,7 @@ class CachedCollection extends Collection
 
     public function fromArray(array $rows)
     {
-        $this->internalRows = $rows;
-        foreach ($this->internalRows as $row) {
-            if ($this->hydrator === null) {
-                $data = [];
-                foreach ($row as $column) {
-                    $data[$column['name']] = $column['value'];
-                }
-                $this->add($data);
-            } else {
-                $this->hydrator->hydrate($row, $this);
-            }
-        }
+        parent::set(new \ArrayIterator($rows));
     }
 
 }
