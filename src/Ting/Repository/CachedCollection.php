@@ -57,5 +57,4 @@ class CachedCollection extends Collection
     {
         parent::set(new \ArrayIterator($rows));
     }
-
 }
