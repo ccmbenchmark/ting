@@ -35,7 +35,7 @@ class Metadata
     protected $queryFactory   = null;
     protected $connectionName = null;
     protected $databaseName   = null;
-    protected $class          = null;
+    protected $entity         = null;
     protected $table          = null;
     protected $fields         = [];
     protected $primaries      = [];
@@ -59,13 +59,13 @@ class Metadata
     /**
      * @throws \CCMBenchmark\Ting\Exception
      */
-    public function setClass($className)
+    public function setEntity($className)
     {
         if (substr($className, 0, 1) === '\\') {
             throw new Exception('Class must not start with a \\');
         }
 
-        $this->class = (string) $className;
+        $this->entity = (string) $className;
     }
 
     public function setTable($tableName)
@@ -116,8 +116,7 @@ class Metadata
 
     public function createEntity()
     {
-        $class = substr($this->class, 0, -10); // Remove "Repository" from class
-        return new $class;
+        return new $this->entity;
     }
 
     public function setEntityPropertyForAutoIncrement($entity, $value)

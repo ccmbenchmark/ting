@@ -49,7 +49,7 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('tests\fixtures\model\BouhRepository');
+        $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField(array(
@@ -107,7 +107,7 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('tests\fixtures\model\BouhRepository');
+        $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField(array(

@@ -32,7 +32,7 @@ class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
     {
         $metadata = $metadataFactory->get();
 
-        $metadata->setClass(get_class());
+        $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setConnection('main');
         $metadata->setDatabase('bouh_world');
         $metadata->setTable('T_BOUH_BOO');

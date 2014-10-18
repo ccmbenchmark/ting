@@ -187,7 +187,7 @@ class Repository
          *
          *  $metadata = $metadataFactory->get();
          *
-         *  $metadata->setClass(get_called_class());
+         *  $metadata->setEntity('myProject\model\Bouh');
          *  $metadata->addField(array(
          *     'primary'    => true,
          *     'fieldName'  => 'aField',
