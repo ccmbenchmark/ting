@@ -24,34 +24,16 @@
 
 namespace sample\src\model;
 
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
+use CCMBenchmark\Ting\Entity\NotifyProperty;
 
-class City implements NotifyPropertyInterface
+class City extends NotifyProperty
 {
-    protected $listeners   = array();
     protected $id          = null;
     protected $name        = null;
     protected $countryCode = null;
     protected $district    = null;
     protected $population  = null;
     protected $dt          = null;
-
-    public function addPropertyListener(PropertyListenerInterface $listener)
-    {
-        $this->listeners[] = $listener;
-    }
-
-    public function propertyChanged($propertyName, $oldValue, $newValue)
-    {
-        if ($oldValue === $newValue) {
-            return;
-        }
-
-        foreach ($this->listeners as $listener) {
-            $listener->propertyChanged($this, $propertyName, $oldValue, $newValue);
-        }
-    }
 
     public function setId($id)
     {

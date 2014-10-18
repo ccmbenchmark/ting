@@ -22,46 +22,26 @@
  *
  **********************************************************************/
 
-namespace tests\fixtures\model;
+namespace CCMBenchmark\Ting\Entity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
 
-class Bouh extends NotifyProperty
+class NotifyProperty implements NotifyPropertyInterface
 {
-    protected $id        = null;
-    protected $firstname = null;
-    protected $name      = null;
+    protected $listeners = array();
 
-    public function setId($id)
+    public function addPropertyListener(PropertyListenerInterface $listener)
     {
-        $this->propertyChanged('id', $this->id, $id);
-        $this->id = (int) $id;
+        $this->listeners[] = $listener;
     }
 
-    public function setFirstname($firstname)
+    public function propertyChanged($propertyName, $oldValue, $newValue)
     {
-        $this->propertyChanged('firstname', $this->firstname, $firstname);
-        $this->firstname = (string) $firstname;
-    }
+        if ($oldValue === $newValue) {
+            return;
+        }
 
-    public function setName($name)
-    {
-        $this->propertyChanged('name', $this->name, $name);
-        $this->name = (string) $name;
-    }
-
-    public function getId()
-    {
-        return (int) $this->id;
-    }
-
-    public function getFirstname()
-    {
-        return (string) $this->firstname;
-    }
-
-    public function getName()
-    {
-        return (string) $this->name;
+        foreach ($this->listeners as $listener) {
+            $listener->propertyChanged($this, $propertyName, $oldValue, $newValue);
+        }
     }
 }
