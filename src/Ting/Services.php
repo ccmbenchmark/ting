@@ -100,7 +100,9 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Cache',
             function () {
-                return new Cache\Memcached();
+                $cache = new Cache\Memcached();
+                $cache->setConnection(new \Memcached($cache->getPersistentId()));
+                return $cache;
             }
         );
     }

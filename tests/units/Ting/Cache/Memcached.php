@@ -35,7 +35,9 @@ class Memcached extends atoum
     public function beforeTestMethod($method)
     {
         $this->memcachedMock = new \mock\Fake\Memcached();
-        $this->memcached = new \CCMBenchmark\Ting\Cache\Memcached($this->memcachedMock);
+        $this->memcached     = new \CCMBenchmark\Ting\Cache\Memcached();
+        $this->memcached->setConfig(['servers' => ['Bouh']]);
+        $this->memcached->setConnection($this->memcachedMock);
     }
 
     public function testGetShouldCallMemcachedGet()
@@ -126,6 +128,112 @@ class Memcached extends atoum
                 ->call('replace')
                     ->withArguments($key, $value, $ttl)
                         ->once()
+        ;
+    }
+
+    public function testConnectWhenAlreadyConnectedShouldDoNothing()
+    {
+        $this
+            ->if($this->memcached->get('Bouh'))
+            ->then($this->memcached->get('Bouh'))
+            ->mock($this->memcachedMock)
+                ->call('addServers')
+                    ->once()
+        ;
+    }
+
+    public function testConnectWithoutConfigShouldRaiseError()
+    {
+        $this
+            ->if($memcached = new \CCMBenchmark\Ting\Cache\Memcached())
+            ->exception(function () use ($memcached) {
+                $memcached->get('Bouh');
+            })
+                ->hasMessage('Must setConfig priory to use Memcached')
+        ;
+    }
+
+    public function testConnectWithoutConfigServersShouldRaiseError()
+    {
+        $this
+            ->if($memcached = new \CCMBenchmark\Ting\Cache\Memcached())
+            ->then($memcached->setConfig(['Bouh']))
+            ->exception(function () use ($memcached) {
+                $memcached->get('Bouh');
+            })
+                ->hasMessage('Config must have servers to use Memcached')
+        ;
+    }
+
+    public function testConnectWithoutConnectionShouldRaiseError()
+    {
+        $this
+            ->if($memcached = new \CCMBenchmark\Ting\Cache\Memcached())
+            ->then($memcached->setConfig(['servers' => ['Bouh']]))
+            ->exception(function () use ($memcached) {
+                $memcached->get('Bouh');
+            })
+                ->hasMessage('Must setConnection priory to use Memcached')
+        ;
+    }
+
+    public function testConnectShouldCallMetadataGetServerListResetServerListAndAddServers()
+    {
+        $this
+            ->if($this->memcached->get('Bouh'))
+            ->mock($this->memcachedMock)
+                ->call('getServerList')
+                    ->once()
+                ->call('resetServerList')
+                    ->once()
+                ->call('addServers')
+                    ->once()
+        ;
+    }
+
+    public function testConnectTwiceShouldNotCallMetadataGetServerListResetServerListAndAddServers()
+    {
+        $this
+            ->if($this->memcached->get('Bouh'))
+            ->then($this->memcached->get('Bouh'))
+            ->mock($this->memcachedMock)
+                ->call('getServerList')
+                    ->once()
+                ->call('resetServerList')
+                    ->once()
+                ->call('addServers')
+                    ->once()
+        ;
+    }
+
+    public function testConfigWithOptionsShouldCallMemcachedSetOptions()
+    {
+        $this
+            ->if($this->memcached->setConfig([
+                'servers' => ['Bouh'],
+                'options' => ['Bouh']
+            ]))
+            ->then($this->memcached->get('Bouh'))
+            ->mock($this->memcachedMock)
+                ->call('setOptions')
+                    ->once()
+        ;
+    }
+
+    public function testGetPersistentIdShouldReturnBouhValue()
+    {
+        $this
+            ->if($this->memcached->setConfig(['persistentId' => 'Bouh']))
+            ->string($this->memcached->getPersistentId())
+                ->isIdenticalTo('Bouh')
+        ;
+    }
+
+    public function testGetPersistentIdShouldReturnNull()
+    {
+        $this
+            ->variable($this->memcached->getPersistentId())
+                ->isNull
         ;
     }
 }

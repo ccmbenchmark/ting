@@ -31,22 +31,27 @@ class Memcached implements CacheInterface
     protected $connected    = false;
     protected $connection   = null;
     protected $config       = [];
-    protected $keyPrefix    = '';
-
-    public function __construct($connection = null)
-    {
-        if ($connection !== null) {
-            $this->connection = $connection;
-            $this->connected = true;
-        }
-    }
 
     public function setConfig(array $config)
     {
         $this->config = $config;
-        if (isset($this->config['keyPrefix'])) {
-            $this->keyPrefix = $this->config['keyPrefix'];
+    }
+
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
+    }
+
+    /**
+     * @internal Getter beacause no other way to do a dependancy injection for \Memcached
+     */
+    public function getPersistentId()
+    {
+        if (isset($this->config['persistentId']) === false) {
+            return null;
         }
+
+        return $this->config['persistentId'];
     }
 
     private function connect()
@@ -54,12 +59,20 @@ class Memcached implements CacheInterface
         if ($this->connected === true) {
             return true;
         }
-        if (count($this->config) === 0) {
-            throw new Exception('Must setConfig priory to connect to memcached');
-        }
-        $this->connection = new \Memcached($this->config['persistentId']);
 
-        if (count($this->config['options']) > 0) {
+        if (count($this->config) === 0) {
+            throw new Exception('Must setConfig priory to use Memcached');
+        }
+
+        if (isset($this->config['servers']) === false) {
+            throw new Exception('Config must have servers to use Memcached');
+        }
+
+        if ($this->connection === null) {
+            throw new Exception('Must setConnection priory to use Memcached');
+        }
+
+        if (isset($this->config['options']) === true && is_array($this->config['options']) === true) {
             $this->connection->setOptions($this->config['options']);
         }
 
@@ -67,6 +80,7 @@ class Memcached implements CacheInterface
             $this->connection->resetServerList();
             $this->connection->addServers($this->config['servers']);
         }
+
         $this->connected = true;
         return true;
     }
@@ -74,58 +88,42 @@ class Memcached implements CacheInterface
     public function get($key)
     {
         $this->connect();
-        return $this->connection->get($this->keyPrefix . $key);
+        return $this->connection->get($key);
     }
 
     public function getMulti(array $keys)
     {
         $this->connect();
-
-        $keys = array_map(function ($key) {
-                return $this->keyPrefix . $key;
-        }, $keys);
-
         return $this->connection->getMulti($keys);
     }
 
     public function store($key, $value, $ttl)
     {
         $this->connect();
-        return $this->connection->set($this->keyPrefix . $key, $value, $ttl);
+        return $this->connection->set($key, $value, $ttl);
     }
 
     public function storeMulti($values, $ttl)
     {
         $this->connect();
-
-        array_walk(
-            $values,
-            function ($value, &$key) {
-                $key = $this->keyPrefix . $key;
-            }
-        );
-
         return $this->connection->setMulti($values, $ttl);
     }
 
     public function delete($key)
     {
         $this->connect();
-        return $this->connection->delete($this->keyPrefix . $key);
+        return $this->connection->delete($key);
     }
 
     public function deleteMulti(array $keys)
     {
         $this->connect();
-        $keys = array_map(function ($key) {
-                return $this->keyPrefix . $key;
-        }, $keys);
         return $this->connection->deleteMulti($keys);
     }
 
     public function replace($key, $value, $ttl)
     {
         $this->connect();
-        return $this->connection->replace($this->keyPrefix . $key, $value, $ttl);
+        return $this->connection->replace($key, $value, $ttl);
     }
 }
