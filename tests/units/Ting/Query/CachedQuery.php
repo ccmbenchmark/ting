@@ -28,5 +28,60 @@ use mageekguy\atoum;
 
 class CachedQuery extends atoum
 {
+    public function testExecuteShouldCallCacheGetAndExecuteQuery()
+    {
 
+        $mockMemcached = new \mock\Memcached();
+        $this->calling($mockMemcached)->addServers = true;
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->execute = true;
+
+        $mockTingMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
+        $mockTingMemcached->setConfig(['servers' => ['Bouh']]);
+        $mockTingMemcached->setConnection($mockMemcached);
+
+        $this
+            ->if($cachedQuery = new \CCMBenchmark\Ting\Query\CachedQuery('SELECT name FROM Bouh'))
+            ->and($cachedQuery->setDriver($mockDriver))
+            ->and($cachedQuery->setCacheDriver($mockTingMemcached))
+            ->then($cachedQuery->execute(new \CCMBenchmark\Ting\Repository\CachedCollection()))
+            ->mock($mockTingMemcached)
+                ->call('get')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('execute')
+                    ->once()
+        ;
+    }
+
+    public function testExecuteShouldCallCacheGetAndReturnDataFromMemcached()
+    {
+
+        $mockMemcached = new \mock\Memcached();
+        $this->calling($mockMemcached)->addServers = true;
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->execute = true;
+
+        $mockTingMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
+        $mockTingMemcached->setConfig(['servers' => ['Bouh']]);
+        $mockTingMemcached->setConnection($mockMemcached);
+        $this->calling($mockTingMemcached)->get = [[['name' => 'key1', 'value' => 'Bouh 1']]];
+
+        $this
+            ->if($cachedQuery = new \CCMBenchmark\Ting\Query\CachedQuery('SELECT name FROM Bouh'))
+            ->and($cachedQuery->setDriver($mockDriver))
+            ->and($cachedQuery->setCacheDriver($mockTingMemcached))
+            ->then($collection = $cachedQuery->execute(new \CCMBenchmark\Ting\Repository\CachedCollection()))
+            ->mock($mockTingMemcached)
+                ->call('get')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('execute')
+                    ->never()
+            ->array($collection->current())
+                ->isIdenticalTo(['key1' => 'Bouh 1'])
+        ;
+    }
 }
