@@ -76,10 +76,10 @@ $memcached = [
     'options' => [
         \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
         //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
-        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP
+        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
+        \Memcached::OPT_PREFIX_KEY           => 'sample-'
     ],
-    'persistentId' => 'ting.test',
-    'keyPrefix'    => 'sample'
+    'persistentId' => 'ting.test'
 ];
 
 
