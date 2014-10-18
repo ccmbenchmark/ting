@@ -29,7 +29,18 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class CachedCollection extends Collection
 {
 
+    protected $fromCache    = false;
     protected $internalRows = [];
+
+    public function setFromCache($value)
+    {
+        $this->fromCache = (bool) $value;
+    }
+
+    public function isFromCache()
+    {
+        return $this->fromCache;
+    }
 
     public function set(ResultInterface $result)
     {
