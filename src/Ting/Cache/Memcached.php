@@ -43,7 +43,7 @@ class Memcached implements CacheInterface
     }
 
     /**
-     * @internal Getter beacause no other way to do a dependancy injection for \Memcached
+     * @internal Getter because no other way to do a dependency injection for \Memcached
      */
     public function getPersistentId()
     {
