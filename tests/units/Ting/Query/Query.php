@@ -24,21 +24,12 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Repository\Metadata;
 use mageekguy\atoum;
 
 class Query extends atoum
 {
-
-    public function testExecuteShouldRaiseException()
-    {
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\Query(''))
-            ->exception(function () use ($query) {
-                $query->execute();
-            })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException');
-    }
-
     public function testExecuteShouldReturnCollection()
     {
         $mockDriver       = new \mock\Fake\Mysqli();
@@ -59,12 +50,15 @@ class Query extends atoum
 
         $this->calling($mockDriver)->query = $mockMysqliResult;
 
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+
         $this
             ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->and($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->and($query = new \CCMBenchmark\Ting\Query\Query('SELECT * from Bouh'))
             ->and($query->setDriver($driver))
-            ->and($query->execute($collection))
+            ->and($query->execute(new Metadata(new QueryFactory()), $mockConnectionPool, $collection))
             ->and($collection->rewind())
             ->array($collection->current())
                 ->isIdenticalTo([

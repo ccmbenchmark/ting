@@ -200,8 +200,8 @@ class UnitOfWork implements PropertyListenerInterface
                             $driver,
                             $entity,
                             $properties,
-                            function (PreparedQuery $query) use ($driver, $entity) {
-                                $query->setDriver($driver)->execute();
+                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
+                                $query->setDriver($driver)->execute($metadata, $this->connectionPool);
                                 $this->detach($entity);
                             }
                         );
@@ -224,7 +224,7 @@ class UnitOfWork implements PropertyListenerInterface
                             $driver,
                             $entity,
                             function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $id = $query->setDriver($driver)->execute();
+                                $id = $query->setDriver($driver)->execute($metadata, $this->connectionPool);
                                 $metadata->setEntityPropertyForAutoIncrement($entity, $id);
                                 $this->detach($entity);
                                 $this->manage($entity);
@@ -249,7 +249,7 @@ class UnitOfWork implements PropertyListenerInterface
                             $driver,
                             $entity,
                             function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $query->setDriver($driver)->execute();
+                                $query->setDriver($driver)->execute($metadata, $this->connectionPool);
                                 $this->detach($entity);
                             }
                         );

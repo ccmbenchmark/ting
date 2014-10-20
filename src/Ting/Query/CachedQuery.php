@@ -26,8 +26,9 @@ namespace CCMBenchmark\Ting\Query;
 
 
 use CCMBenchmark\Ting\Cache\CacheInterface;
-use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class CachedQuery extends Query
 {
@@ -70,12 +71,18 @@ class CachedQuery extends Query
     }
 
     /**
+     * @param Metadata $metadata
+     * @param ConnectionPoolInterface $connectionPool
      * @param CollectionInterface $collection
-     * @return mixed
-     * @throws QueryException
+     * @param null $connectionType
+     * @return CollectionInterface|mixed
      */
-    public function execute(CollectionInterface $collection = null)
-    {
+    public function execute(
+        Metadata $metadata,
+        ConnectionPoolInterface $connectionPool,
+        CollectionInterface $collection = null,
+        $connectionType = null
+    ) {
         ksort($this->params);
         // TODO : add connectionName before hashing
         $key = sha1($this->sql . serialize($this->params)) . '-' . $this->version;
@@ -85,7 +92,8 @@ class CachedQuery extends Query
             $collection->fromArray($values);
         } else {
             $collection->setFromCache(false);
-            parent::execute($collection);
+
+            parent::execute($metadata, $connectionPool, $collection, $connectionType);
             $this->cache->store($key, $collection->toArray(), $this->ttl);
         }
 

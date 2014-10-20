@@ -40,7 +40,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
             ['name' => 'Z%', 'population' => 200000]
         );
 
-        return $this->executePrepared($query, new Collection());
+        return $this->execute($query, new Collection());
     }
 
     public function getNumberOfCities()
@@ -51,7 +51,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
             ['population' => 20000]
         );
 
-        return $this->executePrepared($query);
+        return $this->execute($query);
     }
 
     public static function initMetadata(MetadataFactoryInterface $metadataFactory)

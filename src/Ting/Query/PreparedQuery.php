@@ -24,8 +24,10 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class PreparedQuery extends QueryAbstract
 {
@@ -71,16 +73,20 @@ class PreparedQuery extends QueryAbstract
     }
 
     /**
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
+     * @param CollectionInterface $collection
+     * @param ConnectionPoolInterface $connectionPool
+     * @param Metadata $metadata
+     * @param null $connectionType
      * @return mixed
      * @throws QueryException
      */
     public function execute(
-        CollectionInterface $collection = null
+        Metadata $metadata,
+        ConnectionPoolInterface $connectionPool,
+        CollectionInterface $collection = null,
+        $connectionType = null
     ) {
-        if ($this->driver === null) {
-            throw new QueryException('You have to set the driver before to call execute');
-        }
+        $this->initConnection($collection, $connectionPool, $metadata, $connectionType);
 
         if ($this->prepared === false) {
             $this->prepare();

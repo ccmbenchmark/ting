@@ -81,7 +81,9 @@ class Memcached
      * Retrieve an item from a specific server
      * @link http://php.net/manual/en/memcached.getbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key of the item to fetch.
@@ -127,7 +129,9 @@ class Memcached
      * Retrieve multiple items from a specific server
      * @link http://php.net/manual/en/memcached.getmultibykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param array $keys <p>
      * Array of keys to retrieve.
@@ -172,7 +176,9 @@ class Memcached
      * Request multiple items from a specific server
      * @link http://php.net/manual/en/memcached.getdelayedbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param array $keys <p>
      * Array of keys to request.
@@ -242,7 +248,9 @@ class Memcached
      * Store an item on a specific server
      * @link http://php.net/manual/en/memcached.setbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key under which to store the value.
@@ -284,7 +292,9 @@ class Memcached
      * Set a new expiration on an item on a specific server
      * @link http://php.net/manual/en/memcached.touchbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key under which to store the value.
@@ -323,7 +333,9 @@ class Memcached
      * Store multiple items on a specific server
      * @link http://php.net/manual/en/memcached.setmultibykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param array $items <p>
      * An array of key/value pairs to store on the server.
@@ -373,7 +385,9 @@ class Memcached
      * Unique value associated with the existing item. Generated by memcache.
      * </p>
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key under which to store the value.
@@ -421,7 +435,9 @@ class Memcached
      * Add an item under a new key on a specific server
      * @link http://php.net/manual/en/memcached.addbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key under which to store the value.
@@ -465,7 +481,9 @@ class Memcached
      * Append data to an existing item on a specific server
      * @link http://php.net/manual/en/memcached.appendbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key under which to store the value.
@@ -506,7 +524,9 @@ class Memcached
      * Prepend data to an existing item on a specific server
      * @link http://php.net/manual/en/memcached.prependbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key of the item to prepend the data to.
@@ -550,7 +570,9 @@ class Memcached
      * Replace the item under an existing key on a specific server
      * @link http://php.net/manual/en/memcached.replacebykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key under which to store the value.
@@ -613,7 +635,9 @@ class Memcached
      * Delete an item from a specific server
      * @link http://php.net/manual/en/memcached.deletebykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key to be deleted.
@@ -635,7 +659,9 @@ class Memcached
      * Delete multiple items from a specific server
      * @link http://php.net/manual/en/memcached.deletemultibykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param array $keys <p>
      * The keys to be deleted.
@@ -703,7 +729,9 @@ class Memcached
      * Increment numeric item's value, stored on a specific server
      * @link http://php.net/manual/en/memcached.incrementbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key of the item to increment.
@@ -729,7 +757,9 @@ class Memcached
      * Decrement numeric item's value, stored on a specific server
      * @link http://php.net/manual/en/memcached.decrementbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @param string $key <p>
      * The key of the item to decrement.
@@ -805,7 +835,9 @@ class Memcached
      * Map a key to a server
      * @link http://php.net/manual/en/memcached.getserverbykey.php
      * @param string $server_key <p>
-     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key for the item, we hash on the server key when deciding which memcached server to talk to. This allows related items to be grouped together on a single server for efficiency with multi operations.
+     * The key identifying the server to store the value on or retrieve it from. Instead of hashing on the actual key
+     * for the item, we hash on the server key when deciding which memcached server to talk to. This allows related
+     * items to be grouped together on a single server for efficiency with multi operations.
      * </p>
      * @return array an array containing three keys of host,
      * port, and weight on success or <b>FALSE</b>

@@ -32,9 +32,8 @@ use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\CachedQuery;
-use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\Query;
-use CCMBenchmark\Ting\Query\QueryInterface;
+use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class Repository
@@ -84,8 +83,11 @@ class Repository
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
-    public function get($primaryKeyValue, Collection $collection = null, $connectionType = null)
-    {
+    public function get(
+        $primaryKeyValue,
+        Collection $collection = null,
+        $connectionType = ConnectionPoolInterface::CONNECTION_SLAVE
+    ) {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
@@ -95,7 +97,8 @@ class Repository
                 $driver,
                 $primaryKeyValue,
                 function (Query $query) use ($driver, $collection) {
-                    $query->setDriver($driver)->execute($collection);
+                    $query->setDriver($driver);
+                    $this->execute($query, $collection);
                 }
             );
         };
@@ -116,65 +119,26 @@ class Repository
         return current($collection->current());
     }
 
-    public function executeFromCache(CachedQuery $query, $ttl, $version = 0)
+    public function executeFromCache(CachedQuery $query, $ttl, $version = 0, CachedCollection $collection = null)
     {
-            $query
+        if ($collection === null) {
+            $collection = $this->collectionFactory->getCollectionForCache();
+        }
+
+        $query
             ->setTtl($ttl)
             ->setVersion($version)
             ->setCacheDriver($this->cache);
-        return $this->execute($query, $this->collectionFactory->getCollectionForCache());
+        return $this->execute($query, $collection);
     }
 
-    public function execute(QueryInterface $query, CollectionInterface $collection = null, $connectionType = null)
+    public function execute(QueryAbstract $query, CollectionInterface $collection = null, $connectionType = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
 
-        $callback = function ($connectionType) use ($query, $collection) {
-            $this->metadata->connect(
-                $this->connectionPool,
-                $connectionType,
-                function (DriverInterface $driver) use ($query, $collection) {
-                    $query->setDriver($driver)->execute($collection);
-                }
-            );
-        };
-        if ($connectionType === null) {
-            $query->executeCallbackWithConnectionType(
-                $callback
-            );
-        } else {
-            $callback($connectionType);
-        }
-
-        return $collection;
-    }
-
-    public function executePrepared(PreparedQuery $query, Collection $collection = null, $connectionType = null)
-    {
-        if ($collection === null) {
-            $collection = $this->collectionFactory->get();
-        }
-
-        $callback = function ($connectionType) use ($query, $collection) {
-            $this->metadata->connect(
-                $this->connectionPool,
-                $connectionType,
-                function (DriverInterface $driver) use ($query, $collection) {
-                    $query->setDriver($driver)->prepare()->execute($collection);
-                }
-            );
-        };
-
-        if ($connectionType === null) {
-            $query->executeCallbackWithConnectionType(
-                $callback
-            );
-        } else {
-            $callback($connectionType);
-        }
-
+        $query->execute($this->metadata, $this->connectionPool, $collection, $connectionType);
         return $collection;
     }
 

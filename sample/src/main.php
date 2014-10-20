@@ -133,7 +133,6 @@ try {
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
-
 echo 'City2'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
@@ -141,7 +140,7 @@ try {
     var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
-    $collection = $cityRepository->executePrepared(new \CCMBenchmark\Ting\Query\PreparedQuery(
+    $collection = $cityRepository->execute(new \CCMBenchmark\Ting\Query\PreparedQuery(
         "select * from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3",
@@ -156,11 +155,12 @@ try {
     var_dump($e->getMessage());
 }
 
+die;
 echo 'City3'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    $collection = $cityRepository->executePrepared(
+    $collection = $cityRepository->execute(
         new \CCMBenchmark\Ting\Query\PreparedQuery(
             "select * from t_city_cit as c
             inner join t_country_cou as co on (c.cou_code = co.cou_code)
@@ -196,7 +196,7 @@ try {
     $nb = $cityRepository->getNumberOfCities();
     var_dump(['initial' => $nb->rewind()->current()]);
     $cityRepository->startTransaction();
-        $cityRepository->executePrepared(
+        $cityRepository->execute(
             new PreparedQuery(
                 "INSERT INTO t_city_cit
                     (cit_name, cit_population) VALUES
