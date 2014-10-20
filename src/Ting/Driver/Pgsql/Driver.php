@@ -30,6 +30,7 @@ use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
@@ -88,7 +89,7 @@ class Driver implements DriverInterface
         $sql,
         $params = array(),
         $queryType = QueryAbstract::TYPE_RESULT,
-        Collection $collection = null
+        CollectionInterface $collection = null
     ) {
         $paramsOrder = array();
         $sql = $this->convertParameters($sql, $paramsOrder);

@@ -55,7 +55,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($repository->execute($mockQuery, $collection))
             ->object($outerCollection)
@@ -84,7 +85,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($repository->execute($mockQuery))
             ->object($outerCollection)
@@ -123,7 +125,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($repository->executePrepared($mockQuery, $collection))
             ->object($outerCollection)
@@ -159,7 +162,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($repository->executePrepared($mockQuery))
             ->object($outerCollection)
@@ -215,7 +219,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->and($testBouh = $bouhRepository->get(3))
             ->integer($testBouh->getId())
@@ -276,7 +281,8 @@ class Repository extends atoum
                     $services->get('MetadataRepository'),
                     $mockMetadataFactory,
                     $services->get('CollectionFactory'),
-                    $services->get('UnitOfWork')
+                    $services->get('UnitOfWork'),
+                    $services->get('Cache')
                 )
             )
             ->and($bouhRepository->get(3, null, ConnectionPoolInterface::CONNECTION_MASTER))
@@ -313,7 +319,8 @@ class Repository extends atoum
                     $services->get('MetadataRepository'),
                     $mockMetadataFactory,
                     $services->get('CollectionFactory'),
-                    $services->get('UnitOfWork')
+                    $services->get('UnitOfWork'),
+                    $services->get('Cache')
                 )
             )->and($query = new Query(''))
             ->and(
@@ -355,7 +362,8 @@ class Repository extends atoum
                     $services->get('MetadataRepository'),
                     $mockMetadataFactory,
                     $services->get('CollectionFactory'),
-                    $services->get('UnitOfWork')
+                    $services->get('UnitOfWork'),
+                    $services->get('Cache')
                 )
             )->and($query = new PreparedQuery(''))
             ->and(
@@ -392,7 +400,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($bouhRepository->startTransaction())
             ->boolean($mockDriver->isTransactionOpened())
@@ -417,7 +426,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->commit())
@@ -444,7 +454,8 @@ class Repository extends atoum
                 $services->get('MetadataRepository'),
                 $services->get('MetadataFactory'),
                 $services->get('CollectionFactory'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('Cache')
             ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->rollback())

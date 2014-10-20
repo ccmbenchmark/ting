@@ -47,7 +47,10 @@ class Services extends atoum
             ->object($services->get('Hydrator'))
                 ->isInstanceOf('\CCMBenchmark\Ting\Repository\Hydrator')
             ->object($services->get('RepositoryFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\RepositoryFactory');
+                ->isInstanceOf('\CCMBenchmark\Ting\Repository\RepositoryFactory')
+            ->object($services->get('Cache'))
+                ->isInstanceOf('\CCMBenchmark\Ting\Cache\Memcached')
+        ;
     }
 
     public function testShouldImplementsContainerInterface()

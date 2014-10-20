@@ -91,8 +91,18 @@ class Services implements ContainerInterface
                     $this->get('MetadataRepository'),
                     $this->get('MetadataFactory'),
                     $this->get('CollectionFactory'),
-                    $this->get('UnitOfWork')
+                    $this->get('UnitOfWork'),
+                    $this->get('Cache')
                 );
+            }
+        );
+
+        $this->container->offsetSet(
+            'Cache',
+            function () {
+                $cache = new Cache\Memcached();
+                $cache->setConnection(new \Memcached($cache->getPersistentId()));
+                return $cache;
             }
         );
     }

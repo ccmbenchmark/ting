@@ -32,7 +32,7 @@ class MetadataRepository extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('tests\fixtures\model\BouhRepository');
+        $metadata->setEntity('tests\fixtures\model\BouhRepository');
 
         $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
@@ -59,7 +59,7 @@ class MetadataRepository extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('tests\fixtures\model\BouhRepository');
+        $metadata->setEntity('tests\fixtures\model\BouhRepository');
 
         $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);

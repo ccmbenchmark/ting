@@ -27,6 +27,7 @@ namespace sample\src;
 // ting autoloader
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Query\CachedQuery;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -68,8 +69,44 @@ $connections = [
         ]
     ]
 ];
+$memcached = [
+    'servers' => [
+        ['host' => '127.0.0.1', 'port' => 11211]
+    ],
+    'options' => [
+        \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
+        //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
+        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
+        \Memcached::OPT_PREFIX_KEY           => 'sample-'
+    ],
+    'persistentId' => 'ting.test'
+];
+
 
 $services->get('ConnectionPool')->setConfig($connections);
+$services->get('Cache')->setConfig($memcached);
+$services->get('Cache')->store('key', 'storedInCacheValue', 10);
+var_dump($services->get('Cache')->get('key'));
+
+
+
+$cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
+$collection = $cityRepository->executeFromCache(
+    new CachedQuery(
+        "select cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
+                    co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
+                 from t_city_cit as c
+                inner join t_country_cou as co on (c.cou_code = co.cou_code)
+                where co.cou_code = :code limit 1",
+        ['code' => 'FRA']
+    ),
+    10
+);
+
+foreach ($collection as $result) {
+    var_dump($result);
+    echo str_repeat("-", 40) . "\n";
+}
 
 echo 'City1'."\n";
 try {
@@ -80,7 +117,9 @@ try {
 
     $collection = $cityRepository->execute(
         new \CCMBenchmark\Ting\Query\Query(
-            "select * from t_city_cit as c
+            "select cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
+                co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
+            from t_city_cit as c
             inner join t_country_cou as co on (c.cou_code = co.cou_code)
             where co.cou_code = :code limit 3",
             ['code' => 'FRA']

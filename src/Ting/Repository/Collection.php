@@ -26,7 +26,7 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
-class Collection implements \Iterator
+class Collection implements CollectionInterface, \Iterator
 {
 
     protected $rows     = [];
@@ -37,7 +37,7 @@ class Collection implements \Iterator
         $this->hydrator = $hydrator;
     }
 
-    public function set(ResultInterface $result)
+    public function set(\Iterator $result)
     {
         foreach ($result as $row) {
             if ($this->hydrator === null) {

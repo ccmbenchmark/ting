@@ -22,34 +22,34 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver;
+namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
-interface DriverInterface
+interface QueryInterface
 {
+    public function __construct($sql, array $params = null);
 
-    public function connect($hostname, $username, $password, $port);
-    public function execute(
-        $sql,
-        $params = array(),
-        $queryType = QueryAbstract::TYPE_RESULT,
-        CollectionInterface $collection = null
-    );
-    public function prepare(
-        $sql,
-        \Closure $callback,
-        $queryType = QueryAbstract::TYPE_RESULT,
-        StatementInterface $statement = null
-    );
-    public function setDatabase($database);
-    public function ifIsError(\Closure $callback);
-    public function ifIsNotConnected(\Closure $callback);
-    public function escapeFields($fields, \Closure $callback);
-    public function startTransaction();
-    public function rollback();
-    public function commit();
-    public static function forConnectionKey($connectionName, $database, \Closure $callback);
+    /**
+     * @param array $params
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function setParams(array $params);
+
+    /**
+     * @param DriverInterface $driver
+     * @return $this
+     */
+    public function setDriver(DriverInterface $driver);
+
+    /**
+     * @param CollectionInterface $collection
+     * @return mixed
+     * @throws QueryException
+     */
+    public function execute(CollectionInterface $collection = null);
+
+    public function executeCallbackWithConnectionType(\Closure $callback);
 }

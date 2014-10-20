@@ -30,6 +30,7 @@ use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
@@ -135,7 +136,7 @@ class Driver implements DriverInterface
         $sql,
         $params = array(),
         $queryType = QueryAbstract::TYPE_RESULT,
-        Collection $collection = null
+        CollectionInterface $collection = null
     ) {
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
@@ -148,7 +149,7 @@ class Driver implements DriverInterface
                 switch (gettype($value)) {
                     case "object":
                         if ($value instanceof \DateTime) {
-                            return '"' . $value->format('Y-m-d H:i:s') .'"';
+                            return '"' . $value->format('Y-m-d H:i:s') . '"';
                         }
                         break;
                     case "integer":
@@ -170,7 +171,7 @@ class Driver implements DriverInterface
     }
 
 
-    public function setCollectionWithResult($result, $queryType, Collection $collection = null)
+    public function setCollectionWithResult($result, $queryType, CollectionInterface $collection = null)
     {
         if ($queryType !== QueryAbstract::TYPE_RESULT) {
             if ($queryType === QueryAbstract::TYPE_INSERT) {

@@ -22,13 +22,26 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace CCMBenchmark\Ting\Entity;
 
-use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\UnitOfWork;
 
-interface HydratorInterface
+class NotifyProperty implements NotifyPropertyInterface
 {
-    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
-    public function hydrate(array $columns, CollectionInterface $collection);
+    protected $listeners = array();
+
+    public function addPropertyListener(PropertyListenerInterface $listener)
+    {
+        $this->listeners[] = $listener;
+    }
+
+    public function propertyChanged($propertyName, $oldValue, $newValue)
+    {
+        if ($oldValue === $newValue) {
+            return;
+        }
+
+        foreach ($this->listeners as $listener) {
+            $listener->propertyChanged($this, $propertyName, $oldValue, $newValue);
+        }
+    }
 }

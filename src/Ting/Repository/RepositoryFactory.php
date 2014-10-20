@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -59,18 +60,26 @@ class RepositoryFactory
      * @var UnitOfWork
      */
     protected $unitOfWork;
+
+    /**
+     * @var CacheInterface
+     */
+    protected $cache;
+
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         MetadataFactoryInterface $metadataFactory,
         CollectionFactory $collectionFactory,
-        UnitOfWork $unitOfWork
+        UnitOfWork $unitOfWork,
+        CacheInterface $cache
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
         $this->metadataFactory    = $metadataFactory;
         $this->collectionFactory  = $collectionFactory;
         $this->unitOfWork         = $unitOfWork;
+        $this->cache              = $cache;
     }
 
     public function get($repositoryName)
@@ -80,7 +89,8 @@ class RepositoryFactory
             $this->metadataRepository,
             $this->metadataFactory,
             $this->collectionFactory,
-            $this->unitOfWork
+            $this->unitOfWork,
+            $this->cache
         );
     }
 }

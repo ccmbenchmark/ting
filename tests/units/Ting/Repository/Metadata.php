@@ -29,13 +29,13 @@ use mageekguy\atoum;
 
 class Metadata extends atoum
 {
-    public function testSetClassShouldRaiseExceptionWhenStartWithSlash()
+    public function testSetEntityShouldRaiseExceptionWhenStartWithSlash()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
             ->exception(function () use ($metadata) {
-                    $metadata->setClass('\my\namespace\Bouh');
+                    $metadata->setEntity('\my\namespace\Bouh');
             })
                 ->hasMessage('Class must not start with a \\');
     }
@@ -107,7 +107,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setClass('mock\repository\BouhRepository'))
+            ->then($metadata->setEntity('mock\repository\Bouh'))
             ->object($bouh = $metadata->createEntity())
                 ->isInstanceOf('\mock\repository\Bouh');
     }
@@ -116,7 +116,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('mock\repository\BouhRepository');
+        $metadata->setEntity('mock\repository\Bouh');
         $metadata->addField(array(
             'fieldName'  => 'name',
             'columnName' => 'boo_name'
@@ -137,7 +137,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('mock\repository\BouhRepository');
+        $metadata->setEntity('mock\repository\Bouh');
         $metadata->addField(array(
             'primary'       => true,
             'autoincrement' => true,
@@ -160,7 +160,7 @@ class Metadata extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
-        $metadata->setClass('mock\repository\BouhRepository');
+        $metadata->setEntity('mock\repository\Bouh');
         $metadata->addField(array(
             'primary'    => true,
             'fieldName'  => 'id',

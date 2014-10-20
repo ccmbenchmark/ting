@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class PreparedQuery extends QueryAbstract
 {
@@ -76,7 +76,7 @@ class PreparedQuery extends QueryAbstract
      * @throws QueryException
      */
     public function execute(
-        Collection $collection = null
+        CollectionInterface $collection = null
     ) {
         if ($this->driver === null) {
             throw new QueryException('You have to set the driver before to call execute');

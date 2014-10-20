@@ -22,38 +22,39 @@
  *
  **********************************************************************/
 
-namespace tests\fixtures\model;
+namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
+use CCMBenchmark\Ting\Driver\ResultInterface;
 
-class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
+class CachedCollection extends Collection
 {
-    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
+
+    protected $fromCache    = false;
+    protected $internalRows = [];
+
+    public function setFromCache($value)
     {
-        $metadata = $metadataFactory->get();
+        $this->fromCache = (bool) $value;
+    }
 
-        $metadata->setEntity('tests\fixtures\model\Bouh');
-        $metadata->setConnection('main');
-        $metadata->setDatabase('bouh_world');
-        $metadata->setTable('T_BOUH_BOO');
+    public function isFromCache()
+    {
+        return $this->fromCache;
+    }
 
-        $metadata->addField(array(
-           'primary'       => true,
-           'autoincrement' => true,
-           'fieldName'     => 'id',
-           'columnName'    => 'boo_id'
-        ));
+    public function set(\Iterator $result)
+    {
+        $this->internalRows = iterator_to_array($result);
+        parent::set($result);
+    }
 
-        $metadata->addField(array(
-           'fieldName'  => 'firstname',
-           'columnName' => 'boo_firstname'
-        ));
+    public function toArray()
+    {
+        return $this->internalRows;
+    }
 
-        $metadata->addField(array(
-           'fieldName'  => 'name',
-           'columnName' => 'boo_name'
-        ));
-
-        return $metadata;
+    public function fromArray(array $rows)
+    {
+        parent::set(new \ArrayIterator($rows));
     }
 }

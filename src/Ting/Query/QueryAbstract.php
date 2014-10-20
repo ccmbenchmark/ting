@@ -28,6 +28,7 @@ namespace CCMBenchmark\Ting\Query;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 abstract class QueryAbstract
 {
@@ -81,11 +82,11 @@ abstract class QueryAbstract
     }
 
     /**
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
+     * @param Collection $collection
      * @return mixed
      * @throws QueryException
      */
-    abstract public function execute(Collection $collection = null);
+    abstract public function execute(CollectionInterface $collection = null);
 
     final private function setQueryType()
     {

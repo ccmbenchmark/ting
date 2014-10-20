@@ -22,13 +22,16 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace CCMBenchmark\Ting\Cache;
 
-use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\UnitOfWork;
-
-interface HydratorInterface
+interface CacheInterface
 {
-    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
-    public function hydrate(array $columns, CollectionInterface $collection);
+    public function setConfig(array $config);
+    public function get($key);
+    public function getMulti(array $keys);
+    public function store($key, $value, $ttl);
+    public function storeMulti($values, $ttl);
+    public function delete($key);
+    public function deleteMulti(array $keys);
+    public function replace($key, $value, $ttl);
 }
