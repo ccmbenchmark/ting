@@ -31,7 +31,7 @@ class CachedQuery extends atoum
     public function testExecuteShouldCallCacheGetAndExecuteQuery()
     {
 
-        $mockMemcached = new \mock\Memcached();
+        $mockMemcached = new \mock\tests\units\fixtures\FakeCache\Memcached();
         $this->calling($mockMemcached)->addServers = true;
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
@@ -58,7 +58,7 @@ class CachedQuery extends atoum
     public function testExecuteShouldCallCacheGetAndReturnDataFromMemcached()
     {
 
-        $mockMemcached = new \mock\Memcached();
+        $mockMemcached = new \mock\fixtures\FakeCache\Memcached();
         $this->calling($mockMemcached)->addServers = true;
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
