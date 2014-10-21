@@ -25,13 +25,20 @@
 
 namespace tests\fixtures\FakeQuery;
 
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class FakeQuery extends QueryAbstract
 {
-    public function execute(CollectionInterface $collection = null)
-    {
+
+    public function execute(
+        Metadata $metadata,
+        ConnectionPoolInterface $connectionPool,
+        CollectionInterface $collection = null,
+        $connectionType = null
+    ) {
 
     }
 }

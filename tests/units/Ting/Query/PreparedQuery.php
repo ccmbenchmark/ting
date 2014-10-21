@@ -24,6 +24,8 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Repository\Metadata;
 use mageekguy\atoum;
 
 class PreparedQuery extends atoum
@@ -45,6 +47,9 @@ class PreparedQuery extends atoum
                 $callback($mockStatement, array(), array());
             };
 
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
@@ -52,7 +57,12 @@ class PreparedQuery extends atoum
                 $sql,
                 ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]
             ))
-            ->then($query->setDriver($mockDriver)->prepare()->execute())
+            ->then(
+                $query->setDriver($mockDriver)->prepare()->execute(
+                    new Metadata(new QueryFactory()),
+                    $mockConnectionPool
+                )
+            )
             ->string($outerSql)
                 ->isIdenticalTo($sql)
             ->array($outerParams)
@@ -61,11 +71,14 @@ class PreparedQuery extends atoum
 
     public function testExecuteShouldRaiseExceptionIfNotPrepared()
     {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->exception(function () use ($query) {
-                    $query->execute();
+            ->exception(function () use ($query, $mockConnectionPool) {
+                    $query->execute(new Metadata(new QueryFactory()), $mockConnectionPool);
             })
             ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
         ;
@@ -120,12 +133,15 @@ class PreparedQuery extends atoum
 
     public function testExecuteShouldRaiseExceptionIfNoDriver()
     {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
 
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->exception(function () use ($query) {
-                    $query->execute();
+            ->exception(function () use ($query, $mockConnectionPool) {
+                    $query->execute(new Metadata(new QueryFactory()), $mockConnectionPool);
             })
             ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
         ;
@@ -147,6 +163,9 @@ class PreparedQuery extends atoum
                 $callback($mockStatement, array(), array());
             };
 
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+
         $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
 
         $this
@@ -154,7 +173,7 @@ class PreparedQuery extends atoum
                 $sql,
                 ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]
             ))
-            ->then($query->setDriver($mockDriver)->execute())
+            ->then($query->setDriver($mockDriver)->execute(new Metadata(new QueryFactory()), $mockConnectionPool))
             ->string($outerSql)
                 ->isIdenticalTo($sql)
             ->array($outerParams)

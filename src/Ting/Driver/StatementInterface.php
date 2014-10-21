@@ -24,10 +24,10 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
 {
-    public function execute($statement, $params, $paramsOrder, Collection $collection = null);
+    public function execute($statement, $params, $paramsOrder, CollectionInterface $collection = null);
     public function close();
 }

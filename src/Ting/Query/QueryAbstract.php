@@ -27,8 +27,8 @@ namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 abstract class QueryAbstract
 {
@@ -82,17 +82,49 @@ abstract class QueryAbstract
     }
 
     /**
-     * @param Collection $collection
+     * @param Metadata $metadata
+     * @param ConnectionPoolInterface $connectionPool
+     * @param CollectionInterface $collection
+     * @param null $connectionType
      * @return mixed
-     * @throws QueryException
      */
-    abstract public function execute(CollectionInterface $collection = null);
+    abstract public function execute(
+        Metadata $metadata,
+        ConnectionPoolInterface $connectionPool,
+        CollectionInterface $collection = null,
+        $connectionType = null
+    );
+
+
+    final protected function initConnection(
+        ConnectionPoolInterface $connectionPool = null,
+        Metadata $metadata = null,
+        $connectionType = null
+    ) {
+        $callback = function ($connectionType) use ($metadata, $connectionPool, $connectionType) {
+            $metadata->connect(
+                $connectionPool,
+                $connectionType,
+                function (DriverInterface $driver) {
+                    $this->setDriver($driver);
+                }
+            );
+        };
+
+        if ($connectionType === null) {
+            $this->executeCallbackWithConnectionType(
+                $callback
+            );
+        } else {
+            $callback($connectionType);
+        }
+    }
 
     final private function setQueryType()
     {
         $queryType = self::TYPE_RESULT;
         $sqlCompare = trim(strtoupper($this->sql));
-        /* @todo We REALLY need to do this better :  we don't like playing riddle */
+
         if (strpos($sqlCompare, 'UPDATE') === 0 || strpos($sqlCompare, 'DELETE') === 0) {
             $queryType = self::TYPE_AFFECTED;
         } elseif (strpos($sqlCompare, 'INSERT') === 0 || strpos($sqlCompare, 'REPLACE' === 0)) {

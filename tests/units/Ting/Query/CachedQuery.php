@@ -24,6 +24,9 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\ConnectionPool;
+use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Repository\Metadata;
 use mageekguy\atoum;
 
 class CachedQuery extends atoum
@@ -41,11 +44,20 @@ class CachedQuery extends atoum
         $mockTingMemcached->setConfig(['servers' => ['Bouh']]);
         $mockTingMemcached->setConnection($mockMemcached);
 
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->connect = true;
+
         $this
             ->if($cachedQuery = new \CCMBenchmark\Ting\Query\CachedQuery('SELECT name FROM Bouh'))
             ->and($cachedQuery->setDriver($mockDriver))
             ->and($cachedQuery->setCacheDriver($mockTingMemcached))
-            ->then($cachedQuery->execute(new \CCMBenchmark\Ting\Repository\CachedCollection()))
+            ->then(
+                $cachedQuery->execute(
+                    new Metadata(new QueryFactory()),
+                    $mockConnectionPool,
+                    new \CCMBenchmark\Ting\Repository\CachedCollection()
+                )
+            )
             ->mock($mockTingMemcached)
                 ->call('get')
                     ->once()
@@ -73,7 +85,14 @@ class CachedQuery extends atoum
             ->if($cachedQuery = new \CCMBenchmark\Ting\Query\CachedQuery('SELECT name FROM Bouh'))
             ->and($cachedQuery->setDriver($mockDriver))
             ->and($cachedQuery->setCacheDriver($mockTingMemcached))
-            ->then($collection = $cachedQuery->execute(new \CCMBenchmark\Ting\Repository\CachedCollection()))
+            ->then(
+                $collection =
+                $cachedQuery->execute(
+                    new Metadata(new QueryFactory()),
+                    new ConnectionPool(),
+                    new \CCMBenchmark\Ting\Repository\CachedCollection()
+                )
+            )
             ->mock($mockTingMemcached)
                 ->call('get')
                     ->once()

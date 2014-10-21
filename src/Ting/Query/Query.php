@@ -24,26 +24,32 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class Query extends QueryAbstract implements QueryInterface
 {
 
     /**
      * @param CollectionInterface $collection
+     * @param ConnectionPoolInterface $connectionPool
+     * @param Metadata $metadata
+     * @param null $connectionType
      * @return mixed
-     * @throws QueryException
      */
-    public function execute(CollectionInterface $collection = null)
-    {
-        if ($this->driver === null) {
-            throw new QueryException('You have to set the driver before to call execute');
-        }
-
+    public function execute(
+        Metadata $metadata,
+        ConnectionPoolInterface $connectionPool,
+        CollectionInterface $collection = null,
+        $connectionType = null
+    ) {
         if ($collection === null && $this->queryType == QueryAbstract::TYPE_RESULT) {
             $collection = new Collection();
         }
+
+        $this->initConnection($connectionPool, $metadata, $connectionType);
 
         return $this->driver->execute($this->sql, $this->params, $this->queryType, $collection);
     }

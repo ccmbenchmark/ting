@@ -28,7 +28,7 @@ use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
 {
@@ -64,7 +64,7 @@ class Statement implements StatementInterface
      * @param \CCMBenchmark\Ting\Repository\Collection $collection
      * @return bool
      */
-    public function execute($driverStatement, $params, $paramsOrder, Collection $collection = null)
+    public function execute($driverStatement, $params, $paramsOrder, CollectionInterface $collection = null)
     {
         $this->driverStatement = $driverStatement;
         $types = '';
@@ -105,7 +105,7 @@ class Statement implements StatementInterface
      * @return bool|Result
      * @throws \CCMBenchmark\Ting\Driver\QueryException
      */
-    public function setCollectionWithResult($driverStatement, Collection $collection = null)
+    public function setCollectionWithResult($driverStatement, CollectionInterface $collection = null)
     {
         if ($this->queryType !== QueryAbstract::TYPE_RESULT) {
             if ($this->queryType === QueryAbstract::TYPE_INSERT) {

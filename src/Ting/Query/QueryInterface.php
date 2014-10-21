@@ -24,8 +24,10 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 interface QueryInterface
 {
@@ -45,11 +47,18 @@ interface QueryInterface
     public function setDriver(DriverInterface $driver);
 
     /**
+     * @param Metadata $metadata
+     * @param ConnectionPoolInterface $connectionPool
      * @param CollectionInterface $collection
+     * @param null $connectionType
      * @return mixed
-     * @throws QueryException
      */
-    public function execute(CollectionInterface $collection = null);
+    public function execute(
+        Metadata $metadata,
+        ConnectionPoolInterface $connectionPool,
+        CollectionInterface $collection = null,
+        $connectionType = null
+    );
 
     public function executeCallbackWithConnectionType(\Closure $callback);
 }
