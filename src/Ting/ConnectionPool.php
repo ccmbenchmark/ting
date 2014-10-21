@@ -91,7 +91,7 @@ class ConnectionPool implements ConnectionPoolInterface
         if (
             $connectionType == self::CONNECTION_SLAVE
             && isset($this->connectionConfig[$connectionName]['slaves'])
-            && count($this->connectionConfig[$connectionName]['slaves']) > 0
+            && $this->connectionConfig[$connectionName]['slaves'] !== []
         ) {
             if (
                 isset($this->connectionsTypesToConfig[$connectionName])

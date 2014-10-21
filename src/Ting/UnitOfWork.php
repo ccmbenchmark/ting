@@ -186,7 +186,7 @@ class UnitOfWork implements PropertyListenerInterface
             }
         }
 
-        if (count($properties) === 0) {
+        if ($properties === []) {
             return;
         }
 
