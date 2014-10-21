@@ -88,7 +88,7 @@ class CachedQuery extends Query
         $key = $this->sql . serialize($this->params);
         $metadata->forConnectionNameAndDatabaseName(
             function ($connectionName, $databaseName) use (&$key) {
-                $key .= $connectionName.'|'.$databaseName;
+                $key .= $connectionName . '|' . $databaseName;
             }
         );
         $key = sha1($key) . '-' . $this->version;
