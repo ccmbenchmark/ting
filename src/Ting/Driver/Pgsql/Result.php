@@ -63,7 +63,7 @@ class Result implements ResultInterface
         $tableToAlias = array_flip($aliasToTable);
         preg_match_all('/select\s+(.+?)(\s+from|$)/is', $query, $matches, PREG_SET_ORDER);
 
-        if (count($matches) === 0) {
+        if ($matches === []) {
             throw new queryException('Query invalid: can\'t parse columns');
         }
 

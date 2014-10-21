@@ -60,7 +60,7 @@ class Memcached implements CacheInterface
             return true;
         }
 
-        if (count($this->config) === 0) {
+        if ($this->config === []) {
             throw new Exception('Must setConfig priory to use Memcached');
         }
 
