@@ -144,22 +144,14 @@ class Driver implements DriverInterface
      * @param $sql
      * @param \Closure $callback
      * @param int $queryType
-     * @param StatementInterface $statement
      * @return $this
      */
-    public function prepare(
-        $sql,
-        \Closure $callback,
-        $queryType = QueryAbstract::TYPE_RESULT,
-        StatementInterface $statement = null
-    ) {
+    public function prepare($sql, \Closure $callback, $queryType = QueryAbstract::TYPE_RESULT)
+    {
         list ($sql, $paramsOrder) = $this->convertParameters($sql);
 
-        if ($statement === null) {
-            $statement = new Statement();
-        }
-
-        $statementName = md5($sql);
+        $statement     = new Statement();
+        $statementName = sha1($sql);
         $result = pg_prepare($this->connection, $statementName, $sql);
 
         if ($result === false) {

@@ -38,12 +38,7 @@ interface DriverInterface
         $queryType = QueryAbstract::TYPE_RESULT,
         CollectionInterface $collection = null
     );
-    public function prepare(
-        $sql,
-        \Closure $callback,
-        $queryType = QueryAbstract::TYPE_RESULT,
-        StatementInterface $statement = null
-    );
+    public function prepare($sql, \Closure $callback, $queryType = QueryAbstract::TYPE_RESULT);
     public function setDatabase($database);
     public function ifIsError(\Closure $callback);
     public function ifIsNotConnected(\Closure $callback);

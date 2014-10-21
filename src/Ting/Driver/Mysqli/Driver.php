@@ -201,16 +201,11 @@ class Driver implements DriverInterface
      * @param $sql
      * @param callable $callback
      * @param int $queryType
-     * @param StatementInterface $statement
      * @return $this
      * @throws Exception
      */
-    public function prepare(
-        $sql,
-        \Closure $callback,
-        $queryType = QueryAbstract::TYPE_RESULT,
-        StatementInterface $statement = null
-    ) {
+    public function prepare($sql, \Closure $callback, $queryType = QueryAbstract::TYPE_RESULT)
+    {
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
@@ -222,10 +217,7 @@ class Driver implements DriverInterface
 
         $sql = str_replace('\:', ':', $sql);
 
-        if ($statement === null) {
-            $statement = new Statement();
-        }
-
+        $statement       = new Statement();
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
