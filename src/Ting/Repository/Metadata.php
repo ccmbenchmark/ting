@@ -56,6 +56,11 @@ class Metadata
         $this->databaseName = (string) $databaseName;
     }
 
+    public function forConnectionNameAndDatabaseName(\Closure $callback)
+    {
+        $callback($this->connectionName, $this->databaseName);
+    }
+
     /**
      * @throws \CCMBenchmark\Ting\Exception
      */

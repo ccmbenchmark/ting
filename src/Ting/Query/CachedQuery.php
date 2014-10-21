@@ -84,8 +84,14 @@ class CachedQuery extends Query
         $connectionType = null
     ) {
         ksort($this->params);
-        // TODO : add connectionName before hashing
-        $key = sha1($this->sql . serialize($this->params)) . '-' . $this->version;
+
+        $key = $this->sql . serialize($this->params);
+        $metadata->forConnectionNameAndDatabaseName(
+            function ($connectionName, $databaseName) use (&$key) {
+                $key .= $connectionName . '|' . $databaseName;
+            }
+        );
+        $key = sha1($key) . '-' . $this->version;
 
         if ($values = $this->cache->get($key)) {
             $collection->setFromCache(true);
