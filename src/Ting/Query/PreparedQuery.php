@@ -43,6 +43,9 @@ class PreparedQuery extends QueryAbstract
      * @return $this
      * @throws QueryException
      */
+    /**
+     * @TODO Change method signature to allow call to initConnection from here
+     */
     public function prepare()
     {
         if ($this->driver === null) {
