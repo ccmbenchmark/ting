@@ -97,16 +97,15 @@ abstract class QueryAbstract
 
 
     final protected function initConnection(
-        CollectionInterface $collection = null,
         ConnectionPoolInterface $connectionPool = null,
         Metadata $metadata = null,
         $connectionType = null
     ) {
-        $callback = function ($connectionType) use ($metadata, $connectionPool, $connectionType, $collection) {
+        $callback = function ($connectionType) use ($metadata, $connectionPool, $connectionType) {
             $metadata->connect(
                 $connectionPool,
                 $connectionType,
-                function (DriverInterface $driver) use ($collection) {
+                function (DriverInterface $driver) {
                     $this->setDriver($driver);
                 }
             );

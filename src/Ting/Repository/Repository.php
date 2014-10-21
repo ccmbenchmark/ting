@@ -83,8 +83,14 @@ class Repository
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
+    /**
+     * @param $primariesKeyValue array|int
+     * @param Collection $collection
+     * @param int $connectionType
+     * @return mixed
+     */
     public function get(
-        $primaryKeyValue,
+        $primariesKeyValue,
         Collection $collection = null,
         $connectionType = ConnectionPoolInterface::CONNECTION_SLAVE
     ) {
@@ -92,10 +98,10 @@ class Repository
             $collection = $this->collectionFactory->get();
         }
 
-        $callback = function (DriverInterface $driver) use ($collection, $primaryKeyValue) {
+        $callback = function (DriverInterface $driver) use ($collection, $primariesKeyValue) {
             $this->metadata->generateQueryForPrimary(
                 $driver,
-                $primaryKeyValue,
+                $primariesKeyValue,
                 function (Query $query) use ($driver, $collection) {
                     $query->setDriver($driver);
                     $this->execute($query, $collection);

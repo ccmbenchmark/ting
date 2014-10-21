@@ -86,7 +86,7 @@ class PreparedQuery extends QueryAbstract
         CollectionInterface $collection = null,
         $connectionType = null
     ) {
-        $this->initConnection($collection, $connectionPool, $metadata, $connectionType);
+        $this->initConnection($connectionPool, $metadata, $connectionType);
 
         if ($this->prepared === false) {
             $this->prepare();

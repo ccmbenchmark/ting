@@ -49,7 +49,7 @@ class Query extends QueryAbstract implements QueryInterface
             $collection = new Collection();
         }
 
-        $this->initConnection($collection, $connectionPool, $metadata, $connectionType);
+        $this->initConnection($connectionPool, $metadata, $connectionType);
 
         return $this->driver->execute($this->sql, $this->params, $this->queryType, $collection);
     }
