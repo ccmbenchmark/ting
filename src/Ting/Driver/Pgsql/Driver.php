@@ -91,8 +91,7 @@ class Driver implements DriverInterface
         $queryType = QueryAbstract::TYPE_RESULT,
         CollectionInterface $collection = null
     ) {
-        $paramsOrder = array();
-        $sql = $this->convertParameters($sql, $paramsOrder);
+        list ($sql, $paramsOrder) = $this->convertParameters($sql);
 
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
@@ -154,8 +153,7 @@ class Driver implements DriverInterface
         $queryType = QueryAbstract::TYPE_RESULT,
         StatementInterface $statement = null
     ) {
-        $paramsOrder = array();
-        $sql = $this->convertParameters($sql, $paramsOrder);
+        list ($sql, $paramsOrder) = $this->convertParameters($sql);
 
         if ($statement === null) {
             $statement = new Statement();
@@ -181,23 +179,25 @@ class Driver implements DriverInterface
 
     /**
      * @param $sql
-     * @param $paramsOrder
-     * @return mixed
+     * @return array
      */
-    private function convertParameters($sql, &$paramsOrder)
+    private function convertParameters($sql)
     {
+        $i           = 0;
+        $paramsOrder = [];
+
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
-            function ($match) use (&$paramsOrder) {
+            function ($match) use (&$i, &$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
-                return '$' . count($paramsOrder);
+                return '$' . ++$i;
             },
             $sql
         );
 
         $sql = str_replace('\:', ':', $sql);
 
-        return $sql;
+        return [$sql, $paramsOrder];
     }
 
     public function ifIsError(\Closure $callback)
