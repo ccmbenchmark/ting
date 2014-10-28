@@ -36,6 +36,11 @@ class PreparedQuery extends Query
     protected $prepared = null;
 
     /**
+     * @var \CCMBenchmark\Ting\Driver\StatementInterface
+     */
+    protected $statement = null;
+
+    /**
      * @return $this
      */
     public function prepareQuery()
@@ -49,7 +54,7 @@ class PreparedQuery extends Query
          */
         echo "ATTENTION VERIFIER CACHE AVANT LE PREPARE\n";
 
-        $this->statement = $this->selectConnection()->prepare($this->sql);
+        $this->statement = $this->connection->onSlaveDoPrepare($this->sql);
         $this->prepared  = self::TYPE_RESULT;
 
         return $this;
@@ -69,7 +74,7 @@ class PreparedQuery extends Query
          */
         echo "ATTENTION VERIFIER CACHE AVANT LE PREPARE\n";
 
-        $this->statement = $this->connection->connectMaster()->prepare($this->sql);
+        $this->statement = $this->connection->onMasterDoPrepare($this->sql);
         $this->prepared  = self::TYPE_UPDATE;
 
         return $this;
@@ -97,7 +102,7 @@ class PreparedQuery extends Query
             return $collection;
         }
 
-        $collection = $this->statement->execute($params, $collection);
+        $this->statement->execute($params, $collection);
         $this->cache->store($key, $collection->toArray(), $this->ttl);
 
         return $collection;
