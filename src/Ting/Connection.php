@@ -91,6 +91,28 @@ class Connection
     }
 
     /**
+     * @param $sql
+     * @return \CCMBenchmark\Ting\Driver\StatementInterface
+     */
+    public function onMasterDoPrepare($sql)
+    {
+         return $this
+            ->connectionPool
+            ->onMasterDoPrepare($this->name, $this->database, $sql);
+    }
+
+    /**
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Driver\StatementInterface
+     */
+    public function onSlaveDoPrepare($sql)
+    {
+        return $this
+            ->connectionPool
+            ->onSlaveDoPrepare($this->name, $this->database, $sql);
+    }
+
+    /**
      * @return void
      */
     public function onMasterStartTransaction()

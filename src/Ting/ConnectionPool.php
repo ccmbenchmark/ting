@@ -109,6 +109,30 @@ class ConnectionPool implements ConnectionPoolInterface
     }
 
     /**
+     * @param string $name
+     * @param string $database
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Driver\StatementInterface
+     */
+    public function onMasterDoPrepare($name, $database, $sql)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        return $this->connect($config, $driverClass, $database)->prepare($sql);
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Driver\StatementInterface
+     */
+    public function onSlaveDoPrepare($name, $database, $sql)
+    {
+        list ($config, $driverClass) = $this->preSetSlave($name);
+        return $this->connect($config, $driverClass, $database)->prepare($sql);
+    }
+
+    /**
      * @param array $config
      * @param string $driverClass
      * @param string $database
