@@ -88,7 +88,13 @@ class Memcached implements CacheInterface
     public function get($key)
     {
         $this->connect();
-        return $this->connection->get($key);
+        $value = $this->connection->get($key);
+
+        if ($value === false) {
+            return null;
+        }
+
+        return $value;
     }
 
     public function getMulti(array $keys)
