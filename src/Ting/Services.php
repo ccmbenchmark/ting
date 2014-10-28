@@ -89,7 +89,7 @@ class Services implements ContainerInterface
                 return new Repository\RepositoryFactory(
                     $this->get('ConnectionPool'),
                     $this->get('MetadataRepository'),
-                    $this->get('MetadataFactory'),
+                    $this->get('QueryFactory'),
                     $this->get('CollectionFactory'),
                     $this->get('UnitOfWork'),
                     $this->get('Cache')
