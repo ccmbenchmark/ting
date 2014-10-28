@@ -24,10 +24,10 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
-use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 
 class Metadata
 {
@@ -41,9 +41,9 @@ class Metadata
     protected $primaries      = [];
     protected $autoincrement  = null;
 
-    public function __construct(QueryFactoryInterface $queryFactory)
+    public function getConnection(ConnectionPoolInterface $connectionPool)
     {
-        $this->queryFactory = $queryFactory;
+        return new Connection($connectionPool, $this->connectionName, $this->databaseName);
     }
 
     public function setConnection($connectionName)
