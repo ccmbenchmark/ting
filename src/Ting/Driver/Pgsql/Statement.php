@@ -39,6 +39,11 @@ class Statement implements StatementInterface
     protected $query         = null;
 
 
+    public function __construct($statementName, array $paramsOrder)
+    {
+        $this->statementName = $statementName;
+        $this->paramsOrder   = $paramsOrder;
+    }
     /**
      * @param $connection
      * @return $this
@@ -82,25 +87,18 @@ class Statement implements StatementInterface
         return $this;
     }
 
-    /**
-     * @param $statementName
-     * @param $params
-     * @param $paramsOrder
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
-     * @return bool|int
-     */
-    public function execute($statementName, $params, $paramsOrder, CollectionInterface $collection = null)
+
+    public function execute(array $params, CollectionInterface $collection = null)
     {
-        $this->statementName = $statementName;
         $values = array();
-        foreach (array_keys($paramsOrder) as $key) {
+        foreach (array_keys($this->paramsOrder) as $key) {
             if ($params[$key] instanceof \DateTime) {
                 $params[$key] = $params[$key]->format('Y-m-d H:i:s');
             }
             $values[] = &$params[$key];
         }
 
-        $result = pg_execute($this->connection, $statementName, $values);
+        $result = pg_execute($this->connection, $this->statementName, $values);
         return $this->setCollectionWithResult($result, $collection);
     }
 
