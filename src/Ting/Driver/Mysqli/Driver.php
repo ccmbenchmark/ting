@@ -200,7 +200,7 @@ class Driver implements DriverInterface
      * @return CollectionInterface
      * @throws QueryException
      */
-    public function setCollectionWithResult($result, CollectionInterface $collection)
+    protected function setCollectionWithResult($result, CollectionInterface $collection)
     {
         if ($result === false) {
             throw new QueryException($this->connection->error, $this->connection->errno);

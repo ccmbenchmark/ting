@@ -27,14 +27,13 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
 {
 
     /**
-     * @var \mysqli_stmt|Object|null
+     * @var mixed
      */
     protected $driverStatement = null;
 
@@ -116,7 +115,7 @@ class Statement implements StatementInterface
         }
 
         $collection->set(new Result($result));
-        return $collection;
+        return true;
     }
 
     /**
