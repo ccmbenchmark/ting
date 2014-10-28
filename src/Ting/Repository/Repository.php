@@ -214,7 +214,7 @@ class Repository
      */
     public function startTransaction()
     {
-        $this->connection->startTransaction();
+        $this->connection->onMasterStartTransaction();
     }
 
     /**
@@ -222,7 +222,7 @@ class Repository
      */
     public function rollback()
     {
-        $this->connection->rollback();
+        $this->connection->onMasterRollback();
     }
 
     /**
@@ -230,6 +230,6 @@ class Repository
      */
     public function commit()
     {
-        $this->connection->commit();
+        $this->connection->onMasterCommit();
     }
 }
