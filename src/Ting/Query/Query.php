@@ -24,33 +24,115 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
-class Query extends QueryAbstract implements QueryInterface
+class Query implements QueryInterface
 {
 
     /**
-     * @param CollectionInterface $collection
-     * @param ConnectionPoolInterface $connectionPool
-     * @param Metadata $metadata
-     * @param null $connectionType
-     * @return mixed
+     * @var string|null
      */
-    public function execute(
-        Metadata $metadata,
-        ConnectionPoolInterface $connectionPool,
-        CollectionInterface $collection = null,
-        $connectionType = null
-    ) {
-        if ($collection === null && $this->queryType == QueryAbstract::TYPE_RESULT) {
-            $collection = new Collection();
+    protected $sql = null;
+
+    /**
+     * @var Connection|null
+     */
+    protected $connection = null;
+
+    /**
+     * @var CollectionFactoryInterface|null
+     */
+    protected $collectionFactory = null;
+
+    /**
+     * @var bool
+     */
+    protected $selectMaster = false;
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     */
+    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory)
+    {
+        $this->sql               = $sql;
+        $this->connection        = $connection;
+        $this->collectionFactory = $collectionFactory;
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public function selectMaster($value)
+    {
+        $this->selectMaster = (bool) $value;
+    }
+
+    /**
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return void
+     */
+    protected function executeOnConnection(array $params, CollectionInterface $collection = null)
+    {
+        if ($this->selectMaster === true) {
+            $this->connection->onMasterDoExecute($this->sql, $params, $collection);
+        } else {
+            $this->connection->onSlaveDoExecute($this->sql, $params, $collection);
+        }
+    }
+
+    /**
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return CollectionInterface
+     */
+    public function query(array $params, CollectionInterface $collection = null)
+    {
+        if ($collection === null) {
+            $collection = $this->collectionFactory->get();
         }
 
-        $this->initConnection($connectionPool, $metadata, $connectionType);
+        $this->executeOnConnection($params, $collection);
 
-        return $this->driver->execute($this->sql, $this->params, $this->queryType, $collection);
+        return $collection;
+    }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function execute(array $params)
+    {
+        return $this->connection->onMasterDoExecute($this->sql, $params);
+    }
+
+    /**
+     * @return int
+     */
+    public function getInsertId()
+    {
+        if ($this->selectMaster === true) {
+            return $this->connection->onMasterDoGetInsertId();
+        } else {
+            return $this->connection->onSlaveDoGetInsertId();
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        if ($this->selectMaster === true) {
+            return $this->connection->onMasterDoGetAffectedRows();
+        } else {
+            return $this->connection->onSlaveDoGetAffectedRows();
+        }
     }
 }

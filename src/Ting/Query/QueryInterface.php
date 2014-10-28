@@ -24,41 +24,48 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 interface QueryInterface
 {
-    public function __construct($sql, array $params = null);
+    /**
+     * @var int
+     */
+    const TYPE_RESULT = 1;
+
+    /**
+     * @var int
+     */
+    const TYPE_UPDATE = 2;
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     */
+    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory);
 
     /**
      * @param array $params
-     * @return $this
-     * @throws \InvalidArgumentException
-     */
-    public function setParams(array $params);
-
-    /**
-     * @param DriverInterface $driver
-     * @return $this
-     */
-    public function setDriver(DriverInterface $driver);
-
-    /**
-     * @param Metadata $metadata
-     * @param ConnectionPoolInterface $connectionPool
      * @param CollectionInterface $collection
-     * @param null $connectionType
+     */
+    public function query(array $params, CollectionInterface $collection = null);
+
+    /**
+     * @param array $params
      * @return mixed
      */
-    public function execute(
-        Metadata $metadata,
-        ConnectionPoolInterface $connectionPool,
-        CollectionInterface $collection = null,
-        $connectionType = null
-    );
+    public function execute(array $params);
 
-    public function executeCallbackWithConnectionType(\Closure $callback);
+    /**
+     * @return int
+     */
+    public function getInsertId();
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows();
 }
