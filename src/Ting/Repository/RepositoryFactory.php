@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class RepositoryFactory
@@ -52,11 +53,6 @@ class RepositoryFactory
     protected $collection;
 
     /**
-     * @var Hydrator
-     */
-    protected $hydrator;
-
-    /**
      * @var UnitOfWork
      */
     protected $unitOfWork;
@@ -66,17 +62,25 @@ class RepositoryFactory
      */
     protected $cache;
 
+    /**
+     * @param ConnectionPool $connectionPool
+     * @param MetadataRepository $metadataRepository
+     * @param QueryFactory $queryFactory
+     * @param CollectionFactory $collectionFactory
+     * @param UnitOfWork $unitOfWork
+     * @param CacheInterface $cache
+     */
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
-        MetadataFactoryInterface $metadataFactory,
+        QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
         UnitOfWork $unitOfWork,
         CacheInterface $cache
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
-        $this->metadataFactory    = $metadataFactory;
+        $this->queryFactory       = $queryFactory;
         $this->collectionFactory  = $collectionFactory;
         $this->unitOfWork         = $unitOfWork;
         $this->cache              = $cache;
@@ -87,9 +91,8 @@ class RepositoryFactory
         return new $repositoryName(
             $this->connectionPool,
             $this->metadataRepository,
-            $this->metadataFactory,
+            $this->queryFactory,
             $this->collectionFactory,
-            $this->unitOfWork,
             $this->cache
         );
     }
