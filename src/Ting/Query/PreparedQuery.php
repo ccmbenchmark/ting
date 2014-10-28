@@ -24,77 +24,77 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Repository\Metadata;
 
-class PreparedQuery extends QueryAbstract
+class PreparedQuery extends Query
 {
-    protected $paramsOrder = array();
     /**
-     * @var StatementInterface
+     * @var int|null
      */
-    protected $statement = null;
-    protected $driverStatement = null;
-    protected $prepared = false;
+    protected $prepared = null;
 
     /**
      * @return $this
-     * @throws QueryException
      */
-    /**
-     * @TODO Change method signature to allow call to initConnection from here
-     */
-    public function prepare()
+    public function prepareQuery()
     {
-        if ($this->driver === null) {
-            throw new QueryException('You have to set the driver before to call prepare');
-        }
-
-        if ($this->prepared === true) {
+        if ($this->prepared !== null) {
             return $this;
         }
 
-        $this->driver->prepare(
-            $this->sql,
-            function (
-                StatementInterface $statement,
-                $paramsOrder,
-                $driverStatement
-            ) {
-                $this->statement = $statement;
-                $this->paramsOrder = $paramsOrder;
-                $this->driverStatement = $driverStatement;
-            },
-            $this->queryType,
-            $this->statement
-        );
-        $this->prepared = true;
+        $this->statement = $this->selectConnection()->prepare($this->sql);
+        $this->prepared  = self::TYPE_RESULT;
 
         return $this;
     }
 
     /**
+     * @return $this
+     */
+    public function prepareExecute()
+    {
+        if ($this->prepared !== null) {
+            return $this;
+        }
+
+        $this->statement = $this->connection->connectMaster()->prepare($this->sql);
+        $this->prepared  = self::TYPE_UPDATE;
+
+        return $this;
+    }
+
+    /**
+     * @param array $params
      * @param CollectionInterface $collection
-     * @param ConnectionPoolInterface $connectionPool
-     * @param Metadata $metadata
-     * @param null $connectionType
+     * @return CollectionInterface
+     * @throws QueryException
+     */
+    public function query(array $params, CollectionInterface $collection = null)
+    {
+        if ($collection === null) {
+            $collection = $this->collectionFactory->get();
+        }
+
+        if ($this->prepared !== self::TYPE_RESULT) {
+            throw new QueryException("You should call prepareQuery to use query method");
+        }
+
+        $collection = $this->statement->execute($params, $collection);
+
+        return $collection;
+    }
+
+    /**
+     * @param array $params
      * @return mixed
      * @throws QueryException
      */
-    public function execute(
-        Metadata $metadata,
-        ConnectionPoolInterface $connectionPool,
-        CollectionInterface $collection = null,
-        $connectionType = null
-    ) {
-        $this->initConnection($connectionPool, $metadata, $connectionType);
-
-        if ($this->prepared === false) {
-            $this->prepare();
+    public function execute(array $params)
+    {
+        if ($this->prepared !== self::TYPE_UPDATE) {
+            throw new QueryException("You should call prepareExecute to use query method");
         }
 
-        return $this->statement->execute($this->driverStatement, $this->params, $this->paramsOrder, $collection);
+        return $this->statement->execute($params);
     }
 }
