@@ -24,96 +24,187 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Repository\CollectionInterface;
+
 class ConnectionPool implements ConnectionPoolInterface
 {
 
+    /**
+     * @var array
+     */
     protected $connectionConfig = array();
-    protected $connections = array();
-    protected $connectionsTypesToConfig = array();
 
+    /**
+     * @var array
+     */
+    protected $connections = array();
+
+    /**
+     * @param array $config
+     */
     public function setConfig($config)
     {
         $this->connectionConfig = $config;
     }
 
     /**
-     * @param $connectionName
-     * @param $database
-     * @param $connectionType
-     * @param \Closure $callback
-     * @return $this
-     * @throws Exception
+     * @param string $name
+     * @return array
      */
-    public function connect($connectionName, $database, $connectionType, \Closure $callback)
+    protected function preSetMaster($name)
     {
-        if (isset($this->connectionConfig[$connectionName]) === false) {
-            throw new Exception('Connection not found: ' . $connectionName);
-        }
+        $config = $this->connectionConfig[$name]['master'];
+        $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
-        $driverClass = $this->connectionConfig[$connectionName]['namespace'] . '\\Driver';
-
-        $this->setApplicableConnectionConf($connectionName, $connectionType);
-        $connectionConfig = $this->connectionsTypesToConfig[$connectionName][$connectionType];
-
-        $driverClass::forConnectionKey(
-            $connectionConfig,
-            $database,
-            function ($connectionKey) use (
-                $driverClass,
-                $connectionConfig,
-                $connectionName,
-                $callback,
-                $database,
-                $connectionType
-            ) {
-                if (isset($this->connections[$connectionKey]) === false) {
-                    $driver = new $driverClass();
-                    $driver->connect(
-                        $connectionConfig['host'],
-                        $connectionConfig['user'],
-                        $connectionConfig['password'],
-                        $connectionConfig['port']
-                    );
-                    $this->connections[$connectionKey] = $driver;
-                }
-
-                $this->connections[$connectionKey]->setDatabase($database);
-
-                $callback($this->connections[$connectionKey]);
-            }
-        );
-
-        return $this;
+        return [$config, $driverClass];
     }
 
-    private function setApplicableConnectionConf($connectionName, $connectionType)
+    /**
+     * @param string $name
+     * @return array
+     */
+    protected function preSetSlave($name)
     {
-        if (
-            $connectionType == self::CONNECTION_SLAVE
-            && isset($this->connectionConfig[$connectionName]['slaves'])
-            && $this->connectionConfig[$connectionName]['slaves'] !== []
+        $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
+
+        if (isset($this->connectionConfig[$name]['slaves']) === false
+            || $this->connectionConfig[$name]['slaves'] === []
         ) {
-            if (
-                isset($this->connectionsTypesToConfig[$connectionName])
-                &&
-                isset($this->connectionsTypesToConfig[$connectionName][$connectionType])
-            ) {
-                /**
-                 * It's a slave connection and we already have choose a slave : we use the same one
-                 * In this way we avoid opening one connection per slave because of round-robin
-                 */
-                $connectionConfig = $this->connectionsTypesToConfig[$connectionName][$connectionType];
-            } else {
-                $randomKey = array_rand($this->connectionConfig[$connectionName]['slaves']);
-                $connectionConfig = $this->connectionConfig[$connectionName]['slaves'][$randomKey];
-            }
-        } else {
-            /**
-             * In this case : we only have a master or the connectionType has been set to master
-             */
-            $connectionConfig = $this->connectionConfig[$connectionName]['master'];
+            $config = $this->connectionConfig[$name]['master'];
+            return [$config, $driverClass];
         }
 
-        $this->connectionsTypesToConfig[$connectionName][$connectionType] = $connectionConfig;
+        $randomKey = array_rand($this->connectionConfig[$name]['slaves']);
+        $config = $this->connectionConfig[$name]['slaves'][$randomKey];
+
+        return [$config, $driverClass];
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return mixed
+     */
+    public function onMasterDoExecute($name, $database, $sql, $params, CollectionInterface $collection = null)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        return $this->connect($config, $driverClass, $database)->execute($sql, $params, $collection);
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return mixed
+     */
+    public function onSlaveDoExecute($name, $database, $sql, $params, CollectionInterface $collection = null)
+    {
+        list ($config, $driverClass) = $this->preSetSlave($name);
+        return $this->connect($config, $driverClass, $database)->execute($sql, $params, $collection);
+    }
+
+    /**
+     * @param array $config
+     * @param string $driverClass
+     * @param string $database
+     * @return mixed
+     */
+    protected function connect($config, $driverClass, $database)
+    {
+
+        $connectionKey = $driverClass::getConnectionKey($config, $database);
+
+        if (isset($this->connections[$connectionKey]) === false) {
+            $driver = new $driverClass();
+            $driver->connect(
+                $config['host'],
+                $config['user'],
+                $config['password'],
+                $config['port']
+            );
+            $this->connections[$connectionKey] = $driver;
+        }
+
+        $this->connections[$connectionKey]->setDatabase($database);
+        return $this->connections[$connectionKey];
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     */
+    public function onMasterStartTransaction($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        $this->connect($config, $driverClass, $database)->startTransaction();
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     */
+    public function onMasterRollback($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        $this->connect($config, $driverClass, $database)->rollback();
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     */
+    public function onMasterCommit($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        $this->connect($config, $driverClass, $database)->commit();
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @return int
+     */
+    public function onMasterDoGetInsertId($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        return $this->connect($config, $driverClass, $database)->getInsertId();
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @return int
+     */
+    public function onSlaveDoGetInsertId($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetSlave($name);
+        return $this->connect($config, $driverClass, $database)->onSlaveDoGetInsertId();
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @return int
+     */
+    public function onMasterDoGetAffectedRows($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetMaster($name);
+        return $this->connect($config, $driverClass, $database)->getAffectedRows();
+    }
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @return mixed
+     */
+    public function onSlaveDoGetAffectedRows($name, $database)
+    {
+        list ($config, $driverClass) = $this->preSetSlave($name);
+        return $this->connect($config, $driverClass, $database)->onSlaveDoGetAffectedRows();
     }
 }

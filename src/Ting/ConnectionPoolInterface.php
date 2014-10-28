@@ -25,12 +25,30 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface ConnectionPoolInterface
 {
-    const CONNECTION_MASTER = 1;
-    const CONNECTION_SLAVE  = 2;
-
+    /**
+     * @param array $config
+     */
     public function setConfig($config);
-    public function connect($connectionName, $database, $connectionType, \Closure $callback);
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     */
+    public function onMasterDoExecute($name, $database, $sql, $params, CollectionInterface $collection = null);
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     */
+    public function onSlaveDoExecute($name, $database, $sql, $params, CollectionInterface $collection = null);
 }
