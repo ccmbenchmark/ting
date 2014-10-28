@@ -24,15 +24,67 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\Connection;
+use CCMBenchmark\Ting\Cache\CacheInterface;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
+
 class QueryFactory implements QueryFactoryInterface
 {
-    public function get($sql, array $params = null)
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return Query
+     */
+    public function get($sql, Connection $connection, CollectionFactoryInterface $collectionFactory)
     {
-        return new Query($sql, $params);
+        return new Query($sql, $connection, $collectionFactory);
     }
 
-    public function getPrepared($sql, array $params = null)
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return PreparedQuery
+     */
+    public function getPrepared($sql, Connection $connection, CollectionFactoryInterface $collectionFactory)
     {
-        return new PreparedQuery($sql, $params);
+        return new PreparedQuery($sql, $connection, $collectionFactory);
+    }
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CacheInterface $cache
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return Cached\Query
+     */
+    public function getCached(
+        $sql,
+        Connection $connection,
+        CacheInterface $cache,
+        CollectionFactoryInterface $collectionFactory
+    ) {
+        $cachedQuery = new Cached\Query($sql, $connection, $collectionFactory);
+        $cachedQuery->setCache($cache);
+        return $cachedQuery;
+    }
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CacheInterface $cache
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return Cached\PreparedQuery
+     */
+    public function getCachedPrepared(
+        $sql,
+        Connection $connection,
+        CacheInterface $cache,
+        CollectionFactoryInterface $collectionFactory
+    ) {
+        $cachedPreparedQuery = new Cached\PreparedQuery($sql, $connection, $collectionFactory);
+        $cachedPreparedQuery->setCache($cache);
+        return $cachedPreparedQuery;
     }
 }

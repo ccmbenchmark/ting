@@ -24,8 +24,53 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\Connection;
+use CCMBenchmark\Ting\Cache\CacheInterface;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
+
 interface QueryFactoryInterface
 {
-    public function get($sql, array $params = null);
-    public function getPrepared($sql, array $params = null);
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return Query
+     */
+    public function get($sql, Connection $connection, CollectionFactoryInterface $collectionFactory);
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return PreparedQuery
+     */
+    public function getPrepared($sql, Connection $connection, CollectionFactoryInterface $collectionFactory);
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CacheInterface $cache
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return Cached\Query
+     */
+    public function getCached(
+        $sql,
+        Connection $connection,
+        CacheInterface $cache,
+        CollectionFactoryInterface $collectionFactory
+    );
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CacheInterface $cache
+     * @param CollectionFactoryInterface $collectionFactory
+     * @return Cached\PreparedQuery
+     */
+    public function getCachedPrepared(
+        $sql,
+        Connection $connection,
+        CacheInterface $cache,
+        CollectionFactoryInterface $collectionFactory
+    );
 }
