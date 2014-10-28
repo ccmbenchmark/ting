@@ -25,11 +25,10 @@
 namespace CCMBenchmark\Ting\Query\Cached;
 
 use CCMBenchmark\Ting\Cache\CacheInterface;
-use CCMBenchmark\Ting\Query\Query as QueryNoCache;
 use CCMBenchmark\Ting\Query\QueryException;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
-class Query extends QueryNoCache
+class Query extends \CCMBenchmark\Ting\Query\Query
 {
 
     /**
