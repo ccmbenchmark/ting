@@ -24,9 +24,8 @@
 
 namespace sample\src\model;
 
-use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Repository\Collection;
-use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
@@ -34,29 +33,26 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
     public function getZCountryWithLotsPopulation()
     {
 
-        $query = new PreparedQuery(
+        $query = $this->getQuery(
             'select cit_id, cit_name, cou_code, cit_district, cit_population, last_modified
-                    from t_city_cit as a where cit_name like :name and cit_population > :population limit 3',
-            ['name' => 'Z%', 'population' => 200000]
+                    from t_city_cit as a where cit_name like :name and cit_population > :population limit 3'
+
         );
 
-        return $this->execute($query, new Collection());
+        return $query->query(['name' => 'Z%', 'population' => 200000], new Collection());
     }
 
     public function getNumberOfCities()
     {
 
-        $query = new PreparedQuery(
-            'select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population',
-            ['population' => 20000]
-        );
+        $query = $this->getQuery('select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population');
 
-        return $this->execute($query);
+        return $query->query(['population' => 20000]);
     }
 
-    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
+    public static function initMetadata()
     {
-        $metadata = $metadataFactory->get();
+        $metadata = new Metadata();
 
         $metadata->setEntity('sample\src\model\City');
         $metadata->setConnection('main');
