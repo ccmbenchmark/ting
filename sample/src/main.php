@@ -139,8 +139,6 @@ try {
     var_dump($e->getMessage());
 }
 
-die;
-
 echo 'City2'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');

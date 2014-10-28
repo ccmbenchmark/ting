@@ -53,25 +53,41 @@ $connections = [
     ],
 ];
 
+$memcached = [
+    'servers' => [
+        ['host' => '127.0.0.1', 'port' => 11211]
+    ],
+    'options' => [
+        \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
+        //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
+        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
+        \Memcached::OPT_PREFIX_KEY           => 'sample-'
+    ],
+    'persistentId' => 'ting.test'
+];
+
 $services->get('ConnectionPool')->setConfig($connections);
+$services->get('Cache')->setConfig($memcached);
+
+$services->get('Cache')->store('key', 'storedInCacheValue', 10);
+echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    var_dump($cityRepository->get(3));
+    //var_dump($cityRepository->get(3));
     echo str_repeat("-", 40) . "\n";
 
-    $collection = $cityRepository->execute(
-        new Query(
+    $query = $cityRepository->getQuery(
             'select
                 cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
                 co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
             from t_city_cit as c
             inner join t_country_cou as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 1',
-            ['code' => 'FRA']
-        )
+            where co.cou_code = :code limit 1'
     );
+
+    $collection = $query->query(['code' => 'FRA']);
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -84,6 +100,34 @@ try {
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $collection = $cityRepository->getZCountryWithLotsPopulation();
+
+    foreach ($collection as $result) {
+        var_dump($result);
+        echo str_repeat("-", 40) . "\n";
+    }
+} catch (Exception $e) {
+    var_dump($e->getMessage());
+}
+
+
+try {
+    $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
+
+    echo str_repeat("-", 40) . "\n";
+
+    $query = $cityRepository->getCachedPreparedQuery(
+        'select
+                cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
+                co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
+            from t_city_cit as c
+            inner join t_country_cou as co on (c.cou_code = co.cou_code)
+            where co.cou_code = :code limit 1'
+    );
+
+    $query->setTtl(10);
+    $query->prepareQuery();
+    $collection = $query->query(['code' => 'FRA']);
+    echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";
 
     foreach ($collection as $result) {
         var_dump($result);
