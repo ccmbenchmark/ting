@@ -27,26 +27,24 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
-use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
 
     /**
-     * @var object driver
+     * @var \mysqli_driver|Object|null driver
      */
     protected $driver = null;
 
     /**
-     * @var \mysqli driver connection
+     * @var \mysqli|null driver connection
      */
     protected $connection = null;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $currentDatabase = null;
 
@@ -60,6 +58,11 @@ class Driver implements DriverInterface
      */
     protected $transactionOpened = false;
 
+
+    /**
+     * @param  \mysqli|Object|null $connection
+     * @param \mysqli_driver|Object|null $driver
+     */
     public function __construct($connection = null, $driver = null)
     {
         if ($connection === null) {
@@ -75,18 +78,27 @@ class Driver implements DriverInterface
         }
     }
 
-    public static function forConnectionKey($connectionConfig, $database, \Closure $callback)
+    /**
+     * @param array $connectionConfig
+     * @param string $database
+     * @return string
+     */
+    public static function getConnectionKey(array $connectionConfig, $database)
     {
-        $callback(
+        return
             $connectionConfig['host'] . '|' .
             $connectionConfig['port'] . '|' .
             $connectionConfig['user'] . '|' .
-            $connectionConfig['password']
-        );
+            $connectionConfig['password'];
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param int $port
+     * @return $this
+     * @throws Exception
      */
     public function connect($hostname, $username, $password, $port = 3306)
     {
@@ -103,7 +115,8 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @param string $database
+     * @return $this
      */
     public function setDatabase($database)
     {
@@ -123,7 +136,11 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function ifIsError(\Closure $callback)
+    /**
+     * @param callable $callback
+     * @return $this
+     */
+    public function ifIsError(callable $callback)
     {
         if ($this->connection->error !== '') {
             $callback($this->connection->error);
@@ -132,12 +149,15 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function execute(
-        $sql,
-        $params = array(),
-        $queryType = QueryAbstract::TYPE_RESULT,
-        CollectionInterface $collection = null
-    ) {
+    /**
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return mixed|CollectionInterface
+     * @throws QueryException
+     */
+    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    {
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use ($params) {
@@ -167,44 +187,35 @@ class Driver implements DriverInterface
 
         $result = $this->connection->query($sql);
 
-        return $this->setCollectionWithResult($result, $queryType, $collection);
-    }
-
-
-    public function setCollectionWithResult($result, $queryType, CollectionInterface $collection = null)
-    {
-        if ($queryType !== QueryAbstract::TYPE_RESULT) {
-            if ($queryType === QueryAbstract::TYPE_INSERT) {
-                return $this->connection->insert_id;
-            }
-
-            $result = $this->connection->affected_rows;
-
-            if ($result === null || $result === -1) {
-                return false;
-            }
+        if ($collection === null) {
             return $result;
         }
 
+        return $this->setCollectionWithResult($result, $collection);
+    }
+
+    /**
+     * @param \mysqli_result|Object $result
+     * @param CollectionInterface $collection
+     * @return CollectionInterface
+     * @throws QueryException
+     */
+    public function setCollectionWithResult($result, CollectionInterface $collection)
+    {
         if ($result === false) {
             throw new QueryException($this->connection->error, $this->connection->errno);
         }
 
-        if ($collection !== null) {
-            $collection->set(new Result($result));
-        }
+        $collection->set(new Result($result));
 
-        return true;
+        return $collection;
     }
 
     /**
-     * @param $sql
-     * @param callable $callback
-     * @param int $queryType
-     * @return $this
-     * @throws Exception
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Driver\StatementInterface
      */
-    public function prepare($sql, \Closure $callback, $queryType = QueryAbstract::TYPE_RESULT)
+    public function prepare($sql)
     {
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
@@ -217,7 +228,6 @@ class Driver implements DriverInterface
 
         $sql = str_replace('\:', ':', $sql);
 
-        $statement       = new Statement();
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
@@ -226,14 +236,16 @@ class Driver implements DriverInterface
             });
         }
 
-        $statement->setQueryType($queryType);
+        $statement = new Statement($driverStatement, $paramsOrder);
 
-        $callback($statement, $paramsOrder, $driverStatement);
-
-        return $this;
+        return $statement;
     }
 
-    public function ifIsNotConnected(\Closure $callback)
+    /**
+     * @param callable $callback
+     * @return $this
+     */
+    public function ifIsNotConnected(callable $callback)
     {
         if ($this->connected === false) {
             $callback();
@@ -242,7 +254,12 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function escapeFields($fields, \Closure $callback)
+    /**
+     * @param array $fields
+     * @param callable $callback
+     * @return $this
+     */
+    public function escapeFields(array $fields, callable $callback)
     {
         foreach ($fields as &$field) {
             $field = '`' . $field . '`';
@@ -253,7 +270,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function startTransaction()
     {
@@ -265,7 +282,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function commit()
     {
@@ -277,7 +294,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function rollback()
     {
@@ -288,8 +305,23 @@ class Driver implements DriverInterface
         $this->transactionOpened = false;
     }
 
-    public function isTransactionOpened()
+    /**
+     * @return int
+     */
+    public function getInsertId()
     {
-        return $this->transactionOpened;
+        return (int) $this->connection->insert_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        if ($this->connection->affected_rows < 0) {
+            return 0;
+        }
+
+        return $this->connection->affected_rows;
     }
 }

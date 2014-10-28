@@ -25,26 +25,73 @@
 namespace CCMBenchmark\Ting\Driver;
 
 use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface DriverInterface
 {
 
+    /**
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param int $port
+     * @return $this
+     */
     public function connect($hostname, $username, $password, $port);
-    public function execute(
-        $sql,
-        $params = array(),
-        $queryType = QueryAbstract::TYPE_RESULT,
-        CollectionInterface $collection = null
-    );
-    public function prepare($sql, \Closure $callback, $queryType = QueryAbstract::TYPE_RESULT);
+
+    /**
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return mixed
+     */
+    public function execute($sql, array $params = array(), CollectionInterface $collection = null);
+
+    /**
+     * @param string $sql
+     * @return StatementInterface
+     */
+    public function prepare($sql);
+
+    /**
+     * @param string $database
+     */
     public function setDatabase($database);
-    public function ifIsError(\Closure $callback);
-    public function ifIsNotConnected(\Closure $callback);
-    public function escapeFields($fields, \Closure $callback);
+
+    /**
+     * @param callable $callback
+     */
+    public function ifIsError(callable $callback);
+
+    /**
+     * @param callable $callback
+     */
+    public function ifIsNotConnected(callable $callback);
+
+    /**
+     * @param array $fields
+     * @param callable $callback
+     */
+    public function escapeFields(array $fields, callable $callback);
+
     public function startTransaction();
     public function rollback();
     public function commit();
-    public static function forConnectionKey($connectionName, $database, \Closure $callback);
+
+    /**
+     * @return int
+     */
+    public function getInsertId();
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows();
+
+    /**
+     * @param array $connectionConfig
+     * @param string $database
+     * @return string
+     */
+    public static function getConnectionKey(array $connectionConfig, $database);
 }
