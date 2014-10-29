@@ -30,17 +30,17 @@ class Collection implements CollectionInterface, \Iterator
     /**
      * @var array
      */
-    protected $rows           = [];
+    protected $rows = [];
 
     /**
      * @var HydratorInterface|null
      */
-    protected $hydrator       = null;
+    protected $hydrator = null;
 
     /**
      * @var bool
      */
-    protected $fromCache      = false;
+    protected $fromCache = false;
 
     /**
      * @var bool
@@ -50,7 +50,7 @@ class Collection implements CollectionInterface, \Iterator
     /**
      * @var array
      */
-    protected $internalRows   = [];
+    protected $internalRows = [];
 
     /**
      * @param HydratorInterface $hydrator
@@ -66,7 +66,6 @@ class Collection implements CollectionInterface, \Iterator
      */
     public function set(\Iterator $result)
     {
-
         if ($this->canBeCacheable === true) {
             $this->internalRows = iterator_to_array($result);
         }
