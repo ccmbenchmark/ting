@@ -100,7 +100,13 @@ class Memcached implements CacheInterface
     public function getMulti(array $keys)
     {
         $this->connect();
-        return $this->connection->getMulti($keys);
+        $values = $this->connection->getMulti($keys);
+
+        if ($values === false) {
+            return null;
+        }
+
+        return $values;
     }
 
     public function store($key, $value, $ttl)
