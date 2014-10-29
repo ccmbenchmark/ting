@@ -43,17 +43,12 @@ class PreparedQuery extends Query
     /**
      * @return $this
      */
-    public function prepareQuery()
+    protected function prepareQuery()
     {
         if ($this->prepared !== null) {
             return $this;
         }
-
-        /**
-         * @TODO Verifier cache avant le prepare
-         */
-        echo "ATTENTION VERIFIER CACHE AVANT LE PREPARE\n";
-
+        
         $this->statement = $this->connection->onSlaveDoPrepare($this->sql);
         $this->prepared  = self::TYPE_RESULT;
 
@@ -63,16 +58,11 @@ class PreparedQuery extends Query
     /**
      * @return $this
      */
-    public function prepareExecute()
+    protected function prepareExecute()
     {
         if ($this->prepared !== null) {
             return $this;
         }
-
-        /**
-         * @TODO Verifier cache avant le prepare
-         */
-        echo "ATTENTION VERIFIER CACHE AVANT LE PREPARE\n";
 
         $this->statement = $this->connection->onMasterDoPrepare($this->sql);
         $this->prepared  = self::TYPE_UPDATE;
@@ -88,10 +78,6 @@ class PreparedQuery extends Query
      */
     public function query(array $params, CollectionInterface $collection = null)
     {
-        if ($this->prepared !== self::TYPE_RESULT) {
-            throw new QueryException("You should call prepareQuery to use query method");
-        }
-
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
@@ -101,6 +87,8 @@ class PreparedQuery extends Query
         if ($isCached === true) {
             return $collection;
         }
+
+        $this->prepareQuery();
 
         $this->statement->execute($params, $collection);
         $this->cache->store($key, $collection->toArray(), $this->ttl);
@@ -116,10 +104,7 @@ class PreparedQuery extends Query
     public function execute(array $params)
     {
         $this->checkTtl();
-
-        if ($this->prepared !== self::TYPE_UPDATE) {
-            throw new QueryException("You should call prepareExecute to use query method");
-        }
+        $this->prepareExecute();
 
         return $this->statement->execute($params);
     }
