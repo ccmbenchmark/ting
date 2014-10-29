@@ -47,6 +47,11 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     protected $version = 1;
 
     /**
+     * @var bool
+     */
+    protected $force = false;
+
+    /**
      * @param CacheInterface $cache
      * @return void
      */
@@ -72,6 +77,16 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     public function setVersion($version)
     {
         $this->version = $version;
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setForce($value)
+    {
+        $this->force = (bool) $value;
         return $this;
     }
 
@@ -125,6 +140,12 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      */
     protected function checkCache($key, CollectionInterface $collection, array $params)
     {
+        $collection->setFromCache(false);
+
+        if ($this->force === true) {
+            return false;
+        }
+
         $this->checkTtl();
         $data = $this->cache->get($key);
 
@@ -132,8 +153,6 @@ class Query extends \CCMBenchmark\Ting\Query\Query
             $collection->setFromCache(true);
             $collection->fromArray($data);
             return true;
-        } else {
-            $collection->setFromCache(false);
         }
 
         return false;
