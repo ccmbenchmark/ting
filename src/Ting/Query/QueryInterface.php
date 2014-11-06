@@ -45,19 +45,23 @@ interface QueryInterface
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory);
+    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null);
 
     /**
-     * @param array $params
      * @param CollectionInterface $collection
      */
-    public function query(array $params, CollectionInterface $collection = null);
+    public function query(CollectionInterface $collection = null);
+
+    /**
+     * @return mixed
+     */
+    public function execute();
 
     /**
      * @param array $params
-     * @return mixed
+     * @return void
      */
-    public function execute(array $params);
+    public function setParams(array $params);
 
     /**
      * @return int
