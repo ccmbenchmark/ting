@@ -90,30 +90,26 @@ class Statement implements StatementInterface
 
         $this->driverStatement->execute();
 
-        if ($collection !== null) {
-            return $this->setCollectionWithResult($collection);
-        }
-
-        if ($this->driverStatement->affected_rows === -1) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param CollectionInterface $collection
-     * @return CollectionInterface
-     * @throws QueryException
-     */
-    public function setCollectionWithResult(CollectionInterface $collection)
-    {
         $result = $this->driverStatement->get_result();
 
         if ($result === false) {
             throw new QueryException($this->driverStatement->error, $this->driverStatement->errno);
         }
 
+        if ($collection !== null) {
+            return $this->setCollectionWithResult($result, $collection);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param \mysqli_result $result
+     * @param CollectionInterface $collection
+     * @return CollectionInterface
+     */
+    public function setCollectionWithResult($result, CollectionInterface $collection)
+    {
         $collection->set(new Result($result));
         return true;
     }
@@ -123,10 +119,6 @@ class Statement implements StatementInterface
      */
     public function close()
     {
-        if ($this->driverStatement === null) {
-            throw new Exception('statement->close can\'t be called before statement->execute');
-        }
-
         $this->driverStatement->close();
     }
 }

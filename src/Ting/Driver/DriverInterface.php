@@ -69,10 +69,10 @@ interface DriverInterface
     public function ifIsNotConnected(callable $callback);
 
     /**
-     * @param array $fields
-     * @param callable $callback
+     * @param $field
+     * @return string
      */
-    public function escapeFields(array $fields, callable $callback);
+    public function escapeField($field);
 
     public function startTransaction();
     public function rollback();

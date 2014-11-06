@@ -173,14 +173,9 @@ class Driver implements DriverInterface
         }
     }
 
-    public function escapeFields(array $fields, callable $callback)
+    public function escapeField($field)
     {
-        foreach ($fields as &$field) {
-            $field = '"' . $field . '"';
-        }
-
-        $callback($fields);
-        return $this;
+        return '"' . $field . '"';
     }
 
     /**
@@ -220,10 +215,14 @@ class Driver implements DriverInterface
     }
 
     /**
+     * @params $sequence only applicable for postgresql
      * @return int
      */
-    public function getInsertId()
+    public function getInsertId($sequence = '')
     {
+        /**
+         * @TODO not correct
+         */
         return (int) $this->connection->insert_id;
     }
 
@@ -232,10 +231,6 @@ class Driver implements DriverInterface
      */
     public function getAffectedRows()
     {
-        if ($this->connection->affected_rows < 0) {
-            return 0;
-        }
-
-        return $this->connection->affected_rows;
+        return pg_affected_rows($this->connection);
     }
 }

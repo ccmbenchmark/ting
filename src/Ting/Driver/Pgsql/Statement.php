@@ -66,27 +66,6 @@ class Statement implements StatementInterface
         return $this;
     }
 
-    /**
-     * @param $type
-     * @return $this
-     * @throws \CCMBenchmark\Ting\Driver\Exception
-     */
-    public function setQueryType($type)
-    {
-        if (
-            in_array(
-                $type,
-                array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
-            ) === false
-        ) {
-            throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
-        }
-
-        $this->queryType = $type;
-
-        return $this;
-    }
-
 
     public function execute(array $params, CollectionInterface $collection = null)
     {
@@ -99,31 +78,25 @@ class Statement implements StatementInterface
         }
 
         $result = pg_execute($this->connection, $this->statementName, $values);
-        return $this->setCollectionWithResult($result, $collection);
+
+        if ($result === false) {
+            throw new QueryException(pg_result_error($this->connection));
+        }
+
+        if ($collection !== null) {
+            return $this->setCollectionWithResult($result, $collection);
+        }
+
+        return true;
     }
 
     /**
      * @param $resultResource
      * @param CollectionInterface $collection
      * @return bool
-     * @throws QueryException
      */
     public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
     {
-        if ($collection === null) { // update or insert
-            if ($this->queryType === QueryAbstract::TYPE_INSERT) {
-                $resultResource = pg_query($this->connection, 'SELECT lastval()');
-                $row = pg_fetch_row($resultResource);
-                return $row[0];
-            }
-
-            return pg_affected_rows($resultResource);
-        }
-
-        if ($resultResource === false) {
-            throw new QueryException(pg_result_error($this->connection));
-        }
-
         $result = new Result($resultResource);
         $result->setQuery($this->query);
 
@@ -131,15 +104,8 @@ class Statement implements StatementInterface
         return true;
     }
 
-    /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
-     */
     public function close()
     {
-        if ($this->statementName === null) {
-            throw new Exception('statement->close can\'t be called before statement->execute');
-        }
-
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
     }
 }

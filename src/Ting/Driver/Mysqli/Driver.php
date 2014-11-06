@@ -217,6 +217,7 @@ class Driver implements DriverInterface
      */
     public function prepare($sql)
     {
+        $paramsOrder = [];
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use (&$paramsOrder) {
@@ -255,18 +256,12 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param array $fields
-     * @param callable $callback
-     * @return $this
+     * @param $field
+     * @return string
      */
-    public function escapeFields(array $fields, callable $callback)
+    public function escapeField($field)
     {
-        foreach ($fields as &$field) {
-            $field = '`' . $field . '`';
-        }
-
-        $callback($fields);
-        return $this;
+        return '`' . $field . '`';
     }
 
     /**

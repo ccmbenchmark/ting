@@ -42,10 +42,10 @@ class Statement extends atoum
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
             ->then($statement->setConnection('Awesome connection resource'))
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
-            ->then($statement->execute('MyStatementName', array(), array(), $collection))
+            ->then($statement->execute([], $collection))
             ->string($outerConnection)
                 ->isIdenticalTo('Awesome connection resource');
     }
@@ -73,9 +73,9 @@ class Statement extends atoum
 
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', $paramsOrder))
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
-            ->then($statement->execute('MyStatementName', $params, $paramsOrder, $collection))
+            ->then($statement->execute($params, $collection))
             ->array($outerValues)
                 ->isIdenticalTo(array('Sylvain', 3, 'A very long description', 32.1, '2014-03-01 14:02:05'));
     }
@@ -104,7 +104,7 @@ class Statement extends atoum
         $resultOk->setQuery('SELECT prenom, nom FROM Bouh');
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
             ->then($statement->setQuery('SELECT prenom, nom FROM Bouh'))
             ->then($statement->setCollectionWithResult($result, $collection))
             ->mock($collection)
@@ -114,48 +114,29 @@ class Statement extends atoum
                 ->isCloneOf($resultOk);
     }
 
-    public function testSetCollectionWithResultWithQueryTypeInsertShouldReturnId()
-    {
-        $this->function->pg_query = function ($connection, $sql) {
-            if ($sql !== 'SELECT lastval()') {
-                return false;
-            }
-
-            return array(123);
-        };
-
-        $this->function->pg_fetch_row = function ($result) {
-            return $result;
-        };
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_INSERT))
-            ->integer($statement->setCollectionWithResult(new \ArrayIterator()))
-                ->isIdenticalTo(123);
-    }
-
-    public function testSetCollectionWithResultWithoutCollectionShouldReturnAffectedRows()
-    {
-        $this->function->pg_affected_rows = 321;
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
-            ->integer($statement->setCollectionWithResult(new \ArrayIterator()))
-                ->isIdenticalTo(321);
-    }
-
-    public function testSetCollectionShouldRaiseQueryException()
+    public function testExecuteShouldRaiseQueryException()
     {
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $this->function->pg_execute = false;
         $this->function->pg_result_error = 'unknown error';
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
             ->exception(function () use ($statement, $collection) {
-                $statement->setCollectionWithResult(false, $collection);
+                $statement->execute([]);
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+    }
+
+    public function testExecuteShouldReturnTrueIfNoError()
+    {
+        $this->function->pg_execute = true;
+
+        $this
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
+            ->boolean($statement->execute([]))
+                ->isTrue()
+        ;
     }
 
     public function testCloseShouldExecuteDeallocateQuery()
@@ -176,36 +157,11 @@ class Statement extends atoum
         $this->function->pg_field_table = 'Bouh';
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('statementNameTest', []))
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
-            ->then($statement->execute('statementNameTest', array(), array(), $collection))
+            ->then($statement->execute([], $collection))
             ->then($statement->close())
             ->string($outerQuery)
                 ->isIdenticalTo('DEALLOCATE "statementNameTest"');
-    }
-
-    public function testCloseBeforeExecuteShouldRaiseException()
-    {
-        $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-
-        $this->calling($driverStatement)->get_result = new \mock\Iterator();
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
-            ->exception(function () use ($statement) {
-                $statement->close();
-            })
-                ->hasMessage('statement->close can\'t be called before statement->execute');
-    }
-
-    public function testSetQueryTypeWithInvalidTypeShouldRaisException()
-    {
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement())
-            ->exception(function () use ($statement) {
-                $statement->setQueryType(PHP_INT_MAX);
-            })
-                ->hasMessage('setQueryType should use one of constant Statement::TYPE_*');
     }
 }
