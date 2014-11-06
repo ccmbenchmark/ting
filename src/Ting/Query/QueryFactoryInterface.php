@@ -36,7 +36,7 @@ interface QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return Query
      */
-    public function get($sql, Connection $connection, CollectionFactoryInterface $collectionFactory);
+    public function get($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null);
 
     /**
      * @param string $sql
@@ -44,7 +44,7 @@ interface QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return PreparedQuery
      */
-    public function getPrepared($sql, Connection $connection, CollectionFactoryInterface $collectionFactory);
+    public function getPrepared($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null);
 
     /**
      * @param string $sql
@@ -57,7 +57,7 @@ interface QueryFactoryInterface
         $sql,
         Connection $connection,
         CacheInterface $cache,
-        CollectionFactoryInterface $collectionFactory
+        CollectionFactoryInterface $collectionFactory = null
     );
 
     /**
@@ -71,6 +71,6 @@ interface QueryFactoryInterface
         $sql,
         Connection $connection,
         CacheInterface $cache,
-        CollectionFactoryInterface $collectionFactory
+        CollectionFactoryInterface $collectionFactory = null
     );
 }
