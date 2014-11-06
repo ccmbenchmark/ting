@@ -26,20 +26,23 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Query\Generator;
+use CCMBenchmark\Ting\Query\PreparedQuery;
+use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 
 class Metadata
 {
 
-    protected $queryFactory   = null;
-    protected $connectionName = null;
-    protected $databaseName   = null;
-    protected $entity         = null;
-    protected $table          = null;
-    protected $fields         = [];
-    protected $primaries      = [];
-    protected $autoincrement  = null;
+    protected $queryFactory     = null;
+    protected $connectionName   = null;
+    protected $databaseName     = null;
+    protected $entity           = null;
+    protected $table            = null;
+    protected $fields           = [];
+    protected $fieldsByProperty = [];
+    protected $primaries        = [];
+    protected $autoincrement    = null;
 
     public function getConnection(ConnectionPoolInterface $connectionPool)
     {
@@ -96,6 +99,7 @@ class Metadata
             }
         }
 
+        $this->fieldsByProperty[$params['fieldName']] = $params;
         $this->fields[$params['columnName']] = $params;
 
     }
@@ -141,161 +145,130 @@ class Metadata
         $entity->$property($value);
     }
 
-    public function connectMaster(ConnectionPoolInterface $connectionPool, \Closure $callback)
-    {
-        $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_MASTER, $callback);
+
+    /**
+     * @param Connection $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param $primariesKeyValue
+     * @param $onMaster boolean
+     * @return \CCMBenchmark\Ting\Query\Query
+     */
+    public function getByPrimaries(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        $primariesKeyValue,
+        $onMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->databaseName,
+            $this->table,
+            $fields
+        );
+        return $queryGenerator->getByPrimaries($primariesKeyValue, $collectionFactory, $onMaster);
     }
 
-    public function connectSlave(ConnectionPoolInterface $connectionPool, \Closure $callback)
-    {
-        $this->connect($connectionPool, ConnectionPoolInterface::CONNECTION_SLAVE, $callback);
-    }
-
-    public function connect(ConnectionPoolInterface $connectionPool, $connectionType, \Closure $callback)
-    {
-        $connectionPool->connect($this->connectionName, $this->databaseName, $connectionType, $callback);
-    }
-
-    public function generateQueryForPrimary(DriverInterface $driver, $primariesValue, \Closure $callback)
-    {
-        $columns          = array_keys($this->fields);
-        $columns['table'] = $this->table;
-
-        $driver
-            ->escapeFields($columns, function ($fields) use (&$sql) {
-                $table = $fields['table'];
-                unset($fields['table']);
-
-                $sql = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $table;
-            });
-
-        $conditions = [];
-        if (is_array($primariesValue) === false) {
-            $conditions[reset($this->primaries)['columnName']] = $primariesValue;
-        } else {
-            foreach ($this->primaries as $primary) {
-                if (isset($primariesValue[$primary['fieldName']]) === true) {
-                    $conditions[$primary['columnName']] = $primariesValue[$primary['fieldName']];
-                }
-            }
-        }
-
-        $this->generateWhereCondition($driver, $conditions, function ($whereCondition, $values) use ($sql, $callback) {
-            $callback($this->queryFactory->get($sql . $whereCondition, $values));
-        });
-    }
-
-    public function generateQueryForInsert(DriverInterface $driver, $entity, \Closure $callback)
-    {
-        $columns          = [];
-        $columns['table'] = $this->table;
+    /**
+     * @param Connection $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param $entity
+     * @return PreparedQuery
+     */
+    public function generateQueryForInsert(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        $entity
+    ) {
+        $values = [];
 
         foreach ($this->fields as $column => $field) {
-            $columns[]       = $column;
             $propertyName    = 'get' . $field['fieldName'];
             $values[$column] = $entity->$propertyName();
         }
 
-        $driver
-            ->escapeFields(
-                $columns,
-                function ($fields) use (&$sql, $columns) {
-                    $table = $fields['table'];
-                    unset($fields['table']);
-                    unset($columns['table']);
-
-                    $sql = 'INSERT INTO ' . $table . ' ('
-                        . implode($fields, ', ') . ') VALUES (:' . implode($columns, ', :') . ')';
-                }
-            );
-
-        $callback($this->queryFactory->getPrepared($sql, $values));
-    }
-
-    public function generateQueryForUpdate(DriverInterface $driver, $entity, $properties, \Closure $callback)
-    {
-        $values           = [];
-        $columns          = [];
-        $columns['table'] = $this->table;
-
-        foreach ($this->fields as $column => $field) {
-            if (isset($properties[$field['fieldName']]) === true) {
-                $columns[]       = $column;
-                $values[$column] = $properties[$field['fieldName']][1];
-            }
-        }
-
-        $driver
-            ->escapeFields(
-                $columns,
-                function ($fields) use (&$sql, $columns) {
-                    $table = $fields['table'];
-                    unset($fields['table']);
-
-                    $sqlSet = [];
-                    foreach ($fields as $index => $field) {
-                        $sqlSet[] = $field . ' = :' . $columns[$index];
-                    }
-
-                    $sql = 'UPDATE ' . $table . ' SET ' . implode($sqlSet, ', ');
-                }
-            );
-
-        $primariesValue = [];
-        foreach ($this->primaries as $primary) {
-            $propertyName = 'get' . $primary['fieldName'];
-            $primariesValue[$primary['columnName']] = $entity->$propertyName();
-        }
-
-        $this->generateWhereCondition(
-            $driver,
-            $primariesValue,
-            function ($whereCondition, $primariesValue) use ($values, $sql, $callback) {
-                $callback(
-                    $this->queryFactory->getPrepared($sql . $whereCondition, array_merge($values, $primariesValue))
-                );
-            }
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->databaseName,
+            $this->table,
+            $fields
         );
+
+        return $queryGenerator->insert($values);
     }
 
-    public function generateQueryForDelete(DriverInterface $driver, $entity, \Closure $callback)
-    {
-        $driver
-            ->escapeFields(
-                ['table' => $this->table],
-                function ($fields) use (&$sql) {
-                    $sql = 'DELETE FROM ' . $fields['table'];
-                }
-            );
+    public function generateQueryForUpdate(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        $entity,
+        $properties
+    ) {
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->databaseName,
+            $this->table,
+            array_keys($properties)
+        );
 
+        // Get new values affected to entity
         $values = [];
-        foreach ($this->primaries as $primary) {
-            $propertyName = 'get' . $primary['fieldName'];
-            $values[$primary['columnName']] = $entity->$propertyName();
+        foreach ($properties as $name => $value) {
+            $columnName = $this->fieldsByProperty[$name]['columnName'];
+
+            // 0 means old value, 1 means new value
+            $values[$columnName] = $value[1];
         }
 
-        $this->generateWhereCondition($driver, $values, function ($whereCondition, $values) use ($sql, $callback) {
-            $callback($this->queryFactory->getPrepared($sql . $whereCondition, $values));
-        });
+        // Get actual primaries to where condition
+        $primariesKeyValue = [];
+        foreach ($this->primaries as $key => $primary) {
+            $fieldName = $this->fields[$key]['fieldName'];
+            // Key value has been updated
+            if (isset($properties[$fieldName]) === true) {
+                $primariesKeyValue[$key] = $properties[$fieldName][0];
+            } else {
+                $propertyName = 'get' . $primary['fieldName'];
+                $primariesKeyValue[$key] = $entity->$propertyName();
+            }
+        }
+
+        return $queryGenerator->update($values, $primariesKeyValue);
     }
 
-    protected function generateWhereCondition(DriverInterface $driver, $values, \Closure $callback)
-    {
-        $driver
-            ->escapeFields(
-                array_keys($values),
-                function ($fields) use ($values, $callback) {
-                    $conditions = [];
-                    $i = 0;
-                    foreach ($values as $field => $value) {
-                        $conditions[] = $fields[$i] . ' = :#' . $field;
-                        $values['#' . $field] = $value;
-                        unset($values[$field]);
-                        $i++;
-                    }
+    public function generateQueryForDelete(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        $properties,
+        $entity
+    ) {
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->databaseName,
+            $this->table,
+            array_keys($properties)
+        );
 
-                    $callback(' WHERE ' . implode(' AND ', $conditions), $values);
-                }
-            );
+        // Get actual primaries to where condition
+        $primariesKeyValue = [];
+        foreach ($this->primaries as $key => $primary) {
+            $fieldName = $this->fields[$key]['fieldName'];
+            // Key value has been updated : we need the old one
+            if (isset($properties[$fieldName]) === true) {
+                $primariesKeyValue[$key] = $properties[$fieldName][0];
+            } else {
+                // No update, get the actual
+                $propertyName = 'get' . $primary['fieldName'];
+                $primariesKeyValue[$key] = $entity->$propertyName();
+            }
+        }
+
+        return $queryGenerator->delete($primariesKeyValue);
     }
 }
