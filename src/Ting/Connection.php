@@ -24,8 +24,6 @@
 
 namespace CCMBenchmark\Ting;
 
-use CCMBenchmark\Ting\Repository\CollectionInterface;
-
 class Connection
 {
 
@@ -65,106 +63,33 @@ class Connection
     }
 
     /**
-     * @param string $sql
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
+     * @return Driver\DriverInterface
      */
-    public function onMasterDoExecute($sql, $params, CollectionInterface $collection = null)
+    public function master()
     {
-        return $this
-            ->connectionPool
-            ->onMasterDoExecute($this->name, $this->database, $sql, $params, $collection);
+        return $this->connectionPool->master($this->name, $this->database);
     }
 
     /**
-     * @param string $sql
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
+     * @return Driver\DriverInterface
      */
-    public function onSlaveDoExecute($sql, $params, CollectionInterface $collection = null)
+    public function slave()
     {
-        return $this
-            ->connectionPool
-            ->onSlaveDoExecute($this->name, $this->database, $sql, $params, $collection);
+        return $this->connectionPool->slave($this->name, $this->database);
     }
 
-    /**
-     * @param $sql
-     * @return \CCMBenchmark\Ting\Driver\StatementInterface
-     */
-    public function onMasterDoPrepare($sql)
+    public function startTransaction()
     {
-         return $this
-            ->connectionPool
-            ->onMasterDoPrepare($this->name, $this->database, $sql);
+        return $this->master->startTransaction();
     }
 
-    /**
-     * @param string $sql
-     * @return \CCMBenchmark\Ting\Driver\StatementInterface
-     */
-    public function onSlaveDoPrepare($sql)
+    public function commit()
     {
-        return $this
-            ->connectionPool
-            ->onSlaveDoPrepare($this->name, $this->database, $sql);
+        return $this->master->commit();
     }
 
-    /**
-     * @return void
-     */
-    public function onMasterStartTransaction()
+    public function rollback()
     {
-        $this->connectionPool->onMasterStartTransaction($this->name, $this->database);
-    }
-
-    /**
-     * @return void
-     */
-    public function onMasterRollback()
-    {
-        $this->connectionPool->onMasterRollback($this->name, $this->database);
-    }
-
-    /**
-     * @return void
-     */
-    public function onMasterCommit()
-    {
-        $this->connectionPool->onMasterCommit($this->name, $this->database);
-    }
-
-    /**
-     * @return int
-     */
-    public function onMasterDoGetInsertId()
-    {
-        return (int) $this->connectionPool->onMasterDoGetInsertId($this->name, $this->database);
-    }
-
-    /**
-     * @return int
-     */
-    public function onSlaveDoGetInsertId()
-    {
-        return $this->connectionPool->onSlaveDoGetInsertId($this->name, $this->database);
-    }
-
-    /**
-     * @return int
-     */
-    public function onMasterDoGetAffectedRows()
-    {
-        return $this->connectionPool->onMasterDoGetAffectedRows($this->name, $this->database);
-    }
-
-    /**
-     * @return int
-     */
-    public function onSlaveDoGetAffectedRows()
-    {
-        return $this->connectionPool->onSlaveDoGetAffectedRows($this->name, $this->database);
+        return $this->master->rollback();
     }
 }
