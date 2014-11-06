@@ -93,7 +93,8 @@ class RepositoryFactory
             $this->metadataRepository,
             $this->queryFactory,
             $this->collectionFactory,
-            $this->cache
+            $this->cache,
+            $this->unitOfWork
         );
     }
 }

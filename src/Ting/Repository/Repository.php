@@ -27,7 +27,6 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
-use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
@@ -67,19 +66,22 @@ class Repository
      * @param QueryFactory $queryFactory
      * @param CollectionFactory $collectionFactory
      * @param CacheInterface $cache
+     * @param UnitOfWork $unitOfWork
      */
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
-        CacheInterface $cache
+        CacheInterface $cache,
+        UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
         $this->queryFactory       = $queryFactory;
         $this->collectionFactory  = $collectionFactory;
         $this->cache              = $cache;
+        $this->unitOfWork         = $unitOfWork;
 
         $class            = get_class($this);
         $this->metadata   = $class::initMetadata();
@@ -134,46 +136,46 @@ class Repository
     }
 
     /**
-     * @TODO All this method need to be rewritten
+     * @param $primariesKeyValue associative array column => value
+     * @param bool $forceMaster
+     * @return mixed|null
      */
-    public function get(
-        $primariesKeyValue,
-        Collection $collection = null,
-        $connectionType = "ConnectionPoolInterface::CONNECTION_SLAVE"
-    ) {
+    public function get($primariesKeyValue, $forceMaster = false)
+    {
+        $query = $this->metadata->getByPrimaries(
+            $this->connection,
+            $this->queryFactory,
+            $this->collectionFactory,
+            $primariesKeyValue,
+            (bool) $forceMaster
+        );
 
-        if ($collection === null) {
-            $collection = $this->collectionFactory->get();
+        if ($forceMaster) {
+            $query->selectMaster($forceMaster);
         }
 
-        $query = $this->queryGenerator->getByPrimaries($this->metadata);
-        $query->execute($collection);
-
-        $callback = function (DriverInterface $driver) use ($collection, $primariesKeyValue) {
-            $this->metadata->generateQueryForPrimary(
-                $driver,
-                $primariesKeyValue,
-                function (Query $query) use ($driver, $collection) {
-                    $query->setDriver($driver);
-                    $this->execute($query, $collection);
-                }
-            );
-        };
-
-        if ($connectionType === "ConnectionPoolInterface::CONNECTION_SLAVE" || $connectionType === null) {
-            $this->metadata->connectSlave(
-                $this->connectionPool,
-                $callback
-            );
-        } else {
-            $this->metadata->connectMaster(
-                $this->connectionPool,
-                $callback
-            );
+        $collection = $query->query();
+        if ($collection->count() === 0) {
+            return null;
         }
-        $collection->rewind();
+        $entity = current($collection->current());
 
-        return current($collection->current());
+        return $entity;
+    }
+
+    public function insert($entity)
+    {
+        $this->unitOfWork->persist($entity)->flush();
+    }
+
+    public function update($entity)
+    {
+        $this->unitOfWork->persist($entity)->flush();
+    }
+
+    public function delete($entity)
+    {
+        $this->unitOfWork->delete($entity)->flush();
     }
 
     /**
@@ -214,7 +216,7 @@ class Repository
      */
     public function startTransaction()
     {
-        $this->connection->onMasterStartTransaction();
+        $this->connection->master()->startTransaction();
     }
 
     /**
@@ -222,7 +224,7 @@ class Repository
      */
     public function rollback()
     {
-        $this->connection->onMasterRollback();
+        $this->connection->master()->rollback();
     }
 
     /**
@@ -230,6 +232,6 @@ class Repository
      */
     public function commit()
     {
-        $this->connection->onMasterCommit();
+        $this->connection->master()->commit();
     }
 }
