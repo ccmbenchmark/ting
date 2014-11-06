@@ -24,8 +24,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Driver\ResultInterface;
-
 interface CollectionInterface
 {
     public function set(\Iterator $result);
@@ -42,4 +40,6 @@ interface CollectionInterface
     public function next();
 
     public function valid();
+
+    public function count();
 }

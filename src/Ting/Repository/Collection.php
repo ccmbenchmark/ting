@@ -180,4 +180,10 @@ class Collection implements CollectionInterface, \Iterator
 
         return true;
     }
+
+    public function count()
+    {
+        return count($this->rows);
+    }
+
 }
