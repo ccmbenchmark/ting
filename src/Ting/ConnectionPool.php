@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting;
 
-use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Driver\DriverInterface;
 
 class ConnectionPool implements ConnectionPoolInterface
 {
@@ -33,6 +33,7 @@ class ConnectionPool implements ConnectionPoolInterface
      * @var array
      */
     protected $connectionConfig = array();
+    protected $connectionSlaves = array();
 
     /**
      * @var array
@@ -48,95 +49,63 @@ class ConnectionPool implements ConnectionPoolInterface
     }
 
     /**
-     * @param string $name
-     * @return array
+     * @param $name
+     * @param $database
+     * @throws Exception
+     * @return DriverInterface
      */
-    protected function preSetMaster($name)
+    public function master($name, $database)
     {
+        if (!isset($this->connectionConfig[$name]['master'])) {
+            throw new Exception('Connection not found: ' . $name);
+        }
         $config = $this->connectionConfig[$name]['master'];
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
-        return [$config, $driverClass];
+        return $this->connect($config, $driverClass, $database);
     }
 
     /**
-     * @param string $name
-     * @return array
+     * @param $name
+     * @param $database
+     * @throws Exception
+     * @return DriverInterface
      */
-    protected function preSetSlave($name)
+    public function slave($name, $database)
     {
+        if (!isset($this->connectionConfig[$name])) {
+            throw new Exception('Connection not found: ' . $name);
+        }
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
         if (isset($this->connectionConfig[$name]['slaves']) === false
             || $this->connectionConfig[$name]['slaves'] === []
         ) {
-            $config = $this->connectionConfig[$name]['master'];
-            return [$config, $driverClass];
+            return $this->master($name, $database);
         }
 
-        $randomKey = array_rand($this->connectionConfig[$name]['slaves']);
-        $config = $this->connectionConfig[$name]['slaves'][$randomKey];
+        if (
+            !isset($this->connectionSlaves[$name])
+        ) {
+            /**
+             * It's a slave connection and we do not have choosen a slave. We randomly take one & store datas.
+             * In this way we avoid opening one connection per slave because of round-robin.
+             */
 
-        return [$config, $driverClass];
-    }
+            $randomKey = array_rand($this->connectionConfig[$name]['slaves']);
+            $this->connectionSlaves[$name] = $this->connectionConfig[$name]['slaves'][$randomKey];
+        }
 
-    /**
-     * @param string $name
-     * @param string $database
-     * @param string $sql
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
-     */
-    public function onMasterDoExecute($name, $database, $sql, $params, CollectionInterface $collection = null)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        return $this->connect($config, $driverClass, $database)->execute($sql, $params, $collection);
-    }
+        $connectionConfig = $this->connectionSlaves[$name];
 
-    /**
-     * @param string $name
-     * @param string $database
-     * @param string $sql
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
-     */
-    public function onSlaveDoExecute($name, $database, $sql, $params, CollectionInterface $collection = null)
-    {
-        list ($config, $driverClass) = $this->preSetSlave($name);
-        return $this->connect($config, $driverClass, $database)->execute($sql, $params, $collection);
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     * @param string $sql
-     * @return \CCMBenchmark\Ting\Driver\StatementInterface
-     */
-    public function onMasterDoPrepare($name, $database, $sql)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        return $this->connect($config, $driverClass, $database)->prepare($sql);
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     * @param string $sql
-     * @return \CCMBenchmark\Ting\Driver\StatementInterface
-     */
-    public function onSlaveDoPrepare($name, $database, $sql)
-    {
-        list ($config, $driverClass) = $this->preSetSlave($name);
-        return $this->connect($config, $driverClass, $database)->prepare($sql);
+        return $this->connect($connectionConfig, $driverClass, $database);
     }
 
     /**
      * @param array $config
      * @param string $driverClass
      * @param string $database
-     * @return mixed
+     * @return DriverInterface
      */
     protected function connect($config, $driverClass, $database)
     {
@@ -156,79 +125,5 @@ class ConnectionPool implements ConnectionPoolInterface
 
         $this->connections[$connectionKey]->setDatabase($database);
         return $this->connections[$connectionKey];
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     */
-    public function onMasterStartTransaction($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        $this->connect($config, $driverClass, $database)->startTransaction();
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     */
-    public function onMasterRollback($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        $this->connect($config, $driverClass, $database)->rollback();
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     */
-    public function onMasterCommit($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        $this->connect($config, $driverClass, $database)->commit();
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     * @return int
-     */
-    public function onMasterDoGetInsertId($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        return $this->connect($config, $driverClass, $database)->getInsertId();
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     * @return int
-     */
-    public function onSlaveDoGetInsertId($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetSlave($name);
-        return $this->connect($config, $driverClass, $database)->onSlaveDoGetInsertId();
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     * @return int
-     */
-    public function onMasterDoGetAffectedRows($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetMaster($name);
-        return $this->connect($config, $driverClass, $database)->getAffectedRows();
-    }
-
-    /**
-     * @param string $name
-     * @param string $database
-     * @return mixed
-     */
-    public function onSlaveDoGetAffectedRows($name, $database)
-    {
-        list ($config, $driverClass) = $this->preSetSlave($name);
-        return $this->connect($config, $driverClass, $database)->onSlaveDoGetAffectedRows();
     }
 }
