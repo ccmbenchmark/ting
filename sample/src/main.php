@@ -29,6 +29,8 @@ use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\CachedQuery;
 use CCMBenchmark\Ting\Query\PreparedQuery;
+use sample\src\model\City;
+use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
@@ -56,14 +58,14 @@ $connections = [
         'slaves' => [
             [
                 'host'      => '127.0.0.1',
-                'user'      => 'world_sample',
-                'password'  => 'world_sample',
+                'user'      => 'mysql_readonly',
+                'password'  => 'p455w0rd',
                 'port'      => 3306,
             ],
             [
                 'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
-                'user'      => 'world_sample',
-                'password'  => 'world_sample',
+                'user'      => 'mysql_readonly',
+                'password'  => 'p455w0rd',
                 'port'      => 3306,
             ]
         ]
@@ -88,6 +90,9 @@ $services->get('Cache')->setConfig($memcached);
 $services->get('Cache')->store('key', 'storedInCacheValue', 10);
 echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
+/**
+ * @var CityRepository
+ */
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
 $queryCached = $cityRepository->getCachedQuery(
@@ -99,7 +104,7 @@ $queryCached = $cityRepository->getCachedQuery(
     );
 
 $queryCached->setTtl(10);
-$collection = $queryCached->query(['code' => 'FRA']);
+$collection = $queryCached->setParams(['code' => 'FRA'])->query();
 echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";
 foreach ($collection as $result) {
     var_dump($result);
@@ -122,14 +127,14 @@ try {
             where co.cou_code = :code limit 3"
         );
 
-    $collection = $query->query(['code' => 'FRA']);
+    $collection = $query->setParams(['code' => 'FRA'])->query();
 
     foreach ($collection as $result) {
         var_dump($result);
         echo str_repeat("-", 40) . "\n";
     }
 
-    $collection = $query->query(['code' => 'BEL']);
+    $collection = $query->setParams(['code' => 'BEL'])->query();
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -153,14 +158,14 @@ try {
     );
 
     $preparedQuery->prepareQuery();
-    $collection = $preparedQuery->query(['code' => 'FRA']);
+    $collection = $preparedQuery->setParams(['code' => 'FRA'])->query();
 
     foreach ($collection as $result) {
         var_dump($result);
         echo str_repeat("-", 40) . "\n";
     }
 
-    $collection2 = $preparedQuery->query(['code' => 'BEL']);
+    $collection2 = $preparedQuery->setParams(['code' => 'BEL'])->query();
 
     foreach ($collection2 as $result) {
         var_dump($result);
@@ -186,7 +191,7 @@ try {
             where co.cou_code = :code limit 3"
     );
     $query->selectMaster(true);
-    $collection = $query->query(['code' => 'FRA']);
+    $collection = $query->setParams(['code' => 'FRA'])->query();
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -211,7 +216,7 @@ try {
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $nb = $cityRepository->getNumberOfCities();
-    var_dump(['initial' => $nb->rewind()->current()]);
+    var_dump(['initial' => $nb]);
     $cityRepository->startTransaction();
         $query = $cityRepository->getQuery(
             "INSERT INTO t_city_cit
@@ -219,10 +224,10 @@ try {
                 (:name, :pop)"
         );
 
-        $query->execute(['name' => 'BOUH_TEST', 'pop' => 25000]);
+        $query->setParams(['name' => 'BOUH_TEST', 'pop' => 25000])->execute();
     $cityRepository->rollback();
     $nb = $cityRepository->getNumberOfCities();
-    var_dump(['apres' => $nb->rewind()->current()]);
+    var_dump(['apres' => $nb]);
 } catch (Exception $e) {
     var_dump($e);
 }

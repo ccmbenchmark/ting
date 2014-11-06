@@ -39,7 +39,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 
         );
 
-        return $query->query(['name' => 'Z%', 'population' => 200000], new Collection());
+        return $query->setParams(['name' => 'Z%', 'population' => 200000])->query(new Collection());
     }
 
     public function getNumberOfCities()
@@ -47,7 +47,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 
         $query = $this->getQuery('select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population');
 
-        return $query->query(['population' => 20000]);
+        return $query->setParams(['population' => 20000])->query()->current();
     }
 
     public static function initMetadata()

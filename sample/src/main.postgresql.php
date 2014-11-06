@@ -87,7 +87,7 @@ try {
             where co.cou_code = :code limit 1'
     );
 
-    $collection = $query->query(['code' => 'FRA']);
+    $collection = $query->setParams(['code' => 'FRA'])->query();
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -125,8 +125,8 @@ try {
     );
 
     $query->setTtl(10);
-    $query->prepareQuery();
-    $collection = $query->query(['code' => 'FRA']);
+
+    $collection = $query->setParams(['code' => 'FRA'])->query();
     echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";
 
     foreach ($collection as $result) {
