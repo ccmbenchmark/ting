@@ -51,7 +51,11 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'UnitOfWork',
             function () {
-                return new UnitOfWork($this->get('ConnectionPool'), $this->get('MetadataRepository'));
+                return new UnitOfWork(
+                    $this->get('ConnectionPool'),
+                    $this->get('MetadataRepository'),
+                    $this->get('QueryFactory')
+                );
             }
         );
 
