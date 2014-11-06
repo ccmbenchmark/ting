@@ -28,6 +28,10 @@ use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\PreparedQuery;
+use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+use CCMBenchmark\Ting\Repository\CollectionFactory;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class UnitOfWork implements PropertyListenerInterface
 {
@@ -37,22 +41,29 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
+    protected $queryFactory              = null;
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
 
-    public function __construct(ConnectionPool $connectionPool, MetadataRepository $metadataRepository)
-    {
+    public function __construct(
+        ConnectionPool $connectionPool,
+        MetadataRepository $metadataRepository,
+        QueryFactoryInterface $queryFactory
+    ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
+        $this->queryFactory       = $queryFactory;
     }
 
     public function manage($entity)
     {
-        $this->entitiesManaged[spl_object_hash($entity)] = true;
+        $oid = spl_object_hash($entity);
+        $this->entitiesManaged[$oid] = true;
         if ($entity instanceof NotifyPropertyInterface) {
             $entity->addPropertyListener($this);
         }
+        $this->entitiesShouldBePersisted[$oid] = self::STATE_NEW;
     }
 
     public function isManaged($entity)
@@ -86,6 +97,8 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->entitiesShouldBePersisted[$oid] = $state;
         $this->entities[$oid] = $entity;
+
+        return $this;
     }
 
     public function shouldBePersisted($entity)
@@ -133,11 +146,13 @@ class UnitOfWork implements PropertyListenerInterface
         unset($this->entities[$oid]);
     }
 
-    public function remove($entity)
+    public function delete($entity)
     {
         $oid = spl_object_hash($entity);
         $this->entitiesShouldBePersisted[$oid] = self::STATE_DELETE;
         $this->entities[$oid] = $entity;
+
+        return $this;
     }
 
     public function shouldBeRemoved($entity)
@@ -192,21 +207,14 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($entity, $properties) {
-                $metadata->connectMaster(
-                    $this->connectionPool,
-                    function (DriverInterface $driver) use ($entity, $metadata, $properties) {
-                        $metadata->generateQueryForUpdate(
-                            $driver,
-                            $entity,
-                            $properties,
-                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $query->setDriver($driver)->execute($metadata, $this->connectionPool);
-                                $this->detach($entity);
-                            }
-                        );
-                    }
+            function (Metadata $metadata) use ($entity, $properties) {
+                $query = $metadata->generateQueryForUpdate(
+                    $metadata->getConnection($this->connectionPool),
+                    $this->queryFactory,
+                    $entity,
+                    $properties
                 );
+                $query->prepareExecute()->execute();
             }
         );
     }
@@ -214,24 +222,17 @@ class UnitOfWork implements PropertyListenerInterface
     protected function flushNew($oid)
     {
         $entity = $this->entities[$oid];
+
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($entity) {
-                $metadata->connectMaster(
-                    $this->connectionPool,
-                    function (DriverInterface $driver) use ($entity, $metadata) {
-                        $metadata->generateQueryForInsert(
-                            $driver,
-                            $entity,
-                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $id = $query->setDriver($driver)->execute($metadata, $this->connectionPool);
-                                $metadata->setEntityPropertyForAutoIncrement($entity, $id);
-                                $this->detach($entity);
-                                $this->manage($entity);
-                            }
-                        );
-                    }
+            function (Metadata $metadata) use ($entity) {
+                $query = $metadata->generateQueryForInsert(
+                    $metadata->getConnection($this->connectionPool),
+                    $this->queryFactory,
+                    $entity
                 );
+                $query->prepareExecute()->execute();
+                $this->manage($entity);
             }
         );
     }
@@ -239,22 +240,26 @@ class UnitOfWork implements PropertyListenerInterface
     protected function flushDelete($oid)
     {
         $entity = $this->entities[$oid];
+        $properties = [];
+        if (isset($this->entitiesChanged[$oid])) {
+            foreach ($this->entitiesChanged[$oid] as $property => $values) {
+                if ($values[0] !== $values[1]) {
+                    $properties[$property] = $values;
+                }
+            }
+        }
+
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($entity) {
-                $metadata->connectMaster(
-                    $this->connectionPool,
-                    function (DriverInterface $driver) use ($entity, $metadata) {
-                        $metadata->generateQueryForDelete(
-                            $driver,
-                            $entity,
-                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $query->setDriver($driver)->execute($metadata, $this->connectionPool);
-                                $this->detach($entity);
-                            }
-                        );
-                    }
+            function (Metadata $metadata) use ($entity, $properties) {
+                $query = $metadata->generateQueryForDelete(
+                    $metadata->getConnection($this->connectionPool),
+                    $this->queryFactory,
+                    $properties,
+                    $entity
                 );
+                $query->prepareExecute()->execute();
+                $this->detach($entity);
             }
         );
     }
