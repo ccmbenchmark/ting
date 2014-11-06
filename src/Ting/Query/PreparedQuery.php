@@ -47,7 +47,11 @@ class PreparedQuery extends Query
             return $this;
         }
 
-        $this->statement = $this->connection->onSlaveDoPrepare($this->sql);
+        if ($this->selectMaster === true) {
+            $this->statement = $this->connection->master()->prepare($this->sql);
+        } else {
+            $this->statement = $this->connection->slave()->prepare($this->sql);
+        }
         $this->prepared  = self::TYPE_RESULT;
 
         return $this;
@@ -62,19 +66,18 @@ class PreparedQuery extends Query
             return $this;
         }
 
-        $this->statement = $this->connection->onMasterDoPrepare($this->sql);
+        $this->statement = $this->connection->master()->prepare($this->sql);
         $this->prepared  = self::TYPE_UPDATE;
 
         return $this;
     }
 
     /**
-     * @param array $params
      * @param CollectionInterface $collection
      * @return CollectionInterface
      * @throws QueryException
      */
-    public function query(array $params, CollectionInterface $collection = null)
+    public function query(CollectionInterface $collection = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
@@ -84,22 +87,21 @@ class PreparedQuery extends Query
             throw new QueryException("You should call prepareQuery to use query method");
         }
 
-        $this->statement->execute($params, $collection);
+        $this->statement->execute($this->params, $collection);
 
         return $collection;
     }
 
     /**
-     * @param array $params
      * @return mixed
      * @throws QueryException
      */
-    public function execute(array $params)
+    public function execute()
     {
         if ($this->prepared !== self::TYPE_UPDATE) {
             throw new QueryException("You should call prepareExecute to use query method");
         }
 
-        return $this->statement->execute($params);
+        return $this->statement->execute($this->params);
     }
 }

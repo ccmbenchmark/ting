@@ -91,23 +91,22 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
-     * @param array $params
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
-    public function query(array $params, CollectionInterface $collection = null)
+    public function query(CollectionInterface $collection = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
 
-        $key      = $this->getCacheKey($params);
-        $isCached = $this->checkCache($key, $collection, $params);
+        $key      = $this->getCacheKey($this->params);
+        $isCached = $this->checkCache($key, $collection);
         if ($isCached === true) {
             return $collection;
         }
 
-        parent::query($params, $collection);
+        parent::query($collection);
         $this->cache->store($key, $collection->toArray(), $this->ttl);
 
         return $collection;
@@ -134,11 +133,10 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     /**
      * @param string $key
      * @param CollectionInterface $collection
-     * @param array $params
      * @return bool
      * @throws QueryException
      */
-    protected function checkCache($key, CollectionInterface $collection, array $params)
+    protected function checkCache($key, CollectionInterface $collection)
     {
         $collection->setFromCache(false);
 
@@ -159,14 +157,13 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
-     * @param array $params
      * @return mixed
      * @throws QueryException
      */
-    public function execute(array $params)
+    public function execute()
     {
         $this->checkTtl();
-        return parent::execute($params);
+        return parent::execute();
     }
 
     /**

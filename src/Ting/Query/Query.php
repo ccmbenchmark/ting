@@ -52,11 +52,16 @@ class Query implements QueryInterface
     protected $selectMaster = false;
 
     /**
+     * @var array
+     */
+    protected $params = [];
+
+    /**
      * @param string $sql
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory)
+    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
     {
         $this->sql               = $sql;
         $this->connection        = $connection;
@@ -75,41 +80,40 @@ class Query implements QueryInterface
 
     /**
      * @param array $params
-     * @param CollectionInterface $collection
-     * @return void
+     * @return $this
      */
-    protected function executeOnConnection(array $params, CollectionInterface $collection = null)
+    public function setParams(array $params)
     {
-        if ($this->selectMaster === true) {
-            $this->connection->onMasterDoExecute($this->sql, $params, $collection);
-        } else {
-            $this->connection->onSlaveDoExecute($this->sql, $params, $collection);
-        }
+        $this->params = $params;
+
+        return $this;
     }
 
     /**
-     * @param array $params
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
-    public function query(array $params, CollectionInterface $collection = null)
+    public function query(CollectionInterface $collection = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
 
-        $this->executeOnConnection($params, $collection);
+        if ($this->selectMaster === true) {
+            return $this->connection->master()->execute($this->sql, $this->params, $collection);
+        } else {
+            return $this->connection->slave()->execute($this->sql, $this->params, $collection);
+        }
 
         return $collection;
     }
 
     /**
-     * @param array $params
      * @return mixed
      */
-    public function execute(array $params)
+    public function execute()
     {
-        return $this->connection->onMasterDoExecute($this->sql, $params);
+        return $this->connection->master()->execute($this->sql, $this->params);
     }
 
     /**
