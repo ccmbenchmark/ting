@@ -43,7 +43,7 @@ class PreparedQuery extends Query
     /**
      * @return $this
      */
-    protected function prepareQuery()
+    public function prepareQuery()
     {
         if ($this->prepared !== null) {
             return $this;
@@ -58,7 +58,7 @@ class PreparedQuery extends Query
     /**
      * @return $this
      */
-    protected function prepareExecute()
+    public function prepareExecute()
     {
         if ($this->prepared !== null) {
             return $this;
@@ -77,12 +77,15 @@ class PreparedQuery extends Query
      */
     public function query(CollectionInterface $collection = null)
     {
+        $this->checkTtl();
+
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
 
         $key      = $this->getCacheKey($this->params);
         $isCached = $this->checkCache($key, $collection, $this->params);
+
         if ($isCached === true) {
             return $collection;
         }
@@ -101,7 +104,6 @@ class PreparedQuery extends Query
      */
     public function execute()
     {
-        $this->checkTtl();
         $this->prepareExecute();
 
         return $this->statement->execute($this->params);

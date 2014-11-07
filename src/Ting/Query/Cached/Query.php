@@ -96,6 +96,8 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      */
     public function query(CollectionInterface $collection = null)
     {
+        $this->checkTtl();
+
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
         }
@@ -154,16 +156,6 @@ class Query extends \CCMBenchmark\Ting\Query\Query
         }
 
         return false;
-    }
-
-    /**
-     * @return mixed
-     * @throws QueryException
-     */
-    public function execute()
-    {
-        $this->checkTtl();
-        return parent::execute();
     }
 
     /**
