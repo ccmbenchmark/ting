@@ -24,11 +24,42 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
 use mageekguy\atoum;
 
 class Metadata extends atoum
 {
+    public function testGetConnection()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->object($metadata->getConnection($mockConnectionPool))
+                ->isInstanceOf('\CCMBenchmark\Ting\Connection')
+        ;
+    }
+
+    public function testSetDatabaseShouldReturnThis()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->object($metadata->setDatabase('myDatabase'))
+                ->isIdenticalTo($metadata)
+        ;
+    }
+
+    public function testSetConnectionShouldReturnThis()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->object($metadata->setConnection('main'))
+                ->isIdenticalTo($metadata)
+        ;
+    }
+
     public function testSetEntityShouldRaiseExceptionWhenStartWithSlash()
     {
         $services = new \CCMBenchmark\Ting\Services();
@@ -175,255 +206,5 @@ class Metadata extends atoum
         $this
             ->boolean($metadata->setEntityPropertyForAutoIncrement($bouh, 321))
                 ->isFalse();
-    }
-
-    public function testConnectShouldCallConnectionPoolConnect()
-    {
-        $services           = new \CCMBenchmark\Ting\Services();
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
-        $callback = function ($bouh) {
-        };
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setConnection('bouh_connection'))
-            ->then($metadata->setDatabase('bouh_database'))
-            ->then($metadata->connect($mockConnectionPool, ConnectionPoolInterface::CONNECTION_MASTER, $callback))
-            ->mock($mockConnectionPool)
-                ->call('connect')
-                    ->withIdenticalArguments(
-                        'bouh_connection',
-                        'bouh_database',
-                        ConnectionPoolInterface::CONNECTION_MASTER,
-                        $callback
-                    )->once();
-    }
-
-    public function testConnectMasterShouldCallConnectWithMasterValue()
-    {
-        $services           = new \CCMBenchmark\Ting\Services();
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
-        $callback = function ($bouh) {
-        };
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setConnection('bouh_connection'))
-            ->then($metadata->setDatabase('bouh_database'))
-            ->then($metadata->connectMaster($mockConnectionPool, $callback))
-            ->mock($mockConnectionPool)
-                ->call('connect')
-                    ->withIdenticalArguments(
-                        'bouh_connection',
-                        'bouh_database',
-                        ConnectionPoolInterface::CONNECTION_MASTER,
-                        $callback
-                    )->once();
-    }
-
-    public function testConnectMasterShouldCallConnectWithSlaveValue()
-    {
-        $services           = new \CCMBenchmark\Ting\Services();
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
-        $callback = function ($bouh) {
-        };
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setConnection('bouh_connection'))
-            ->then($metadata->setDatabase('bouh_database'))
-            ->then($metadata->connectSlave($mockConnectionPool, $callback))
-            ->mock($mockConnectionPool)
-                ->call('connect')
-                    ->withIdenticalArguments(
-                        'bouh_connection',
-                        'bouh_database',
-                        ConnectionPoolInterface::CONNECTION_SLAVE,
-                        $callback
-                    )->once();
-    }
-
-    public function testGenerateQueryForPrimaryShouldCallCallbackWithQueryObject()
-    {
-        $services   = new \CCMBenchmark\Ting\Services();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $query = new \CCMBenchmark\Ting\Query\Query(
-            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :#id',
-            ['#id' => 'BOuH']
-        );
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setTable('T_BOUH_BO'))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'id',
-                'columnName' => 'id'
-            )))
-            ->then($metadata->addField(array(
-                'fieldName'  => 'name',
-                'columnName' => 'bo_name'
-            )))
-            ->then($metadata->generateQueryForPrimary($mockDriver, 'BOuH', function ($query) use (&$outerQuery) {
-                $outerQuery = $query;
-            }))
-            ->object($outerQuery)
-                ->isCloneOf($query);
-
-    }
-
-    public function testGenerateQueryForMultiColumnsPrimaryShouldCallCallbackWithQueryObject()
-    {
-        $services   = new \CCMBenchmark\Ting\Services();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $query = new \CCMBenchmark\Ting\Query\Query(
-            'SELECT `id`, `bo_name` FROM `T_BOUH_BO` WHERE `id` = :#id AND `bo_name` = :#bo_name',
-            ['#id' => 3, '#bo_name' => 'Bouh']
-        );
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setTable('T_BOUH_BO'))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'id',
-                'columnName' => 'id'
-            )))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'name',
-                'columnName' => 'bo_name'
-            )))
-            ->then($metadata->generateQueryForPrimary(
-                $mockDriver,
-                ['id' => 3, 'name' => 'Bouh'],
-                function ($query) use (&$outerQuery) {
-                    $outerQuery = $query;
-                }
-            ))
-            ->object($outerQuery)
-                ->isCloneOf($query);
-
-    }
-
-    public function testGenerateQueryForInsertShouldCallCallbackWithQueryObject()
-    {
-        $services   = new \CCMBenchmark\Ting\Services();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $entity = new \tests\fixtures\model\Bouh();
-        $entity->setId(123);
-        $entity->setFirstname('Sylvain');
-        $entity->setName('Robez-Masson');
-
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-            'INSERT INTO `T_BOUH_BO` (`boo_id`, `boo_name`, `boo_firstname`) '
-            . 'VALUES (:boo_id, :boo_name, :boo_firstname)',
-            [
-                'boo_id'        => 123,
-                'boo_firstname' => 'Sylvain',
-                'boo_name'      => 'Robez-Masson'
-            ]
-        );
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setTable('T_BOUH_BO'))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'id',
-                'columnName' => 'boo_id'
-            )))
-            ->then($metadata->addField(array(
-                'fieldName'  => 'name',
-                'columnName' => 'boo_name'
-            )))
-            ->then($metadata->addField(array(
-                'fieldName'  => 'firstname',
-                'columnName' => 'boo_firstname'
-            )))
-            ->then($metadata->generateQueryForInsert($mockDriver, $entity, function ($query) use (&$outerQuery) {
-                $outerQuery = $query;
-            }))
-            ->object($outerQuery)
-                ->isCloneOf($query);
-    }
-
-    public function testGenerateQueryForUpdateShouldCallCallbackWithQueryObject()
-    {
-        $services   = new \CCMBenchmark\Ting\Services();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $entity = new \tests\fixtures\model\Bouh();
-        $entity->setId(123);
-        $entity->setFirstname('Sylvain');
-        $entity->setName('Robez-Masson');
-
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-            'UPDATE `T_BOUH_BO` SET `boo_name` = :boo_name WHERE `boo_id` = :#boo_id',
-            ['#boo_id' => 123, 'boo_name' => 'Robez-Masson']
-        );
-
-        $properties = ['name' => ['toto', 'Robez-Masson']];
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setTable('T_BOUH_BO'))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'id',
-                'columnName' => 'boo_id'
-            )))
-            ->then($metadata->addField(array(
-                'fieldName'  => 'name',
-                'columnName' => 'boo_name'
-            )))
-            ->then($metadata->addField(array(
-                'fieldName'  => 'firstname',
-                'columnName' => 'boo_firstname'
-            )))
-            ->then($metadata->generateQueryForUpdate(
-                $mockDriver,
-                $entity,
-                $properties,
-                function ($query) use (&$outerQuery) {
-                    $outerQuery = $query;
-                }
-            ))
-            ->object($outerQuery)
-                ->isCloneOf($query);
-    }
-
-    public function testGenerateQueryForDeleteShouldCallCallbackWithQueryObject()
-    {
-        $services   = new \CCMBenchmark\Ting\Services();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $entity = new \tests\fixtures\model\Bouh();
-        $entity->setId(123);
-
-        $query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-            'DELETE FROM `T_BOUH_BO` WHERE `boo_id` = :#boo_id',
-            ['#boo_id' => 123]
-        );
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->then($metadata->setTable('T_BOUH_BO'))
-            ->then($metadata->addField(array(
-                'primary'    => true,
-                'fieldName'  => 'id',
-                'columnName' => 'boo_id'
-            )))
-            ->then($metadata->generateQueryForDelete($mockDriver, $entity, function ($query) use (&$outerQuery) {
-                $outerQuery = $query;
-            }))
-            ->object($outerQuery)
-                ->isCloneOf($query);
     }
 }

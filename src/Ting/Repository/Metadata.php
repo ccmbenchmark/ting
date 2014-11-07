@@ -28,13 +28,13 @@ use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\Generator;
+use CCMBenchmark\Ting\Query\GeneratorFactory;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 
 class Metadata
 {
 
-    protected $queryFactory     = null;
     protected $connectionName   = null;
     protected $databaseName     = null;
     protected $entity           = null;
@@ -52,16 +52,15 @@ class Metadata
     public function setConnection($connectionName)
     {
         $this->connectionName = (string) $connectionName;
+
+        return $this;
     }
 
     public function setDatabase($databaseName)
     {
         $this->databaseName = (string) $databaseName;
-    }
 
-    public function forConnectionNameAndDatabaseName(\Closure $callback)
-    {
-        $callback($this->connectionName, $this->databaseName);
+        return $this;
     }
 
     /**
@@ -165,7 +164,6 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
-            $this->databaseName,
             $this->table,
             $fields
         );
@@ -194,7 +192,6 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
-            $this->databaseName,
             $this->table,
             $fields
         );
@@ -211,7 +208,6 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
-            $this->databaseName,
             $this->table,
             array_keys($properties)
         );
@@ -250,7 +246,6 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
-            $this->databaseName,
             $this->table,
             array_keys($properties)
         );
