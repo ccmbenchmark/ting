@@ -24,20 +24,13 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-
 class MetadataFactory implements MetadataFactoryInterface
 {
-
-    protected $queryFactory = null;
-
-    public function __construct(QueryFactoryInterface $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
-    }
-
+    /**
+     * @TODO voir si toujours utile
+     */
     public function get()
     {
-        return new Metadata($this->queryFactory);
+        return new Metadata();
     }
 }

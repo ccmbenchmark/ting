@@ -24,10 +24,10 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-
 interface MetadataFactoryInterface
 {
-    public function __construct(QueryFactoryInterface $queryFactory);
+    /**
+     * @TODO Voir si toujours utile
+     */
     public function get();
 }
