@@ -51,23 +51,20 @@ class Generator
     public function __construct(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
-        $database,
         $table,
         array $fields
     ) {
-        $this->connection  = $connection;
+        $this->connection   = $connection;
         $this->queryFactory = $queryFactory;
-        $this->database = $database;
-        $this->tableName = $table;
-        $this->fields = $fields;
+        $this->tableName   = $table;
+        $this->fields       = $fields;
     }
 
     public function getByPrimaries(
         array $primariesValue,
         CollectionFactoryInterface $collectionFactory,
         $onMaster = false
-    )
-    {
+    ) {
         if ($onMaster === true) {
             $driver = $this->connection->master();
         } else {
@@ -158,7 +155,7 @@ class Generator
     protected function escapeFields(array $fields, DriverInterface $driver)
     {
         return array_map(
-            function($field) use ($driver) {
+            function ($field) use ($driver) {
                 return $driver->escapeField($field);
             },
             $fields
@@ -179,4 +176,4 @@ class Generator
 
         return [$conditions, $values];
     }
-} 
+}
