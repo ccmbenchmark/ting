@@ -158,19 +158,14 @@ class Repository
         if ($collection->count() === 0) {
             return null;
         }
-        $entity = current($collection->current());
+        $entity = $collection->current();
 
         return $entity;
     }
 
-    public function insert($entity)
+    public function save($entity)
     {
-        $this->unitOfWork->persist($entity)->flush();
-    }
-
-    public function update($entity)
-    {
-        $this->unitOfWork->persist($entity)->flush();
+        $this->unitOfWork->save($entity)->flush();
     }
 
     public function delete($entity)
