@@ -43,11 +43,11 @@ class Connection
     protected $name = null;
 
     /**
-     * @param ConnectionPool $connectionPool
+     * @param ConnectionPoolInterface $connectionPool
      * @param string $name
      * @param string $database
      */
-    public function __construct(ConnectionPool $connectionPool, $name, $database)
+    public function __construct(ConnectionPoolInterface $connectionPool, $name, $database)
     {
         $this->connectionPool = $connectionPool;
         $this->name           = $name;
@@ -80,16 +80,16 @@ class Connection
 
     public function startTransaction()
     {
-        return $this->master->startTransaction();
+        return $this->master()->startTransaction();
     }
 
     public function commit()
     {
-        return $this->master->commit();
+        return $this->master()->commit();
     }
 
     public function rollback()
     {
-        return $this->master->rollback();
+        return $this->master()->rollback();
     }
 }
