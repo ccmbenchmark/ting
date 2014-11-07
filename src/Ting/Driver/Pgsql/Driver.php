@@ -90,6 +90,10 @@ class Driver implements DriverInterface
 
         $result = pg_query_params($this->connection, $sql, $values);
 
+        if ($result === false) {
+            throw new QueryException(pg_last_error($this->connection));
+        }
+
         if ($collection === null) {
             return $result;
         }
@@ -99,10 +103,6 @@ class Driver implements DriverInterface
 
     protected function setCollectionWithResult($result, $sql, CollectionInterface $collection)
     {
-        if ($result === false) {
-            throw new QueryException($this->connection->error, $this->connection->errno);
-        }
-
         $result = new Result($result);
         $result->setQuery($sql);
         $collection->set($result);

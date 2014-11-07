@@ -46,7 +46,7 @@ class Result implements ResultInterface
         $fields = array();
 
         preg_match_all(
-            '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!on)(?<alias>[a-z0-9_]+)?"?(\s|$)/is',
+            '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!on)(?!where)(?<alias>[a-z0-9_]+)?"?(\s|$)/is',
             $query,
             $matches,
             PREG_SET_ORDER

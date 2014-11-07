@@ -187,6 +187,10 @@ class Driver implements DriverInterface
 
         $result = $this->connection->query($sql);
 
+        if ($result === false) {
+            throw new QueryException($this->connection->error, $this->connection->errno);
+        }
+
         if ($collection === null) {
             return $result;
         }
@@ -202,10 +206,6 @@ class Driver implements DriverInterface
      */
     protected function setCollectionWithResult($result, CollectionInterface $collection)
     {
-        if ($result === false) {
-            throw new QueryException($this->connection->error, $this->connection->errno);
-        }
-
         $collection->set(new Result($result));
 
         return $collection;

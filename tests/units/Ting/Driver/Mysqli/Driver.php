@@ -25,10 +25,24 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use CCMBenchmark\Ting\Query\Query;
+use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
 class Driver extends atoum
 {
+
+    public function testGetConnectionKeyShouldBeIdempotent()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $connectionConfig = ['host' => '127.0.0.1', 'user' => 'app_read', 'password' => 'pzefgdfg', 'port' => 3306];
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->string($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+        ;
+    }
 
     public function testShouldImplementDriverInterface()
     {
@@ -263,11 +277,83 @@ class Driver extends atoum
 
     public function testExecuteShouldRaiseExceptionIfValueNotDefined()
     {
-        $this->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
             ->exception(function () use ($driver) {
                 $driver->execute('SELECT * WHERE id = :id');
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+    }
+
+    public function testExecuteShouldReturnACollection()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+
+        $collection = new Collection();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->and(
+                $this->calling($driverFake)->real_escape_string = function ($value) {
+                    return addcslashes($value, '"');
+                }
+            )
+            ->and(
+                $this->calling($driverFake)->query = function ($sql) use (&$outerSql, $mockMysqliResult) {
+                    $outerSql = $sql;
+                    return $mockMysqliResult;
+                }
+            )
+            ->object(
+                $driver->execute(
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id
+                    AND name = :name AND age = :age AND last_modified = :date',
+                    [
+                        'id' => 12,
+                        'name' => 'L\'étang du lac',
+                        'age' => 12.6,
+                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+                    ],
+                    $collection
+                )
+            )
+                ->isInstanceOf($collection)
+        ;
+    }
+
+    public function testExecuteShouldThrowExceptionOnError()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+
+        $collection = new Collection();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->and(
+                $this->calling($driverFake)->real_escape_string = function ($value) {
+                    return addcslashes($value, '"');
+                }
+            )
+            ->and($this->calling($driverFake)->query = false)
+            ->and($driverFake->error = 'Undefined Error')
+            ->and($driverFake->errno = 127)
+            ->exception(function () use ($driver, $collection) {
+                $driver->execute(
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id
+                    AND name = :name AND age = :age AND last_modified = :date',
+                    [
+                        'id' => 12,
+                        'name' => 'L\'étang du lac',
+                        'age' => 12.6,
+                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+                    ],
+                    $collection
+                );
+            })
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+        ;
     }
 
     public function testExecuteShouldBuildACorrectQuery()
@@ -295,7 +381,7 @@ class Driver extends atoum
                     AND name = :name AND age = :age AND last_modified = :date',
                     [
                         'id' => 12,
-                        'name' => 'L\'�tang du lac',
+                        'name' => 'L\'étang du lac',
                         'age' => 12.6,
                         'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
                     ]
@@ -304,7 +390,7 @@ class Driver extends atoum
             ->string($outerSql)
                 ->isEqualTo(
                     'SELECT population FROM T_CITY_CIT WHERE id = 12
-                    AND name = "L\'�tang du lac" AND age = 12.6 AND last_modified = "2014-03-01 14:02:05"'
+                    AND name = "L\'étang du lac" AND age = 12.6 AND last_modified = "2014-03-01 14:02:05"'
                 )
             ->mock($driverFake)
                 ->call('query')

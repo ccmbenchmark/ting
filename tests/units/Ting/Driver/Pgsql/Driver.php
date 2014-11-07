@@ -29,6 +29,17 @@ use mageekguy\atoum;
 
 class Driver extends atoum
 {
+    public function testGetConnectionKeyShouldBeIdempotent()
+    {
+        $connectionConfig = ['host' => '127.0.0.1', 'user' => 'app_read', 'password' => 'pzefgdfg', 'port' => 3306];
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->string($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+        ;
+    }
+
     public function testShouldImplementDriverInterface()
     {
         $this
@@ -296,7 +307,7 @@ class Driver extends atoum
         /**
          * @Todo Corriger quand implémentation définitive
          */
-        $this->boolean($bool = false)
+        $this->boolean(false)
             ->isTrue()
         ;
     }
@@ -340,17 +351,40 @@ class Driver extends atoum
 
     public function testExecuteShouldReturnACollection()
     {
-        /**
-         * @TODO need to check that return is a collection
-         */
-        $this->
-            boolean(false)
-                ->isTrue();
-        return false;
+        $this->function->pg_connect      = true;
+        $this->function->pg_query_params = true;
+        $this->function->pg_fetch_array  = 'data';
+        $this->function->pg_result_seek  = true;
+        $this->function->pg_field_table  = 'myTable';
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $this->calling($mockCollection)->set = true;
+
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-                ->object($driver->execute('SELECT 1 FROM "myTable" WHERE id = :id', ['id' => 12], new Collection()))
-                ->isInstanceOf('CCMBenchmark\Ting\Repository\Collection')
-            ;
+                ->object($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
+                    ->isIdenticalTo($mockCollection)
+        ;
+    }
+
+    public function testExecuteShouldRaiseExceptionWhenErrorHappens()
+    {
+        $this->function->pg_connect      = true;
+        $this->function->pg_query_params = false;
+        $this->function->pg_fetch_array  = 'data';
+        $this->function->pg_result_seek  = true;
+        $this->function->pg_field_table  = 'myTable';
+        $this->function->pg_last_error   = 'Unknown Error';
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $this->calling($mockCollection)->set = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+                ->exception(function () use ($driver) {
+                    $driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]);
+                })
+                    ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+        ;
     }
 }
