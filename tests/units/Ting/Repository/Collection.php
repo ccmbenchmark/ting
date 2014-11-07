@@ -140,4 +140,66 @@ class Collection extends atoum
             ->string($collection->key())
                 ->isIdenticalTo('MyKey');
     }
+
+    public function testIsFromCache()
+    {
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->and($collection->setFromCache(false))
+                ->boolean($collection->isFromCache())
+                    ->isFalse()
+            ->and($collection->setFromCache(true))
+                ->boolean($collection->isFromCache())
+                    ->isTrue()
+        ;
+    }
+
+    public function testToArrayReturnArray()
+    {
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->array($collection->toArray())
+                ->isIdenticalTo([])
+        ;
+    }
+
+    public function testCount()
+    {
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->then($collection->add(['data' => 'field']))
+            ->integer($collection->count())
+                ->isIdenticalTo(1)
+            ->then($collection->add(['2nddata' => 'field']))
+            ->integer($collection->count())
+                ->isIdenticalTo(2)
+        ;
+    }
+
+    public function testSetFromCache()
+    {
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = array();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->and($collection->setFromCache(true))
+            ->and($collection->set($result))
+            ->boolean($collection->isFromCache())
+                ->isTrue()
+        ;
+    }
 }

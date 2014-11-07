@@ -45,7 +45,7 @@ class Collection implements CollectionInterface, \Iterator
     /**
      * @var bool
      */
-    protected $canBeCacheable = false;
+    protected $isCacheable = false;
 
     /**
      * @var array
@@ -66,7 +66,7 @@ class Collection implements CollectionInterface, \Iterator
      */
     public function set(\Iterator $result)
     {
-        if ($this->canBeCacheable === true) {
+        if ($this->isCacheable === true) {
             $this->internalRows = iterator_to_array($result);
         }
 
@@ -103,8 +103,8 @@ class Collection implements CollectionInterface, \Iterator
      */
     public function setFromCache($value)
     {
-        $this->fromCache         = (bool) $value;
-        $this->canBeCacheable = true;
+        $this->fromCache   = (bool) $value;
+        $this->isCacheable = true;
     }
 
     /**
@@ -162,7 +162,7 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
-     * @return void
+     * @return mixed
      */
     public function next()
     {
