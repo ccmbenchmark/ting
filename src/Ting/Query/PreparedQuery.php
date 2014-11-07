@@ -99,7 +99,7 @@ class PreparedQuery extends Query
     public function execute()
     {
         if ($this->prepared !== self::TYPE_UPDATE) {
-            throw new QueryException("You should call prepareExecute to use query method");
+            throw new QueryException("You should call prepareExecute to use execute method");
         }
 
         return $this->statement->execute($this->params);

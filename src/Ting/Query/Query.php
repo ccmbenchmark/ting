@@ -104,8 +104,6 @@ class Query implements QueryInterface
         } else {
             return $this->connection->slave()->execute($this->sql, $this->params, $collection);
         }
-
-        return $collection;
     }
 
     /**
@@ -121,11 +119,7 @@ class Query implements QueryInterface
      */
     public function getInsertId()
     {
-        if ($this->selectMaster === true) {
-            return $this->connection->onMasterDoGetInsertId();
-        } else {
-            return $this->connection->onSlaveDoGetInsertId();
-        }
+        return $this->connection->master()->getInsertId();
     }
 
     /**
@@ -133,10 +127,6 @@ class Query implements QueryInterface
      */
     public function getAffectedRows()
     {
-        if ($this->selectMaster === true) {
-            return $this->connection->onMasterDoGetAffectedRows();
-        } else {
-            return $this->connection->onSlaveDoGetAffectedRows();
-        }
+        return $this->connection->master()->getAffectedRows();
     }
 }

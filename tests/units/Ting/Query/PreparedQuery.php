@@ -25,158 +25,167 @@
 namespace tests\units\CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Metadata;
 use mageekguy\atoum;
 
 class PreparedQuery extends atoum
 {
 
-    public function testExecuteShouldCallDriverPrepare()
+    public function testPrepareQueryShouldCallSlavePrepare()
     {
-        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement();
-        $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $this->calling($mockStatement)->execute =
-            function ($mockStatement, $params, $paramsOrder, $collection) use (&$outerParams) {
-                $outerParams = $params;
-            };
-
-        $this->calling($mockDriver)->prepare =
-            function ($sql, $callback) use (&$outerSql, $mockStatement) {
-                $outerSql = $sql;
-                $callback($mockStatement, array(), array());
-            };
-
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
 
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
+        $this->calling($mockConnection)->slave = $mockDriver;
+        $this->calling($mockDriver)->prepare = true;
 
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-                $sql,
-                ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]
-            ))
-            ->then(
-                $query->setDriver($mockDriver)->prepare()->execute(
-                    new Metadata(new QueryFactory()),
-                    $mockConnectionPool
-                )
-            )
-            ->string($outerSql)
-                ->isIdenticalTo($sql)
-            ->array($outerParams)
-                ->isIdenticalTo(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6));
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
+            ->object($query->prepareQuery())
+                ->isIdenticalTo($query)
+            ->mock($mockConnection)
+                ->call('slave')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('prepare')
+                    ->once()
+        ;
+    }
+
+    public function testPrepareQueryShouldCallMasterPrepare()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+
+        $this->calling($mockConnection)->master = $mockDriver;
+        $this->calling($mockDriver)->prepare = true;
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
+            ->then($query->selectMaster(true))
+            ->object($query->prepareQuery())
+                ->isIdenticalTo($query)
+            ->object($query->prepareQuery())
+                ->isIdenticalTo($query)
+            ->mock($mockConnection)
+                ->call('master')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('prepare')
+                    ->once()
+        ;
+    }
+
+    public function testPrepareExecuteShouldCallMasterPrepare()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+
+        $this->calling($mockConnection)->master = $mockDriver;
+        $this->calling($mockDriver)->prepare = true;
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
+            ->then($query->selectMaster(true))
+            ->object($query->prepareExecute())
+                ->isIdenticalTo($query)
+            ->object($query->prepareExecute())
+                ->isIdenticalTo($query)
+            ->mock($mockConnection)
+                ->call('master')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('prepare')
+                    ->once()
+        ;
+    }
+
+    public function testExecuteShouldCallStatementExecute()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
+
+        $this->calling($mockStatement)->execute = true;
+        $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockConnection)->master = $mockDriver;
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
+            ->object($query->prepareExecute())
+                ->isIdenticalTo($query)
+            ->then($query->setParams(['id' => 12]))
+            ->then($query->execute())
+            ->mock($mockStatement)
+                ->call('execute')
+                    ->once()
+        ;
     }
 
     public function testExecuteShouldRaiseExceptionIfNotPrepared()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
 
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
         $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->exception(function () use ($query, $mockConnectionPool) {
-                    $query->execute(new Metadata(new QueryFactory()), $mockConnectionPool);
-            })
-            ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
-        ;
-    }
-
-    public function testSetParamsShouldReturnPreparedQuery()
-    {
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->object($query->setParams(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6)))
-                ->isIdenticalTo($query)
-        ;
-    }
-
-    public function testSetDriverShouldReturnPreparedQuery()
-    {
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-        $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->object($query->setDriver($mockDriver))
-            ->isIdenticalTo($query)
-        ;
-    }
-
-    public function testPrepareShouldRaiseExceptionIfNoDriver()
-    {
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
             ->exception(function () use ($query) {
-                $query->prepare();
+                $query->execute();
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
-            ;
-    }
+                ->hasMessage('You should call prepareExecute to use execute method')
 
-    public function testPrepareShouldReturnSameObjectAtSecondCall()
-    {
-        $fakeDriver         = new \mock\Fake\Mysqli();
-        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
-
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->then($query->setDriver($mockDriver))
-            ->object($query->prepare())
-                ->isIdenticalTo($query->prepare())
         ;
     }
 
-    public function testExecuteShouldRaiseExceptionIfNoDriver()
+    public function testQueryShouldCallStatementExecuteAndReturnCollection()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
 
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
+        $collection = new Collection();
+
+        $this->calling($mockStatement)->execute = $collection;
+        $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockConnection)->slave = $mockDriver;
+        $this->calling($mockCollectionFactory)->get = $collection;
+
         $this
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection, $mockCollectionFactory))
+            ->object($query->prepareQuery())
+                ->isIdenticalTo($query)
+            ->then($query->setParams(['id' => 12]))
+            ->object($query->query())
+                ->isIdenticalTo($collection)
+            ->mock($mockStatement)
+                ->call('execute')
+                    ->once()
+        ;
+    }
 
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery($sql))
-            ->exception(function () use ($query, $mockConnectionPool) {
-                    $query->execute(new Metadata(new QueryFactory()), $mockConnectionPool);
+    public function testQueryShouldCallRaiseExceptionIfNotPrepared()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
+            ->exception(function () use ($query) {
+                $query->query(new Collection());
             })
-            ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
+                ->hasMessage('You should call prepareQuery to use query method')
+
         ;
-    }
-
-    public function testExecuteShouldPrepareQueryIfNot()
-    {
-        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement();
-        $mockDriver    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
-        $this->calling($mockStatement)->execute =
-            function ($mockStatement, $params, $paramsOrder, $collection) use (&$outerParams) {
-                $outerParams = $params;
-            };
-
-        $this->calling($mockDriver)->prepare =
-            function ($sql, $callback) use (&$outerSql, $mockStatement) {
-                $outerSql = $sql;
-                $callback($mockStatement, array(), array());
-            };
-
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
-
-        $sql = 'SELECT 1 FROM T_BOUH_BOO WHERE BOO_OLD = :old AND BOO_FIRSTNAME = :fname AND BOO_FLOAT = :bim';
-
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery(
-                $sql,
-                ['old' => 3, 'name' => 'bouhName', 'bim' => 3.6]
-            ))
-            ->then($query->setDriver($mockDriver)->execute(new Metadata(new QueryFactory()), $mockConnectionPool))
-            ->string($outerSql)
-                ->isIdenticalTo($sql)
-            ->array($outerParams)
-                ->isIdenticalTo(array('old' => 3, 'name' => 'bouhName', 'bim' => 3.6));
     }
 }
