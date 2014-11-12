@@ -79,12 +79,12 @@ try {
     echo str_repeat("-", 40) . "\n";
 
     $query = $cityRepository->getQuery(
-            'select
-                cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
-                co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
-            from t_city_cit as c
-            inner join t_country_cou as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 1'
+        'select
+            cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
+            co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
+        from t_city_cit as c
+        inner join t_country_cou as co on (c.cou_code = co.cou_code)
+        where co.cou_code = :code limit 1'
     );
 
     $collection = $query->setParams(['code' => 'FRA'])->query();

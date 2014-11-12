@@ -138,6 +138,4 @@ class Driver implements DriverInterface
     public function commit()
     {
     }
-
-
 }

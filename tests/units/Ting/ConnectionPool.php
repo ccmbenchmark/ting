@@ -78,7 +78,8 @@ class ConnectionPool extends atoum
                             ],
                         ]
                     ]
-                ]))
+                ]
+            ))
             ->object($connectionPool->slave('bouh', 'bouhDb'))
                 ->isIdenticalTo($connectionPool->slave('bouh', 'bouhDb'))
                 ->isIdenticalTo($connectionPool->slave('bouh', 'bouhDb'))
@@ -103,7 +104,8 @@ class ConnectionPool extends atoum
                         ],
                         'slaves'    => []
                     ]
-                ]))
+                ]
+            ))
             ->object($connectionPool->slave('bouh', 'bouhDb'))
                 ->isIdenticalTo($connectionPool->master('bouh', 'bouhDb'))
             ;
@@ -132,7 +134,8 @@ class ConnectionPool extends atoum
                             ]
                         ]
                     ]
-                ]))
+                ]
+            ))
             ->object($connectionPool->master('bouh', 'bouhDb'))
                 ->isInstanceOf('\tests\fixtures\FakeDriver\Driver')
             ->object($connectionPool->slave('bouh', 'bouhDb'))

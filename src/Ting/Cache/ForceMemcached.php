@@ -41,5 +41,4 @@ class ForceMemcached extends Memcached
     {
         return null;
     }
-
 }

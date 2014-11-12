@@ -36,7 +36,6 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
         $query = $this->getQuery(
             'select cit_id, cit_name, cou_code, cit_district, cit_population, last_modified
                     from t_city_cit as a where cit_name like :name and cit_population > :population limit 3'
-
         );
 
         return $query->setParams(['name' => 'Z%', 'population' => 200000])->query(new Collection());
