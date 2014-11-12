@@ -38,8 +38,6 @@ class Services extends atoum
                 ->isInstanceOf('\CCMBenchmark\Ting\MetadataRepository')
             ->object($services->get('UnitOfWork'))
                 ->isInstanceOf('\CCMBenchmark\Ting\UnitOfWork')
-            ->object($services->get('MetadataFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\MetadataFactoryInterface')
             ->object($services->get('CollectionFactory'))
                 ->isInstanceOf('\CCMBenchmark\Ting\Repository\CollectionFactory')
             ->object($services->get('QueryFactory'))

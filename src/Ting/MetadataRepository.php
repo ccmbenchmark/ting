@@ -25,18 +25,11 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 
 class MetadataRepository
 {
 
     protected $metadataList    = array();
-    protected $metadataFactory = null;
-
-    public function __construct(MetadataFactoryInterface $metadataFactory)
-    {
-        $this->metadataFactory = $metadataFactory;
-    }
 
     public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound)
     {
@@ -85,7 +78,7 @@ class MetadataRepository
         $loaded = 0;
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata($this->metadataFactory));
+            $this->addMetadata($repository, $repository::initMetadata());
             $loaded++;
         }
 

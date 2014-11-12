@@ -60,13 +60,6 @@ class Services implements ContainerInterface
         );
 
         $this->container->offsetSet(
-            'MetadataFactory',
-            function () {
-                return new Repository\MetadataFactory($this->get('QueryFactory'));
-            }
-        );
-
-        $this->container->offsetSet(
             'CollectionFactory',
             $this->container->factory(function () {
                 return new Repository\CollectionFactory($this->get('Hydrator'));
