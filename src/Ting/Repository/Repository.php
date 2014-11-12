@@ -149,7 +149,7 @@ class Repository
             $this->queryFactory,
             $this->collectionFactory,
             $primariesKeyValue,
-            (bool) $forceMaster
+            (bool)$forceMaster
         );
 
         if ($forceMaster) {
