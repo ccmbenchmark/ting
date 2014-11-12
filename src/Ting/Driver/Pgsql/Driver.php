@@ -215,15 +215,13 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @params $sequence only applicable for postgresql
      * @return int
      */
-    public function getInsertId($sequence = '')
+    public function getInsertId()
     {
-        /**
-         * @TODO not correct
-         */
-        return (int) $this->connection->insert_id;
+        $resultResource = pg_query($this->connection, 'SELECT lastval()');
+        $row = pg_fetch_row($resultResource);
+        return (int)$row[0];
     }
 
     /**

@@ -298,17 +298,24 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->integer($driver->getAffectedRows())
-            ->isIdenticalTo(12)
+                ->isIdenticalTo(12)
         ;
     }
 
     public function testGetInsertIdShouldReturnInsertedId()
     {
-        /**
-         * @Todo Corriger quand implémentation définitive
-         */
-        $this->boolean(false)
-            ->isTrue()
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this->function->pg_fetch_row = [4];
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->integer($driver->getInsertId())
+                ->isIdenticalTo(4)
+            ->string($outerQuery)
+                ->isIdenticalTo('SELECT lastval()')
         ;
     }
 
@@ -317,7 +324,11 @@ class Driver extends atoum
         $count = 0;
         $outerSql = '';
         $outerValues = '';
-        $this->function->pg_query_params = function ($connection, $sql, $values) use (
+        $this->function->pg_query_params = function (
+            $connection,
+            $sql,
+            $values
+        ) use (
             &$count,
             &$outerSql,
             &$outerValues
