@@ -58,14 +58,14 @@ $connections = [
         'slaves' => [
             [
                 'host'      => '127.0.0.1',
-                'user'      => 'mysql_readonly',
-                'password'  => 'p455w0rd',
+                'user'      => 'world_sample',
+                'password'  => 'world_sample',
                 'port'      => 3306,
             ],
             [
                 'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
-                'user'      => 'mysql_readonly',
-                'password'  => 'p455w0rd',
+                'user'      => 'world_sample_readonly',
+                'password'  => 'world_sample_readonly',
                 'port'      => 3306,
             ]
         ]
@@ -186,9 +186,9 @@ try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     $query = $cityRepository->getQuery(
-        "select * from t_city_cit as c
-        inner join t_country_cou as co on (c.cou_code = co.cou_code)
-        where co.cou_code = :code limit 3"
+            "select * from t_city_cit as c
+            inner join t_country_cou as co on (c.cou_code = co.cou_code)
+            where co.cou_code = :code limit 3"
     );
     $query->selectMaster(true);
     $collection = $query->setParams(['code' => 'FRA'])->query();

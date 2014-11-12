@@ -46,8 +46,8 @@ $connections = [
         'namespace' => '\CCMBenchmark\Ting\Driver\Pgsql',
         'master'    => [
             'host'      => 'localhost',
-            'user'      => 'postgres',
-            'password'  => 'p455w0rd',
+            'user'      => 'world_sample',
+            'password'  => 'world_sample',
             'port'      => 5432
         ]
     ],
