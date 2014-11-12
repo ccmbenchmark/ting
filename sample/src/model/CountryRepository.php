@@ -33,7 +33,7 @@ class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata = new Metadata();
 
         $metadata->setEntity('sample\src\model\Country');
-        $metadata->setConnection('main');
+        $metadata->setConnectionName('main');
         $metadata->setDatabase('world');
         $metadata->setTable('t_country_cou');
 

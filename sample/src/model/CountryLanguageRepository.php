@@ -33,7 +33,7 @@ class CountryLanguageRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata = new Metadata();
 
         $metadata->setEntity('sample\src\model\CountryLanguage');
-        $metadata->setConnection('main');
+        $metadata->setConnectionName('main');
         $metadata->setDatabase('world');
         $metadata->setTable('t_countrylanguage_col');
 

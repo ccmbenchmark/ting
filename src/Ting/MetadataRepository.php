@@ -31,6 +31,11 @@ class MetadataRepository
 
     protected $metadataList    = array();
 
+    /**
+     * @param          $table
+     * @param callable $callbackFound   called with applicable Metadata if applicable
+     * @param callable $callbackNotFound called if unknown table - no parameter
+     */
     public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound)
     {
         $found = false;
@@ -52,6 +57,11 @@ class MetadataRepository
         }
     }
 
+    /**
+     * @param          $entity
+     * @param callable $callbackFound Called with applicable Metadata if applicable
+     * @param callable $callbackNotFound called if unknown entity - no parameter
+     */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         $repository = get_class($entity) . 'Repository';
@@ -69,6 +79,13 @@ class MetadataRepository
         }
     }
 
+    /**
+     * Load in memory all metadatas
+     *
+     * @param $namespace
+     * @param $globPattern
+     * @return int
+     */
     public function batchLoadMetadata($namespace, $globPattern)
     {
         if (file_exists(dirname($globPattern)) === false) {

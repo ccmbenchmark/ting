@@ -35,11 +35,19 @@ class Result implements ResultInterface
     protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
 
+    /**
+     * @param resource $result
+     */
     public function __construct($result)
     {
         $this->result = $result;
     }
 
+    /**
+     * Analyze the given query
+     * @param $query
+     * @throws QueryException
+     */
     public function setQuery($query)
     {
         $aliasToTable = array();
@@ -104,11 +112,21 @@ class Result implements ResultInterface
         $this->fields = $fields;
     }
 
+    /**
+     * Move the internal pointer to an arbitrary row in the result set
+     * @param $offset
+     * @return bool
+     */
     public function dataSeek($offset)
     {
         return pg_result_seek($this->result, $offset);
     }
 
+    /**
+     * Format data
+     * @param $data
+     * @return array
+     */
     public function format($data)
     {
         if ($data === false) {

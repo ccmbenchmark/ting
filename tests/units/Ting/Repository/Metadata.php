@@ -55,7 +55,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
-            ->object($metadata->setConnection('main'))
+            ->object($metadata->setConnectionName('main'))
                 ->isIdenticalTo($metadata)
         ;
     }

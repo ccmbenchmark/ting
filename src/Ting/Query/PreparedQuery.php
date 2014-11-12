@@ -39,6 +39,7 @@ class PreparedQuery extends Query
     protected $statement = null;
 
     /**
+     * Prepare a reading query (SELECT, SHOW, ...)
      * @return $this
      */
     public function prepareQuery()
@@ -58,6 +59,7 @@ class PreparedQuery extends Query
     }
 
     /**
+     * Prepare a writing query (UPDATE, INSERT, DELETE, ...)
      * @return $this
      */
     public function prepareExecute()
@@ -73,6 +75,7 @@ class PreparedQuery extends Query
     }
 
     /**
+     * Prepare then execute a reading query
      * @param CollectionInterface $collection
      * @return CollectionInterface
      * @throws QueryException
@@ -83,9 +86,7 @@ class PreparedQuery extends Query
             $collection = $this->collectionFactory->get();
         }
 
-        if ($this->prepared !== self::TYPE_RESULT) {
-            throw new QueryException("You should call prepareQuery to use query method");
-        }
+        $this->prepareQuery();
 
         $this->statement->execute($this->params, $collection);
 
@@ -93,14 +94,13 @@ class PreparedQuery extends Query
     }
 
     /**
+     * Prepare then execute a writing query
      * @return mixed
      * @throws QueryException
      */
     public function execute()
     {
-        if ($this->prepared !== self::TYPE_UPDATE) {
-            throw new QueryException("You should call prepareExecute to use execute method");
-        }
+        $this->prepareExecute();
 
         return $this->statement->execute($this->params);
     }

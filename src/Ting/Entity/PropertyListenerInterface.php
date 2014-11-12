@@ -26,5 +26,13 @@ namespace CCMBenchmark\Ting\Entity;
 
 interface PropertyListenerInterface
 {
+    /**
+     * Notify all observers with old and new values
+     * @param $entity
+     * @param $propertyName
+     * @param $oldValue
+     * @param $newValue
+     * @return void
+     */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue);
 }

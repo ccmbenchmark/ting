@@ -38,7 +38,10 @@ class Statement implements StatementInterface
     protected $queryType     = null;
     protected $query         = null;
 
-
+    /**
+     * @param       $statementName
+     * @param array $paramsOrder
+     */
     public function __construct($statementName, array $paramsOrder)
     {
         $this->statementName = $statementName;
@@ -66,7 +69,13 @@ class Statement implements StatementInterface
         return $this;
     }
 
-
+    /**
+     * Execute the actual statement with the given parameters
+     * @param array               $params
+     * @param CollectionInterface $collection
+     * @return bool|mixed
+     * @throws QueryException
+     */
     public function execute(array $params, CollectionInterface $collection = null)
     {
         $values = array();
@@ -104,6 +113,9 @@ class Statement implements StatementInterface
         return true;
     }
 
+    /**
+     * Deallocate the current prepared statement
+     */
     public function close()
     {
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');

@@ -52,6 +52,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     protected $force = false;
 
     /**
+     * Set the cache interface to the actual query
      * @param CacheInterface $cache
      * @return void
      */
@@ -61,6 +62,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
+     * Define the ttl for the current query
      * @param int $ttl
      * @return $this
      */
@@ -71,6 +73,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
+     * Set the version used in the key
      * @param int $version
      * @return $this
      */
@@ -81,6 +84,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
+     * Set force mode. If enabled : always do query
      * @param bool $value
      * @return $this
      */
@@ -91,6 +95,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
+     * Check if query is in cache or execute the query and store the result
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
@@ -133,6 +138,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     }
 
     /**
+     * Check if a key is available in cache and fill collection if it's available
      * @param string $key
      * @param CollectionInterface $collection
      * @return bool

@@ -70,6 +70,7 @@ class Query implements QueryInterface
     }
 
     /**
+     * Force the query to be executed on the master connection. Applicable only on a reading query.
      * @param bool $value
      * @return void
      */
@@ -90,6 +91,7 @@ class Query implements QueryInterface
     }
 
     /**
+     * Execute a reading query
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
@@ -107,6 +109,7 @@ class Query implements QueryInterface
     }
 
     /**
+     * Execute a writing query
      * @return mixed
      */
     public function execute()

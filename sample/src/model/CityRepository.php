@@ -55,7 +55,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata = new Metadata();
 
         $metadata->setEntity('sample\src\model\City');
-        $metadata->setConnection('main');
+        $metadata->setConnectionName('main');
         $metadata->setDatabase('world');
         $metadata->setTable('t_city_cit');
 

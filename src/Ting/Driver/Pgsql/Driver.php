@@ -44,6 +44,12 @@ class Driver implements DriverInterface
      */
     protected $transactionOpened = false;
 
+    /**
+     * Return a unique connection key identifier
+     * @param array  $connectionConfig
+     * @param string $database
+     * @return string
+     */
     public static function getConnectionKey(array $connectionConfig, $database)
     {
         return
@@ -54,12 +60,26 @@ class Driver implements DriverInterface
             $database;
     }
 
+    /**
+     * Construct connection information
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param int    $port
+     * @return $this
+     */
     public function connect($hostname, $username, $password, $port)
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
         return $this;
     }
 
+    /**
+     * Connect the driver to the given database
+     * @param string $database
+     * @return $this
+     * @throws Exception
+     */
     public function setDatabase($database)
     {
         if ($this->connection !== null) {
@@ -76,6 +96,14 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    /**
+     * Execute the given query on the actual connection
+     * @param string              $sql
+     * @param array               $params
+     * @param CollectionInterface $collection
+     * @return CollectionInterface|mixed|resource
+     * @throws QueryException
+     */
     public function execute($sql, array $params = array(), CollectionInterface $collection = null)
     {
         list ($sql, $paramsOrder) = $this->convertParameters($sql);
@@ -110,6 +138,11 @@ class Driver implements DriverInterface
         return $collection;
     }
 
+    /**
+     * Prepare the given query against the current connection
+     * @param string $sql
+     * @return Statement|\CCMBenchmark\Ting\Driver\StatementInterface
+     */
     public function prepare($sql)
     {
         list ($sql, $paramsOrder) = $this->convertParameters($sql);
@@ -154,6 +187,10 @@ class Driver implements DriverInterface
         return [$sql, $paramsOrder];
     }
 
+    /**
+     * Execute callback if an error has been encountered
+     * @param callable $callback
+     */
     public function ifIsError(callable $callback)
     {
         $error = '';
@@ -166,6 +203,10 @@ class Driver implements DriverInterface
         }
     }
 
+    /**
+     * Execute the callback if the driver is not connected
+     * @param callable $callback
+     */
     public function ifIsNotConnected(callable $callback)
     {
         if ($this->connection === null) {
@@ -173,12 +214,18 @@ class Driver implements DriverInterface
         }
     }
 
+    /**
+     * Escape the given field name according to PGSQL Standards
+     * @param $field
+     * @return string
+     */
     public function escapeField($field)
     {
         return '"' . $field . '"';
     }
 
     /**
+     * Start a transaction against the current connection
      * @throws \CCMBenchmark\Ting\Driver\Exception
      */
     public function startTransaction()
@@ -191,6 +238,7 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Commit the transaction against the current connection
      * @throws \CCMBenchmark\Ting\Driver\Exception
      */
     public function commit()
@@ -203,6 +251,7 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Rollback the actual opened transaction
      * @throws \CCMBenchmark\Ting\Driver\Exception
      */
     public function rollback()
@@ -215,6 +264,7 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Return the last inserted id
      * @return int
      */
     public function getInsertId()
@@ -225,6 +275,7 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Give the number of affected rows
      * @return int
      */
     public function getAffectedRows()

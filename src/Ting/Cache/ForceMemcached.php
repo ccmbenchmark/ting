@@ -24,8 +24,11 @@
 
 namespace CCMBenchmark\Ting\Cache;
 
-use CCMBenchmark\Ting\Exception;
-
+/**
+ * This class is here to implement a false cache storage to force retrieve of values
+ * Class ForceMemcached
+ * @package CCMBenchmark\Ting\Cache
+ */
 class ForceMemcached extends Memcached
 {
 

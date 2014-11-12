@@ -48,11 +48,13 @@ interface QueryInterface
     public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null);
 
     /**
+     * Execute a reading query (SELECT, SHOW, etc.)
      * @param CollectionInterface $collection
      */
     public function query(CollectionInterface $collection = null);
 
     /**
+     * Execute a writing query (UPDATE, INSERT, etc.)
      * @return mixed
      */
     public function execute();

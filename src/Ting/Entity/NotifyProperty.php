@@ -29,11 +29,22 @@ class NotifyProperty implements NotifyPropertyInterface
 {
     protected $listeners = array();
 
+    /**
+     * Add an observer to the current object
+     * @param PropertyListenerInterface $listener
+     * @return void
+     */
     public function addPropertyListener(PropertyListenerInterface $listener)
     {
         $this->listeners[] = $listener;
     }
 
+    /**
+     * Notify all observers with old and new values
+     * @param $propertyName
+     * @param $oldValue
+     * @param $newValue
+     */
     public function propertyChanged($propertyName, $oldValue, $newValue)
     {
         if ($oldValue === $newValue) {

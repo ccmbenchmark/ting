@@ -34,17 +34,30 @@ class Result implements ResultInterface
     protected $iteratorOffset = 0;
     protected $iteratorCurrent = null;
 
+    /**
+     * @param \Iterator $result
+     */
     public function __construct($result)
     {
         $this->result = $result;
         $this->fields = $this->result->fetch_fields();
     }
 
+    /**
+     * Move the internal result pointer to an arbitrary row
+     * @param $offset
+     * @return mixed
+     */
     public function dataSeek($offset)
     {
         return $this->result->data_seek($offset);
     }
 
+    /**
+     * Format output
+     * @param $data
+     * @return array
+     */
     public function format($data)
     {
         if ($data === null) {
@@ -121,22 +134,37 @@ class Result implements ResultInterface
         $this->next();
     }
 
+    /**
+     * Return current row
+     * @return mixed|null
+     */
     public function current()
     {
         return $this->iteratorCurrent;
     }
 
+    /**
+     * Return the key of the actual row
+     * @return int|mixed
+     */
     public function key()
     {
         return $this->iteratorOffset;
     }
 
+    /**
+     * Move to the next row in result set
+     */
     public function next()
     {
         $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
         $this->iteratorOffset++;
     }
 
+    /**
+     * Is the actual row valid
+     * @return bool
+     */
     public function valid()
     {
         if ($this->iteratorCurrent !== null) {

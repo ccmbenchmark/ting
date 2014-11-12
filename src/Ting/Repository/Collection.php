@@ -61,6 +61,7 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
+     * Fill collection from iterator
      * @param \Iterator $result
      * @return void
      */
@@ -84,6 +85,7 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
+     * Add a row in the collection
      * @param mixed $data
      * @param string|null $key
      * @return void
@@ -181,9 +183,11 @@ class Collection implements CollectionInterface, \Iterator
         return true;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->rows);
     }
-
 }

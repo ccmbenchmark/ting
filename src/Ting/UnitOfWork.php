@@ -46,6 +46,11 @@ class UnitOfWork implements PropertyListenerInterface
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
 
+    /**
+     * @param ConnectionPool        $connectionPool
+     * @param MetadataRepository    $metadataRepository
+     * @param QueryFactoryInterface $queryFactory
+     */
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
@@ -56,6 +61,11 @@ class UnitOfWork implements PropertyListenerInterface
         $this->queryFactory       = $queryFactory;
     }
 
+    /**
+     * Watch changes on provided entity
+     *
+     * @param $entity
+     */
     public function manage($entity)
     {
         $oid = spl_object_hash($entity);
@@ -66,6 +76,10 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entitiesShouldBePersisted[$oid] = self::STATE_NEW;
     }
 
+    /**
+     * @param $entity
+     * @return bool - true if the entity is managed
+     */
     public function isManaged($entity)
     {
         if (isset($this->entitiesManaged[spl_object_hash($entity)]) === true) {
@@ -75,6 +89,10 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * @param $entity
+     * @return bool - true if the entity has not been persisted yet
+     */
     public function isNew($entity)
     {
         $oid = spl_object_hash($entity);
@@ -87,6 +105,12 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * Flag the entity to be persisted (insert or update) on next flush
+     *
+     * @param $entity
+     * @return $this
+     */
     public function save($entity)
     {
         $oid   = spl_object_hash($entity);
@@ -101,6 +125,10 @@ class UnitOfWork implements PropertyListenerInterface
         return $this;
     }
 
+    /**
+     * @param $entity
+     * @return bool
+     */
     public function shouldBePersisted($entity)
     {
         if (isset($this->entitiesShouldBePersisted[spl_object_hash($entity)]) === true) {
@@ -110,6 +138,12 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * @param $entity
+     * @param $propertyName
+     * @param $oldValue
+     * @param $newValue
+     */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
     {
         if ($oldValue === $newValue) {
@@ -129,6 +163,11 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entitiesChanged[$oid][$propertyName][1] = $newValue;
     }
 
+    /**
+     * @param $entity
+     * @param $propertyName
+     * @return bool
+     */
     public function isPropertyChanged($entity, $propertyName)
     {
         if (isset($this->entitiesChanged[spl_object_hash($entity)][$propertyName]) === true) {
@@ -138,6 +177,11 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * Stop watching changes on the entity
+     *
+     * @param $entity
+     */
     public function detach($entity)
     {
         $oid = spl_object_hash($entity);
@@ -146,6 +190,12 @@ class UnitOfWork implements PropertyListenerInterface
         unset($this->entities[$oid]);
     }
 
+    /**
+     * Flag the entity to be deleted on next flush
+     *
+     * @param $entity
+     * @return $this
+     */
     public function delete($entity)
     {
         $oid = spl_object_hash($entity);
@@ -155,6 +205,12 @@ class UnitOfWork implements PropertyListenerInterface
         return $this;
     }
 
+    /**
+     * Returns true if delete($entity) has been called
+     *
+     * @param $entity
+     * @return bool
+     */
     public function shouldBeRemoved($entity)
     {
         $oid = spl_object_hash($entity);
@@ -168,6 +224,12 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * Apply flagged changes against the database:
+     * * Persist flagged new entities
+     * * Update flagged entities
+     * * Delete flagged entities
+     */
     public function flush()
     {
         foreach ($this->entitiesShouldBePersisted as $oid => $state) {
@@ -187,6 +249,11 @@ class UnitOfWork implements PropertyListenerInterface
         }
     }
 
+    /**
+     * Update all applicable entities in database
+     *
+     * @param $oid
+     */
     protected function flushManaged($oid)
     {
         if (isset($this->entitiesChanged[$oid]) === false) {
@@ -219,6 +286,11 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
+    /**
+     * Insert all applicable entities in database
+     *
+     * @param $oid
+     */
     protected function flushNew($oid)
     {
         $entity = $this->entities[$oid];
@@ -239,6 +311,11 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
+    /**
+     * Delete all flagged entities from database
+     *
+     * @param $oid
+     */
     protected function flushDelete($oid)
     {
         $entity = $this->entities[$oid];

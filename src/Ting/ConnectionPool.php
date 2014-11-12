@@ -33,6 +33,10 @@ class ConnectionPool implements ConnectionPoolInterface
      * @var array
      */
     protected $connectionConfig = array();
+
+    /**
+     * @var array
+     */
     protected $connectionSlaves = array();
 
     /**
@@ -49,6 +53,8 @@ class ConnectionPool implements ConnectionPoolInterface
     }
 
     /**
+     * Return the master connection
+     *
      * @param $name
      * @param $database
      * @throws Exception
@@ -66,6 +72,8 @@ class ConnectionPool implements ConnectionPoolInterface
     }
 
     /**
+     * Return always the same slave connection
+     *
      * @param $name
      * @param $database
      * @throws Exception

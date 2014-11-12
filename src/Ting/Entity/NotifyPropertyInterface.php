@@ -27,5 +27,10 @@ namespace CCMBenchmark\Ting\Entity;
 
 interface NotifyPropertyInterface
 {
+    /**
+     * Add an observer to the current object
+     * @param PropertyListenerInterface $listener
+     * @return mixed
+     */
     public function addPropertyListener(PropertyListenerInterface $listener);
 }

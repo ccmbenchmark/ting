@@ -55,6 +55,8 @@ class Connection
     }
 
     /**
+     * Return a unique id for a connection and a database
+     *
      * @param callable $callback
      */
     public function forCacheKey(callable $callback)
@@ -63,6 +65,8 @@ class Connection
     }
 
     /**
+     * Return the master connection
+     *
      * @return Driver\DriverInterface
      */
     public function master()
@@ -71,6 +75,8 @@ class Connection
     }
 
     /**
+     * Return a slave connection
+     *
      * @return Driver\DriverInterface
      */
     public function slave()
@@ -78,16 +84,31 @@ class Connection
         return $this->connectionPool->slave($this->name, $this->database);
     }
 
+    /**
+     * Start a transaction against the master connection
+     *
+     * @return mixed
+     */
     public function startTransaction()
     {
         return $this->master()->startTransaction();
     }
 
+    /**
+     * Commit the opened transaction on the master connection
+     *
+     * @return mixed
+     */
     public function commit()
     {
         return $this->master()->commit();
     }
 
+    /**
+     * Rollback the opened transaction on the master connection
+     *
+     * @return mixed
+     */
     public function rollback()
     {
         return $this->master()->rollback();

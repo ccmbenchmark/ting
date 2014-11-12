@@ -26,12 +26,66 @@ namespace CCMBenchmark\Ting\Cache;
 
 interface CacheInterface
 {
+    /**
+     * Inject configuration to the cache driver
+     * @param array $config
+     * @return mixed
+     */
     public function setConfig(array $config);
+
+    /**
+     * Retrieve one key
+     * @param $key
+     * @return mixed
+     */
     public function get($key);
+
+    /**
+     * Retrieve multiple keys
+     * @param array $keys
+     * @return mixed
+     */
     public function getMulti(array $keys);
+
+    /**
+     * Store 1 key / value. TTL of 0 means infinite
+     * @param $key
+     * @param $value
+     * @param $ttl
+     * @return mixed
+     */
     public function store($key, $value, $ttl);
-    public function storeMulti($values, $ttl);
+
+    /**
+     * Store multiple key values (associative array). TTL of 0 means infinite
+     * @param array $values
+     * @param $ttl
+     * @return mixed
+     */
+    public function storeMulti(array $values, $ttl);
+
+    /**
+     * Delete one key from the storage
+     *
+     * @param $key
+     * @return mixed
+     */
     public function delete($key);
+
+    /**
+     * Delete multiple keys from the storage
+     * @param array $keys
+     * @return mixed
+     */
     public function deleteMulti(array $keys);
+
+    /**
+     * Replace the value of the provided key with the provided value. TTL of 0 means infinite.
+     *
+     * @param $key
+     * @param $value
+     * @param $ttl
+     * @return mixed
+     */
     public function replace($key, $value, $ttl);
 }

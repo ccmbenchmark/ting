@@ -44,18 +44,32 @@ class Metadata
     protected $primaries        = [];
     protected $autoincrement    = null;
 
+    /**
+     * Return applicable connection
+     * @param ConnectionPoolInterface $connectionPool
+     * @return Connection
+     */
     public function getConnection(ConnectionPoolInterface $connectionPool)
     {
         return new Connection($connectionPool, $this->connectionName, $this->databaseName);
     }
 
-    public function setConnection($connectionName)
+    /**
+     * Set connection name related to configuration
+     * @param $connectionName
+     * @return $this
+     */
+    public function setConnectionName($connectionName)
     {
         $this->connectionName = (string) $connectionName;
 
         return $this;
     }
 
+    /**
+     * @param $databaseName
+     * @return $this
+     */
     public function setDatabase($databaseName)
     {
         $this->databaseName = (string) $databaseName;
@@ -64,6 +78,7 @@ class Metadata
     }
 
     /**
+     * Set entity name
      * @throws \CCMBenchmark\Ting\Exception
      */
     public function setEntity($className)
@@ -75,13 +90,22 @@ class Metadata
         $this->entity = (string) $className;
     }
 
+    /**
+     * Set table name
+     * @param $tableName
+     */
     public function setTable($tableName)
     {
         $this->table = (string) $tableName;
     }
 
     /**
-     * @param array $params
+     * Add a field to metadata.
+     * @param array $params. Associative array with :
+     *      fieldName : string : name of the property on the object
+     *      columnName : string : name of the mysql column
+     *      primary : boolean : is this field a primary - optional
+     *      autoincrement : boolean : is this field an autoincrement - optional
      * @throws \CCMBenchmark\Ting\Exception
      */
     public function addField(array $params)
@@ -103,6 +127,12 @@ class Metadata
 
     }
 
+    /**
+     * Execute callback if the provided table is the actual
+     * @param          $table
+     * @param callable $callback
+     * @return bool
+     */
     public function ifTableKnown($table, \Closure $callback)
     {
         if ($this->table === $table) {
@@ -113,6 +143,11 @@ class Metadata
         return false;
     }
 
+    /**
+     * Returns true if the column is present in this metadata
+     * @param $column
+     * @return bool
+     */
     public function hasColumn($column)
     {
         if (isset($this->fields[$column]) === true) {
@@ -122,11 +157,21 @@ class Metadata
         return false;
     }
 
+    /**
+     * Create a new entity
+     * @return mixed
+     */
     public function createEntity()
     {
         return new $this->entity;
     }
 
+    /**
+     * Set the provided value to autoincrement if applicable
+     * @param $entity
+     * @param $value
+     * @return $this|bool
+     */
     public function setEntityPropertyForAutoIncrement($entity, $value)
     {
         if ($this->autoincrement === null) {
@@ -138,6 +183,12 @@ class Metadata
         return $this;
     }
 
+    /**
+     * Set a property to the provided value
+     * @param $entity
+     * @param $column
+     * @param $value
+     */
     public function setEntityProperty($entity, $column, $value)
     {
         $property = 'set' . $this->fields[$column]['fieldName'];
@@ -146,6 +197,8 @@ class Metadata
 
 
     /**
+     * Return a Query to get one object by it's primaries
+     *
      * @param Connection $connection
      * @param QueryFactoryInterface $queryFactory
      * @param CollectionFactoryInterface $collectionFactory
@@ -171,6 +224,8 @@ class Metadata
     }
 
     /**
+     * Return a query to insert a row in database
+     *
      * @param Connection $connection
      * @param QueryFactoryInterface $queryFactory
      * @param $entity
@@ -199,6 +254,15 @@ class Metadata
         return $queryGenerator->insert($values);
     }
 
+    /**
+     * Return a query to update a row in database
+     *
+     * @param Connection            $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param                       $entity
+     * @param                       $properties
+     * @return PreparedQuery
+     */
     public function generateQueryForUpdate(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
@@ -237,6 +301,15 @@ class Metadata
         return $queryGenerator->update($values, $primariesKeyValue);
     }
 
+    /**
+     * Return a query to delete a row from database
+     *
+     * @param Connection            $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param                       $properties
+     * @param                       $entity
+     * @return PreparedQuery
+     */
     public function generateQueryForDelete(
         Connection $connection,
         QueryFactoryInterface $queryFactory,

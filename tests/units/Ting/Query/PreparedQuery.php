@@ -128,22 +128,6 @@ class PreparedQuery extends atoum
         ;
     }
 
-    public function testExecuteShouldRaiseExceptionIfNotPrepared()
-    {
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
-            ->exception(function () use ($query) {
-                $query->execute();
-            })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
-                ->hasMessage('You should call prepareExecute to use execute method')
-
-        ;
-    }
-
     public function testQueryShouldCallStatementExecuteAndReturnCollection()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -170,22 +154,6 @@ class PreparedQuery extends atoum
             ->mock($mockStatement)
                 ->call('execute')
                     ->once()
-        ;
-    }
-
-    public function testQueryShouldCallRaiseExceptionIfNotPrepared()
-    {
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
-            ->exception(function () use ($query) {
-                $query->query(new Collection());
-            })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
-                ->hasMessage('You should call prepareQuery to use query method')
-
         ;
     }
 }

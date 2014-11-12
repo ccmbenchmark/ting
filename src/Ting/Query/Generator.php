@@ -42,12 +42,16 @@ class Generator
      */
     protected $queryFactory = null;
 
-    protected $database = '';
-
     protected $tableName = '';
 
     protected $fields = [];
 
+    /**
+     * @param Connection            $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param                       $table
+     * @param array                 $fields
+     */
     public function __construct(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
@@ -60,6 +64,13 @@ class Generator
         $this->fields       = $fields;
     }
 
+    /**
+     * Returns a Query, allowing to fetch an object by his primaries (associative array)
+     * @param array                      $primariesValue
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool                       $onMaster
+     * @return Query
+     */
     public function getByPrimaries(
         array $primariesValue,
         CollectionFactoryInterface $collectionFactory,
@@ -88,6 +99,7 @@ class Generator
     }
 
     /**
+     * Returns a PreparedQuery to insert an object in database
      * @param array $values associative array : columnName => value
      * @return PreparedQuery
      */
@@ -105,6 +117,7 @@ class Generator
     }
 
     /**
+     * Returns a prepared query to update values in database
      * @param array $values associative array : columnName => value
      * @param array $primariesValue
      * @return PreparedQuery
@@ -152,6 +165,12 @@ class Generator
         return $query;
     }
 
+    /**
+     * Protect every fields provided, using the driver provided
+     * @param array           $fields
+     * @param DriverInterface $driver
+     * @return array
+     */
     protected function escapeFields(array $fields, DriverInterface $driver)
     {
         return array_map(
@@ -162,6 +181,11 @@ class Generator
         );
     }
 
+    /**
+     * @param $fields
+     * @param $values
+     * @return array
+     */
     protected function generateConditionAndParams($fields, $values)
     {
         $conditions = [];

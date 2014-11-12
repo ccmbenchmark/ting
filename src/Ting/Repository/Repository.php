@@ -136,6 +136,8 @@ class Repository
     }
 
     /**
+     * Retrieve one object from database
+     *
      * @param $primariesKeyValue associative array column => value
      * @param bool $forceMaster
      * @return mixed|null
@@ -163,11 +165,21 @@ class Repository
         return $entity;
     }
 
+    /**
+     * Save an entity in database (update or insert)
+     *
+     * @param $entity
+     */
     public function save($entity)
     {
         $this->unitOfWork->save($entity)->flush();
     }
 
+    /**
+     * Delete an entity from database
+     *
+     * @param $entity
+     */
     public function delete($entity)
     {
         $this->unitOfWork->delete($entity)->flush();
@@ -207,6 +219,8 @@ class Repository
     }
 
     /**
+     * Start a transaction against the master connection
+     *
      * @return void
      */
     public function startTransaction()
@@ -215,6 +229,8 @@ class Repository
     }
 
     /**
+     * Rollback the transaction opened on the master connection
+     *
      * @return void
      */
     public function rollback()
@@ -223,6 +239,8 @@ class Repository
     }
 
     /**
+     * Commit the transaction opened on the master connection
+     *
      * @return void
      */
     public function commit()

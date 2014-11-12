@@ -26,6 +26,13 @@ namespace CCMBenchmark\Ting\Repository;
 
 interface CollectionFactoryInterface
 {
+    /**
+     * @param HydratorInterface $hydrator
+     */
     public function __construct(HydratorInterface $hydrator);
+
+    /**
+     * @return Collection
+     */
     public function get();
 }

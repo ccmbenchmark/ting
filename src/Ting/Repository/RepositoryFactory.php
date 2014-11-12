@@ -86,6 +86,10 @@ class RepositoryFactory
         $this->cache              = $cache;
     }
 
+    /**
+     * @param $repositoryName
+     * @return mixed
+     */
     public function get($repositoryName)
     {
         return new $repositoryName(

@@ -41,6 +41,7 @@ class PreparedQuery extends Query
     protected $statement = null;
 
     /**
+     * Prepare the query. Only for reading query (SELECT, SHOW, etc.)
      * @return $this
      */
     public function prepareQuery()
@@ -56,6 +57,7 @@ class PreparedQuery extends Query
     }
 
     /**
+     * Prepare the query. Only for writing query (INSERT, UPDATE, DELETE, ...)
      * @return $this
      */
     public function prepareExecute()
@@ -71,6 +73,7 @@ class PreparedQuery extends Query
     }
 
     /**
+     * Prepare and execute the read query.
      * @param CollectionInterface $collection
      * @return CollectionInterface
      * @throws QueryException
@@ -99,6 +102,7 @@ class PreparedQuery extends Query
     }
 
     /**
+     * Prepare and execute a writing query
      * @return mixed
      * @throws QueryException
      */
