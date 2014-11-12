@@ -31,7 +31,7 @@ class PreparedQuery extends Query
     /**
      * @var int|null
      */
-    protected $prepared = null;
+    protected $prepared = false;
 
     /**
      * @var \CCMBenchmark\Ting\Driver\StatementInterface
@@ -44,7 +44,7 @@ class PreparedQuery extends Query
      */
     public function prepareQuery()
     {
-        if ($this->prepared !== null) {
+        if ($this->prepared === true) {
             return $this;
         }
 
@@ -53,7 +53,7 @@ class PreparedQuery extends Query
         } else {
             $this->statement = $this->connection->slave()->prepare($this->sql);
         }
-        $this->prepared  = self::TYPE_RESULT;
+        $this->prepared  = true;
 
         return $this;
     }
@@ -64,12 +64,12 @@ class PreparedQuery extends Query
      */
     public function prepareExecute()
     {
-        if ($this->prepared !== null) {
+        if ($this->prepared === true) {
             return $this;
         }
 
         $this->statement = $this->connection->master()->prepare($this->sql);
-        $this->prepared  = self::TYPE_UPDATE;
+        $this->prepared  = true;
 
         return $this;
     }

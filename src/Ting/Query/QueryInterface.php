@@ -31,16 +31,6 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 interface QueryInterface
 {
     /**
-     * @var int
-     */
-    const TYPE_RESULT = 1;
-
-    /**
-     * @var int
-     */
-    const TYPE_UPDATE = 2;
-
-    /**
      * @param string $sql
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
