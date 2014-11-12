@@ -87,7 +87,7 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
-    public function persist($entity)
+    public function save($entity)
     {
         $oid   = spl_object_hash($entity);
         $state = self::STATE_NEW;
@@ -226,12 +226,14 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function (Metadata $metadata) use ($entity) {
+                $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
-                    $metadata->getConnection($this->connectionPool),
+                    $connection,
                     $this->queryFactory,
                     $entity
                 );
                 $query->prepareExecute()->execute();
+                $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
                 $this->manage($entity);
             }
         );
