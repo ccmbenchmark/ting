@@ -116,7 +116,7 @@ echo 'City1'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    //var_dump($cityRepository->get(3));
+    var_dump($cityRepository->get(['cit_id' => 3]));
     echo str_repeat("-", 40) . "\n";
 
     $query = $cityRepository->getQuery(
@@ -148,8 +148,8 @@ echo 'City2'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    //var_dump($cityRepository->get(3));
-    //echo str_repeat("-", 40) . "\n";
+    var_dump($cityRepository->get(['cit_id' => 3]));
+    echo str_repeat("-", 40) . "\n";
 
     $preparedQuery = $cityRepository->getPreparedQuery(
         "select c.* from t_city_cit as c
@@ -186,9 +186,9 @@ try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     $query = $cityRepository->getQuery(
-            "select * from t_city_cit as c
-            inner join t_country_cou as co on (c.cou_code = co.cou_code)
-            where co.cou_code = :code limit 3"
+        "select * from t_city_cit as c
+        inner join t_country_cou as co on (c.cou_code = co.cou_code)
+        where co.cou_code = :code limit 3"
     );
     $query->selectMaster(true);
     $collection = $query->setParams(['code' => 'FRA'])->query();

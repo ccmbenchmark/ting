@@ -75,7 +75,7 @@ echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    //var_dump($cityRepository->get(3));
+    var_dump($cityRepository->get(['cit_id' => 3]));
     echo str_repeat("-", 40) . "\n";
 
     $query = $cityRepository->getQuery(
