@@ -89,7 +89,7 @@ class Generator
 
         list($conditions, $params) = $this->generateConditionAndParams($fields, $primariesValue);
 
-        $sql .= 'WHERE '.implode(' AND ', $conditions);
+        $sql .= ' WHERE '.implode(' AND ', $conditions);
 
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
