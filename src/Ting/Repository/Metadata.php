@@ -285,18 +285,7 @@ class Metadata
             $values[$columnName] = $value[1];
         }
 
-        // Get actual primaries to where condition
-        $primariesKeyValue = [];
-        foreach ($this->primaries as $key => $primary) {
-            $fieldName = $this->fields[$key]['fieldName'];
-            // Key value has been updated
-            if (isset($properties[$fieldName]) === true) {
-                $primariesKeyValue[$key] = $properties[$fieldName][0];
-            } else {
-                $propertyName = 'get' . $primary['fieldName'];
-                $primariesKeyValue[$key] = $entity->$propertyName();
-            }
-        }
+        $primariesKeyValue = $this->getPrimariesKeyValues($properties, $entity);
 
         return $queryGenerator->update($values, $primariesKeyValue);
     }
@@ -323,7 +312,13 @@ class Metadata
             array_keys($properties)
         );
 
-        // Get actual primaries to where condition
+        $primariesKeyValue = $this->getPrimariesKeyValues($properties, $entity);
+
+        return $queryGenerator->delete($primariesKeyValue);
+    }
+
+    protected function getPrimariesKeyValues($properties, $entity)
+    {
         $primariesKeyValue = [];
         foreach ($this->primaries as $key => $primary) {
             $fieldName = $this->fields[$key]['fieldName'];
@@ -336,7 +331,6 @@ class Metadata
                 $primariesKeyValue[$key] = $entity->$propertyName();
             }
         }
-
-        return $queryGenerator->delete($primariesKeyValue);
+        return $primariesKeyValue;
     }
 }
