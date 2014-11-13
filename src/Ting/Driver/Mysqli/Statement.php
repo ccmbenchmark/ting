@@ -90,11 +90,11 @@ class Statement implements StatementInterface
 
         $this->driverStatement->execute();
 
-        $result = $this->driverStatement->get_result();
-
-        if ($result === false) {
+        if ($this->driverStatement->errno > 0) {
             throw new QueryException($this->driverStatement->error, $this->driverStatement->errno);
         }
+
+        $result = $this->driverStatement->get_result();
 
         if ($collection !== null) {
             return $this->setCollectionWithResult($result, $collection);
