@@ -219,7 +219,31 @@ class Metadata
             $this->table,
             $fields
         );
+
+        $primariesKeyValue = $this->getPrimariesKeyValuesAsArray($primariesKeyValue);
+
         return $queryGenerator->getByPrimaries($primariesKeyValue, $collectionFactory, $onMaster);
+    }
+
+    protected function getPrimariesKeyValuesAsArray($originalValue)
+    {
+        if (is_array($originalValue) === false) {
+            $primariesKeyValue = [];
+            $count = 0;
+            foreach ($this->fields as $field) {
+                if (isset($field['primary']) === true && $field['primary'] === true) {
+                    $count++;
+                    $primariesKeyValue[$field['columnName']] = $originalValue;
+                }
+            }
+            if ($count === 1) {
+                return $primariesKeyValue;
+            } else {
+                throw new \CCMBenchmark\Ting\Exception('Incorrect format for primaries');
+            }
+        } else {
+            return $originalValue;
+        }
     }
 
     /**
@@ -284,7 +308,7 @@ class Metadata
             $values[$columnName] = $value[1];
         }
 
-        $primariesKeyValue = $this->getPrimariesKeyValues($properties, $entity);
+        $primariesKeyValue = $this->getPrimariesKeyValuesByProperties($properties, $entity);
 
         return $queryGenerator->update($values, $primariesKeyValue);
     }
@@ -311,12 +335,12 @@ class Metadata
             array_keys($properties)
         );
 
-        $primariesKeyValue = $this->getPrimariesKeyValues($properties, $entity);
+        $primariesKeyValue = $this->getPrimariesKeyValuesByProperties($properties, $entity);
 
         return $queryGenerator->delete($primariesKeyValue);
     }
 
-    protected function getPrimariesKeyValues($properties, $entity)
+    protected function getPrimariesKeyValuesByProperties($properties, $entity)
     {
         $primariesKeyValue = [];
         foreach ($this->primaries as $key => $primary) {
