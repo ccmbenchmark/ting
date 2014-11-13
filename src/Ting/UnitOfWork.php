@@ -24,13 +24,9 @@
 
 namespace CCMBenchmark\Ting;
 
-use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
-use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-use CCMBenchmark\Ting\Repository\CollectionFactory;
-use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 use CCMBenchmark\Ting\Repository\Metadata;
 
 class UnitOfWork implements PropertyListenerInterface
@@ -73,7 +69,6 @@ class UnitOfWork implements PropertyListenerInterface
         if ($entity instanceof NotifyPropertyInterface) {
             $entity->addPropertyListener($this);
         }
-        $this->entitiesShouldBePersisted[$oid] = self::STATE_NEW;
     }
 
     /**
