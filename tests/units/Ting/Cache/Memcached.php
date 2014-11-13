@@ -40,6 +40,15 @@ class Memcached extends atoum
         $this->memcached->setConnection($this->memcachedMock);
     }
 
+    public function testGetShouldReturnNullOnNonExistentKey()
+    {
+        $this->calling($this->memcachedMock)->get = false;
+        $this
+            ->variable($this->memcached->get('key'))
+                ->isNull()
+        ;
+    }
+
     public function testGetShouldCallMemcachedGet()
     {
         $this
@@ -48,6 +57,15 @@ class Memcached extends atoum
                 ->call('get')
                     ->withArguments('key')
                         ->once()
+        ;
+    }
+
+    public function testGetMultiShouldReturnNullWhenNoKeyIsPresent()
+    {
+        $this->calling($this->memcachedMock)->getMulti = false;
+        $this
+            ->variable($this->memcached->getMulti(['key1', 'key2', 'key3']))
+            ->isNull()
         ;
     }
 

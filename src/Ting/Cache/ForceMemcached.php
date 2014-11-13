@@ -1,5 +1,4 @@
 <?php
-
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -23,22 +22,23 @@
  *
  **********************************************************************/
 
-namespace tests\fixtures\FakeQuery;
+namespace CCMBenchmark\Ting\Cache;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Repository\Metadata;
-
-class FakeQuery extends QueryAbstract
+/**
+ * This class is here to implement a false cache storage to force retrieve of values
+ * Class ForceMemcached
+ * @package CCMBenchmark\Ting\Cache
+ */
+class ForceMemcached extends Memcached
 {
 
-    public function execute(
-        Metadata $metadata,
-        ConnectionPoolInterface $connectionPool,
-        CollectionInterface $collection = null,
-        $connectionType = null
-    ) {
+    public function get($key)
+    {
+        return null;
+    }
 
+    public function getMulti(array $keys)
+    {
+        return null;
     }
 }

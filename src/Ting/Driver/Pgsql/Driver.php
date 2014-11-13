@@ -27,9 +27,6 @@ namespace CCMBenchmark\Ting\Driver\Pgsql;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
-use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
@@ -45,23 +42,42 @@ class Driver implements DriverInterface
      */
     protected $transactionOpened = false;
 
-    public static function forConnectionKey($connectionConfig, $database, \Closure $callback)
+    /**
+     * Return a unique connection key identifier
+     * @param array  $connectionConfig
+     * @param string $database
+     * @return string
+     */
+    public static function getConnectionKey(array $connectionConfig, $database)
     {
-        $callback(
+        return
             $connectionConfig['host'] . '|' .
             $connectionConfig['port'] . '|' .
             $connectionConfig['user'] . '|' .
             $connectionConfig['password'] . '|' .
-            $database
-        );
+            $database;
     }
 
+    /**
+     * Construct connection information
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param int    $port
+     * @return $this
+     */
     public function connect($hostname, $username, $password, $port)
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
         return $this;
     }
 
+    /**
+     * Connect the driver to the given database
+     * @param string $database
+     * @return $this
+     * @throws Exception
+     */
     public function setDatabase($database)
     {
         if ($this->connection !== null) {
@@ -79,18 +95,15 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param $sql
-     * @param array $params
-     * @param int $queryType
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
-     * @return bool|int
+     * Execute the given query on the actual connection
+     * @param string              $sql
+     * @param array               $params
+     * @param CollectionInterface $collection
+     * @return CollectionInterface|mixed|resource
+     * @throws QueryException
      */
-    public function execute(
-        $sql,
-        $params = array(),
-        $queryType = QueryAbstract::TYPE_RESULT,
-        CollectionInterface $collection = null
-    ) {
+    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    {
         list ($sql, $paramsOrder) = $this->convertParameters($sql);
 
         $values = array();
@@ -103,56 +116,38 @@ class Driver implements DriverInterface
 
         $result = pg_query_params($this->connection, $sql, $values);
 
-        return $this->setCollectionWithResult($result, $sql, $queryType, $collection);
+        if ($result === false) {
+            throw new QueryException(pg_last_error($this->connection));
+        }
+
+        if ($collection === null) {
+            return $result;
+        }
+
+        return $this->setCollectionWithResult($result, $sql, $collection);
     }
 
-    /**
-     * @param $resultResource
-     * @param $query
-     * @param $queryType
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
-     * @return bool|int
-     * @throws \CCMBenchmark\Ting\Driver\QueryException
-     */
-    public function setCollectionWithResult($resultResource, $query, $queryType, Collection $collection = null)
+    protected function setCollectionWithResult($result, $sql, CollectionInterface $collection)
     {
-        if ($queryType !== QueryAbstract::TYPE_RESULT) {
-            if ($queryType === QueryAbstract::TYPE_INSERT) {
-                $resultResource = pg_query($this->connection, 'SELECT lastval()');
-                $row = pg_fetch_row($resultResource);
-                return $row[0];
-            }
+        $result = new Result($result);
+        $result->setQuery($sql);
+        $collection->set($result);
 
-            return pg_affected_rows($resultResource);
-        }
-
-        if ($resultResource === false) {
-            throw new QueryException(pg_result_error($this->connection));
-        }
-
-        $result = new Result($resultResource);
-        $result->setQuery($query);
-
-        if ($collection !== null) {
-            $collection->set($result);
-        }
-
-        return true;
+        return $collection;
     }
 
     /**
-     * @param $sql
-     * @param \Closure $callback
-     * @param int $queryType
-     * @return $this
+     * Prepare the given query against the current connection
+     * @param string $sql
+     * @return Statement|\CCMBenchmark\Ting\Driver\StatementInterface
      */
-    public function prepare($sql, \Closure $callback, $queryType = QueryAbstract::TYPE_RESULT)
+    public function prepare($sql)
     {
         list ($sql, $paramsOrder) = $this->convertParameters($sql);
 
-        $statement     = new Statement();
         $statementName = sha1($sql);
-        $result = pg_prepare($this->connection, $statementName, $sql);
+        $statement     = new Statement($statementName, $paramsOrder);
+        $result        = pg_prepare($this->connection, $statementName, $sql);
 
         if ($result === false) {
             $this->ifIsError(function () use ($sql) {
@@ -162,11 +157,9 @@ class Driver implements DriverInterface
 
         $statement
             ->setConnection($this->connection)
-            ->setQueryType($queryType);
-        $statement->setQuery($sql);
+            ->setQuery($sql);
 
-        $callback($statement, $paramsOrder, $statementName);
-        return $this;
+        return $statement;
     }
 
     /**
@@ -192,7 +185,11 @@ class Driver implements DriverInterface
         return [$sql, $paramsOrder];
     }
 
-    public function ifIsError(\Closure $callback)
+    /**
+     * Execute callback if an error has been encountered
+     * @param callable $callback
+     */
+    public function ifIsError(callable $callback)
     {
         $error = '';
         if ($this->connection !== null) {
@@ -204,24 +201,29 @@ class Driver implements DriverInterface
         }
     }
 
-    public function ifIsNotConnected(\Closure $callback)
+    /**
+     * Execute the callback if the driver is not connected
+     * @param callable $callback
+     */
+    public function ifIsNotConnected(callable $callback)
     {
         if ($this->connection === null) {
             $callback();
         }
     }
 
-    public function escapeFields($fields, \Closure $callback)
+    /**
+     * Escape the given field name according to PGSQL Standards
+     * @param $field
+     * @return string
+     */
+    public function escapeField($field)
     {
-        foreach ($fields as &$field) {
-            $field = '"' . $field . '"';
-        }
-
-        $callback($fields);
-        return $this;
+        return '"' . $field . '"';
     }
 
     /**
+     * Start a transaction against the current connection
      * @throws \CCMBenchmark\Ting\Driver\Exception
      */
     public function startTransaction()
@@ -234,6 +236,7 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Commit the transaction against the current connection
      * @throws \CCMBenchmark\Ting\Driver\Exception
      */
     public function commit()
@@ -246,6 +249,7 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Rollback the actual opened transaction
      * @throws \CCMBenchmark\Ting\Driver\Exception
      */
     public function rollback()
@@ -255,5 +259,25 @@ class Driver implements DriverInterface
         }
         pg_query($this->connection, 'ROLLBACK');
         $this->transactionOpened = false;
+    }
+
+    /**
+     * Return the last inserted id
+     * @return int
+     */
+    public function getInsertId()
+    {
+        $resultResource = pg_query($this->connection, 'SELECT lastval()');
+        $row = pg_fetch_row($resultResource);
+        return (int)$row[0];
+    }
+
+    /**
+     * Give the number of affected rows
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        return pg_affected_rows($this->connection);
     }
 }

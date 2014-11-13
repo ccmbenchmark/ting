@@ -27,49 +27,43 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
 {
 
+    /**
+     * @var mixed
+     */
     protected $driverStatement = null;
-    protected $queryType       = null;
 
     /**
-     * @param $type
-     * @return $this
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @var array|null
      */
-    public function setQueryType($type)
+    protected $paramsOrder = null;
+
+    /**
+     * @param \mysqli_stmt|Object $driverStatement
+     * @param array $paramsOrder
+     */
+    public function __construct($driverStatement, array $paramsOrder)
     {
-        if (
-            in_array(
-                $type,
-                array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
-            ) === false
-        ) {
-            throw new Exception('setQueryType should use one of constant QueryAbstract::TYPE_*');
-        }
-
-        $this->queryType = $type;
-
-        return $this;
+        $this->driverStatement = $driverStatement;
+        $this->paramsOrder     = $paramsOrder;
     }
 
     /**
-     * @param $driverStatement
-     * @param $params
-     * @param $paramsOrder
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
-     * @return bool
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return bool|CollectionInterface
+     * @throws QueryException
      */
-    public function execute($driverStatement, $params, $paramsOrder, CollectionInterface $collection = null)
+    public function execute(array $params, CollectionInterface $collection = null)
     {
-        $this->driverStatement = $driverStatement;
         $types = '';
         $values = array();
-        foreach (array_keys($paramsOrder) as $key) {
+
+        foreach (array_keys($this->paramsOrder) as $key) {
             switch (gettype($params[$key])) {
                 case "object":
                     if ($params[$key] instanceof \DateTime) {
@@ -92,53 +86,39 @@ class Statement implements StatementInterface
         }
 
         array_unshift($values, $types);
-        call_user_func_array(array($driverStatement, 'bind_param'), $values);
+        call_user_func_array(array($this->driverStatement, 'bind_param'), $values);
 
-        $driverStatement->execute();
+        $this->driverStatement->execute();
 
-        return $this->setCollectionWithResult($driverStatement, $collection);
+        if ($this->driverStatement->errno > 0) {
+            throw new QueryException($this->driverStatement->error, $this->driverStatement->errno);
+        }
+
+        $result = $this->driverStatement->get_result();
+
+        if ($collection !== null) {
+            return $this->setCollectionWithResult($result, $collection);
+        }
+
+        return true;
     }
 
     /**
-     * @param $driverStatement
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
-     * @return bool|Result
-     * @throws \CCMBenchmark\Ting\Driver\QueryException
+     * @param \mysqli_result $result
+     * @param CollectionInterface $collection
+     * @return CollectionInterface
      */
-    public function setCollectionWithResult($driverStatement, CollectionInterface $collection = null)
+    public function setCollectionWithResult($result, CollectionInterface $collection)
     {
-        if ($this->queryType !== QueryAbstract::TYPE_RESULT) {
-            if ($this->queryType === QueryAbstract::TYPE_INSERT) {
-                    return $driverStatement->insert_id;
-            }
-
-            $result = $driverStatement->affected_rows;
-
-            if ($result === null || $result === -1) {
-                return false;
-            }
-            return $result;
-        }
-
-        $result = $driverStatement->get_result();
-
-        if ($result === false) {
-            throw new QueryException($driverStatement->error, $driverStatement->errno);
-        }
-
         $collection->set(new Result($result));
         return true;
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function close()
     {
-        if ($this->driverStatement === null) {
-            throw new Exception('statement->close can\'t be called before statement->execute');
-        }
-
         $this->driverStatement->close();
     }
 }

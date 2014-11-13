@@ -22,12 +22,14 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Query;
+namespace CCMBenchmark\Ting\Query\Cached;
 
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Query\QueryException;
 
 class PreparedQuery extends Query
 {
+
     /**
      * @var int|null
      */
@@ -39,7 +41,7 @@ class PreparedQuery extends Query
     protected $statement = null;
 
     /**
-     * Prepare a reading query (SELECT, SHOW, ...)
+     * Prepare the query. Only for reading query (SELECT, SHOW, etc.)
      * @return $this
      */
     public function prepareQuery()
@@ -47,19 +49,15 @@ class PreparedQuery extends Query
         if ($this->prepared === true) {
             return $this;
         }
-
-        if ($this->selectMaster === true) {
-            $this->statement = $this->connection->master()->prepare($this->sql);
-        } else {
-            $this->statement = $this->connection->slave()->prepare($this->sql);
-        }
+        
+        $this->statement = $this->connection->slave()->prepare($this->sql);
         $this->prepared  = true;
 
         return $this;
     }
 
     /**
-     * Prepare a writing query (UPDATE, INSERT, DELETE, ...)
+     * Prepare the query. Only for writing query (INSERT, UPDATE, DELETE, ...)
      * @return $this
      */
     public function prepareExecute()
@@ -75,26 +73,36 @@ class PreparedQuery extends Query
     }
 
     /**
-     * Prepare then execute a reading query
+     * Prepare and execute the read query.
      * @param CollectionInterface $collection
      * @return CollectionInterface
      * @throws QueryException
      */
     public function query(CollectionInterface $collection = null)
     {
+        $this->checkTtl();
+
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
+        }
+
+        $key      = $this->getCacheKey($this->params);
+        $isCached = $this->checkCache($key, $collection, $this->params);
+
+        if ($isCached === true) {
+            return $collection;
         }
 
         $this->prepareQuery();
 
         $this->statement->execute($this->params, $collection);
+        $this->cache->store($key, $collection->toArray(), $this->ttl);
 
         return $collection;
     }
 
     /**
-     * Prepare then execute a writing query
+     * Prepare and execute a writing query
      * @return mixed
      * @throws QueryException
      */

@@ -25,19 +25,17 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
 
 class MetadataRepository
 {
 
     protected $metadataList    = array();
-    protected $metadataFactory = null;
 
-    public function __construct(MetadataFactoryInterface $metadataFactory)
-    {
-        $this->metadataFactory = $metadataFactory;
-    }
-
+    /**
+     * @param          $table
+     * @param callable $callbackFound   called with applicable Metadata if applicable
+     * @param callable $callbackNotFound called if unknown table - no parameter
+     */
     public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound)
     {
         $found = false;
@@ -59,6 +57,11 @@ class MetadataRepository
         }
     }
 
+    /**
+     * @param          $entity
+     * @param callable $callbackFound Called with applicable Metadata if applicable
+     * @param callable $callbackNotFound called if unknown entity - no parameter
+     */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         $repository = get_class($entity) . 'Repository';
@@ -76,6 +79,13 @@ class MetadataRepository
         }
     }
 
+    /**
+     * Load in memory all metadatas
+     *
+     * @param $namespace
+     * @param $globPattern
+     * @return int
+     */
     public function batchLoadMetadata($namespace, $globPattern)
     {
         if (file_exists(dirname($globPattern)) === false) {
@@ -85,7 +95,7 @@ class MetadataRepository
         $loaded = 0;
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata($this->metadataFactory));
+            $this->addMetadata($repository, $repository::initMetadata());
             $loaded++;
         }
 

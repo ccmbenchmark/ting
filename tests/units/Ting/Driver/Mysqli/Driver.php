@@ -25,28 +25,23 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use CCMBenchmark\Ting\Query\Query;
+use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
 class Driver extends atoum
 {
 
-    public function testForConnectionKeyShouldCallCallbackWithConnectionName()
+    public function testGetConnectionKeyShouldBeIdempotent()
     {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $connectionConfig = ['host' => '127.0.0.1', 'user' => 'app_read', 'password' => 'pzefgdfg', 'port' => 3306];
         $this
-            ->if(\CCMBenchmark\Ting\Driver\Mysqli\Driver::forConnectionKey(
-                [
-                    'host'      => 'bouhHost',
-                    'user'      => 'bouhUser',
-                    'password'  => 'bouhPassword',
-                    'port'      => 3306
-                ],
-                'BouhDatabase',
-                function ($connectionKey) use (&$outerConnectionKey) {
-                    $outerConnectionKey = $connectionKey;
-                }
-            ))
-            ->string($outerConnectionKey)
-                ->isIdenticalTo('bouhHost|3306|bouhUser|bouhPassword');
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->string($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+        ;
     }
 
     public function testShouldImplementDriverInterface()
@@ -234,32 +229,6 @@ class Driver extends atoum
                 ->isTrue();
     }
 
-    public function testPrepareShouldCallCallback()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->prepare(
-                'SELECT 1 FROM bouh WHERE first = :first AND second = :#second',
-                function (
-                    $statement,
-                    $paramsOrder,
-                    $driverStatement
-                ) use (
-                    &$outerStatement,
-                    &$outerParamsOrder,
-                    &$outerDriverStatement
-                ) {
-                    $outerParamsOrder = $paramsOrder;
-                }
-            ))
-            ->array($outerParamsOrder)
-                ->isIdenticalTo(array('first' => null, '#second' => null));
-    }
-
     public function testPrepareShouldRaiseQueryException()
     {
         $mockDriver = new \mock\Fake\Mysqli();
@@ -308,11 +277,83 @@ class Driver extends atoum
 
     public function testExecuteShouldRaiseExceptionIfValueNotDefined()
     {
-        $this->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver())
             ->exception(function () use ($driver) {
                 $driver->execute('SELECT * WHERE id = :id');
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+    }
+
+    public function testExecuteShouldReturnACollection()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+
+        $collection = new Collection();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->and(
+                $this->calling($driverFake)->real_escape_string = function ($value) {
+                    return addcslashes($value, '"');
+                }
+            )
+            ->and(
+                $this->calling($driverFake)->query = function ($sql) use (&$outerSql, $mockMysqliResult) {
+                    $outerSql = $sql;
+                    return $mockMysqliResult;
+                }
+            )
+            ->object(
+                $driver->execute(
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id
+                    AND name = :name AND age = :age AND last_modified = :date',
+                    [
+                        'id' => 12,
+                        'name' => 'L\'étang du lac',
+                        'age' => 12.6,
+                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+                    ],
+                    $collection
+                )
+            )
+                ->isInstanceOf($collection)
+        ;
+    }
+
+    public function testExecuteShouldThrowExceptionOnError()
+    {
+        $driverFake          = new \mock\Fake\Mysqli();
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+
+        $collection = new Collection();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->and(
+                $this->calling($driverFake)->real_escape_string = function ($value) {
+                    return addcslashes($value, '"');
+                }
+            )
+            ->and($this->calling($driverFake)->query = false)
+            ->and($driverFake->error = 'Undefined Error')
+            ->and($driverFake->errno = 127)
+            ->exception(function () use ($driver, $collection) {
+                $driver->execute(
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id
+                    AND name = :name AND age = :age AND last_modified = :date',
+                    [
+                        'id' => 12,
+                        'name' => 'L\'étang du lac',
+                        'age' => 12.6,
+                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+                    ],
+                    $collection
+                );
+            })
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+        ;
     }
 
     public function testExecuteShouldBuildACorrectQuery()
@@ -340,7 +381,7 @@ class Driver extends atoum
                     AND name = :name AND age = :age AND last_modified = :date',
                     [
                         'id' => 12,
-                        'name' => 'L\'�tang du lac',
+                        'name' => 'L\'étang du lac',
                         'age' => 12.6,
                         'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
                     ]
@@ -349,64 +390,11 @@ class Driver extends atoum
             ->string($outerSql)
                 ->isEqualTo(
                     'SELECT population FROM T_CITY_CIT WHERE id = 12
-                    AND name = "L\'�tang du lac" AND age = 12.6 AND last_modified = "2014-03-01 14:02:05"'
+                    AND name = "L\'étang du lac" AND age = 12.6 AND last_modified = "2014-03-01 14:02:05"'
                 )
             ->mock($driverFake)
                 ->call('query')
                     ->once();
-    }
-
-    public function testSetCollectionWithIncorrectQueryShouldRaiseException()
-    {
-        $driverFake          = new \mock\Fake\Mysqli();
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
-            ->and($driverFake->errno = 12)
-            ->and($driverFake->error = 'You tried an incorrect query')
-            ->exception(
-                function () use ($driver) {
-                    $driver->setCollectionWithResult(false, Query::TYPE_RESULT);
-                }
-            )
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
-        ;
-    }
-
-    public function testSetCollectionShouldReturnInsertIdOnInsertion()
-    {
-        $driverFake          = new \mock\Fake\Mysqli();
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
-            ->and($driverFake->insert_id = 3)
-            ->integer($driver->setCollectionWithResult(true, Query::TYPE_INSERT))
-                ->isEqualTo(3)
-        ;
-    }
-
-    public function testSetCollectionShouldReturnAffectedRowsNumberOnUpdate()
-    {
-        $driverFake          = new \mock\Fake\Mysqli();
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
-            ->and($driverFake->affected_rows = 12)
-            ->integer($driver->setCollectionWithResult(true, Query::TYPE_AFFECTED))
-                ->isEqualTo(12)
-        ;
-    }
-
-    public function testSetCollectionShouldReturnFalseOnIncorrectResult()
-    {
-        $driverFake          = new \mock\Fake\Mysqli();
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
-            ->and($driverFake->affected_rows = null)
-            ->boolean($driver->setCollectionWithResult(true, Query::TYPE_AFFECTED))
-                ->isFalse()
-        ;
     }
 
     public function testPrepareShouldNotTransformEscapedColon()
@@ -429,30 +417,15 @@ class Driver extends atoum
                 ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
     }
 
-    public function testEscapeFieldsShouldCallCallbackAndReturnThis()
+    public function testEscapeFieldShouldEscapeField()
     {
         $mockDriver = new \mock\Fake\Mysqli();
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->object($driver->escapeFields(array('Bouh'), function ($escaped) use (&$outerEscaped) {
-                $outerEscaped = $escaped;
-            }))
-                ->isIdenticalTo($driver)
-            ->string($outerEscaped[0])
-                ->isIdenticalTo('`Bouh`');
-    }
-
-    public function testStartTransactionShouldOpenTransaction()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->boolean($driver->isTransactionOpened())
-                ->isFalse()
-            ->then($driver->startTransaction())
-            ->boolean($driver->isTransactionOpened())
-                ->isTrue();
+            ->string($driver->escapeField('Bouh'))
+                ->isIdenticalTo('`Bouh`')
+        ;
     }
 
     public function testStartTransactionShouldRaiseExceptionIfCalledTwice()
@@ -468,15 +441,17 @@ class Driver extends atoum
         ;
     }
 
-    public function testCommitShouldCloseConnection()
+    public function testCommitShouldCloseTransaction()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->then($driver->commit())
-            ->boolean($driver->isTransactionOpened())
-                ->isFalse()
+            ->exception(function () use ($driver) {
+                $driver->commit();
+            })
+                ->hasMessage('Cannot commit no transaction')
             ;
     }
 
@@ -499,8 +474,11 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->then($driver->rollback())
-            ->boolean($driver->isTransactionOpened())
-                ->isFalse()
+            ->exception(function () use ($driver) {
+                $driver->rollback();
+            })
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
+                ->hasMessage('Cannot rollback no transaction')
             ;
     }
 
@@ -513,6 +491,48 @@ class Driver extends atoum
                     $driver->rollback();
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
+        ;
+    }
+
+    public function testGetInsertIdShouldReturnInsertedId()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $mockDriver->insert_id = 3;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->integer($driver->getInsertId())
+            ->isIdenticalTo(3)
+        ;
+    }
+
+    public function testGetAffectedRowsShouldReturnAffectedRows()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $mockDriver->affected_rows = 12;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->integer($driver->getAffectedRows())
+            ->isIdenticalTo(12)
+        ;
+    }
+
+    public function testGetAffectedRowsShouldReturn0OnError()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $mockDriver->affected_rows = -1;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->integer($driver->getAffectedRows())
+            ->isIdenticalTo(0)
         ;
     }
 }

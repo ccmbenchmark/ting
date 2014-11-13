@@ -24,96 +24,114 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Driver\DriverInterface;
+
 class ConnectionPool implements ConnectionPoolInterface
 {
 
+    /**
+     * @var array
+     */
     protected $connectionConfig = array();
-    protected $connections = array();
-    protected $connectionsTypesToConfig = array();
 
+    /**
+     * @var array
+     */
+    protected $connectionSlaves = array();
+
+    /**
+     * @var array
+     */
+    protected $connections = array();
+
+    /**
+     * @param array $config
+     */
     public function setConfig($config)
     {
         $this->connectionConfig = $config;
     }
 
     /**
-     * @param $connectionName
+     * Return the master connection
+     *
+     * @param $name
      * @param $database
-     * @param $connectionType
-     * @param \Closure $callback
-     * @return $this
      * @throws Exception
+     * @return DriverInterface
      */
-    public function connect($connectionName, $database, $connectionType, \Closure $callback)
+    public function master($name, $database)
     {
-        if (isset($this->connectionConfig[$connectionName]) === false) {
-            throw new Exception('Connection not found: ' . $connectionName);
+        if (!isset($this->connectionConfig[$name]['master'])) {
+            throw new Exception('Connection not found: ' . $name);
         }
+        $config = $this->connectionConfig[$name]['master'];
+        $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
-        $driverClass = $this->connectionConfig[$connectionName]['namespace'] . '\\Driver';
-
-        $this->setApplicableConnectionConf($connectionName, $connectionType);
-        $connectionConfig = $this->connectionsTypesToConfig[$connectionName][$connectionType];
-
-        $driverClass::forConnectionKey(
-            $connectionConfig,
-            $database,
-            function ($connectionKey) use (
-                $driverClass,
-                $connectionConfig,
-                $connectionName,
-                $callback,
-                $database,
-                $connectionType
-            ) {
-                if (isset($this->connections[$connectionKey]) === false) {
-                    $driver = new $driverClass();
-                    $driver->connect(
-                        $connectionConfig['host'],
-                        $connectionConfig['user'],
-                        $connectionConfig['password'],
-                        $connectionConfig['port']
-                    );
-                    $this->connections[$connectionKey] = $driver;
-                }
-
-                $this->connections[$connectionKey]->setDatabase($database);
-
-                $callback($this->connections[$connectionKey]);
-            }
-        );
-
-        return $this;
+        return $this->connect($config, $driverClass, $database);
     }
 
-    private function setApplicableConnectionConf($connectionName, $connectionType)
+    /**
+     * Return always the same slave connection
+     *
+     * @param $name
+     * @param $database
+     * @throws Exception
+     * @return DriverInterface
+     */
+    public function slave($name, $database)
     {
-        if (
-            $connectionType == self::CONNECTION_SLAVE
-            && isset($this->connectionConfig[$connectionName]['slaves'])
-            && $this->connectionConfig[$connectionName]['slaves'] !== []
+        if (!isset($this->connectionConfig[$name])) {
+            throw new Exception('Connection not found: ' . $name);
+        }
+        $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
+
+        if (isset($this->connectionConfig[$name]['slaves']) === false
+            || $this->connectionConfig[$name]['slaves'] === []
         ) {
-            if (
-                isset($this->connectionsTypesToConfig[$connectionName])
-                &&
-                isset($this->connectionsTypesToConfig[$connectionName][$connectionType])
-            ) {
-                /**
-                 * It's a slave connection and we already have choose a slave : we use the same one
-                 * In this way we avoid opening one connection per slave because of round-robin
-                 */
-                $connectionConfig = $this->connectionsTypesToConfig[$connectionName][$connectionType];
-            } else {
-                $randomKey = array_rand($this->connectionConfig[$connectionName]['slaves']);
-                $connectionConfig = $this->connectionConfig[$connectionName]['slaves'][$randomKey];
-            }
-        } else {
-            /**
-             * In this case : we only have a master or the connectionType has been set to master
-             */
-            $connectionConfig = $this->connectionConfig[$connectionName]['master'];
+            return $this->master($name, $database);
         }
 
-        $this->connectionsTypesToConfig[$connectionName][$connectionType] = $connectionConfig;
+        if (
+            !isset($this->connectionSlaves[$name])
+        ) {
+            /**
+             * It's a slave connection and we do not have choosen a slave. We randomly take one & store datas.
+             * In this way we avoid opening one connection per slave because of round-robin.
+             */
+
+            $randomKey = array_rand($this->connectionConfig[$name]['slaves']);
+            $this->connectionSlaves[$name] = $this->connectionConfig[$name]['slaves'][$randomKey];
+        }
+
+        $connectionConfig = $this->connectionSlaves[$name];
+
+        return $this->connect($connectionConfig, $driverClass, $database);
+    }
+
+    /**
+     * @param array $config
+     * @param string $driverClass
+     * @param string $database
+     * @return DriverInterface
+     */
+    protected function connect($config, $driverClass, $database)
+    {
+
+        $connectionKey = $driverClass::getConnectionKey($config, $database);
+
+        if (isset($this->connections[$connectionKey]) === false) {
+            $driver = new $driverClass();
+            $driver->connect(
+                $config['host'],
+                $config['user'],
+                $config['password'],
+                $config['port']
+            );
+            $this->connections[$connectionKey] = $driver;
+        }
+
+        $this->connections[$connectionKey]->setDatabase($database);
+        return $this->connections[$connectionKey];
     }
 }

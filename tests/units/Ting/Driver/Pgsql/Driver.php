@@ -24,30 +24,20 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Query\Query;
 use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
 class Driver extends atoum
 {
-
-    public function testForConnectionKeyShouldCallCallbackWithConnectionNameAndDatabase()
+    public function testGetConnectionKeyShouldBeIdempotent()
     {
+        $connectionConfig = ['host' => '127.0.0.1', 'user' => 'app_read', 'password' => 'pzefgdfg', 'port' => 3306];
         $this
-            ->if(\CCMBenchmark\Ting\Driver\Pgsql\Driver::forConnectionKey(
-                [
-                    'host'      => 'bouhHost',
-                    'user'      => 'bouhUser',
-                    'password'  => 'bouhPassword',
-                    'port'      => 5555
-                ],
-                'BouhDatabase',
-                function ($connectionKey) use (&$outerConnectionKey) {
-                    $outerConnectionKey = $connectionKey;
-                }
-            ))
-            ->string($outerConnectionKey)
-                ->isIdenticalTo('bouhHost|5555|bouhUser|bouhPassword|BouhDatabase');
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->string($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+                ->isIdenticalTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+        ;
     }
 
     public function testShouldImplementDriverInterface()
@@ -154,31 +144,6 @@ class Driver extends atoum
                 ->isTrue();
     }
 
-    public function testPrepareShouldCallCallback()
-    {
-        $this->function->pg_connect = true;
-        $this->function->pg_prepare = true;
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->setDatabase('database.test'))
-            ->then($driver->prepare(
-                'SELECT 1 FROM bouh WHERE first = :first AND second = :#second',
-                function (
-                    $statement,
-                    $paramsOrder,
-                    $collection
-                ) use (
-                    &$outerParamsOrder
-                ) {
-                    $outerParamsOrder = $paramsOrder;
-                }
-            ))
-            ->array($outerParamsOrder)
-                ->isIdenticalTo(array('first' => null, '#second' => null));
-    }
-
     public function testPrepareShouldRaiseQueryException()
     {
         $this->function->pg_connect = true;
@@ -228,18 +193,15 @@ class Driver extends atoum
                 ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
     }
 
-    public function testEscapeFieldsShouldCallCallbackAndReturnThis()
+    public function testEscapeFieldShouldReturnEscapedField()
     {
         $this->function->pg_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->object($driver->escapeFields(array('Bouh'), function ($escaped) use (&$outerEscaped) {
-                $outerEscaped = $escaped;
-            }))
-                ->isIdenticalTo($driver)
-            ->string($outerEscaped[0])
-                ->isIdenticalTo('"Bouh"');
+            ->string($driver->escapeField('Bouh'))
+                ->isIdenticalTo('"Bouh"')
+        ;
     }
 
     public function testStartTransactionShouldExecuteQueryBegin()
@@ -329,126 +291,111 @@ class Driver extends atoum
 
     }
 
-    public function testExecuteInsertShouldCallPgQueryAndReturnInsertId()
+    public function testGetAffectedRowsShouldReturnAffectedRows()
     {
+        $this->function->pg_affected_rows = 12;
+
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->and(
-                $this->function->pg_query_params =
-                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
-                    $outerQuery = $query;
-                    $outerParams = $params;
-                }
-            )
-            ->and(
-                $this->function->pg_query =
-                function ($connection, $query) use (&$outerQueryLastVal) {
-                    $outerQueryLastVal = $query;
-                }
-            )
-            ->and($this->function->pg_fetch_row = [12])
-            ->integer(
-                $driver->execute(
-                    'INSERT INTO T_CITY_CIT (id, name, age, last_modified) VALUES (:id, :name, :age, :date)',
-                    [
-                        'id' => 12,
-                        'name' => 'L\'�tang du lac',
-                        'age' => 12.6,
-                        'date' => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
-                    ],
-                    Query::TYPE_INSERT
-                )
-            )
+            ->integer($driver->getAffectedRows())
                 ->isIdenticalTo(12)
-            ->string($outerQuery)
-                ->isIdenticalTo('INSERT INTO T_CITY_CIT (id, name, age, last_modified) VALUES ($1, $2, $3, $4)')
-            ->array($outerParams)
-                ->isIdenticalTo([12, 'L\'�tang du lac', 12.6, "2014-03-01 14:02:05"])
-            ->string($outerQueryLastVal)
-                ->isIdenticalTo('SELECT lastval()')
-            ;
+        ;
     }
 
-    public function testExecuteUpdateShouldCallPgQueryAndReturnAffectedRows()
+    public function testGetInsertIdShouldReturnInsertedId()
     {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this->function->pg_fetch_row = [4];
+
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->and(
-                $this->function->pg_query_params =
-                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
-                    $outerQuery = $query;
-                    $outerParams = $params;
-                }
-            )
-            ->and($this->function->pg_affected_rows = 4)
-            ->integer(
-                $driver->execute(
-                    'UPDATE T_CITY_CIT SET name = :name WHERE id > :id',
-                    ['id' => 12, 'name' => 'L\'�tang du lac', 'age' => 12.6],
-                    Query::TYPE_AFFECTED
-                )
-            )
+            ->integer($driver->getInsertId())
                 ->isIdenticalTo(4)
             ->string($outerQuery)
-                ->isIdenticalTo('UPDATE T_CITY_CIT SET name = $1 WHERE id > $2')
-            ->array($outerParams)
-                ->isIdenticalTo(['L\'�tang du lac', 12])
-            ;
+                ->isIdenticalTo('SELECT lastval()')
+        ;
     }
 
-    public function testSetCollectionShouldRaiseExceptionOnError()
+    public function testExecuteShouldCallPGQueryParams()
     {
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->and(
-                $this->function->pg_query_params =
-                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
-                    $outerQuery = $query;
-                    $outerParams = $params;
-                }
-            )
-            ->and($this->function->pg_affected_rows = 4)
-            ->exception(
-                function () use ($driver) {
-                    $driver->setCollectionWithResult(
-                        false,
-                        'UPDATE T_CITY_CIT SET name = :name WHERE id > :id',
-                        Query::TYPE_RESULT,
-                        new Collection()
-                    );
-                }
-            )
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
-            ;
-    }
-
-    public function testExecuteSelectShouldCallPgQueryAndReturnTrue()
-    {
+        $count = 0;
+        $outerSql = '';
+        $outerValues = '';
+        $this->function->pg_query_params = function (
+            $connection,
+            $sql,
+            $values
+        ) use (
+            &$count,
+            &$outerSql,
+            &$outerValues
+        ) {
+            $count++;
+            $outerSql = $sql;
+            $outerValues = $values;
+        };
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->and(
-                $this->function->pg_query_params =
-                function ($connection, $query, $params) use (&$outerQuery, &$outerParams) {
-                    $outerQuery = $query;
-                    $outerParams = $params;
-                }
-            )
-            ->and($this->function->pg_field_table = 'T_CITY_CIT')
-            ->boolean(
-                $driver->execute(
-                    'SELECT id FROM T_CITY_CIT WHERE name = :name',
-                    ['name' => 'L\'�tang du lac'],
-                    Query::TYPE_RESULT
-                )
-            )
-                ->isTrue
-            ;
-        /*
-            ->string($outerQuery)
-                ->isIdenticalTo('SELECT id FROM T_CITY_CIT WHERE name = $1')
-            ->array($outerParams)
-                ->isIdenticalTo(['L\'�tang du lac'])
-            ;*/
+                ->then($driver->execute('SELECT 1 FROM "myTable" WHERE id = :id', ['id' => 12]))
+                    ->array($outerValues)
+                        ->isIdenticalTo([0 => 12])
+                    ->string($outerSql)
+                        ->isIdenticalTo('SELECT 1 FROM "myTable" WHERE id = $1')
+                    ->integer($count)
+                        ->isIdenticalTo(1)
+                ->then($driver->execute(
+                    'INSERT INTO "myTable" (date_field) VALUES (:date)',
+                    ['date' => new \DateTime('2014-12-31 23:59:59')]
+                ))
+                    ->array($outerValues)
+                        ->isIdenticalTo([0 => '2014-12-31 23:59:59'])
+                    ->string($outerSql)
+                        ->isIdenticalTo('INSERT INTO "myTable" (date_field) VALUES ($1)')
+                    ->integer($count)
+                        ->isIdenticalTo(2)
+        ;
+    }
+
+    public function testExecuteShouldReturnACollection()
+    {
+        $this->function->pg_connect      = true;
+        $this->function->pg_query_params = true;
+        $this->function->pg_fetch_array  = 'data';
+        $this->function->pg_result_seek  = true;
+        $this->function->pg_field_table  = 'myTable';
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $this->calling($mockCollection)->set = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+                ->object($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
+                    ->isIdenticalTo($mockCollection)
+        ;
+    }
+
+    public function testExecuteShouldRaiseExceptionWhenErrorHappens()
+    {
+        $this->function->pg_connect      = true;
+        $this->function->pg_query_params = false;
+        $this->function->pg_fetch_array  = 'data';
+        $this->function->pg_result_seek  = true;
+        $this->function->pg_field_table  = 'myTable';
+        $this->function->pg_last_error   = 'Unknown Error';
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $this->calling($mockCollection)->set = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+                ->exception(function () use ($driver) {
+                    $driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]);
+                })
+                    ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+        ;
     }
 }

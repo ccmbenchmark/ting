@@ -24,10 +24,10 @@
 
 namespace CCMBenchmark\Ting;
 
-use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
-use CCMBenchmark\Ting\Query\PreparedQuery;
+use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class UnitOfWork implements PropertyListenerInterface
 {
@@ -37,24 +37,44 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
+    protected $queryFactory              = null;
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
 
-    public function __construct(ConnectionPool $connectionPool, MetadataRepository $metadataRepository)
-    {
+    /**
+     * @param ConnectionPool        $connectionPool
+     * @param MetadataRepository    $metadataRepository
+     * @param QueryFactoryInterface $queryFactory
+     */
+    public function __construct(
+        ConnectionPool $connectionPool,
+        MetadataRepository $metadataRepository,
+        QueryFactoryInterface $queryFactory
+    ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
+        $this->queryFactory       = $queryFactory;
     }
 
+    /**
+     * Watch changes on provided entity
+     *
+     * @param $entity
+     */
     public function manage($entity)
     {
-        $this->entitiesManaged[spl_object_hash($entity)] = true;
+        $oid = spl_object_hash($entity);
+        $this->entitiesManaged[$oid] = true;
         if ($entity instanceof NotifyPropertyInterface) {
             $entity->addPropertyListener($this);
         }
     }
 
+    /**
+     * @param $entity
+     * @return bool - true if the entity is managed
+     */
     public function isManaged($entity)
     {
         if (isset($this->entitiesManaged[spl_object_hash($entity)]) === true) {
@@ -64,6 +84,10 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * @param $entity
+     * @return bool - true if the entity has not been persisted yet
+     */
     public function isNew($entity)
     {
         $oid = spl_object_hash($entity);
@@ -76,7 +100,13 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
-    public function persist($entity)
+    /**
+     * Flag the entity to be persisted (insert or update) on next flush
+     *
+     * @param $entity
+     * @return $this
+     */
+    public function save($entity)
     {
         $oid   = spl_object_hash($entity);
         $state = self::STATE_NEW;
@@ -86,8 +116,14 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->entitiesShouldBePersisted[$oid] = $state;
         $this->entities[$oid] = $entity;
+
+        return $this;
     }
 
+    /**
+     * @param $entity
+     * @return bool
+     */
     public function shouldBePersisted($entity)
     {
         if (isset($this->entitiesShouldBePersisted[spl_object_hash($entity)]) === true) {
@@ -97,6 +133,12 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * @param $entity
+     * @param $propertyName
+     * @param $oldValue
+     * @param $newValue
+     */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
     {
         if ($oldValue === $newValue) {
@@ -116,6 +158,11 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entitiesChanged[$oid][$propertyName][1] = $newValue;
     }
 
+    /**
+     * @param $entity
+     * @param $propertyName
+     * @return bool
+     */
     public function isPropertyChanged($entity, $propertyName)
     {
         if (isset($this->entitiesChanged[spl_object_hash($entity)][$propertyName]) === true) {
@@ -125,6 +172,11 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * Stop watching changes on the entity
+     *
+     * @param $entity
+     */
     public function detach($entity)
     {
         $oid = spl_object_hash($entity);
@@ -133,13 +185,27 @@ class UnitOfWork implements PropertyListenerInterface
         unset($this->entities[$oid]);
     }
 
-    public function remove($entity)
+    /**
+     * Flag the entity to be deleted on next flush
+     *
+     * @param $entity
+     * @return $this
+     */
+    public function delete($entity)
     {
         $oid = spl_object_hash($entity);
         $this->entitiesShouldBePersisted[$oid] = self::STATE_DELETE;
         $this->entities[$oid] = $entity;
+
+        return $this;
     }
 
+    /**
+     * Returns true if delete($entity) has been called
+     *
+     * @param $entity
+     * @return bool
+     */
     public function shouldBeRemoved($entity)
     {
         $oid = spl_object_hash($entity);
@@ -153,6 +219,12 @@ class UnitOfWork implements PropertyListenerInterface
         return false;
     }
 
+    /**
+     * Apply flagged changes against the database:
+     * * Persist flagged new entities
+     * * Update flagged entities
+     * * Delete flagged entities
+     */
     public function flush()
     {
         foreach ($this->entitiesShouldBePersisted as $oid => $state) {
@@ -172,6 +244,11 @@ class UnitOfWork implements PropertyListenerInterface
         }
     }
 
+    /**
+     * Update all applicable entities in database
+     *
+     * @param $oid
+     */
     protected function flushManaged($oid)
     {
         if (isset($this->entitiesChanged[$oid]) === false) {
@@ -192,69 +269,71 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($entity, $properties) {
-                $metadata->connectMaster(
-                    $this->connectionPool,
-                    function (DriverInterface $driver) use ($entity, $metadata, $properties) {
-                        $metadata->generateQueryForUpdate(
-                            $driver,
-                            $entity,
-                            $properties,
-                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $query->setDriver($driver)->execute($metadata, $this->connectionPool);
-                                $this->detach($entity);
-                            }
-                        );
-                    }
+            function (Metadata $metadata) use ($entity, $properties) {
+                $query = $metadata->generateQueryForUpdate(
+                    $metadata->getConnection($this->connectionPool),
+                    $this->queryFactory,
+                    $entity,
+                    $properties
                 );
+                $query->prepareExecute()->execute();
             }
         );
     }
 
+    /**
+     * Insert all applicable entities in database
+     *
+     * @param $oid
+     */
     protected function flushNew($oid)
     {
         $entity = $this->entities[$oid];
+
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($entity) {
-                $metadata->connectMaster(
-                    $this->connectionPool,
-                    function (DriverInterface $driver) use ($entity, $metadata) {
-                        $metadata->generateQueryForInsert(
-                            $driver,
-                            $entity,
-                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $id = $query->setDriver($driver)->execute($metadata, $this->connectionPool);
-                                $metadata->setEntityPropertyForAutoIncrement($entity, $id);
-                                $this->detach($entity);
-                                $this->manage($entity);
-                            }
-                        );
-                    }
+            function (Metadata $metadata) use ($entity) {
+                $connection = $metadata->getConnection($this->connectionPool);
+                $query = $metadata->generateQueryForInsert(
+                    $connection,
+                    $this->queryFactory,
+                    $entity
                 );
+                $query->prepareExecute()->execute();
+                $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
+                $this->manage($entity);
             }
         );
     }
 
+    /**
+     * Delete all flagged entities from database
+     *
+     * @param $oid
+     */
     protected function flushDelete($oid)
     {
         $entity = $this->entities[$oid];
+        $properties = [];
+        if (isset($this->entitiesChanged[$oid])) {
+            foreach ($this->entitiesChanged[$oid] as $property => $values) {
+                if ($values[0] !== $values[1]) {
+                    $properties[$property] = $values;
+                }
+            }
+        }
+
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function ($metadata) use ($entity) {
-                $metadata->connectMaster(
-                    $this->connectionPool,
-                    function (DriverInterface $driver) use ($entity, $metadata) {
-                        $metadata->generateQueryForDelete(
-                            $driver,
-                            $entity,
-                            function (PreparedQuery $query) use ($driver, $entity, $metadata) {
-                                $query->setDriver($driver)->execute($metadata, $this->connectionPool);
-                                $this->detach($entity);
-                            }
-                        );
-                    }
+            function (Metadata $metadata) use ($entity, $properties) {
+                $query = $metadata->generateQueryForDelete(
+                    $metadata->getConnection($this->connectionPool),
+                    $this->queryFactory,
+                    $properties,
+                    $entity
                 );
+                $query->prepareExecute()->execute();
+                $this->detach($entity);
             }
         );
     }

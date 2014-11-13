@@ -24,16 +24,16 @@
 
 namespace sample\src\model;
 
-use CCMBenchmark\Ting\Repository\MetadataFactoryInterface;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
-    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
+    public static function initMetadata()
     {
-        $metadata = $metadataFactory->get();
+        $metadata = new Metadata();
 
         $metadata->setEntity('sample\src\model\Country');
-        $metadata->setConnection('main');
+        $metadata->setConnectionName('main');
         $metadata->setDatabase('world');
         $metadata->setTable('t_country_cou');
 

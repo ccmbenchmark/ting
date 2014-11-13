@@ -24,41 +24,44 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 interface QueryInterface
 {
-    public function __construct($sql, array $params = null);
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     */
+    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null);
+
+    /**
+     * Execute a reading query (SELECT, SHOW, etc.)
+     * @param CollectionInterface $collection
+     */
+    public function query(CollectionInterface $collection = null);
+
+    /**
+     * Execute a writing query (UPDATE, INSERT, etc.)
+     * @return mixed
+     */
+    public function execute();
 
     /**
      * @param array $params
-     * @return $this
-     * @throws \InvalidArgumentException
+     * @return void
      */
     public function setParams(array $params);
 
     /**
-     * @param DriverInterface $driver
-     * @return $this
+     * @return int
      */
-    public function setDriver(DriverInterface $driver);
+    public function getInsertId();
 
     /**
-     * @param Metadata $metadata
-     * @param ConnectionPoolInterface $connectionPool
-     * @param CollectionInterface $collection
-     * @param null $connectionType
-     * @return mixed
+     * @return int
      */
-    public function execute(
-        Metadata $metadata,
-        ConnectionPoolInterface $connectionPool,
-        CollectionInterface $collection = null,
-        $connectionType = null
-    );
-
-    public function executeCallbackWithConnectionType(\Closure $callback);
+    public function getAffectedRows();
 }

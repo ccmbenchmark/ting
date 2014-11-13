@@ -26,8 +26,6 @@ namespace tests\fixtures\FakeDriver;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Query\QueryAbstract;
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
@@ -48,56 +46,96 @@ class Driver implements DriverInterface
 
     }
 
-    public function execute(
-        $sql,
-        $params = array(),
-        $queryType = QueryAbstract::TYPE_RESULT,
-        CollectionInterface $collection = null
-    ) {
-
+    /**
+     * @param string $sql
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return mixed
+     */
+    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    {
+        
     }
 
-    public function prepare(
-        $sql,
-        \Closure $callback,
-        $queryType = QueryAbstract::TYPE_RESULT,
-        StatementInterface $statement = null
-    ) {
-
+    /**
+     * @param string $sql
+     * @return StatementInterface
+     */
+    public function prepare($sql)
+    {
+        
     }
 
+    /**
+     * @param $field
+     * @return string
+     */
+    public function escapeField($field)
+    {
+        
+    }
+
+    /**
+     * @return int
+     */
+    public function getInsertId()
+    {
+        
+    }
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        
+    }
+
+    /**
+     * @param array $connectionConfig
+     * @param string $database
+     * @return string
+     */
+    public static function getConnectionKey(array $connectionConfig, $database)
+    {
+        
+    }
+
+    /**
+     * @param string $database
+     */
     public function setDatabase($database)
     {
-        $this->database = $database;
+        
     }
 
-    public function ifIsError(\Closure $callback)
+    /**
+     * @param callable $callback
+     */
+    public function ifIsError(callable $callback)
     {
-
+        
     }
 
-    public function ifIsNotConnected(\Closure $callback)
+    /**
+     * @param callable $callback
+     */
+    public function ifIsNotConnected(callable $callback)
     {
-
-    }
-
-    public function escapeFields($fields, \Closure $callback)
-    {
-
+        
     }
 
     public function startTransaction()
     {
-
+        
     }
 
     public function rollback()
     {
-
+        
     }
 
     public function commit()
     {
-
     }
 }

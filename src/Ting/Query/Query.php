@@ -24,33 +24,112 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\ConnectionPoolInterface;
-use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
-class Query extends QueryAbstract implements QueryInterface
+class Query implements QueryInterface
 {
 
     /**
-     * @param CollectionInterface $collection
-     * @param ConnectionPoolInterface $connectionPool
-     * @param Metadata $metadata
-     * @param null $connectionType
-     * @return mixed
+     * @var string|null
      */
-    public function execute(
-        Metadata $metadata,
-        ConnectionPoolInterface $connectionPool,
-        CollectionInterface $collection = null,
-        $connectionType = null
-    ) {
-        if ($collection === null && $this->queryType == QueryAbstract::TYPE_RESULT) {
-            $collection = new Collection();
+    protected $sql = null;
+
+    /**
+     * @var Connection|null
+     */
+    protected $connection = null;
+
+    /**
+     * @var CollectionFactoryInterface|null
+     */
+    protected $collectionFactory = null;
+
+    /**
+     * @var bool
+     */
+    protected $selectMaster = false;
+
+    /**
+     * @var array
+     */
+    protected $params = [];
+
+    /**
+     * @param string $sql
+     * @param Connection $connection
+     * @param CollectionFactoryInterface $collectionFactory
+     */
+    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
+    {
+        $this->sql               = $sql;
+        $this->connection        = $connection;
+        $this->collectionFactory = $collectionFactory;
+        return $this;
+    }
+
+    /**
+     * Force the query to be executed on the master connection. Applicable only on a reading query.
+     * @param bool $value
+     * @return void
+     */
+    public function selectMaster($value)
+    {
+        $this->selectMaster = (bool) $value;
+    }
+
+    /**
+     * @param array $params
+     * @return $this
+     */
+    public function setParams(array $params)
+    {
+        $this->params = $params;
+
+        return $this;
+    }
+
+    /**
+     * Execute a reading query
+     * @param CollectionInterface $collection
+     * @return CollectionInterface
+     */
+    public function query(CollectionInterface $collection = null)
+    {
+        if ($collection === null) {
+            $collection = $this->collectionFactory->get();
         }
 
-        $this->initConnection($connectionPool, $metadata, $connectionType);
+        if ($this->selectMaster === true) {
+            return $this->connection->master()->execute($this->sql, $this->params, $collection);
+        } else {
+            return $this->connection->slave()->execute($this->sql, $this->params, $collection);
+        }
+    }
 
-        return $this->driver->execute($this->sql, $this->params, $this->queryType, $collection);
+    /**
+     * Execute a writing query
+     * @return mixed
+     */
+    public function execute()
+    {
+        return $this->connection->master()->execute($this->sql, $this->params);
+    }
+
+    /**
+     * @return int
+     */
+    public function getInsertId()
+    {
+        return $this->connection->master()->getInsertId();
+    }
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        return $this->connection->master()->getAffectedRows();
     }
 }

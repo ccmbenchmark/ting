@@ -24,8 +24,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Driver\ResultInterface;
-
 interface CollectionInterface
 {
     public function set(\Iterator $result);
@@ -42,4 +40,30 @@ interface CollectionInterface
     public function next();
 
     public function valid();
+
+    public function count();
+
+    public function add($data, $key = null);
+
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public function setFromCache($value);
+
+    /**
+     * @return bool
+     */
+    public function isFromCache();
+
+    /**
+     * @return array
+     */
+    public function toArray();
+
+    /**
+     * @param array $rows
+     * @return void
+     */
+    public function fromArray(array $rows);
 }

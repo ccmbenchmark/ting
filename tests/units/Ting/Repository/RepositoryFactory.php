@@ -36,7 +36,7 @@ class RepositoryFactory extends atoum
             ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
                 $services->get('ConnectionPool'),
                 $services->get('MetadataRepository'),
-                $services->get('MetadataFactory'),
+                $services->get('QueryFactory'),
                 $services->get('CollectionFactory'),
                 $services->get('UnitOfWork'),
                 $services->get('Cache')

@@ -28,6 +28,15 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
 {
-    public function execute($statement, $params, $paramsOrder, CollectionInterface $collection = null);
+    /**
+     * @param array $params
+     * @param CollectionInterface $collection
+     * @return mixed
+     */
+    public function execute(array $params, CollectionInterface $collection = null);
+
+    /**
+     * @return void
+     */
     public function close();
 }

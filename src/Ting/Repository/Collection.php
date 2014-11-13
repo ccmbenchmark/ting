@@ -24,21 +24,53 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Driver\ResultInterface;
-
 class Collection implements CollectionInterface, \Iterator
 {
 
-    protected $rows     = [];
+    /**
+     * @var array
+     */
+    protected $rows = [];
+
+    /**
+     * @var HydratorInterface|null
+     */
     protected $hydrator = null;
 
+    /**
+     * @var bool
+     */
+    protected $fromCache = false;
+
+    /**
+     * @var bool
+     */
+    protected $isCacheable = false;
+
+    /**
+     * @var array
+     */
+    protected $internalRows = [];
+
+    /**
+     * @param HydratorInterface $hydrator
+     */
     public function __construct(HydratorInterface $hydrator = null)
     {
         $this->hydrator = $hydrator;
     }
 
+    /**
+     * Fill collection from iterator
+     * @param \Iterator $result
+     * @return void
+     */
     public function set(\Iterator $result)
     {
+        if ($this->isCacheable === true) {
+            $this->internalRows = iterator_to_array($result);
+        }
+
         foreach ($result as $row) {
             if ($this->hydrator === null) {
                 $data = [];
@@ -52,6 +84,12 @@ class Collection implements CollectionInterface, \Iterator
         }
     }
 
+    /**
+     * Add a row in the collection
+     * @param mixed $data
+     * @param string|null $key
+     * @return void
+     */
     public function add($data, $key = null)
     {
         if ($key === null) {
@@ -62,7 +100,46 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
+     * @param bool $value
+     * @return void
+     */
+    public function setFromCache($value)
+    {
+        $this->fromCache   = (bool) $value;
+        $this->isCacheable = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFromCache()
+    {
+        return $this->fromCache;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->internalRows;
+    }
+
+    /**
+     * @param array $rows
+     * @return void
+     */
+    public function fromArray(array $rows)
+    {
+        $this->set(new \ArrayIterator($rows));
+    }
+
+    /**
      * Iterator
+     */
+
+    /**
+     * @return $this
      */
     public function rewind()
     {
@@ -70,21 +147,33 @@ class Collection implements CollectionInterface, \Iterator
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function current()
     {
         return current($this->rows);
     }
 
+    /**
+     * @return mixed
+     */
     public function key()
     {
         return key($this->rows);
     }
 
+    /**
+     * @return mixed
+     */
     public function next()
     {
         return next($this->rows);
     }
 
+    /**
+     * @return bool
+     */
     public function valid()
     {
         if (current($this->rows) === false) {
@@ -92,5 +181,13 @@ class Collection implements CollectionInterface, \Iterator
         }
 
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->rows);
     }
 }

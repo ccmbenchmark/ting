@@ -24,10 +24,8 @@
 
 namespace CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
-use CCMBenchmark\Ting\Query\QueryAbstract;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
@@ -38,7 +36,15 @@ class Statement implements StatementInterface
     protected $queryType     = null;
     protected $query         = null;
 
-
+    /**
+     * @param       $statementName
+     * @param array $paramsOrder
+     */
+    public function __construct($statementName, array $paramsOrder)
+    {
+        $this->statementName = $statementName;
+        $this->paramsOrder   = $paramsOrder;
+    }
     /**
      * @param $connection
      * @return $this
@@ -62,70 +68,42 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param $type
-     * @return $this
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * Execute the actual statement with the given parameters
+     * @param array               $params
+     * @param CollectionInterface $collection
+     * @return bool|mixed
+     * @throws QueryException
      */
-    public function setQueryType($type)
+    public function execute(array $params, CollectionInterface $collection = null)
     {
-        if (
-            in_array(
-                $type,
-                array(QueryAbstract::TYPE_RESULT, QueryAbstract::TYPE_AFFECTED, QueryAbstract::TYPE_INSERT)
-            ) === false
-        ) {
-            throw new Exception('setQueryType should use one of constant Statement::TYPE_*');
-        }
-
-        $this->queryType = $type;
-
-        return $this;
-    }
-
-    /**
-     * @param $statementName
-     * @param $params
-     * @param $paramsOrder
-     * @param \CCMBenchmark\Ting\Repository\Collection $collection
-     * @return bool|int
-     */
-    public function execute($statementName, $params, $paramsOrder, CollectionInterface $collection = null)
-    {
-        $this->statementName = $statementName;
         $values = array();
-        foreach (array_keys($paramsOrder) as $key) {
+        foreach (array_keys($this->paramsOrder) as $key) {
             if ($params[$key] instanceof \DateTime) {
                 $params[$key] = $params[$key]->format('Y-m-d H:i:s');
             }
             $values[] = &$params[$key];
         }
 
-        $result = pg_execute($this->connection, $statementName, $values);
-        return $this->setCollectionWithResult($result, $collection);
+        $result = pg_execute($this->connection, $this->statementName, $values);
+
+        if ($result === false) {
+            throw new QueryException(pg_result_error($this->connection));
+        }
+
+        if ($collection !== null) {
+            return $this->setCollectionWithResult($result, $collection);
+        }
+
+        return true;
     }
 
     /**
      * @param $resultResource
      * @param CollectionInterface $collection
      * @return bool
-     * @throws QueryException
      */
     public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
     {
-        if ($collection === null) { // update or insert
-            if ($this->queryType === QueryAbstract::TYPE_INSERT) {
-                $resultResource = pg_query($this->connection, 'SELECT lastval()');
-                $row = pg_fetch_row($resultResource);
-                return $row[0];
-            }
-
-            return pg_affected_rows($resultResource);
-        }
-
-        if ($resultResource === false) {
-            throw new QueryException(pg_result_error($this->connection));
-        }
-
         $result = new Result($resultResource);
         $result->setQuery($this->query);
 
@@ -134,14 +112,10 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * Deallocate the current prepared statement
      */
     public function close()
     {
-        if ($this->statementName === null) {
-            throw new Exception('statement->close can\'t be called before statement->execute');
-        }
-
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
     }
 }

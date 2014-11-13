@@ -26,14 +26,10 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
-use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\ContainerInterface;
-use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\Query\CachedQuery;
-use CCMBenchmark\Ting\Query\Query;
-use CCMBenchmark\Ting\Query\QueryAbstract;
+use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class Repository
@@ -51,7 +47,7 @@ class Repository
     /**
      * @var \CCMBenchmark\Ting\ConnectionPoolInterface
      */
-    protected $connectionPool;
+    protected $connection;
 
     /**
      * @var UnitOfWork
@@ -64,91 +60,136 @@ class Repository
      */
     protected $cache;
 
+    /**
+     * @param ConnectionPool $connectionPool
+     * @param MetadataRepository $metadataRepository
+     * @param QueryFactory $queryFactory
+     * @param CollectionFactory $collectionFactory
+     * @param CacheInterface $cache
+     * @param UnitOfWork $unitOfWork
+     */
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
-        MetadataFactoryInterface $metadataFactory,
+        QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
-        UnitOfWork $unitOfWork,
-        CacheInterface $cache
+        CacheInterface $cache,
+        UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
+        $this->queryFactory       = $queryFactory;
         $this->collectionFactory  = $collectionFactory;
-        $this->unitOfWork         = $unitOfWork;
         $this->cache              = $cache;
+        $this->unitOfWork         = $unitOfWork;
 
-        $class = get_class($this);
-        $this->metadata = $class::initMetadata($metadataFactory);
+        $class            = get_class($this);
+        $this->metadata   = $class::initMetadata();
+        $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
     /**
-     * @param $primariesKeyValue array|int
-     * @param Collection $collection
-     * @param int $connectionType
-     * @return mixed
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Query\Query
      */
-    public function get(
-        $primariesKeyValue,
-        Collection $collection = null,
-        $connectionType = ConnectionPoolInterface::CONNECTION_SLAVE
-    ) {
-        if ($collection === null) {
-            $collection = $this->collectionFactory->get();
-        }
-
-        $callback = function (DriverInterface $driver) use ($collection, $primariesKeyValue) {
-            $this->metadata->generateQueryForPrimary(
-                $driver,
-                $primariesKeyValue,
-                function (Query $query) use ($driver, $collection) {
-                    $query->setDriver($driver);
-                    $this->execute($query, $collection);
-                }
-            );
-        };
-
-        if ($connectionType === ConnectionPoolInterface::CONNECTION_SLAVE || $connectionType === null) {
-            $this->metadata->connectSlave(
-                $this->connectionPool,
-                $callback
-            );
-        } else {
-            $this->metadata->connectMaster(
-                $this->connectionPool,
-                $callback
-            );
-        }
-        $collection->rewind();
-
-        return current($collection->current());
-    }
-
-    public function executeFromCache(CachedQuery $query, $ttl, $version = 0, CachedCollection $collection = null)
+    public function getQuery($sql)
     {
-        if ($collection === null) {
-            $collection = $this->collectionFactory->getCollectionForCache();
-        }
-
-        $query
-            ->setTtl($ttl)
-            ->setVersion($version)
-            ->setCacheDriver($this->cache);
-        return $this->execute($query, $collection);
+        return $this->queryFactory->get($sql, $this->connection, $this->collectionFactory);
     }
 
-    public function execute(QueryAbstract $query, CollectionInterface $collection = null, $connectionType = null)
+    /**
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Query\PreparedQuery
+     */
+    public function getPreparedQuery($sql)
     {
-        if ($collection === null) {
-            $collection = $this->collectionFactory->get();
-        }
-
-        $query->execute($this->metadata, $this->connectionPool, $collection, $connectionType);
-        return $collection;
+        return $this->queryFactory->getPrepared($sql, $this->connection, $this->collectionFactory);
     }
 
-    public static function initMetadata(MetadataFactoryInterface $metadataFactory)
+    /**
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Query\Cached\Query
+     */
+    public function getCachedQuery($sql)
+    {
+        return $this->queryFactory->getCached(
+            $sql,
+            $this->connection,
+            $this->cache,
+            $this->collectionFactory
+        );
+    }
+
+    /**
+     * @param string $sql
+     * @return \CCMBenchmark\Ting\Query\Cached\PreparedQuery
+     */
+    public function getCachedPreparedQuery($sql)
+    {
+        return $this->queryFactory->getCachedPrepared(
+            $sql,
+            $this->connection,
+            $this->cache,
+            $this->collectionFactory
+        );
+    }
+
+    /**
+     * Retrieve one object from database
+     *
+     * @param $primariesKeyValue associative array column => value or if one primary : just the value
+     * @param bool $forceMaster
+     * @return mixed|null
+     */
+    public function get($primariesKeyValue, $forceMaster = false)
+    {
+        $query = $this->metadata->getByPrimaries(
+            $this->connection,
+            $this->queryFactory,
+            $this->collectionFactory,
+            $primariesKeyValue,
+            (bool)$forceMaster
+        );
+
+        if ($forceMaster) {
+            $query->selectMaster($forceMaster);
+        }
+
+        $collection = $query->query();
+        if ($collection->count() === 0) {
+            return null;
+        }
+        $entity = $collection->current();
+
+        return current($entity);
+    }
+
+    /**
+     * Save an entity in database (update or insert)
+     *
+     * @param $entity
+     */
+    public function save($entity)
+    {
+        $this->unitOfWork->save($entity)->flush();
+    }
+
+    /**
+     * Delete an entity from database
+     *
+     * @param $entity
+     */
+    public function delete($entity)
+    {
+        $this->unitOfWork->delete($entity)->flush();
+    }
+
+    /**
+     * @throws Exception
+     * @return \CCMBenchmark\Ting\Repository\Metadata
+     */
+    public static function initMetadata()
     {
         throw new Exception('You should add initMetadata in your class repository');
 
@@ -177,33 +218,33 @@ class Repository
          */
     }
 
+    /**
+     * Start a transaction against the master connection
+     *
+     * @return void
+     */
     public function startTransaction()
     {
-        $this->metadata->connectMaster(
-            $this->connectionPool,
-            function (DriverInterface $driver) {
-                $driver->startTransaction();
-            }
-        );
+        $this->connection->master()->startTransaction();
     }
 
+    /**
+     * Rollback the transaction opened on the master connection
+     *
+     * @return void
+     */
     public function rollback()
     {
-        $this->metadata->connectMaster(
-            $this->connectionPool,
-            function (DriverInterface $driver) {
-                $driver->rollback();
-            }
-        );
+        $this->connection->master()->rollback();
     }
 
+    /**
+     * Commit the transaction opened on the master connection
+     *
+     * @return void
+     */
     public function commit()
     {
-        $this->metadata->connectMaster(
-            $this->connectionPool,
-            function (DriverInterface $driver) {
-                $driver->commit();
-            }
-        );
+        $this->connection->master()->commit();
     }
 }

@@ -44,9 +44,8 @@ class Statement extends atoum
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
-            ->then($statement->execute($driverStatement, $params, $paramsOrder, $collection))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, $paramsOrder))
+            ->then($statement->execute($params, $collection))
             ->mock($driverStatement)
                 ->call('bind_param')
                     ->withIdenticalArguments(
@@ -67,9 +66,8 @@ class Statement extends atoum
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
-            ->then($statement->execute($driverStatement, array(), array(), $collection))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, array()))
+            ->then($statement->execute(array(), $collection))
             ->mock($driverStatement)
                 ->call('execute')
                     ->once();
@@ -117,9 +115,8 @@ class Statement extends atoum
         };
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
-            ->then($statement->setCollectionWithResult($driverStatement, $collection))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->then($statement->setCollectionWithResult($result, $collection))
             ->mock($collection)
                 ->call('set')
                     ->once()
@@ -127,49 +124,7 @@ class Statement extends atoum
                 ->isCloneOf(new \CCMBenchmark\Ting\Driver\Mysqli\Result($result));
     }
 
-    public function testSetCollectionWithResultWithQueryTypeInsertShouldReturnId()
-    {
-        $driverStatement = new \mock\Fake\DriverStatement();
-        $driverStatement->insert_id = 123;
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_INSERT))
-            ->integer($statement->setCollectionWithResult($driverStatement))
-                ->isIdenticalTo(123);
-    }
-
-    public function testSetCollectionWithResultWithoutCollectionShouldReturnAffectedRows()
-    {
-        $driverStatement = new \mock\Fake\DriverStatement();
-        $driverStatement->affected_rows = 321;
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->integer($statement->setCollectionWithResult($driverStatement))
-                ->isIdenticalTo(321);
-    }
-
-    public function testSetCollectionWithResultWithoutCollectionShouldReturnFalse()
-    {
-        $driverStatement = new \mock\Fake\DriverStatement();
-        $driverStatement->affected_rows = null;
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->boolean($statement->setCollectionWithResult($driverStatement))
-                ->isFalse();
-
-        $driverStatement->affected_rows = -1;
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->boolean($statement->setCollectionWithResult($driverStatement))
-                ->isFalse();
-    }
-
-    public function testSetCollectionShouldRaiseQueryException()
+    public function testExecuteShouldRaiseQueryExceptionOnError()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
@@ -179,12 +134,24 @@ class Statement extends atoum
         $this->calling($driverStatement)->get_result = false;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
             ->exception(function () use ($statement, $driverStatement, $collection) {
-                $statement->setCollectionWithResult($driverStatement, $collection);
+                $statement->execute([], $collection);
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+    }
+
+    public function testExecuteShouldReturnTrueIfNoError()
+    {
+        $driverStatement = new \mock\Fake\DriverStatement();
+
+        $this->calling($driverStatement)->get_result = true;
+
+        $this
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->boolean($statement->execute([]))
+                ->isTrue()
+        ;
     }
 
     public function testCloseShouldCallDriverStatementClose()
@@ -195,37 +162,11 @@ class Statement extends atoum
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->then($statement->setQueryType(\CCMBenchmark\Ting\Query\QueryAbstract::TYPE_RESULT))
-            ->then($statement->execute($driverStatement, array(), array(), $collection))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->then($statement->execute(array(), $collection))
             ->then($statement->close())
             ->mock($driverStatement)
                 ->call('close')
                     ->once();
-    }
-
-    public function testCloseBeforeExecuteShouldRaiseException()
-    {
-        $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-
-        $this->calling($driverStatement)->get_result = new \mock\Iterator();
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->exception(function () use ($statement) {
-                $statement->close();
-            })
-                ->hasMessage('statement->close can\'t be called before statement->execute');
-    }
-
-    public function testSetQueryTypeWithInvalidTypeShouldRaisException()
-    {
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement())
-            ->exception(function () use ($statement) {
-                $statement->setQueryType(PHP_INT_MAX);
-            })
-                ->hasMessage('setQueryType should use one of constant QueryAbstract::TYPE_*');
     }
 }

@@ -29,18 +29,19 @@ class CollectionFactory implements CollectionFactoryInterface
 
     protected $hydrator = null;
 
+    /**
+     * @param HydratorInterface $hydrator
+     */
     public function __construct(HydratorInterface $hydrator = null)
     {
         $this->hydrator = $hydrator;
     }
 
+    /**
+     * @return Collection
+     */
     public function get()
     {
         return new Collection($this->hydrator);
-    }
-
-    public function getCollectionForCache()
-    {
-        return new CachedCollection($this->hydrator);
     }
 }

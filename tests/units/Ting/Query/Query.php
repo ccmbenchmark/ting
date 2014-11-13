@@ -24,50 +24,139 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\Query\QueryFactory;
-use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
 class Query extends atoum
 {
-    public function testExecuteShouldReturnCollection()
+    public function testSetParamsShouldReturnThis()
     {
-        $mockDriver       = new \mock\Fake\Mysqli();
-        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['truc'], ['bouh']]);
-
-        $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
-            $stdClass = new \stdClass();
-            $stdClass->name     = 'prenom';
-            $stdClass->orgname  = 'firstname';
-            $stdClass->table    = 'bouh';
-            $stdClass->orgtable = 'T_BOUH_BOO';
-            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
-            $fields[] = $stdClass;
-
-            return $fields;
-        };
-
-        $this->calling($mockDriver)->query = $mockMysqliResult;
-
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->connect = true;
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\Query('SELECT', $mockConnection))
+            ->object($query->setParams([]))
+                ->isIdenticalTo($query)
+        ;
+    }
+
+    public function testExecuteShouldCallExecuteOnMasterDriver()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+
+        $this->calling($mockConnection)->master = $mockDriver;
+        $this->calling($mockDriver)->execute = true;
 
         $this
-            ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->and($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->and($query = new \CCMBenchmark\Ting\Query\Query('SELECT * from Bouh'))
-            ->and($query->setDriver($driver))
-            ->and($query->execute(new Metadata(new QueryFactory()), $mockConnectionPool, $collection))
-            ->and($collection->rewind())
-            ->array($collection->current())
-                ->isIdenticalTo([
-                    'prenom' => 'truc'
-                ])
-            ->and($collection->next())
-            ->array($collection->current())
-                ->isIdenticalTo([
-                    'prenom' => 'bouh'
-                ]);
+            ->if($query = new \CCMBenchmark\Ting\Query\Query('INSERT', $mockConnection))
+            ->then($query->execute())
+                ->mock($mockConnection)
+                    ->call('master')
+                        ->once()
+                ->mock($mockDriver)
+                    ->call('execute')
+                        ->once()
+        ;
+    }
+
+    public function testQueryShouldCallExecuteOnSlaveDriver()
+    {
+
+        $mockConnectionPool     = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver             = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection         = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockCollectionFactory  = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+
+        $this->calling($mockConnection)->slave = $mockDriver;
+        $this->calling($mockDriver)->execute = true;
+        $this->calling($mockCollectionFactory)->get = new Collection();
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\Query('SELECT', $mockConnection, $mockCollectionFactory))
+            ->then($query->query())
+                ->mock($mockConnection)
+                    ->call('slave')
+                        ->once()
+                ->mock($mockDriver)
+                    ->call('execute')
+                        ->once()
+                ->mock($mockCollectionFactory)
+                    ->call('get')
+                        ->once()
+        ;
+    }
+
+    public function testQueryShouldCallExecuteOnMasterDriver()
+    {
+
+        $mockConnectionPool     = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver             = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection         = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockCollectionFactory  = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+
+        $this->calling($mockConnection)->master = $mockDriver;
+        $this->calling($mockDriver)->execute = true;
+        $this->calling($mockCollectionFactory)->get = new Collection();
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\Query('SELECT', $mockConnection, $mockCollectionFactory))
+            ->then($query->selectMaster(true))
+            ->then($query->query())
+                ->mock($mockConnection)
+                    ->call('master')
+                        ->once()
+                ->mock($mockDriver)
+                    ->call('execute')
+                        ->once()
+                ->mock($mockCollectionFactory)
+                    ->call('get')
+                        ->once()
+        ;
+    }
+
+    public function testGetInsertIdShouldCallMasterDriver()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+
+        $this->calling($mockConnection)->master = $mockDriver;
+        $this->calling($mockDriver)->getInsertId = 1;
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\Query('INSERT', $mockConnection))
+            ->integer($query->getInsertId())
+                ->isIdenticalTo(1)
+            ->mock($mockConnection)
+                ->call('master')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('getInsertId')
+                    ->once()
+        ;
+    }
+
+    public function testGetAffectedRowsShouldCallMasterDriver()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+
+        $this->calling($mockConnection)->master = $mockDriver;
+        $this->calling($mockDriver)->getAffectedRows = 4;
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\Query('INSERT', $mockConnection))
+            ->integer($query->getAffectedRows())
+                ->isIdenticalTo(4)
+            ->mock($mockConnection)
+                ->call('master')
+                    ->once()
+            ->mock($mockDriver)
+                ->call('getAffectedRows')
+                    ->once()
+        ;
     }
 }

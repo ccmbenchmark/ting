@@ -33,12 +33,22 @@ class Hydrator implements HydratorInterface
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
 
+    /**
+     * @param MetadataRepository $metadaRepository
+     * @param UnitOfWork         $unitOfWork
+     */
     public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork)
     {
         $this->metadataRepository = $metadaRepository;
         $this->unitOfWork         = $unitOfWork;
     }
 
+    /**
+     * Hydrate one object from values
+     * @param array               $columns
+     * @param CollectionInterface $collection
+     * @return array
+     */
     public function hydrate(array $columns, CollectionInterface $collection)
     {
         $result       = array();
