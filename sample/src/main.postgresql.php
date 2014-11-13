@@ -25,7 +25,6 @@
 namespace sample\src;
 
 // ting autoloader
-use CCMBenchmark\Ting\Query\Query;
 
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader

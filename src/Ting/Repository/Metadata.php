@@ -28,7 +28,6 @@ use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\Generator;
-use CCMBenchmark\Ting\Query\GeneratorFactory;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 

@@ -24,9 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Query;
 
-use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Repository\Collection;
-use CCMBenchmark\Ting\Repository\Metadata;
 use mageekguy\atoum;
 
 class PreparedQuery extends atoum

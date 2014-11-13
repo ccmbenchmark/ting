@@ -26,9 +26,7 @@ namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPool;
-use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Repository\CollectionFactory;
-use CCMBenchmark\Ting\Repository\MetadataFactory as MetadataFactoryOriginal;
 use mageekguy\atoum;
 use tests\fixtures\model\Bouh;
 use tests\fixtures\model\BouhRepository;

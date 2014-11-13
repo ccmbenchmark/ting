@@ -25,11 +25,7 @@
 namespace sample\src;
 
 // ting autoloader
-use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Exception;
-use CCMBenchmark\Ting\Query\CachedQuery;
-use CCMBenchmark\Ting\Query\PreparedQuery;
-use sample\src\model\City;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
