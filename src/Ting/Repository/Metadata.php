@@ -229,14 +229,10 @@ class Metadata
     {
         if (is_array($originalValue) === false) {
             $primariesKeyValue = [];
-            $count = 0;
-            foreach ($this->fields as $field) {
-                if (isset($field['primary']) === true && $field['primary'] === true) {
-                    $count++;
-                    $primariesKeyValue[$field['columnName']] = $originalValue;
-                }
-            }
-            if ($count === 1) {
+            if (count($this->primaries) == 1) {
+                reset($this->primaries);
+                $columnName = key($this->primaries);
+                $primariesKeyValue[$columnName] = $originalValue;
                 return $primariesKeyValue;
             } else {
                 throw new \CCMBenchmark\Ting\Exception('Incorrect format for primaries');
