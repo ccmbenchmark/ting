@@ -1,5 +1,6 @@
 {
     "name": "ccmbenchmark/ting",
+    "description": "Ting : a lightweight datamapper",
     "type": "library",
     "license": "Apache-2.0",
     "require": {
@@ -11,7 +12,7 @@
     },
     "autoload": {
         "psr-4" : {
-            "CCMBenchmark\\": "src/"
+            "CCMBenchmark\\Ting\\": "src/Ting/"
         }
     }
 }
