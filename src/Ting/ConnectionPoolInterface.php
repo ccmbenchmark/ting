@@ -25,7 +25,7 @@
 
 namespace CCMBenchmark\Ting;
 
-use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
 interface ConnectionPoolInterface
 {

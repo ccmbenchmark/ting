@@ -27,7 +27,7 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
-use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface

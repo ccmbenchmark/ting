@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
-use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
