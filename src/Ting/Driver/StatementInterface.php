@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
@@ -39,4 +40,10 @@ interface StatementInterface
      * @return void
      */
     public function close();
+
+    /**
+     * @param DriverLoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(DriverLoggerInterface $logger = null);
 }
