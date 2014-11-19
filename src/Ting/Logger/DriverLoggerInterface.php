@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Logger\Driver;
+namespace CCMBenchmark\Ting\Logger;
 
 interface DriverLoggerInterface
 {

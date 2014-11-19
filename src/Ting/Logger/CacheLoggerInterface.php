@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Logger\Cache;
+namespace CCMBenchmark\Ting\Logger;
 
 
 interface CacheLoggerInterface
