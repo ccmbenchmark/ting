@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
+use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
@@ -41,6 +42,11 @@ class Statement implements StatementInterface
      * @var array|null
      */
     protected $paramsOrder = null;
+
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger = null;
 
     /**
      * @param \mysqli_stmt|Object $driverStatement
@@ -102,6 +108,16 @@ class Statement implements StatementInterface
 
         return true;
     }
+
+    /**
+     * @param DriverLoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
 
     /**
      * @param \mysqli_result $result

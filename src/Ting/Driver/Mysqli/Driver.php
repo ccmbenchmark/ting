@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
@@ -56,6 +57,11 @@ class Driver implements DriverInterface
      * @var bool
      */
     protected $transactionOpened = false;
+
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger = null;
 
 
     /**
@@ -112,6 +118,15 @@ class Driver implements DriverInterface
 
         return $this;
     }
+
+    /**
+     * @param DriverLoggerInterface $logger
+     */
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
 
     /**
      * @param string $database
@@ -184,7 +199,16 @@ class Driver implements DriverInterface
             $sql
         );
 
+
+        if ($this->logger !== null) {
+            $this->logger->startQuery($sql, $params);
+        }
+
         $result = $this->connection->query($sql);
+
+        if ($this->logger !== null) {
+            $this->logger->stopQuery();
+        }
 
         if ($result === false) {
             throw new QueryException($this->connection->error, $this->connection->errno);
@@ -237,6 +261,7 @@ class Driver implements DriverInterface
         }
 
         $statement = new Statement($driverStatement, $paramsOrder);
+        $statement->setLogger($this->logger);
 
         return $statement;
     }
