@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Logger\Driver\DriverLoggerInterface;
 
 class ConnectionPool implements ConnectionPoolInterface
 {
@@ -43,6 +44,19 @@ class ConnectionPool implements ConnectionPoolInterface
      * @var array
      */
     protected $connections = array();
+
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger = null;
+
+    /**
+     * @param DriverLoggerInterface $logger
+     */
+    public function __construct(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
 
     /**
      * @param array $config
@@ -122,6 +136,11 @@ class ConnectionPool implements ConnectionPoolInterface
 
         if (isset($this->connections[$connectionKey]) === false) {
             $driver = new $driverClass();
+
+            if ($this->logger !== null) {
+                $driver->setLogger($this->logger);
+            }
+
             $driver->connect(
                 $config['host'],
                 $config['user'],
