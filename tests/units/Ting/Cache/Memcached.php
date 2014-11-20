@@ -183,18 +183,6 @@ class Memcached extends atoum
         ;
     }
 
-    public function testConnectWithoutConnectionShouldRaiseError()
-    {
-        $this
-            ->if($memcached = new \CCMBenchmark\Ting\Cache\Memcached())
-            ->then($memcached->setConfig(['servers' => ['Bouh']]))
-            ->exception(function () use ($memcached) {
-                $memcached->get('Bouh');
-            })
-                ->hasMessage('Must setConnection priory to use Memcached')
-        ;
-    }
-
     public function testConnectShouldCallMetadataGetServerListResetServerListAndAddServers()
     {
         $this
