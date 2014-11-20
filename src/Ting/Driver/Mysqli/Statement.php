@@ -126,8 +126,10 @@ class Statement implements StatementInterface
      */
     public function setLogger(DriverLoggerInterface $logger = null)
     {
-        $this->logger = $logger;
-        $this->objectHash = spl_object_hash($this->driverStatement);
+        if ($logger !== null) {
+            $this->logger = $logger;
+            $this->objectHash = spl_object_hash($this->driverStatement);
+        }
     }
 
 
