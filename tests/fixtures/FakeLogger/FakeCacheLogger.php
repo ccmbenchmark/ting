@@ -22,11 +22,33 @@
  *
  **********************************************************************/
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/fixtures/model/Bouh.php';
-require __DIR__ . '/fixtures/model/BouhRepository.php';
-require __DIR__ . '/fixtures/FakeCache/Memcached.php';
-require __DIR__ . '/fixtures/FakeDriver/Driver.php';
-require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
-require __DIR__ . '/fixtures/FakeLogger/FakeDriverLogger.php';
-require __DIR__ . '/fixtures/FakeLogger/FakeCacheLogger.php';
+namespace tests\fixtures\FakeLogger;
+
+
+use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
+
+class FakeCacheLogger implements CacheLoggerInterface
+{
+    /**
+     * Log an operation
+     *
+     * @param $operation string one of defined constant starting with OPERATION_
+     * @param $keys array|string impacted keys by the operation
+     * @return void
+     */
+    public function startOperation($operation, $keys)
+    {
+
+    }
+
+    /**
+     * Flag the previously operation as stopped. Useful for time logging.
+     *
+     * @param $miss boolean tells if the last get was a miss if it was a read operation
+     * @return void
+     */
+    public function stopOperation($miss = false)
+    {
+
+    }
+}
