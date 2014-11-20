@@ -47,11 +47,11 @@ class Memcached implements CacheInterface
      */
     public function getPersistentId()
     {
-        if (isset($this->config['persistentId']) === false) {
+        if (isset($this->config['persistent_id']) === false) {
             return null;
         }
 
-        return $this->config['persistentId'];
+        return $this->config['persistent_id'];
     }
 
     private function connect()

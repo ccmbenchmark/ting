@@ -226,10 +226,10 @@ class Memcached extends atoum
         ;
     }
 
-    public function testGetPersistentIdShouldReturnBouhValue()
+    public function testGetPersistentIdShouldReturnConfiguredValue()
     {
         $this
-            ->if($this->memcached->setConfig(['persistentId' => 'Bouh']))
+            ->if($this->memcached->setConfig(['persistent_id' => 'Bouh']))
             ->string($this->memcached->getPersistentId())
                 ->isIdenticalTo('Bouh')
         ;
