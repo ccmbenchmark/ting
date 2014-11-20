@@ -152,7 +152,7 @@ class Repository
             (bool)$forceMaster
         );
 
-        if ($forceMaster) {
+        if ($forceMaster === true) {
             $query->selectMaster($forceMaster);
         }
 
