@@ -24,6 +24,8 @@
 
 namespace CCMBenchmark\Ting\Cache;
 
+use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
+
 interface CacheInterface
 {
     /**
@@ -34,7 +36,16 @@ interface CacheInterface
     public function setConfig(array $config);
 
     /**
+     * Add the ability to log operations
+     *
+     * @param CacheLoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(CacheLoggerInterface $logger = null);
+
+    /**
      * Retrieve one key
+     *
      * @param $key
      * @return mixed
      */
@@ -42,6 +53,7 @@ interface CacheInterface
 
     /**
      * Retrieve multiple keys
+     *
      * @param array $keys
      * @return mixed
      */
@@ -49,6 +61,7 @@ interface CacheInterface
 
     /**
      * Store 1 key / value. TTL of 0 means infinite
+     *
      * @param $key
      * @param $value
      * @param $ttl
@@ -58,6 +71,7 @@ interface CacheInterface
 
     /**
      * Store multiple key values (associative array). TTL of 0 means infinite
+     *
      * @param array $values
      * @param $ttl
      * @return mixed
@@ -74,6 +88,7 @@ interface CacheInterface
 
     /**
      * Delete multiple keys from the storage
+     *
      * @param array $keys
      * @return mixed
      */

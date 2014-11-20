@@ -25,12 +25,17 @@
 namespace CCMBenchmark\Ting\Cache;
 
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
 
 class Memcached implements CacheInterface
 {
     protected $connected    = false;
     protected $connection   = null;
     protected $config       = [];
+    /**
+     * @var CacheLoggerInterface|null
+     */
+    protected $logger       = null;
 
     public function setConfig(array $config)
     {
@@ -41,6 +46,45 @@ class Memcached implements CacheInterface
     {
         $this->connection = $connection;
     }
+
+    /**
+     * Add the ability to log operations
+     *
+     * @param CacheLoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(CacheLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Logs an operation with $this->logger if provided
+     *
+     * @param $type
+     * @param $operation
+     * @return void
+     */
+    protected function log($type, $operation)
+    {
+        if ($this->logger !== null) {
+            $this->logger->startOperation($type, $operation);
+        }
+    }
+
+    /**
+     * Flag the last operation logged as stopped
+     *
+     * @param $miss boolean optional : required if last operation was a read
+     * @return void
+     */
+    protected function stopLog($miss = false)
+    {
+        if ($this->logger !== null) {
+            $this->logger->stopOperation($miss);
+        }
+    }
+
 
     /**
      * @internal Getter because no other way to do a dependency injection for \Memcached
@@ -88,7 +132,10 @@ class Memcached implements CacheInterface
     public function get($key)
     {
         $this->connect();
+
+        $this->log(CacheLoggerInterface::OPERATION_GET, $key);
         $value = $this->connection->get($key);
+        $this->stopLog(($value === false));
 
         if ($value === false) {
             return null;
@@ -100,7 +147,10 @@ class Memcached implements CacheInterface
     public function getMulti(array $keys)
     {
         $this->connect();
+
+        $this->log(CacheLoggerInterface::OPERATION_GET_MULTI, $keys);
         $values = $this->connection->getMulti($keys);
+        $this->stopLog(($values === false));
 
         if ($values === false) {
             return null;
@@ -112,30 +162,55 @@ class Memcached implements CacheInterface
     public function store($key, $value, $ttl)
     {
         $this->connect();
-        return $this->connection->set($key, $value, $ttl);
+
+        $this->log(CacheLoggerInterface::OPERATION_STORE, $key);
+        $result = $this->connection->set($key, $value, $ttl);
+        $this->stopLog();
+
+        return $result;
     }
 
     public function storeMulti(array $values, $ttl)
     {
         $this->connect();
-        return $this->connection->setMulti($values, $ttl);
+
+        $this->log(CacheLoggerInterface::OPERATION_STORE_MULTI, array_keys($values));
+        $result = $this->connection->setMulti($values, $ttl);
+        $this->stopLog();
+
+        return $result;
     }
 
     public function delete($key)
     {
         $this->connect();
-        return $this->connection->delete($key);
+
+        $this->log(CacheLoggerInterface::OPERATION_DELETE, $key);
+        $result = $this->connection->delete($key);
+        $this->stopLog();
+
+        return $result;
     }
 
     public function deleteMulti(array $keys)
     {
         $this->connect();
-        return $this->connection->deleteMulti($keys);
+
+        $this->log(CacheLoggerInterface::OPERATION_DELETE_MULTI, $keys);
+        $result = $this->connection->deleteMulti($keys);
+        $this->stopLog();
+
+        return $result;
     }
 
     public function replace($key, $value, $ttl)
     {
         $this->connect();
-        return $this->connection->replace($key, $value, $ttl);
+
+        $this->log(CacheLoggerInterface::OPERATION_REPLACE, $key);
+        $result = $this->connection->replace($key, $value, $ttl);
+        $this->stopLog();
+
+        return $result;
     }
 }

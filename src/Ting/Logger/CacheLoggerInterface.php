@@ -27,39 +27,29 @@ namespace CCMBenchmark\Ting\Logger;
 
 interface CacheLoggerInterface
 {
-    /**
-     * Increment a hit counter
-     *
-     * @return void
-     */
-    public function hit();
-
-    /**
-     * Increment a miss counter
-     *
-     * @return void
-     */
-    public function miss();
-
-    /**
-     * Increment a store counter
-     *
-     * @return void
-     */
-    public function store();
+    const OPERATION_GET           = 'GET';
+    const OPERATION_GET_MULTI     = 'GET_MULTI';
+    const OPERATION_STORE         = 'STORE';
+    const OPERATION_STORE_MULTI   = 'STORE_MULTI';
+    const OPERATION_DELETE        = 'DELETE_MULTI';
+    const OPERATION_DELETE_MULTI  = 'DELETE_MULTI';
+    const OPERATION_REPLACE       = 'REPLACE';
+    const OPERATION_REPLACE_MULTI = 'REPLACE_MULTI';
 
     /**
      * Log an operation
      *
-     * @param $operation
+     * @param $operation string one of defined constant starting with OPERATION_
+     * @param $keys array|string impacted keys by the operation
      * @return void
      */
-    public function startOperation($operation);
+    public function startOperation($operation, $keys);
 
     /**
-     * Flag the previously started operation as stopped. Useful for time logging.
+     * Flag the previously operation as stopped. Useful for time logging.
      *
+     * @param $miss boolean tells if the last get was a miss if it was a read operation
      * @return void
      */
-    public function stopOperation();
+    public function stopOperation($miss = false);
 }
