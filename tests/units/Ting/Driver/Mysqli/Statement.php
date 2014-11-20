@@ -173,4 +173,25 @@ class Statement extends atoum
                 ->call('close')
                     ->once();
     }
+
+    public function testExecuteShouldLogQuery()
+    {
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $mockLogger      = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $driverStatement->errno = 0;
+
+        $this
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->and($statement->setLogger($mockLogger))
+            ->then($statement->execute(array(), $collection))
+                ->mock($mockLogger)
+                    ->call('startStatementExecute')
+                        ->once()
+                    ->call('stopStatementExecute')
+                        ->once()
+        ;
+    }
 }

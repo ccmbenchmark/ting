@@ -142,4 +142,42 @@ class ConnectionPool extends atoum
                 ->isInstanceOf('\tests\fixtures\FakeDriver\Driver')
             ;
     }
+
+    public function testConnectionPoolShouldLogConnections()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool($mockLogger))
+            ->and($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ],
+                        'slaves'    => [
+                            [
+                                'host'      => 'slave1',
+                                'user'      => 'test',
+                                'password'  => 'test',
+                                'port'      => 3306
+                            ]
+                        ]
+                    ]
+                ]
+            ))
+            ->then($connectionPool->master('bouh', 'bouhDb'))
+                ->mock($mockLogger)
+                    ->call('addConnection')
+                        ->once()
+            ->then($connectionPool->slave('bouh', 'bouhDb'))
+                ->mock($mockLogger)
+                    ->call('addConnection')
+                        ->once()
+            ;
+    }
 }

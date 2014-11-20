@@ -398,4 +398,46 @@ class Driver extends atoum
                     ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
         ;
     }
+
+    public function testExecuteShouldLogQuery()
+    {
+        $this->function->pg_query_params = true;
+        $this->function->pg_fetch_array  = 'data';
+        $this->function->pg_result_seek  = true;
+        $this->function->pg_field_table  = 'myTable';
+
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->and($driver->setLogger($mockLogger))
+            ->then($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]))
+                ->mock($mockLogger)
+                    ->call('startQuery')
+                        ->once()
+                    ->call('stopQuery')
+                        ->once()
+        ;
+    }
+
+    public function testPrepareShouldLogQuery()
+    {
+        $this->function->pg_prepare      = true;
+        $this->function->pg_fetch_array  = 'data';
+        $this->function->pg_result_seek  = true;
+        $this->function->pg_field_table  = 'myTable';
+
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->and($driver->setLogger($mockLogger))
+            ->then($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
+                ->mock($mockLogger)
+                    ->call('startPrepare')
+                        ->once()
+                    ->call('stopPrepare')
+                        ->once()
+        ;
+    }
 }
