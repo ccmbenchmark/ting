@@ -25,8 +25,15 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
+
 interface ConnectionPoolInterface
 {
+    /**
+     * @param DriverLoggerInterface $logger
+     */
+    public function __construct(DriverLoggerInterface $logger);
+
     /**
      * @param array $config
      */

@@ -22,10 +22,44 @@
  *
  **********************************************************************/
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/fixtures/model/Bouh.php';
-require __DIR__ . '/fixtures/model/BouhRepository.php';
-require __DIR__ . '/fixtures/FakeCache/Memcached.php';
-require __DIR__ . '/fixtures/FakeDriver/Driver.php';
-require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
-require __DIR__ . '/fixtures/FakeLogger/FakeDriverLogger.php';
+namespace CCMBenchmark\Ting\Logger;
+
+
+interface CacheLoggerInterface
+{
+    /**
+     * Increment a hit counter
+     *
+     * @return void
+     */
+    public function hit();
+
+    /**
+     * Increment a miss counter
+     *
+     * @return void
+     */
+    public function miss();
+
+    /**
+     * Increment a store counter
+     *
+     * @return void
+     */
+    public function store();
+
+    /**
+     * Log an operation
+     *
+     * @param $operation
+     * @return void
+     */
+    public function startOperation($operation);
+
+    /**
+     * Flag the previously started operation as stopped. Useful for time logging.
+     *
+     * @return void
+     */
+    public function stopOperation();
+}

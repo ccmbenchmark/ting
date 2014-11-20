@@ -168,6 +168,7 @@ class PreparedQuery extends atoum
         $this->calling($mockConnection)->master = $mockDriver;
         $this->calling($mockDriver)->execute    = true;
         $this->calling($mockDriver)->prepare    = $mockStatement;
+        $mockMysqliStatement->errno             = 0;
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('SELECT', $mockConnection))

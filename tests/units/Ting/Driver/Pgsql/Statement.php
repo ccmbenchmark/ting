@@ -164,4 +164,25 @@ class Statement extends atoum
             ->string($outerQuery)
                 ->isIdenticalTo('DEALLOCATE "statementNameTest"');
     }
+
+    public function testExecuteShouldLogQuery()
+    {
+        $this->function->pg_execute = [];
+        $this->function->pg_result_seek = 0;
+        $this->function->pg_fetch_array = false;
+
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('statementNameTest', []))
+            ->and($statement->setLogger($mockLogger))
+            ->and($statement->setQuery('SELECT firstname FROM Bouh'))
+            ->then($statement->execute([]))
+                ->mock($mockLogger)
+                    ->call('startStatementExecute')
+                        ->once()
+                    ->call('stopStatementExecute')
+                        ->once()
+        ;
+    }
 }

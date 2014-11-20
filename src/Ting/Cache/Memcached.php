@@ -47,11 +47,11 @@ class Memcached implements CacheInterface
      */
     public function getPersistentId()
     {
-        if (isset($this->config['persistentId']) === false) {
+        if (isset($this->config['persistent_id']) === false) {
             return null;
         }
 
-        return $this->config['persistentId'];
+        return $this->config['persistent_id'];
     }
 
     private function connect()
@@ -69,7 +69,7 @@ class Memcached implements CacheInterface
         }
 
         if ($this->connection === null) {
-            throw new Exception('Must setConnection priory to use Memcached');
+            $this->connection = new \Memcached($this->getPersistentId());
         }
 
         if (isset($this->config['options']) === true && is_array($this->config['options']) === true) {

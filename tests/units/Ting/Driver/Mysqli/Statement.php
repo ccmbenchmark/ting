@@ -42,6 +42,7 @@ class Statement extends atoum
         $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null);
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $driverStatement->errno = 0;
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, $paramsOrder))
@@ -64,6 +65,7 @@ class Statement extends atoum
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $driverStatement->errno = 0;
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, array()))
@@ -146,6 +148,7 @@ class Statement extends atoum
         $driverStatement = new \mock\Fake\DriverStatement();
 
         $this->calling($driverStatement)->get_result = true;
+        $driverStatement->errno = 0;
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
@@ -160,6 +163,7 @@ class Statement extends atoum
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $driverStatement->errno = 0;
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
@@ -168,5 +172,26 @@ class Statement extends atoum
             ->mock($driverStatement)
                 ->call('close')
                     ->once();
+    }
+
+    public function testExecuteShouldLogQuery()
+    {
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $mockLogger      = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $driverStatement->errno = 0;
+
+        $this
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->and($statement->setLogger($mockLogger))
+            ->then($statement->execute(array(), $collection))
+                ->mock($mockLogger)
+                    ->call('startStatementExecute')
+                        ->once()
+                    ->call('stopStatementExecute')
+                        ->once()
+        ;
     }
 }

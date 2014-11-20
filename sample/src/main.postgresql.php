@@ -62,7 +62,7 @@ $memcached = [
         \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
         \Memcached::OPT_PREFIX_KEY           => 'sample-'
     ],
-    'persistentId' => 'ting.test'
+    'persistent_id' => 'ting.test'
 ];
 
 $services->get('ConnectionPool')->setConfig($connections);

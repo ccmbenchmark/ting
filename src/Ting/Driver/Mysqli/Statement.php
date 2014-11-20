@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
@@ -41,6 +42,16 @@ class Statement implements StatementInterface
      * @var array|null
      */
     protected $paramsOrder = null;
+
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger = null;
+
+    /**
+     * @var string spl_object_hash of current object
+     */
+    protected $objectHash = '';
 
     /**
      * @param \mysqli_stmt|Object $driverStatement
@@ -88,7 +99,13 @@ class Statement implements StatementInterface
         array_unshift($values, $types);
         call_user_func_array(array($this->driverStatement, 'bind_param'), $values);
 
+        if ($this->logger !== null) {
+            $this->logger->startStatementExecute($this->objectHash, $params);
+        }
         $this->driverStatement->execute();
+        if ($this->logger !== null) {
+            $this->logger->stopStatementExecute($this->objectHash);
+        }
 
         if ($this->driverStatement->errno > 0) {
             throw new QueryException($this->driverStatement->error, $this->driverStatement->errno);
@@ -102,6 +119,19 @@ class Statement implements StatementInterface
 
         return true;
     }
+
+    /**
+     * @param DriverLoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        if ($logger !== null) {
+            $this->logger = $logger;
+            $this->objectHash = spl_object_hash($this->driverStatement);
+        }
+    }
+
 
     /**
      * @param \mysqli_result $result

@@ -27,10 +27,15 @@ namespace CCMBenchmark\Ting\Driver\Pgsql;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
+    /**
+     * @var string current database name
+     */
+    protected $database  = '';
 
     /**
      * @var resource pgsql
@@ -41,6 +46,16 @@ class Driver implements DriverInterface
      * @var bool
      */
     protected $transactionOpened = false;
+
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger = null;
+
+    /**
+     * @var string spl_object_hash of current object
+     */
+    protected $objectHash = '';
 
     /**
      * Return a unique connection key identifier
@@ -85,6 +100,7 @@ class Driver implements DriverInterface
         }
 
         $resource = pg_connect($this->dsn . ' dbname=' . $database);
+        $this->database = $database;
 
         if ($resource === false) {
             throw new Exception('Connect Error: ' . $this->dsn . ' dbname=' . $database);
@@ -94,17 +110,24 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+        $this->objectHash = spl_object_hash($this);
+    }
+
+
     /**
      * Execute the given query on the actual connection
-     * @param string              $sql
+     * @param string              $originalSQL
      * @param array               $params
      * @param CollectionInterface $collection
      * @return CollectionInterface|mixed|resource
      * @throws QueryException
      */
-    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    public function execute($originalSQL, array $params = array(), CollectionInterface $collection = null)
     {
-        list ($sql, $paramsOrder) = $this->convertParameters($sql);
+        list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
 
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
@@ -114,7 +137,13 @@ class Driver implements DriverInterface
             $values[] = &$params[$key];
         }
 
+        if ($this->logger !== null) {
+            $this->logger->startQuery($originalSQL, $params, $this->objectHash, $this->database);
+        }
         $result = pg_query_params($this->connection, $sql, $values);
+        if ($this->logger !== null) {
+            $this->logger->stopQuery();
+        }
 
         if ($result === false) {
             throw new QueryException(pg_last_error($this->connection));
@@ -138,16 +167,24 @@ class Driver implements DriverInterface
 
     /**
      * Prepare the given query against the current connection
-     * @param string $sql
+     * @param string $originalSQL
      * @return Statement|\CCMBenchmark\Ting\Driver\StatementInterface
      */
-    public function prepare($sql)
+    public function prepare($originalSQL)
     {
-        list ($sql, $paramsOrder) = $this->convertParameters($sql);
+        list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
 
         $statementName = sha1($sql);
         $statement     = new Statement($statementName, $paramsOrder);
-        $result        = pg_prepare($this->connection, $statementName, $sql);
+
+        if ($this->logger !== null) {
+            $this->logger->startPrepare($originalSQL, $this->objectHash, $this->database);
+            $statement->setLogger($this->logger);
+        }
+        $result = pg_prepare($this->connection, $statementName, $sql);
+        if ($this->logger !== null) {
+            $this->logger->stopPrepare($statementName);
+        }
 
         if ($result === false) {
             $this->ifIsError(function () use ($sql) {

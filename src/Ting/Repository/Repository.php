@@ -138,7 +138,7 @@ class Repository
     /**
      * Retrieve one object from database
      *
-     * @param $primariesKeyValue associative array column => value or if one primary : just the value
+     * @param $primariesKeyValue array|int|string column => value or if one primary : just the value
      * @param bool $forceMaster
      * @return mixed|null
      */
@@ -152,7 +152,7 @@ class Repository
             (bool)$forceMaster
         );
 
-        if ($forceMaster) {
+        if ($forceMaster === true) {
             $query->selectMaster($forceMaster);
         }
 

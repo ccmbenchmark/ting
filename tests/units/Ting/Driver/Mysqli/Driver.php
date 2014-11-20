@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
-use CCMBenchmark\Ting\Query\Query;
 use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
@@ -533,6 +532,44 @@ class Driver extends atoum
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->integer($driver->getAffectedRows())
             ->isIdenticalTo(0)
+        ;
+    }
+
+    public function testExecuteMustLogQuery()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this->calling($mockDriver)->query = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->setLogger($mockLogger))
+            ->then($driver->execute('Empty query'))
+            ->mock($mockLogger)
+                ->call('startQuery')
+                    ->once()
+                ->call('stopQuery')
+                    ->once()
+        ;
+    }
+
+    public function testPrepareShouldLogQuery()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this->calling($mockDriver)->prepare = new \stdClass();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->setLogger($mockLogger))
+            ->then($driver->prepare('Empty query'))
+            ->mock($mockLogger)
+                ->call('startPrepare')
+                    ->once()
+                ->call('stopPrepare')
+                    ->once()
         ;
     }
 }

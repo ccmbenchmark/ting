@@ -183,18 +183,6 @@ class Memcached extends atoum
         ;
     }
 
-    public function testConnectWithoutConnectionShouldRaiseError()
-    {
-        $this
-            ->if($memcached = new \CCMBenchmark\Ting\Cache\Memcached())
-            ->then($memcached->setConfig(['servers' => ['Bouh']]))
-            ->exception(function () use ($memcached) {
-                $memcached->get('Bouh');
-            })
-                ->hasMessage('Must setConnection priory to use Memcached')
-        ;
-    }
-
     public function testConnectShouldCallMetadataGetServerListResetServerListAndAddServers()
     {
         $this
@@ -238,10 +226,10 @@ class Memcached extends atoum
         ;
     }
 
-    public function testGetPersistentIdShouldReturnBouhValue()
+    public function testGetPersistentIdShouldReturnConfiguredValue()
     {
         $this
-            ->if($this->memcached->setConfig(['persistentId' => 'Bouh']))
+            ->if($this->memcached->setConfig(['persistent_id' => 'Bouh']))
             ->string($this->memcached->getPersistentId())
                 ->isIdenticalTo('Bouh')
         ;

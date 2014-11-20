@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface DriverInterface
@@ -86,6 +87,8 @@ interface DriverInterface
      * @return int
      */
     public function getAffectedRows();
+
+    public function setLogger(DriverLoggerInterface $logger = null);
 
     /**
      * @param array $connectionConfig

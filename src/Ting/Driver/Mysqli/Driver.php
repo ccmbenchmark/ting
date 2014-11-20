@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
@@ -57,6 +58,15 @@ class Driver implements DriverInterface
      */
     protected $transactionOpened = false;
 
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger = null;
+
+    /**
+     * @var string hash of current object
+     */
+    protected $objectHash = '';
 
     /**
      * @param  \mysqli|Object|null $connection
@@ -112,6 +122,16 @@ class Driver implements DriverInterface
 
         return $this;
     }
+
+    /**
+     * @param DriverLoggerInterface $logger
+     */
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+        $this->objectHash = spl_object_hash($this);
+    }
+
 
     /**
      * @param string $database
@@ -184,7 +204,16 @@ class Driver implements DriverInterface
             $sql
         );
 
+
+        if ($this->logger !== null) {
+            $this->logger->startQuery($sql, $params, $this->objectHash, $this->currentDatabase);
+        }
+
         $result = $this->connection->query($sql);
+
+        if ($this->logger !== null) {
+            $this->logger->stopQuery();
+        }
 
         if ($result === false) {
             throw new QueryException($this->connection->error, $this->connection->errno);
@@ -228,6 +257,9 @@ class Driver implements DriverInterface
 
         $sql = str_replace('\:', ':', $sql);
 
+        if ($this->logger !== null) {
+            $this->logger->startPrepare($sql, $this->objectHash, $this->currentDatabase);
+        }
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
@@ -236,7 +268,12 @@ class Driver implements DriverInterface
             });
         }
 
+        if ($this->logger !== null) {
+            $this->logger->stopPrepare(spl_object_hash($driverStatement));
+        }
+
         $statement = new Statement($driverStatement, $paramsOrder);
+        $statement->setLogger($this->logger);
 
         return $statement;
     }

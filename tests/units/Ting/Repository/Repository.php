@@ -52,7 +52,7 @@ class Repository extends atoum
         $entity->setName('Bouh');
 
         $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add($entity);
+        $collection->add(['entity' => $entity]);
 
         $this->calling($mockQuery)->query = $collection;
 
