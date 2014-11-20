@@ -27,18 +27,65 @@ namespace CCMBenchmark\Ting\Logger;
 interface DriverLoggerInterface
 {
     /**
+     * Add an opened connection to the list
+     *
+     * @param $name       string connection name
+     * @param $connection string spl_object_hash of the connection
+     * @param $connectionConfig array Connection parameters
+     */
+    public function addConnection($name, $connection, array $connectionConfig);
+
+    /**
      * Logs a SQL Query
      *
      * @param      $sql
      * @param      $params
-     * @param bool $prepared
+     * @param      $connection string spl_object_hash of the connection
+     * @param      $database   string name of the database
      * @return void
      */
-    public function startQuery($sql, $params, $prepared = false);
+    public function startQuery($sql, $params, $connection, $database);
+
+    /**
+     * Log the preparation of a statement
+     *
+     * @param $sql string the query
+     * @param $connection string spl_object_hash of the connection
+     * @param $database string name of the database
+     * @return void
+     */
+    public function startPrepare($sql, $connection, $database);
+
+    /**
+     * Log the parameters applied to a statement when executed
+     *
+     * @param $statement string statement name
+     * @param $params
+     * @return void
+     */
+    public function startStatementExecute($statement, $params);
+
 
     /**
      * Log the end of a query (for timing purposes mainly)
+     *
      * @return void
      */
     public function stopQuery();
+
+    /**
+     * Log the end of the preparation (for timing purposes)
+     *
+     * @param $statement string statement name
+     * @return void
+     */
+    public function stopPrepare($statement);
+
+    /**
+     * Log the end of execution of a prepared statement
+     *
+     * @param $statement string statement name
+     * @return void
+     */
+    public function stopStatementExecute($statement);
 }

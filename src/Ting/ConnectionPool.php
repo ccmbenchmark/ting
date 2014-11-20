@@ -82,7 +82,7 @@ class ConnectionPool implements ConnectionPoolInterface
         $config = $this->connectionConfig[$name]['master'];
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
-        return $this->connect($config, $driverClass, $database);
+        return $this->connect($config, $driverClass, $database, $name);
     }
 
     /**
@@ -120,16 +120,17 @@ class ConnectionPool implements ConnectionPoolInterface
 
         $connectionConfig = $this->connectionSlaves[$name];
 
-        return $this->connect($connectionConfig, $driverClass, $database);
+        return $this->connect($connectionConfig, $driverClass, $database, $name);
     }
 
     /**
      * @param array $config
      * @param string $driverClass
      * @param string $database
+     * @param string $name connection name
      * @return DriverInterface
      */
-    protected function connect($config, $driverClass, $database)
+    protected function connect($config, $driverClass, $database, $name)
     {
 
         $connectionKey = $driverClass::getConnectionKey($config, $database);
@@ -138,6 +139,7 @@ class ConnectionPool implements ConnectionPoolInterface
             $driver = new $driverClass();
 
             if ($this->logger !== null) {
+                $this->logger->addConnection($name, spl_object_hash($driver), $config);
                 $driver->setLogger($this->logger);
             }
 

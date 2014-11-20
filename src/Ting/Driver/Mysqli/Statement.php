@@ -49,6 +49,11 @@ class Statement implements StatementInterface
     protected $logger = null;
 
     /**
+     * @var string spl_object_hash of current object
+     */
+    protected $objectHash = '';
+
+    /**
      * @param \mysqli_stmt|Object $driverStatement
      * @param array $paramsOrder
      */
@@ -94,7 +99,13 @@ class Statement implements StatementInterface
         array_unshift($values, $types);
         call_user_func_array(array($this->driverStatement, 'bind_param'), $values);
 
+        if ($this->logger !== null) {
+            $this->logger->startStatementExecute($this->objectHash, $params);
+        }
         $this->driverStatement->execute();
+        if ($this->logger !== null) {
+            $this->logger->stopStatementExecute($this->objectHash);
+        }
 
         if ($this->driverStatement->errno > 0) {
             throw new QueryException($this->driverStatement->error, $this->driverStatement->errno);
@@ -116,6 +127,7 @@ class Statement implements StatementInterface
     public function setLogger(DriverLoggerInterface $logger = null)
     {
         $this->logger = $logger;
+        $this->objectHash = spl_object_hash($this->driverStatement);
     }
 
 

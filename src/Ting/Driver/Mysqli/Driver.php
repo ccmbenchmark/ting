@@ -63,6 +63,10 @@ class Driver implements DriverInterface
      */
     protected $logger = null;
 
+    /**
+     * @var string hash of current object
+     */
+    protected $objectHash = '';
 
     /**
      * @param  \mysqli|Object|null $connection
@@ -125,6 +129,7 @@ class Driver implements DriverInterface
     public function setLogger(DriverLoggerInterface $logger = null)
     {
         $this->logger = $logger;
+        $this->objectHash = spl_object_hash($this);
     }
 
 
@@ -201,7 +206,7 @@ class Driver implements DriverInterface
 
 
         if ($this->logger !== null) {
-            $this->logger->startQuery($sql, $params);
+            $this->logger->startQuery($sql, $params, $this->objectHash, $this->currentDatabase);
         }
 
         $result = $this->connection->query($sql);
@@ -252,12 +257,19 @@ class Driver implements DriverInterface
 
         $sql = str_replace('\:', ':', $sql);
 
+        if ($this->logger !== null) {
+            $this->logger->startPrepare($sql, $this->objectHash, $this->currentDatabase);
+        }
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
             $this->ifIsError(function () use ($sql) {
                 throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
             });
+        }
+
+        if ($this->logger !== null) {
+            $this->logger->stopPrepare(spl_object_hash($driverStatement));
         }
 
         $statement = new Statement($driverStatement, $paramsOrder);

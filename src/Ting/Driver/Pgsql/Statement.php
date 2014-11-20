@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting\Driver\Pgsql;
 
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
+use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
@@ -35,6 +36,11 @@ class Statement implements StatementInterface
     protected $statementName = null;
     protected $queryType     = null;
     protected $query         = null;
+
+    /**
+     * @var DriverLoggerInterface|null
+     */
+    protected $logger        = null;
 
     /**
      * @param       $statementName
@@ -68,6 +74,16 @@ class Statement implements StatementInterface
     }
 
     /**
+     * @param DriverLoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+
+    /**
      * Execute the actual statement with the given parameters
      * @param array               $params
      * @param CollectionInterface $collection
@@ -84,7 +100,13 @@ class Statement implements StatementInterface
             $values[] = &$params[$key];
         }
 
+        if ($this->logger !== null) {
+            $this->logger->startStatementExecute($this->statementName, $params);
+        }
         $result = pg_execute($this->connection, $this->statementName, $values);
+        if ($this->logger !== null) {
+            $this->logger->stopStatementExecute($this->statementName);
+        }
 
         if ($result === false) {
             throw new QueryException(pg_result_error($this->connection));
