@@ -29,3 +29,4 @@ require __DIR__ . '/fixtures/FakeCache/Memcached.php';
 require __DIR__ . '/fixtures/FakeDriver/Driver.php';
 require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
 require __DIR__ . '/fixtures/FakeLogger/FakeDriverLogger.php';
+require __DIR__ . '/fixtures/FakeLogger/FakeCacheLogger.php';

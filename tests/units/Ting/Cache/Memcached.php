@@ -242,4 +242,116 @@ class Memcached extends atoum
                 ->isNull
         ;
     }
+
+    public function testGetShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->get = 1;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->get('key'))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
+
+    public function testGetMultiShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->getMulti = false;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->getMulti(['key', 'key2']))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
+
+    public function testStoreShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->store = true;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->store('key', 'value', 0))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
+
+    public function testStoreMultiShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->storeMulti = true;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->storeMulti(['key' => 'value'], 0))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
+
+    public function testDeleteShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->delete = true;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->delete('key'))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
+
+    public function testDeleteMultiShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->deleteMulti = true;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->deleteMulti(['key', 'key2']))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
+
+    public function testReplaceShouldLog()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeCacheLogger();
+        $this->calling($this->memcachedMock)->replace = true;
+
+        $this
+            ->if($this->memcached->setLogger($mockLogger))
+            ->and($this->memcached->replace('key', 'value', 0))
+                ->mock($mockLogger)
+                    ->call('startOperation')
+                        ->once()
+                    ->call('stopOperation')
+                        ->once()
+        ;
+    }
 }

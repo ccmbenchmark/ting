@@ -22,20 +22,13 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Logger;
+namespace tests\fixtures\FakeLogger;
 
 
-interface CacheLoggerInterface
+use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
+
+class FakeCacheLogger implements CacheLoggerInterface
 {
-    const OPERATION_GET           = 'GET';
-    const OPERATION_GET_MULTI     = 'GET_MULTI';
-    const OPERATION_STORE         = 'STORE';
-    const OPERATION_STORE_MULTI   = 'STORE_MULTI';
-    const OPERATION_DELETE        = 'DELETE_MULTI';
-    const OPERATION_DELETE_MULTI  = 'DELETE_MULTI';
-    const OPERATION_REPLACE       = 'REPLACE';
-    const OPERATION_REPLACE_MULTI = 'REPLACE_MULTI';
-
     /**
      * Log an operation
      *
@@ -43,7 +36,10 @@ interface CacheLoggerInterface
      * @param $keys array|string impacted keys by the operation
      * @return void
      */
-    public function startOperation($operation, $keys);
+    public function startOperation($operation, $keys)
+    {
+
+    }
 
     /**
      * Flag the previously operation as stopped. Useful for time logging.
@@ -51,5 +47,8 @@ interface CacheLoggerInterface
      * @param $miss boolean tells if the last get was a miss if it was a read operation
      * @return void
      */
-    public function stopOperation($miss = false);
+    public function stopOperation($miss = false)
+    {
+
+    }
 }
