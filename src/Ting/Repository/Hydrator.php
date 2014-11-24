@@ -61,7 +61,10 @@ class Hydrator implements HydratorInterface
                         $metadataList[$column['table']] = $metadata;
                         $result[$column['table']]       = $metadata->createEntity();
                     },
-                    function () use (&$result, $column) {
+                    function () use (&$result, &$column) {
+                        if ($column['table'] === '') {
+                            $column['table'] = 'db__table';
+                        }
                         $result[$column['table']] = new \stdClass();
                     }
                 );
@@ -76,11 +79,7 @@ class Hydrator implements HydratorInterface
                     $column['value']
                 );
             } else {
-                if (isset($result['db__table']) === false) {
-                    $result['db__table'] = new \stdClass();
-                }
-
-                $result['db__table']->$column['name'] = $column['value'];
+                $result[$column['table']]->$column['name'] = $column['value'];
             }
         }
 
