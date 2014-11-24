@@ -135,6 +135,14 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
+     * @return @mixed
+     */
+    public function first()
+    {
+        return $this->rewind()->current();
+    }
+
+    /**
      * Iterator
      */
 
