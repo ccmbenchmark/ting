@@ -174,4 +174,40 @@ class Hydrator extends atoum
             ->string($data['db__table']->fname)
                 ->isIdenticalTo('Sylvain');
     }
+
+    public function testHydrateShouldHydrateIntoAnonymousObject()
+    {
+
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $data = array(
+            array(
+                'name'     => 'fname',
+                'orgName'  => 'boo_firstname',
+                'table'    => 'my_table',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Sylvain'
+            ),
+            array(
+                'name'     => 'name',
+                'orgName'  => 'boo_name',
+                'table'    => 'my_table',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Robez-Masson'
+            )
+        );
+
+        $collection = $services->get('CollectionFactory')->get();
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
+                $services->get('MetadataRepository'),
+                $services->get('UnitOfWork')
+            ))
+            ->then($data = $hydrator->hydrate($data, $collection))
+            ->string($data['my_table']->name)
+                ->isIdenticalTo('Robez-Masson')
+            ->string($data['my_table']->fname)
+                ->isIdenticalTo('Sylvain');
+    }
 }
