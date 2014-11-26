@@ -30,6 +30,9 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class Result implements ResultInterface
 {
 
+    const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having'
+        . '|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
+
     protected $result          = null;
     protected $fields          = array();
     protected $iteratorOffset  = 0;
@@ -54,7 +57,8 @@ class Result implements ResultInterface
         $fields = array();
 
         preg_match_all(
-            '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!on)(?!where)(?<alias>[a-z0-9_]+)?"?(\s|$)/is',
+            '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!\b('
+            . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z0-9_]+)?"?(\s|$)/is',
             $query,
             $matches,
             PREG_SET_ORDER
@@ -83,11 +87,12 @@ class Result implements ResultInterface
         }
 
         preg_match_all(
-            '/(?:(?:"?(?<table>[a-z0-9_]+)"?\.)?(?<column>[a-z0-9_]+)(?:\s*(?:as)?\s+(?<alias>[a-z0-9_]+))?)/is',
+            '/(?:(?:"?(?<table>[a-z0-9_]+)"?\.)?(?<column>[^\s,]+)(?:\s*(?:as)?\s+(?<alias>[a-z0-9_]+))?)/is',
             $queryColumns,
             $matches,
             PREG_SET_ORDER
         );
+
         foreach ($matches as $match) {
             $stdClass = new \stdClass();
             $stdClass->orgname = $match['column'];
@@ -103,7 +108,12 @@ class Result implements ResultInterface
                 $stdClass->orgtable = $aliasToTable[$stdClass->table];
             } else {
                 $stdClass->orgtable = strtolower(pg_field_table($this->result, count($fields)));
-                $stdClass->table    = $tableToAlias[$stdClass->orgtable];
+
+                if (isset($tableToAlias[$stdClass->orgtable]) === false) {
+                    $stdClass->table = $stdClass->orgtable;
+                } else {
+                    $stdClass->table = $tableToAlias[$stdClass->orgtable];
+                }
             }
 
             $fields[] = $stdClass;
