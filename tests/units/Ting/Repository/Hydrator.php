@@ -135,7 +135,7 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
                 ->isIdenticalTo('Sylvain')
-            ->string($data['db__table']->otherColumn)
+            ->string($data['bouh']->otherColumn)
                 ->isIdenticalTo('Happy Face');
     }
 
@@ -169,9 +169,9 @@ class Hydrator extends atoum
                 $services->get('UnitOfWork')
             ))
             ->then($data = $hydrator->hydrate($data, $collection))
-            ->string($data['db__table']->name)
+            ->string($data['\name'])
                 ->isIdenticalTo('Robez-Masson')
-            ->string($data['db__table']->fname)
+            ->string($data['\fname'])
                 ->isIdenticalTo('Sylvain');
     }
 
