@@ -79,7 +79,7 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
-    public function testHydrateShouldHydrateUnknownColumnIntoDbTable()
+    public function testHydrateShouldHydrateUnknownColumnIntoKey0()
     {
         $data = array(
             array(
@@ -135,11 +135,11 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
                 ->isIdenticalTo('Sylvain')
-            ->string($data['bouh']->otherColumn)
+            ->string($data[0]->otherColumn)
                 ->isIdenticalTo('Happy Face');
     }
 
-    public function testHydrateShouldHydrateIntoDbTable()
+    public function testHydrateShouldHydrateIntoKey0()
     {
 
         $services = new \CCMBenchmark\Ting\Services();
@@ -149,42 +149,6 @@ class Hydrator extends atoum
                 'name'     => 'fname',
                 'orgName'  => 'boo_firstname',
                 'table'    => '',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ),
-            array(
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => '',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            )
-        );
-
-        $collection = $services->get('CollectionFactory')->get();
-
-        $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
-                $services->get('MetadataRepository'),
-                $services->get('UnitOfWork')
-            ))
-            ->then($data = $hydrator->hydrate($data, $collection))
-            ->string($data['\name'])
-                ->isIdenticalTo('Robez-Masson')
-            ->string($data['\fname'])
-                ->isIdenticalTo('Sylvain');
-    }
-
-    public function testHydrateShouldHydrateIntoAnonymousObject()
-    {
-
-        $services = new \CCMBenchmark\Ting\Services();
-
-        $data = array(
-            array(
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => 'my_table',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
             ),
@@ -205,9 +169,9 @@ class Hydrator extends atoum
                 $services->get('UnitOfWork')
             ))
             ->then($data = $hydrator->hydrate($data, $collection))
-            ->string($data['my_table']->name)
+            ->string($data[0]->name)
                 ->isIdenticalTo('Robez-Masson')
-            ->string($data['my_table']->fname)
+            ->string($data[0]->fname)
                 ->isIdenticalTo('Sylvain');
     }
 }

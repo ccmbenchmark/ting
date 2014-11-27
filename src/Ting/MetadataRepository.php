@@ -36,7 +36,7 @@ class MetadataRepository
      * @param callable $callbackFound   called with applicable Metadata if applicable
      * @param callable $callbackNotFound called if unknown table - no parameter
      */
-    public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound)
+    public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         $found = false;
         foreach ($this->metadataList as $metadata) {
@@ -52,7 +52,7 @@ class MetadataRepository
             }
         }
 
-        if ($found === false) {
+        if ($found === false && $callbackNotFound !== null) {
             $callbackNotFound();
         }
     }
