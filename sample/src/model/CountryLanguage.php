@@ -25,9 +25,13 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class CountryLanguage extends NotifyProperty
+class CountryLanguage implements NotifyPropertyInterface
 {
+
+    use NotifyProperty;
+
     protected $code       = null;
     protected $language   = null;
     protected $isOfficial = null;
