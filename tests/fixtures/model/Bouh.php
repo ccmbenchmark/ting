@@ -25,9 +25,13 @@
 namespace tests\fixtures\model;
 
 use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class Bouh extends NotifyProperty
+class Bouh implements NotifyPropertyInterface
 {
+
+    use NotifyProperty;
+
     protected $id        = null;
     protected $firstname = null;
     protected $name      = null;

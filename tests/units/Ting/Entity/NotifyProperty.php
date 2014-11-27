@@ -34,7 +34,7 @@ class NotifyProperty extends atoum
         $mockListener = new \mock\CCMBenchmark\Ting\Entity\PropertyListenerInterface();
 
         $this
-            ->if($notifyProperty = new \CCMBenchmark\Ting\Entity\NotifyProperty())
+            ->if($notifyProperty = new \mock\tests\fixtures\model\Bouh())
             ->and($notifyProperty->addPropertyListener($mockListener))
             ->then($notifyProperty->propertyChanged('Bouh', 'value', 'value'))
             ->mock($mockListener)
@@ -50,7 +50,7 @@ class NotifyProperty extends atoum
         $mockListener2 = new \mock\CCMBenchmark\Ting\Entity\PropertyListenerInterface();
 
         $this
-            ->if($notifyProperty = new \CCMBenchmark\Ting\Entity\NotifyProperty())
+            ->if($notifyProperty = new \mock\tests\fixtures\model\Bouh())
             ->and($notifyProperty->addPropertyListener($mockListener))
             ->and($notifyProperty->addPropertyListener($mockListener2))
             ->then($notifyProperty->propertyChanged('Bouh', 'value', 'newValue'))

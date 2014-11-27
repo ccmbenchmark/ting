@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Entity;
 
 
-class NotifyProperty implements NotifyPropertyInterface
+trait NotifyProperty
 {
     protected $listeners = array();
 
