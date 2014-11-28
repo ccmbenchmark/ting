@@ -77,14 +77,17 @@ class MetadataRepository
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;
         }
+
     }
 
     /**
-     * Load in memory all metadatas
+     * Read every files from given globPattern and load in memory all metadatas
+     * This method should be used to discover the files and then create cache,
+     * because glob uses directory reading at every hit.
      *
      * @param $namespace
      * @param $globPattern
-     * @return int
+     * @return array
      */
     public function batchLoadMetadata($namespace, $globPattern)
     {
@@ -92,11 +95,31 @@ class MetadataRepository
             return 0;
         }
 
-        $loaded = 0;
+        $loaded = [];
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
             $this->addMetadata($repository, $repository::initMetadata());
-            $loaded++;
+            $loaded[] = $repository;
+        }
+
+        return $loaded;
+    }
+
+
+    /**
+     * Read every classes (should be fully qualified namespaces) to load metadatas in memory.
+     * This method is far more efficient than batchLoadMetadata : with opcache enabled, files
+     * are not read from disk anymore.
+     *
+     * @param array $paths
+     * @return array
+     */
+    public function batchLoadMetadataFromCache(array $paths)
+    {
+        $loaded = [];
+        foreach ($paths as $repository) {
+            $this->addMetadata($repository, $repository::initMetadata());
+            $loaded[] = $repository;
         }
 
         return $loaded;
