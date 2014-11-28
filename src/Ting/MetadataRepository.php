@@ -91,11 +91,12 @@ class MetadataRepository
      */
     public function batchLoadMetadata($namespace, $globPattern)
     {
+        $loaded = [];
+
         if (file_exists(dirname($globPattern)) === false) {
-            return 0;
+            return $loaded;
         }
 
-        $loaded = [];
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
             $this->addMetadata($repository, $repository::initMetadata());
