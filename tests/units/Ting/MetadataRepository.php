@@ -141,14 +141,15 @@ class MetadataRepository extends atoum
                     $services->get('MetadataFactory')
                 )
             )
-            ->variable($return = $metadataRepository->batchLoadMetadata(
+            ->array($metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
-                ->isIdenticalTo(1);
+                ->size
+                    ->isIdenticalTo(1);
     }
 
-    public function testBatchLoadMetadataWithInvalidPathShouldReturn0()
+    public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
@@ -157,10 +158,11 @@ class MetadataRepository extends atoum
                     $services->get('MetadataFactory')
                 )
             )
-            ->variable($return = $metadataRepository->batchLoadMetadata(
+            ->array($metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 '/not/valid/path/*Repository.php'
             ))
-                ->isIdenticalTo(0);
+                ->isEmpty()
+        ;
     }
 }
