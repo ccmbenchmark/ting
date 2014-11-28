@@ -44,12 +44,25 @@ class Hydrator implements HydratorInterface
     }
 
     /**
-     * Hydrate one object from values
+     * Hydrate one object from values and add to Collection
      * @param array               $columns
      * @param CollectionInterface $collection
      * @return array
      */
     public function hydrate(array $columns, CollectionInterface $collection)
+    {
+        $result = $this->hydrateColumns($columns);
+        $collection->add($result);
+        return $result;
+    }
+
+    /**
+     * Hydrate one object from values
+     * @param array               $columns
+     * @param CollectionInterface $collection
+     * @return array
+     */
+    protected function hydrateColumns(array $columns)
     {
         $result       = array();
         $metadataList = array();
@@ -87,8 +100,6 @@ class Hydrator implements HydratorInterface
                 $this->unitOfWork->manage($entity);
             }
         }
-
-        $collection->add($result);
 
         return $result;
     }

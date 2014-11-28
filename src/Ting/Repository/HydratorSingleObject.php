@@ -24,27 +24,22 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-class CollectionFactory implements CollectionFactoryInterface
+use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\UnitOfWork;
+
+class HydratorSingleObject extends Hydrator
 {
 
-    protected $hydrator = null;
-
     /**
-     * @param HydratorInterface $hydrator
+     * Hydrate one object from values
+     * @param array               $columns
+     * @param CollectionInterface $collection
+     * @return array
      */
-    public function __construct(HydratorInterface $hydrator = null)
+    public function hydrate(array $columns, CollectionInterface $collection)
     {
-        $this->hydrator = $hydrator;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function get(HydratorInterface $hydrator = null)
-    {
-        if ($hydrator === null) {
-            $hydrator = $this->hydrator;
-        }
-        return new Collection($hydrator);
+        $result = reset(parent::hydrateColumns($columns));
+        $collection->add($result);
+        return $result;
     }
 }
