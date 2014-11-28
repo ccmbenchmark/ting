@@ -31,13 +31,13 @@ require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../vendor/autoload.php';
 
 $services = new \CCMBenchmark\Ting\Services();
-$repositoriesNumber =
+$repositories =
     $services
         ->get('MetadataRepository')
         ->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
 echo str_repeat("-", 40) . "\n";
-echo 'Load Repositories: ' . $repositoriesNumber . "\n";
+echo 'Load Repositories: ' . count($repositories) . "\n";
 echo str_repeat("-", 40) . "\n";
 
 $connections = [
