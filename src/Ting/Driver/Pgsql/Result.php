@@ -148,10 +148,10 @@ class Result implements ResultInterface
 
         foreach ($this->fields as $i => $rawField) {
             $column = array(
-                'name'     => $rawField->name,
-                'orgName'  => $rawField->orgname,
-                'table'    => $rawField->table,
-                'orgTable' => $rawField->orgtable,
+                'name'     => $this->unescapeField($rawField->name),
+                'orgName'  => $this->unescapeField($rawField->orgname),
+                'table'    => $this->unescapeField($rawField->table),
+                'orgTable' => $this->unescapeField($rawField->orgtable),
                 'value'    => $data[$i]
             );
 
@@ -159,6 +159,16 @@ class Result implements ResultInterface
         }
 
         return $columns;
+    }
+
+    /**
+     * Unescape the given field name according to PGSQL Standards
+     * @param $field
+     * @return string
+     */
+    protected function unescapeField($field)
+    {
+        return trim($field, '"');
     }
 
     /**
