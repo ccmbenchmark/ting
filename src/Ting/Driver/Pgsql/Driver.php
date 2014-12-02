@@ -58,6 +58,11 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
+     * @var resource
+     */
+    protected $result = null;
+
+    /**
      * Return a unique connection key identifier
      * @param array  $connectionConfig
      * @param string $database
@@ -140,25 +145,25 @@ class Driver implements DriverInterface
         if ($this->logger !== null) {
             $this->logger->startQuery($originalSQL, $params, $this->objectHash, $this->database);
         }
-        $result = pg_query_params($this->connection, $sql, $values);
+        $this->result = pg_query_params($this->connection, $sql, $values);
         if ($this->logger !== null) {
             $this->logger->stopQuery();
         }
 
-        if ($result === false) {
+        if ($this->result === false) {
             throw new QueryException(pg_last_error($this->connection));
         }
 
         if ($collection === null) {
-            return $result;
+            return $this->result;
         }
 
-        return $this->setCollectionWithResult($result, $sql, $collection);
+        return $this->setCollectionWithResult($sql, $collection);
     }
 
-    protected function setCollectionWithResult($result, $sql, CollectionInterface $collection)
+    protected function setCollectionWithResult($sql, CollectionInterface $collection)
     {
-        $result = new Result($result);
+        $result = new Result($this->result);
         $result->setQuery($sql);
         $collection->set($result);
 
@@ -306,7 +311,7 @@ class Driver implements DriverInterface
     {
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
         $row = pg_fetch_row($resultResource);
-        return (int)$row[0];
+        return (int) $row[0];
     }
 
     /**
@@ -315,6 +320,10 @@ class Driver implements DriverInterface
      */
     public function getAffectedRows()
     {
-        return pg_affected_rows($this->connection);
+        if ($this->result === null) {
+            return 0;
+        }
+
+        return pg_affected_rows($this->result);
     }
 }
