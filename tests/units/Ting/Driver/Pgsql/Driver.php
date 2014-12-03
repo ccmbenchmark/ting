@@ -291,14 +291,14 @@ class Driver extends atoum
 
     }
 
-    public function testGetAffectedRowsShouldReturnAffectedRows()
+    public function testGetAffectedRowsWithouResultShouldReturn0()
     {
         $this->function->pg_affected_rows = 12;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->integer($driver->getAffectedRows())
-                ->isIdenticalTo(12)
+                ->isIdenticalTo(0)
         ;
     }
 
