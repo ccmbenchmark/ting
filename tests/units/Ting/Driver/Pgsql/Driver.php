@@ -360,7 +360,7 @@ class Driver extends atoum
         ;
     }
 
-    public function testExecuteShouldReturnACollection()
+    public function testExecuteShouldCallSetOnCollection()
     {
         $this->function->pg_connect      = true;
         $this->function->pg_query_params = true;
@@ -373,9 +373,23 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-                ->object($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
-                    ->isIdenticalTo($mockCollection)
+            ->then($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
+            ->mock($mockCollection)
+                ->call('set')->once();
         ;
+    }
+
+    public function testExecuteShouldReturnArray()
+    {
+        $this->function->pg_connect       = true;
+        $this->function->pg_query_params  = true;
+        $this->function->pg_fetch_assoc   = ['Bouh' => 'Hop'];
+        $this->function->pg_result_status = PGSQL_TUPLES_OK;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->array($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]))
+            ->isIdenticalTo(['Bouh' => 'Hop']);
     }
 
     public function testExecuteShouldRaiseExceptionWhenErrorHappens()

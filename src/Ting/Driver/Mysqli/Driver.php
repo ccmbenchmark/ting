@@ -220,7 +220,11 @@ class Driver implements DriverInterface
         }
 
         if ($collection === null) {
-            return $result;
+            if ($result === true) {
+                return true;
+            }
+
+            return $result->fetch_assoc();
         }
 
         return $this->setCollectionWithResult($result, $collection);

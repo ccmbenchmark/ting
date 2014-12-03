@@ -357,9 +357,8 @@ class Driver extends atoum
 
     public function testExecuteShouldBuildACorrectQuery()
     {
-        $driverFake          = new \mock\Fake\Mysqli();
-        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
-
+        $driverFake       = new \mock\Fake\Mysqli();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult(['hop' => 'la']);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
@@ -374,7 +373,7 @@ class Driver extends atoum
                     return $mockMysqliResult;
                 }
             )
-            ->then(
+            ->array(
                 $driver->execute(
                     'SELECT population FROM T_CITY_CIT WHERE id = :id
                     AND name = :name AND age = :age AND last_modified = :date',
@@ -386,6 +385,7 @@ class Driver extends atoum
                     ]
                 )
             )
+                ->isIdenticalTo(['hop' => 'la'])
             ->string($outerSql)
                 ->isEqualTo(
                     'SELECT population FROM T_CITY_CIT WHERE id = 12
@@ -394,6 +394,19 @@ class Driver extends atoum
             ->mock($driverFake)
                 ->call('query')
                     ->once();
+    }
+
+    public function testExecuteShouldReturnTrue()
+    {
+        $driverFake = new \mock\Fake\Mysqli();
+        $this->calling($driverFake)->query = function ($sql) {
+            return true;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->boolean($driver->execute('UPDATE Bouh SET id = 3'))
+                ->isTrue();
     }
 
     public function testPrepareShouldNotTransformEscapedColon()
