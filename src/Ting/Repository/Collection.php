@@ -139,7 +139,13 @@ class Collection implements CollectionInterface, \Iterator
      */
     public function first()
     {
-        return $this->rewind()->current();
+        $result = $this->rewind()->current();
+
+        if ($result === false) {
+            return null;
+        }
+
+        return $result;
     }
 
     /**

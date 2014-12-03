@@ -99,6 +99,39 @@ class Collection extends atoum
                     ->withIdenticalArguments($data, $collection)->once();
     }
 
+    public function testFirstShouldReturnNull()
+    {
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->variable($collection->first())
+                ->isNull();
+    }
+
+    public function testFirstShouldReturnFirstItemOfCollection()
+    {
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = array();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->then($collection->set($result))
+            ->array($collection->first())
+                ->isEqualTo(['prenom' => 'Sylvain']);
+    }
+
     public function testIterator()
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
