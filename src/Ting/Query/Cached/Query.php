@@ -42,6 +42,11 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     protected $ttl = null;
 
     /**
+     * @var string|null
+     */
+    protected $cacheKey = null;
+
+    /**
      * @var int
      */
     protected $version = 1;
@@ -69,6 +74,19 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     public function setTtl($ttl)
     {
         $this->ttl = (int) $ttl;
+        return $this;
+    }
+
+    /**
+     * Define the cache key for the current query
+     *
+     * @param $cacheKey
+     * @return $this
+     */
+    public function setCacheKey($cacheKey)
+    {
+        $this->cacheKey = $cacheKey;
+
         return $this;
     }
 
@@ -107,34 +125,15 @@ class Query extends \CCMBenchmark\Ting\Query\Query
             $collection = $this->collectionFactory->get();
         }
 
-        $key      = $this->getCacheKey($this->params);
-        $isCached = $this->checkCache($key, $collection);
+        $isCached = $this->checkCache($this->cacheKey, $collection);
         if ($isCached === true) {
             return $collection;
         }
 
         parent::query($collection);
-        $this->cache->store($key, $collection->toArray(), $this->ttl);
+        $this->cache->store($this->cacheKey, $collection->toArray(), $this->ttl);
 
         return $collection;
-    }
-
-    /**
-     * @param array $params
-     * @return string
-     */
-    protected function getCacheKey(array $params)
-    {
-        ksort($params);
-        $key = $this->sql . serialize($params);
-        $this->connection->forCacheKey(
-            function ($cacheKey) use (&$key) {
-                $key = $key . $cacheKey;
-            }
-        );
-        $key = sha1($key) . '-' . $this->version;
-
-        return $key;
     }
 
     /**
@@ -146,6 +145,10 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      */
     protected function checkCache($key, CollectionInterface $collection)
     {
+        if ($key === null) {
+            throw new QueryException('You must call setCacheKey to use query method');
+        }
+
         $collection->setFromCache(false);
 
         if ($this->force === true) {

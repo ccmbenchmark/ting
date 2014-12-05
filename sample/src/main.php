@@ -87,7 +87,7 @@ $services->get('Cache')->store('key', 'storedInCacheValue', 10);
 echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
 /**
- * @var CityRepository
+ * @var $cityRepository CityRepository
  */
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
@@ -99,7 +99,7 @@ $queryCached = $cityRepository->getCachedQuery(
             where co.cou_code = :code limit 1"
 );
 
-$queryCached->setTtl(10);
+$queryCached->setTtl(10)->setCacheKey('cityFRA');
 $collection = $queryCached->setParams(['code' => 'FRA'])->query();
 echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";
 foreach ($collection as $result) {

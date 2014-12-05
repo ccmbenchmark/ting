@@ -29,21 +29,6 @@ use mageekguy\atoum;
 
 class PreparedQuery extends atoum
 {
-    public function testQueryShouldRaiseExceptionIfNoTTL()
-    {
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-
-        $this
-            ->if($query = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('SELECT', $mockConnection))
-            ->exception(function () use ($query) {
-                $query->query();
-            })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
-                ->hasMessage('You should call setTtl to use query method')
-        ;
-    }
-
     public function testQueryShouldCallOnlyCacheGetIfDataInCache()
     {
         $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -73,7 +58,7 @@ class PreparedQuery extends atoum
                 $query = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('', $mockConnection, $mockCollectionFactory)
             )
             ->then($query->setCache($mockMemcached))
-            ->then($query->setTtl(10))
+            ->then($query->setTtl(10)->setCacheKey('myCacheKey'))
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
                 ->mock($mockCollectionFactory)
@@ -114,7 +99,7 @@ class PreparedQuery extends atoum
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('', $mockConnection))
             ->then($query->setCache($mockMemcached))
-            ->then($query->setTtl(10))
+            ->then($query->setTtl(10)->setCacheKey('myCacheKey'))
             ->then($query->prepareQuery())
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
@@ -144,7 +129,7 @@ class PreparedQuery extends atoum
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('SELECT', $mockConnection))
-            ->then($query->setTtl(0))
+            ->then($query->setTtl(0)->setCacheKey('myCacheKey'))
             ->object($query->prepareExecute())
                 ->isIdenticalTo($query->prepareExecute())
             ->mock($mockDriver)
@@ -172,7 +157,7 @@ class PreparedQuery extends atoum
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('SELECT', $mockConnection))
-            ->then($query->setTtl(0))
+            ->then($query->setTtl(0)->setCacheKey('myCacheKey'))
             ->then($query->execute())
             ->mock($mockStatement)
                 ->call('execute')
