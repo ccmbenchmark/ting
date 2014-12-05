@@ -29,9 +29,10 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-
+    // @codingStandardsIgnoreStart
     const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
-
+    // @codingStandardsIgnoreEnd
+    
     protected $result          = null;
     protected $fields          = array();
     protected $iteratorOffset  = 0;
