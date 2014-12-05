@@ -165,4 +165,20 @@ class MetadataRepository extends atoum
                 ->isEmpty()
         ;
     }
+
+    public function testBatchLoadMetadataFromCacheShouldLoad1Repository()
+    {
+        $paths = ['tests\fixtures\model\BouhRepository'];
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if(
+                $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
+                    $services->get('MetadataFactory')
+                )
+            )
+            ->array($metadataRepository->batchLoadMetadataFromCache($paths))
+                ->size
+                ->isIdenticalTo(1)
+        ;
+    }
 }

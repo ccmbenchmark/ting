@@ -40,6 +40,15 @@ class Memcached extends atoum
         $this->memcached->setConnection($this->memcachedMock);
     }
 
+    public function testSetConnectionShouldReturnVoid()
+    {
+        $this
+            ->if($memcached = new \CCMBenchmark\Ting\Cache\Memcached())
+            ->variable($memcached->setConnection($this->memcachedMock))
+                ->isNull()
+        ;
+    }
+
     public function testGetShouldReturnNullOnNonExistentKey()
     {
         $this->calling($this->memcachedMock)->get = false;
