@@ -38,7 +38,8 @@ class HydratorSingleObject extends Hydrator
      */
     public function hydrate(array $columns, CollectionInterface $collection)
     {
-        $result = reset(parent::hydrateColumns($columns));
+        $result = parent::hydrateColumns($columns);
+        $result = reset($result);
         $collection->add($result);
         return $result;
     }
