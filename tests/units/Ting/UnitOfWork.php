@@ -212,4 +212,104 @@ class UnitOfWork extends atoum
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isFalse();
     }
+
+    public function testIsNewAfterFlushShouldReturnFalse()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+        $mockMetadata = new \mock\CCMBenchmark\Ting\Repository\Metadata();
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($mockMetadata);
+
+        $mockMetadataRepository->addMetadata(
+            'tests\fixtures\model\BouhRepository',
+            \tests\fixtures\model\BouhRepository::initMetadata()
+        );
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('', $mockConnection);
+        $this->calling($mockPreparedQuery)->prepareExecute = $mockPreparedQuery;
+        $this->calling($mockPreparedQuery)->execute = true;
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->getInsertId = 1;
+
+
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $mockConnectionPool,
+                $mockMetadataRepository,
+                $mockQueryFactory
+            ))
+            ->then($unitOfWork->save($entity))
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isTrue()
+            ->boolean($unitOfWork->isNew($entity))
+                ->isTrue()
+            ->variable($unitOfWork->flush())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()
+            ->boolean($unitOfWork->isNew($entity))
+                ->isFalse()
+        ;
+    }
+
+    public function testShouldBePersistedAfterFlushShouldReturnFalse()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+        $mockMetadata = new \mock\CCMBenchmark\Ting\Repository\Metadata();
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($mockMetadata);
+
+        $mockMetadataRepository->addMetadata(
+            'tests\fixtures\model\BouhRepository',
+            \tests\fixtures\model\BouhRepository::initMetadata()
+        );
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('', $mockConnection);
+        $this->calling($mockPreparedQuery)->prepareExecute = $mockPreparedQuery;
+        $this->calling($mockPreparedQuery)->execute = true;
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->getInsertId = 1;
+
+
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $mockConnectionPool,
+                $mockMetadataRepository,
+                $mockQueryFactory
+            ))
+            ->and($unitOfWork->manage($entity))
+            ->then($entity->setName('newName'))
+            ->then($unitOfWork->save($entity))
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isTrue()
+            ->variable($unitOfWork->flush())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()
+            ->then($unitOfWork->delete($entity))
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isTrue()
+            ->then($entity->setId(1))
+            ->variable($unitOfWork->flush())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()
+        ;
+    }
 }

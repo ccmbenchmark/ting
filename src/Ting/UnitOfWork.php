@@ -38,6 +38,7 @@ class UnitOfWork implements PropertyListenerInterface
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
     protected $queryFactory              = null;
+    protected $entities                  = array();
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
@@ -269,7 +270,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties) {
+            function (Metadata $metadata) use ($entity, $properties, $oid) {
                 $query = $metadata->generateQueryForUpdate(
                     $metadata->getConnection($this->connectionPool),
                     $this->queryFactory,
@@ -277,6 +278,9 @@ class UnitOfWork implements PropertyListenerInterface
                     $properties
                 );
                 $query->prepareExecute()->execute();
+
+                unset($this->entitiesChanged[$oid]);
+                unset($this->entitiesShouldBePersisted[$oid]);
             }
         );
     }
@@ -292,7 +296,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity) {
+            function (Metadata $metadata) use ($entity, $oid) {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
                     $connection,
@@ -301,6 +305,10 @@ class UnitOfWork implements PropertyListenerInterface
                 );
                 $query->prepareExecute()->execute();
                 $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
+
+                unset($this->entitiesChanged[$oid]);
+                unset($this->entitiesShouldBePersisted[$oid]);
+
                 $this->manage($entity);
             }
         );
