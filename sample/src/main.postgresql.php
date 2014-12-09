@@ -26,6 +26,8 @@ namespace sample\src;
 
 // ting autoloader
 
+use sample\src\model\CityRepository;
+
 require __DIR__ . '/../../vendor/autoload.php';
 // sample autoloader
 require __DIR__ . '/../vendor/autoload.php';
@@ -110,6 +112,9 @@ try {
 
 
 try {
+    /**
+     * @var $cityRepository CityRepository
+     */
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     echo str_repeat("-", 40) . "\n";
@@ -123,7 +128,7 @@ try {
             where co.cou_code = :code limit 1'
     );
 
-    $query->setTtl(10);
+    $query->setTtl(10)->setCacheKey('cit_FRA_pgsql');
 
     $collection = $query->setParams(['code' => 'FRA'])->query();
     echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";

@@ -41,6 +41,11 @@ class MysqliResult implements \Iterator
 
     }
 
+    public function fetch_assoc()
+    {
+        return $this->data;
+    }
+
     public function data_seek()
     {
 

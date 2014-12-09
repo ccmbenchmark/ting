@@ -73,10 +73,10 @@ class Result extends atoum
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
-            ->then($result->setQuery('SELECT firstname as prenom, bouh.name as nom FROM T_BOUH_BOO as bouh'))
+            ->then($result->setQuery('SELECT "firstname", bouh.name as nom FROM T_BOUH_BOO as bouh'))
             ->then($row = $result->format(array('firstname' => 'Sylvain', 'name' => 'Robez-Masson')))
             ->string($row[0]['name'])
-                ->isIdenticalTo('prenom')
+                ->isIdenticalTo('firstname')
             ->string($row[0]['orgName'])
                 ->isIdenticalTo('firstname')
             ->string($row[0]['table'])

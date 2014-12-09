@@ -40,6 +40,17 @@ class Query extends atoum
         ;
     }
 
+    public function testSetCacheKeyShouldReturnThis()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $this
+            ->if($cachedQuery = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection))
+            ->object($cachedQuery->setCacheKey('myCacheKey'))
+                ->isIdenticalTo($cachedQuery)
+        ;
+    }
+
     public function testSetVersionShouldReturnThis()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -89,7 +100,7 @@ class Query extends atoum
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection, $mockCollectionFactory))
             ->then($query->setCache($mockMemcached))
-            ->then($query->setTtl(10))
+            ->then($query->setTtl(10)->setCacheKey('myCacheKey'))
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
                 ->mock($mockCollectionFactory)
@@ -126,7 +137,7 @@ class Query extends atoum
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection))
             ->then($query->setCache($mockMemcached))
-            ->then($query->setTtl(10))
+            ->then($query->setTtl(10)->setCacheKey('myCacheKey'))
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
             ->mock($mockMemcached)
@@ -143,11 +154,27 @@ class Query extends atoum
         $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
         $this
             ->if($cachedQuery = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection))
+            ->and($cachedQuery->setCacheKey('myCacheKey'))
             ->exception(function () use ($cachedQuery) {
                 $cachedQuery->query();
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
                 ->hasMessage('You should call setTtl to use query method')
+        ;
+    }
+
+    public function testQueryWithoutCacheKeyShouldRaiseException()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $this
+            ->if($cachedQuery = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection))
+            ->and($cachedQuery->setTtl(10))
+            ->exception(function () use ($cachedQuery) {
+                $cachedQuery->query(new Collection());
+            })
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
+                ->hasMessage('You must call setCacheKey to use query method')
         ;
     }
 }

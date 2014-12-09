@@ -86,8 +86,7 @@ class PreparedQuery extends Query
             $collection = $this->collectionFactory->get();
         }
 
-        $key      = $this->getCacheKey($this->params);
-        $isCached = $this->checkCache($key, $collection, $this->params);
+        $isCached = $this->checkCache($this->cacheKey, $collection, $this->params);
 
         if ($isCached === true) {
             return $collection;
@@ -96,7 +95,7 @@ class PreparedQuery extends Query
         $this->prepareQuery();
 
         $this->statement->execute($this->params, $collection);
-        $this->cache->store($key, $collection->toArray(), $this->ttl);
+        $this->cache->store($this->cacheKey, $collection->toArray(), $this->ttl);
 
         return $collection;
     }
