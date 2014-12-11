@@ -213,7 +213,7 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
-    public function testIsNewAfterFlushShouldReturnFalse()
+    public function testIsNewAfterProcessShouldReturnFalse()
     {
         $entity = new \tests\fixtures\model\Bouh();
         $mockMetadata = new \mock\CCMBenchmark\Ting\Repository\Metadata();
@@ -251,7 +251,7 @@ class UnitOfWork extends atoum
                 ->isTrue()
             ->boolean($unitOfWork->isNew($entity))
                 ->isTrue()
-            ->variable($unitOfWork->flush())
+            ->variable($unitOfWork->process())
                 ->isNull()
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isFalse()
@@ -260,7 +260,7 @@ class UnitOfWork extends atoum
         ;
     }
 
-    public function testShouldBePersistedAfterFlushShouldReturnFalse()
+    public function testShouldBePersistedAfterProcessShouldReturnFalse()
     {
         $entity = new \tests\fixtures\model\Bouh();
         $mockMetadata = new \mock\CCMBenchmark\Ting\Repository\Metadata();
@@ -298,7 +298,7 @@ class UnitOfWork extends atoum
             ->then($unitOfWork->pushSave($entity))
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isTrue()
-            ->variable($unitOfWork->flush())
+            ->variable($unitOfWork->process())
                 ->isNull()
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isFalse()
@@ -306,7 +306,7 @@ class UnitOfWork extends atoum
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isTrue()
             ->then($entity->setId(1))
-            ->variable($unitOfWork->flush())
+            ->variable($unitOfWork->process())
                 ->isNull()
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isFalse()

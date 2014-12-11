@@ -186,7 +186,7 @@ class Repository extends atoum
         ;
     }
 
-    public function testSaveShouldCallUnitOfWorkSaveThenFlush()
+    public function testSaveShouldCallUnitOfWorkSaveThenProcess()
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -196,7 +196,7 @@ class Repository extends atoum
             $services->get('QueryFactory')
         );
         $this->calling($mockUnitOfWork)->pushSave = $mockUnitOfWork;
-        $this->calling($mockUnitOfWork)->flush = true;
+        $this->calling($mockUnitOfWork)->process = true;
 
         $entity = new Bouh();
 
@@ -213,12 +213,12 @@ class Repository extends atoum
             ->mock($mockUnitOfWork)
                 ->call('pushSave')
                     ->once()
-                ->call('flush')
+                ->call('process')
                     ->once()
         ;
     }
 
-    public function testDeleteShouldCallUnitOfWorkDeleteThenFlush()
+    public function testDeleteShouldCallUnitOfWorkDeleteThenProcess()
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -228,7 +228,7 @@ class Repository extends atoum
             $services->get('QueryFactory')
         );
         $this->calling($mockUnitOfWork)->pushDelete = $mockUnitOfWork;
-        $this->calling($mockUnitOfWork)->flush  = true;
+        $this->calling($mockUnitOfWork)->process  = true;
 
         $entity = new Bouh();
 
@@ -245,7 +245,7 @@ class Repository extends atoum
             ->mock($mockUnitOfWork)
                 ->call('pushDelete')
                     ->once()
-                ->call('flush')
+                ->call('process')
                     ->once()
         ;
     }

@@ -102,7 +102,7 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * Flag the entity to be persisted (insert or update) on next flush
+     * Flag the entity to be persisted (insert or update) on next process
      *
      * @param $entity
      * @return $this
@@ -187,7 +187,7 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * Flag the entity to be deleted on next flush
+     * Flag the entity to be deleted on next process
      *
      * @param $entity
      * @return $this
@@ -222,24 +222,24 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Apply flagged changes against the database:
-     * * Persist flagged new entities
-     * * Update flagged entities
-     * * Delete flagged entities
+     * Save flagged new entities
+     * Update flagged entities
+     * Delete flagged entities
      */
-    public function flush()
+    public function process()
     {
         foreach ($this->entitiesShouldBePersisted as $oid => $state) {
             switch ($state) {
                 case self::STATE_MANAGED:
-                    $this->flushManaged($oid);
+                    $this->processManaged($oid);
                     break;
 
                 case self::STATE_NEW:
-                    $this->flushNew($oid);
+                    $this->processNew($oid);
                     break;
 
                 case self::STATE_DELETE:
-                    $this->flushDelete($oid);
+                    $this->processDelete($oid);
                     break;
             }
         }
@@ -250,7 +250,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param $oid
      */
-    protected function flushManaged($oid)
+    protected function processManaged($oid)
     {
         if (isset($this->entitiesChanged[$oid]) === false) {
             return;
@@ -290,7 +290,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param $oid
      */
-    protected function flushNew($oid)
+    protected function processNew($oid)
     {
         $entity = $this->entities[$oid];
 
@@ -319,7 +319,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param $oid
      */
-    protected function flushDelete($oid)
+    protected function processDelete($oid)
     {
         $entity = $this->entities[$oid];
         $properties = [];

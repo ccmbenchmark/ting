@@ -172,7 +172,7 @@ class Repository
      */
     public function save($entity)
     {
-        $this->unitOfWork->pushSave($entity)->flush();
+        $this->unitOfWork->pushSave($entity)->process();
     }
 
     /**
@@ -182,7 +182,7 @@ class Repository
      */
     public function delete($entity)
     {
-        $this->unitOfWork->pushDelete($entity)->flush();
+        $this->unitOfWork->pushDelete($entity)->process();
     }
 
     /**
