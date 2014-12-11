@@ -194,7 +194,7 @@ class UnitOfWork extends atoum
                 $this->services->get('MetadataRepository'),
                 $this->services->get('QueryFactory')
             ))
-            ->then($unitOfWork->delete($mockEntity))
+            ->then($unitOfWork->pushDelete($mockEntity))
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isTrue();
     }
@@ -302,7 +302,7 @@ class UnitOfWork extends atoum
                 ->isNull()
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isFalse()
-            ->then($unitOfWork->delete($entity))
+            ->then($unitOfWork->pushDelete($entity))
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isTrue()
             ->then($entity->setId(1))

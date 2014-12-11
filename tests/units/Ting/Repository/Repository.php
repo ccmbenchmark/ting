@@ -227,7 +227,7 @@ class Repository extends atoum
             $services->get('MetadataRepository'),
             $services->get('QueryFactory')
         );
-        $this->calling($mockUnitOfWork)->delete = $mockUnitOfWork;
+        $this->calling($mockUnitOfWork)->pushDelete = $mockUnitOfWork;
         $this->calling($mockUnitOfWork)->flush  = true;
 
         $entity = new Bouh();
@@ -243,7 +243,7 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->delete($entity))
             ->mock($mockUnitOfWork)
-                ->call('delete')
+                ->call('pushDelete')
                     ->once()
                 ->call('flush')
                     ->once()

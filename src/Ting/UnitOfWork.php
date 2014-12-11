@@ -192,7 +192,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param $entity
      * @return $this
      */
-    public function delete($entity)
+    public function pushDelete($entity)
     {
         $oid = spl_object_hash($entity);
         $this->entitiesShouldBePersisted[$oid] = self::STATE_DELETE;
