@@ -72,6 +72,15 @@ class Metadata extends atoum
                 ->hasMessage('Class must not start with a \\');
     }
 
+    public function testAddFieldShouldReturnThis()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory')))
+            ->object($metadata->addField(array('columnName' => 'BO_BOUH', 'fieldName' => 'bouh')))
+                ->isIdenticalTo($metadata);
+    }
+
     public function testAddFieldWithInvalidParametersShouldThrowException()
     {
         $services = new \CCMBenchmark\Ting\Services();
