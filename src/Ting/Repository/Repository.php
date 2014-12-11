@@ -172,7 +172,7 @@ class Repository
      */
     public function save($entity)
     {
-        $this->unitOfWork->save($entity)->flush();
+        $this->unitOfWork->pushSave($entity)->flush();
     }
 
     /**

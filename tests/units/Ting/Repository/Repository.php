@@ -195,7 +195,7 @@ class Repository extends atoum
             $services->get('MetadataRepository'),
             $services->get('QueryFactory')
         );
-        $this->calling($mockUnitOfWork)->save  = $mockUnitOfWork;
+        $this->calling($mockUnitOfWork)->pushSave = $mockUnitOfWork;
         $this->calling($mockUnitOfWork)->flush = true;
 
         $entity = new Bouh();
@@ -211,7 +211,7 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->save($entity))
             ->mock($mockUnitOfWork)
-                ->call('save')
+                ->call('pushSave')
                     ->once()
                 ->call('flush')
                     ->once()

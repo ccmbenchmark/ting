@@ -107,7 +107,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param $entity
      * @return $this
      */
-    public function save($entity)
+    public function pushSave($entity)
     {
         $oid   = spl_object_hash($entity);
         $state = self::STATE_NEW;
