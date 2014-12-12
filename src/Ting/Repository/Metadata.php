@@ -106,6 +106,7 @@ class Metadata
      *      primary : boolean : is this field a primary - optional
      *      autoincrement : boolean : is this field an autoincrement - optional
      * @throws \CCMBenchmark\Ting\Exception
+     * @return $this
      */
     public function addField(array $params)
     {
@@ -124,6 +125,7 @@ class Metadata
         $this->fieldsByProperty[$params['fieldName']] = $params;
         $this->fields[$params['columnName']] = $params;
 
+        return $this;
     }
 
     /**

@@ -186,7 +186,7 @@ class Repository extends atoum
         ;
     }
 
-    public function testSaveShouldCallUnitOfWorkSaveThenFlush()
+    public function testSaveShouldCallUnitOfWorkSaveThenProcess()
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -195,8 +195,8 @@ class Repository extends atoum
             $services->get('MetadataRepository'),
             $services->get('QueryFactory')
         );
-        $this->calling($mockUnitOfWork)->save  = $mockUnitOfWork;
-        $this->calling($mockUnitOfWork)->flush = true;
+        $this->calling($mockUnitOfWork)->pushSave = $mockUnitOfWork;
+        $this->calling($mockUnitOfWork)->process = true;
 
         $entity = new Bouh();
 
@@ -211,14 +211,14 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->save($entity))
             ->mock($mockUnitOfWork)
-                ->call('save')
+                ->call('pushSave')
                     ->once()
-                ->call('flush')
+                ->call('process')
                     ->once()
         ;
     }
 
-    public function testDeleteShouldCallUnitOfWorkDeleteThenFlush()
+    public function testDeleteShouldCallUnitOfWorkDeleteThenProcess()
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -227,8 +227,8 @@ class Repository extends atoum
             $services->get('MetadataRepository'),
             $services->get('QueryFactory')
         );
-        $this->calling($mockUnitOfWork)->delete = $mockUnitOfWork;
-        $this->calling($mockUnitOfWork)->flush  = true;
+        $this->calling($mockUnitOfWork)->pushDelete = $mockUnitOfWork;
+        $this->calling($mockUnitOfWork)->process  = true;
 
         $entity = new Bouh();
 
@@ -243,9 +243,9 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->delete($entity))
             ->mock($mockUnitOfWork)
-                ->call('delete')
+                ->call('pushDelete')
                     ->once()
-                ->call('flush')
+                ->call('process')
                     ->once()
         ;
     }

@@ -82,26 +82,26 @@ try {
     echo str_repeat("-", 40) . "\n";
     $city->setName("boum");
     $city->setDistrict('Yolé');
-    $unitOfWork->persist($city);
+    $unitOfWork->pushSave($city);
 
     $city2 = new model\City();
     $city2->setName('Bouh');
     $city2->setDistrict('Yo');
-    $unitOfWork->persist($city2);
+    $unitOfWork->pushSave($city2);
 
-    $unitOfWork->flush();
+    $unitOfWork->process();
 
     $city->setName("Herat");
     $city->setDistrict('Herat');
-    $unitOfWork->persist($city);
+    $unitOfWork->pushSave($city);
 
     $city2->setName('Bouh 2');
     $unitOfWork->persist($city2);
 
-    $unitOfWork->flush();
+    $unitOfWork->process();
 
-    $unitOfWork->remove($city2);
-    $unitOfWork->flush();
+    $unitOfWork->pushDelete($city2);
+    $unitOfWork->process();
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }

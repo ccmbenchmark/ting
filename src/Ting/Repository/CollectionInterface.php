@@ -29,6 +29,11 @@ interface CollectionInterface
     public function set(\Iterator $result);
 
     /**
+     * @return mixed
+     */
+    public function first();
+
+    /**
      * Iterator
      */
     public function rewind();
