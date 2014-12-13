@@ -30,18 +30,29 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class Metadata
 {
 
-    protected $connectionName   = null;
-    protected $databaseName     = null;
-    protected $entity           = null;
-    protected $table            = null;
-    protected $fields           = [];
-    protected $fieldsByProperty = [];
-    protected $primaries        = [];
-    protected $autoincrement    = null;
+    /**
+     * @var SerializerFactoryInterface|null
+     */
+    protected $serializerFactory = null;
+    protected $connectionName    = null;
+    protected $databaseName      = null;
+    protected $entity            = null;
+    protected $table             = null;
+    protected $fields            = [];
+    protected $fieldsByProperty  = [];
+    protected $primaries         = [];
+    protected $autoincrement     = null;
+
+
+    public function __construct(SerializerFactoryInterface $serializerFactory)
+    {
+        $this->serializerFactory = $serializerFactory;
+    }
 
     /**
      * Return applicable connection
@@ -193,7 +204,40 @@ class Metadata
     public function setEntityProperty($entity, $column, $value)
     {
         $property = 'set' . $this->fields[$column]['fieldName'];
+
+        if (isset($this->fields[$column]['serializer']) === true) {
+            $options = [];
+
+            if (isset($this->fields[$column]['serializer_options']['unserialize']) === true) {
+                $options = $this->fields[$column]['serializer_options']['unserialize'];
+            }
+            $value = $this->serializerFactory->get($this->fields[$column]['serializer'])->unserialize($value, $options);
+        }
+
         $entity->$property($value);
+    }
+
+    /**
+     * Retrieve property of entity according to the field (unserialize if needed)
+     * @param object $entity
+     * @param array $field
+     * @return mixed
+     */
+    protected function getEntityProperty($entity, $field)
+    {
+        $propertyName    = 'get' . $field['fieldName'];
+        $value = $entity->$propertyName();
+
+        if (isset($field['serializer']) === true) {
+            $options = [];
+
+            if (isset($field['serializer_options']['serialize']) === true) {
+                $options = $field['serializer_options']['serialize'];
+            }
+            $value = $this->serializerFactory->get($field['serializer'])->serialize($value, $options);
+        }
+
+        return $value;
     }
 
 
@@ -260,8 +304,7 @@ class Metadata
         $values = [];
 
         foreach ($this->fields as $column => $field) {
-            $propertyName    = 'get' . $field['fieldName'];
-            $values[$column] = $entity->$propertyName();
+            $values[$column] = $this->getEntityProperty($entity, $field);
         }
 
         $fields = array_keys($this->fields);

@@ -30,6 +30,7 @@ use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class Repository
@@ -74,7 +75,8 @@ class Repository
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
         CacheInterface $cache,
-        UnitOfWork $unitOfWork
+        UnitOfWork $unitOfWork,
+        SerializerFactoryInterface $serializerFactory
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
@@ -84,7 +86,7 @@ class Repository
         $this->unitOfWork         = $unitOfWork;
 
         $class            = get_class($this);
-        $this->metadata   = $class::initMetadata();
+        $this->metadata   = $class::initMetadata($serializerFactory);
         $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
@@ -189,16 +191,20 @@ class Repository
      * @throws Exception
      * @return \CCMBenchmark\Ting\Repository\Metadata
      */
-    public static function initMetadata()
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
     {
         throw new Exception('You should add initMetadata in your class repository');
 
         /**
          * Example for your repository :
          *
-         *  $metadata = $metadataFactory->get();
+         *  $metadata = new Metadata($serializerFactory);
          *
          *  $metadata->setEntity('myProject\model\Bouh');
+         *  $metadata->setConnectionName('main');
+         *  $metadata->setDatabase('bouh');
+         *  $metadata->setTable('T_BOUH_BOO');
+         *
          *  $metadata->addField(array(
          *     'primary'    => true,
          *     'fieldName'  => 'aField',

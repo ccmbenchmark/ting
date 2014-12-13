@@ -112,6 +112,7 @@ class Generator
             . implode($fields, ', ') . ') VALUES (:' . implode(array_keys($values), ', :') . ')';
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
+
         $query->setParams($values);
         return $query;
     }

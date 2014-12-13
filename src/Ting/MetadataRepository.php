@@ -25,11 +25,22 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class MetadataRepository
 {
 
-    protected $metadataList    = array();
+    protected $metadataList = array();
+
+    /**
+     * @var SerializerFactoryInterface|null
+     */
+    protected $serializerFactory = null;
+
+    public function __construct(SerializerFactoryInterface $serializerFactory)
+    {
+        $this->serializerFactory = $serializerFactory;
+    }
 
     /**
      * @param          $table
@@ -99,7 +110,7 @@ class MetadataRepository
 
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata());
+            $this->addMetadata($repository, $repository::initMetadata($this->serializerFactory));
             $loaded[] = $repository;
         }
 
@@ -119,7 +130,7 @@ class MetadataRepository
     {
         $loaded = [];
         foreach ($paths as $repository) {
-            $this->addMetadata($repository, $repository::initMetadata());
+            $this->addMetadata($repository, $repository::initMetadata($this->serializerFactory));
             $loaded[] = $repository;
         }
 

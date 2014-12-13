@@ -44,7 +44,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'MetadataRepository',
             function () {
-                return new MetadataRepository($this->get('MetadataFactory'));
+                return new MetadataRepository($this->get('SerializerFactory'));
             }
         );
 
@@ -74,6 +74,13 @@ class Services implements ContainerInterface
         );
 
         $this->container->offsetSet(
+            'SerializerFactory',
+            function () {
+                return new Serializer\SerializerFactory();
+            }
+        );
+
+        $this->container->offsetSet(
             'Hydrator',
             function () {
                 return new Repository\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
@@ -96,7 +103,8 @@ class Services implements ContainerInterface
                     $this->get('QueryFactory'),
                     $this->get('CollectionFactory'),
                     $this->get('UnitOfWork'),
-                    $this->get('Cache')
+                    $this->get('Cache'),
+                    $this->get('SerializerFactory')
                 );
             }
         );
