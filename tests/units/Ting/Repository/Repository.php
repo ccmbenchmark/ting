@@ -63,7 +63,8 @@ class Repository extends atoum
                 $mockQueryFactory,
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->variable($repository->get([]))
                 ->isIdenticalTo($entity)
@@ -96,7 +97,8 @@ class Repository extends atoum
                 $mockQueryFactory,
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->variable($repository->get([], true))
                 ->isNull()
@@ -125,7 +127,8 @@ class Repository extends atoum
                 $services->get('QueryFactory'),
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->startTransaction())
             ->mock($mockDriver)
@@ -150,7 +153,8 @@ class Repository extends atoum
                 $services->get('QueryFactory'),
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->commit())
@@ -176,7 +180,8 @@ class Repository extends atoum
                 $services->get('QueryFactory'),
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->rollback())
@@ -207,7 +212,8 @@ class Repository extends atoum
                 $services->get('QueryFactory'),
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $mockUnitOfWork
+                $mockUnitOfWork,
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->save($entity))
             ->mock($mockUnitOfWork)
@@ -239,7 +245,8 @@ class Repository extends atoum
                 $services->get('QueryFactory'),
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $mockUnitOfWork
+                $mockUnitOfWork,
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->delete($entity))
             ->mock($mockUnitOfWork)
@@ -264,7 +271,8 @@ class Repository extends atoum
                 $mockQueryFactory,
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->getQuery('QUERY'))
             ->mock($mockQueryFactory)
@@ -287,7 +295,8 @@ class Repository extends atoum
                 $mockQueryFactory,
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->getPreparedQuery('QUERY'))
             ->mock($mockQueryFactory)
@@ -310,7 +319,8 @@ class Repository extends atoum
                 $mockQueryFactory,
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->getCachedQuery('QUERY'))
             ->mock($mockQueryFactory)
@@ -333,7 +343,8 @@ class Repository extends atoum
                 $mockQueryFactory,
                 $services->get('CollectionFactory'),
                 $services->get('Cache'),
-                $services->get('UnitOfWork')
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
             ))
             ->then($bouhRepository->getCachedPreparedQuery('QUERY'))
             ->mock($mockQueryFactory)

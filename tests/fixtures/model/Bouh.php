@@ -35,6 +35,7 @@ class Bouh implements NotifyPropertyInterface
     protected $id        = null;
     protected $firstname = null;
     protected $name      = null;
+    protected $roles     = ['USER'];
 
     public function setId($id)
     {
@@ -54,6 +55,12 @@ class Bouh implements NotifyPropertyInterface
         $this->name = (string) $name;
     }
 
+    public function setRoles(array $roles)
+    {
+        $this->propertyChanged('roles', $this->roles, $roles);
+        $this->roles = $roles;
+    }
+
     public function getId()
     {
         return (int) $this->id;
@@ -67,5 +74,10 @@ class Bouh implements NotifyPropertyInterface
     public function getName()
     {
         return (string) $this->name;
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }

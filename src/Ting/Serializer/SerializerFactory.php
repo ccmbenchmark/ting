@@ -22,28 +22,25 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Repository;
+namespace CCMBenchmark\Ting\Serializer;
 
-use mageekguy\atoum;
-
-class RepositoryFactory extends atoum
+class SerializerFactory implements SerializerFactoryInterface
 {
-    public function testGet()
-    {
-        $services = new \CCMBenchmark\Ting\Services();
+    /**
+     * @var SerializerInterface[]
+     */
+    protected $serializers = [];
 
-        $this
-            ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
-                $services->get('ConnectionPool'),
-                $services->get('MetadataRepository'),
-                $services->get('QueryFactory'),
-                $services->get('CollectionFactory'),
-                $services->get('UnitOfWork'),
-                $services->get('Cache'),
-                $services->get('SerializerFactory')
-            ))
-            ->and($repository = $repositoryFactory->get('\mock\tests\fixtures\model\BouhRepository'))
-            ->object($repository)
-                ->isInstanceOf('\mock\tests\fixtures\model\BouhRepository');
+    /**
+     * @param string $serializerName
+     * @return SerializerInterface
+     */
+    public function get($serializerName)
+    {
+        if (isset($this->serializers[$serializerName]) === false) {
+            $this->serializers[$serializerName] = new $serializerName();
+        }
+
+        return $this->serializers[$serializerName];
     }
 }

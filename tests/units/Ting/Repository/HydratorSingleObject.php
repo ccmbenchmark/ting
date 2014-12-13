@@ -48,7 +48,7 @@ class HydratorSingleObject extends atoum
         );
 
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 

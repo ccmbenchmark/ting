@@ -22,28 +22,28 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Repository;
+
+namespace tests\units\CCMBenchmark\Ting\Serializer;
 
 use mageekguy\atoum;
 
-class RepositoryFactory extends atoum
+class SerializerFactory extends atoum
 {
-    public function testGet()
+    public function testGetShouldReturnNewInstance()
     {
-        $services = new \CCMBenchmark\Ting\Services();
-
         $this
-            ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
-                $services->get('ConnectionPool'),
-                $services->get('MetadataRepository'),
-                $services->get('QueryFactory'),
-                $services->get('CollectionFactory'),
-                $services->get('UnitOfWork'),
-                $services->get('Cache'),
-                $services->get('SerializerFactory')
-            ))
-            ->and($repository = $repositoryFactory->get('\mock\tests\fixtures\model\BouhRepository'))
-            ->object($repository)
-                ->isInstanceOf('\mock\tests\fixtures\model\BouhRepository');
+            ->if($serializerFactory = new \CCMBenchmark\Ting\Serializer\SerializerFactory())
+            ->object($serializerFactory->get('CCMBenchmark\Ting\Serializer\Json'))
+                ->isInstanceOf('\CCMBenchmark\Ting\Serializer\Json');
+        ;
+    }
+
+    public function testGetShouldReturnSameInstance()
+    {
+        $this
+            ->if($serializerFactory = new \CCMBenchmark\Ting\Serializer\SerializerFactory())
+            ->object($serializerFactory->get('CCMBenchmark\Ting\Serializer\Json'))
+            ->isIdenticalTo($serializerFactory->get('CCMBenchmark\Ting\Serializer\Json'));
+        ;
     }
 }

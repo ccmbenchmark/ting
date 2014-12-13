@@ -216,12 +216,11 @@ class UnitOfWork extends atoum
     public function testIsNewAfterProcessShouldReturnFalse()
     {
         $entity = new \tests\fixtures\model\Bouh();
-        $mockMetadata = new \mock\CCMBenchmark\Ting\Repository\Metadata();
-        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($mockMetadata);
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($this->services->get('SerializerFactory'));
 
         $mockMetadataRepository->addMetadata(
             'tests\fixtures\model\BouhRepository',
-            \tests\fixtures\model\BouhRepository::initMetadata()
+            \tests\fixtures\model\BouhRepository::initMetadata($this->services->get('SerializerFactory'))
         );
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -263,12 +262,11 @@ class UnitOfWork extends atoum
     public function testShouldBePersistedAfterProcessShouldReturnFalse()
     {
         $entity = new \tests\fixtures\model\Bouh();
-        $mockMetadata = new \mock\CCMBenchmark\Ting\Repository\Metadata();
-        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($mockMetadata);
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($this->services->get('SerializerFactory'));
 
         $mockMetadataRepository->addMetadata(
             'tests\fixtures\model\BouhRepository',
-            \tests\fixtures\model\BouhRepository::initMetadata()
+            \tests\fixtures\model\BouhRepository::initMetadata($this->services->get('SerializerFactory'))
         );
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();

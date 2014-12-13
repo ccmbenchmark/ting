@@ -31,10 +31,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \tests\fixtures\model\Bouh();
@@ -58,10 +58,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForEntityShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('tests\fixtures\model\BouhRepository');
 
-        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $entity = new \mock\tests\fixtures\model\Bouh2();
@@ -85,10 +85,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -110,10 +110,10 @@ class MetadataRepository extends atoum
     public function testFindMetadataForTableShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('QueryFactory'));
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('MetadataFactory'));
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
         $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 
         $this
@@ -138,7 +138,7 @@ class MetadataRepository extends atoum
         $this
             ->if(
                 $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
-                    $services->get('MetadataFactory')
+                    $services->get('SerializerFactory')
                 )
             )
             ->array($metadataRepository->batchLoadMetadata(
@@ -155,7 +155,7 @@ class MetadataRepository extends atoum
         $this
             ->if(
                 $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
-                    $services->get('MetadataFactory')
+                    $services->get('SerializerFactory')
                 )
             )
             ->array($metadataRepository->batchLoadMetadata(
@@ -173,7 +173,7 @@ class MetadataRepository extends atoum
         $this
             ->if(
                 $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
-                    $services->get('MetadataFactory')
+                    $services->get('SerializerFactory')
                 )
             )
             ->array($metadataRepository->batchLoadMetadataFromCache($paths))

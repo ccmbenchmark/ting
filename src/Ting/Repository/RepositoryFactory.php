@@ -28,6 +28,7 @@ use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class RepositoryFactory
@@ -69,6 +70,7 @@ class RepositoryFactory
      * @param CollectionFactory $collectionFactory
      * @param UnitOfWork $unitOfWork
      * @param CacheInterface $cache
+     * @param SerializerFactoryInterface $serializerFactory
      */
     public function __construct(
         ConnectionPool $connectionPool,
@@ -76,7 +78,8 @@ class RepositoryFactory
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
         UnitOfWork $unitOfWork,
-        CacheInterface $cache
+        CacheInterface $cache,
+        SerializerFactoryInterface $serializerFactory
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
@@ -84,6 +87,7 @@ class RepositoryFactory
         $this->collectionFactory  = $collectionFactory;
         $this->unitOfWork         = $unitOfWork;
         $this->cache              = $cache;
+        $this->serializerFactory  = $serializerFactory;
     }
 
     /**
@@ -98,7 +102,8 @@ class RepositoryFactory
             $this->queryFactory,
             $this->collectionFactory,
             $this->cache,
-            $this->unitOfWork
+            $this->unitOfWork,
+            $this->serializerFactory
         );
     }
 }
