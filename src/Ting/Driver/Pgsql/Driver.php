@@ -138,7 +138,14 @@ class Driver implements DriverInterface
         foreach (array_keys($paramsOrder) as $key) {
             if ($params[$key] instanceof \DateTime) {
                 $params[$key] = $params[$key]->format('Y-m-d H:i:s');
+            } elseif (is_bool($params[$key]) === true) {
+                if ($params[$key] === true) {
+                    $params[$key] = 't';
+                } else {
+                    $params[$key] = 'f';
+                }
             }
+
             $values[] = &$params[$key];
         }
 

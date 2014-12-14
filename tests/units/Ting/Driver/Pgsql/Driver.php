@@ -360,6 +360,24 @@ class Driver extends atoum
         ;
     }
 
+    public function testExecuteShouldCallPGQueryParamsWithBooleanCastedIntoPostgresqlValue()
+    {
+        $outerValues = '';
+        $this->function->pg_query_params = function ($connection, $sql, $values) use (&$outerValues) {
+            $outerValues = $values;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->execute(
+                'SELECT 1 FROM "myTable" WHERE enabled = :enabled AND disabled = :disabled',
+                ['enabled' => true, 'disabled' => false]
+            ))
+            ->array($outerValues)
+                ->isIdenticalTo([0 => 't', 1 => 'f']);
+        ;
+    }
+
     public function testExecuteShouldCallSetOnCollection()
     {
         $this->function->pg_connect      = true;
