@@ -39,25 +39,29 @@ class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField(array(
-           'primary'       => true,
-           'autoincrement' => true,
-           'fieldName'     => 'id',
-           'columnName'    => 'boo_id'
+            'primary'       => true,
+            'autoincrement' => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'boo_id',
+            'type'          => 'int'
         ));
 
         $metadata->addField(array(
-           'fieldName'  => 'firstname',
-           'columnName' => 'boo_firstname'
+            'fieldName'  => 'firstname',
+            'columnName' => 'boo_firstname',
+            'type'      => 'string'
         ));
 
         $metadata->addField(array(
-           'fieldName'  => 'name',
-           'columnName' => 'boo_name'
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'roles',
             'columnName' => 'boo_roles',
+            'type'       => 'string',
             'serializer' => '\CCMBenchmark\Ting\Serializer\Json'
         ));
 
