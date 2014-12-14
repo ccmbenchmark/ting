@@ -80,6 +80,29 @@ class Statement extends atoum
                 ->isIdenticalTo(array('Sylvain', 3, 'A very long description', 32.1, '2014-03-01 14:02:05'));
     }
 
+    public function testExecuteShouldCallDriverExecuteWithParametersWithBooleanCastedIntoPostgresqlValue()
+    {
+        $this->function->pg_field_table = 'Bouh';
+        $this->function->pg_execute     = function ($connection, $statementName, $values) use (&$outerValues) {
+            $outerValues = $values;
+            return [];
+        };
+        $this->function->pg_result_seek = 0;
+        $this->function->pg_fetch_array = false;
+
+        $collection  = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $params      = array('enabled' => true, 'disabled' => false);
+        $paramsOrder = array('enabled' => null, 'disabled' => null);
+
+
+        $this
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', $paramsOrder))
+            ->then($statement->setQuery('SELECT firstname FROM Bouh'))
+            ->then($statement->execute($params, $collection))
+            ->array($outerValues)
+            ->isIdenticalTo(array('t', 'f'));
+    }
+
     public function testSetCollectionWithResult()
     {
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
