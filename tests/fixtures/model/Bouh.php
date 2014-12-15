@@ -35,18 +35,20 @@ class Bouh implements NotifyPropertyInterface
     protected $id        = null;
     protected $firstname = null;
     protected $name      = null;
+    protected $enabled   = null;
+    protected $price     = null;
     protected $roles     = ['USER'];
 
     public function setId($id)
     {
         $this->propertyChanged('id', $this->id, $id);
-        $this->id = (int) $id;
+        $this->id = $id;
     }
 
     public function setFirstname($firstname)
     {
         $this->propertyChanged('firstname', $this->firstname, $firstname);
-        $this->firstname = (string) $firstname;
+        $this->firstname = $firstname;
     }
 
     public function setName($name)
@@ -61,23 +63,45 @@ class Bouh implements NotifyPropertyInterface
         $this->roles = $roles;
     }
 
+    public function setEnabled($enabled)
+    {
+        $this->propertyChanged('enabled', $this->enabled, $enabled);
+        $this->enabled = $enabled;
+    }
+
+    public function setPrice($price)
+    {
+        $this->propertyChanged('price', $this->price, $price);
+        $this->price = $price;
+    }
+
     public function getId()
     {
-        return (int) $this->id;
+        return $this->id;
     }
 
     public function getFirstname()
     {
-        return (string) $this->firstname;
+        return $this->firstname;
     }
 
     public function getName()
     {
-        return (string) $this->name;
+        return $this->name;
     }
 
     public function getRoles()
     {
         return $this->roles;
+    }
+
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    public function getPrice()
+    {
+        return $this->price;
     }
 }

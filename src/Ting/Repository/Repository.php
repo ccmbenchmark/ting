@@ -219,7 +219,8 @@ class Repository
          * int
          * datetime
          * string
-         * float
+         * double
+         * bool
          *
          */
     }

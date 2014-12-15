@@ -121,8 +121,16 @@ class Metadata
      */
     public function addField(array $params)
     {
-        if (isset($params['fieldName']) === false || isset($params['columnName']) === false) {
-            throw new Exception('Field configuration must have fieldName and columnName properties');
+        if (isset($params['fieldName']) === false) {
+            throw new Exception('Field configuration must have "fieldName" property');
+        }
+
+        if (isset($params['columnName']) === false) {
+            throw new Exception('Field configuration must have "columnName" property');
+        }
+
+        if (isset($params['type']) === false) {
+            throw new Exception('Field configuration must have "type" property');
         }
 
         if (isset($params['primary']) === true && $params['primary'] === true) {
@@ -235,6 +243,21 @@ class Metadata
                 $options = $field['serializer_options']['serialize'];
             }
             $value = $this->serializerFactory->get($field['serializer'])->serialize($value, $options);
+        } else {
+            switch ($field['type']) {
+                case 'int':
+                    $value = (int) $value;
+                    break;
+                case 'string':
+                    $value = (string) $value;
+                    break;
+                case 'bool':
+                    $value = (bool) $value;
+                    break;
+                case 'double':
+                    $value = (double) $value;
+                    break;
+            }
         }
 
         return $value;
@@ -304,6 +327,10 @@ class Metadata
         $values = [];
 
         foreach ($this->fields as $column => $field) {
+            if (isset($field['autoincrement']) === true && $field['autoincrement'] === true) {
+                continue;
+            }
+
             $values[$column] = $this->getEntityProperty($entity, $field);
         }
 
@@ -344,9 +371,7 @@ class Metadata
         $values = [];
         foreach ($properties as $name => $value) {
             $columnName = $this->fieldsByProperty[$name]['columnName'];
-
-            // 0 means old value, 1 means new value
-            $values[$columnName] = $value[1];
+            $values[$columnName] = $this->getEntityProperty($entity, $this->fieldsByProperty[$name]);
         }
 
         $primariesKeyValue = $this->getPrimariesKeyValuesByProperties($properties, $entity);
