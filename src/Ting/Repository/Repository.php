@@ -68,6 +68,7 @@ class Repository
      * @param CollectionFactory $collectionFactory
      * @param CacheInterface $cache
      * @param UnitOfWork $unitOfWork
+     * @throws Exception
      */
     public function __construct(
         ConnectionPool $connectionPool,
@@ -86,7 +87,19 @@ class Repository
         $this->unitOfWork         = $unitOfWork;
 
         $class            = get_class($this);
-        $this->metadata   = $class::initMetadata($serializerFactory);
+        $this->metadataRepository->findMetadataForRepository(
+            $class,
+            function ($metadata) {
+                $this->metadata = $metadata;
+            },
+            function () use ($class) {
+                throw new Exception(
+                    'Metadata not found for ' . $class
+                    . ', you probably forget to call MetadataRepository::batchLoadMetadata'
+                );
+            }
+        );
+
         $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
@@ -188,10 +201,12 @@ class Repository
     }
 
     /**
+     * @param SerializerFactory $serializerFactory
+     * @param array $options Options you can use to custom initialization of Metadata
      * @throws Exception
      * @return \CCMBenchmark\Ting\Repository\Metadata
      */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
         throw new Exception('You should add initMetadata in your class repository');
 
