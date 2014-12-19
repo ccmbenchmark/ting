@@ -38,15 +38,23 @@ class Metadata
     /**
      * @var SerializerFactoryInterface|null
      */
-    protected $serializerFactory = null;
-    protected $connectionName    = null;
-    protected $databaseName      = null;
-    protected $entity            = null;
-    protected $table             = null;
-    protected $fields            = [];
-    protected $fieldsByProperty  = [];
-    protected $primaries         = [];
-    protected $autoincrement     = null;
+    protected $serializerFactory  = null;
+    protected $connectionName     = null;
+    protected $databaseName       = null;
+    protected $entity             = null;
+    protected $table              = null;
+    protected $fields             = [];
+    protected $fieldsByProperty   = [];
+    protected $primaries          = [];
+    protected $autoincrement      = null;
+    protected $defaultSerializers = [
+        'string'   => '\CCMBenchmark\Ting\Serializer\String',
+        'int'      => '\CCMBenchmark\Ting\Serializer\Int',
+        'bool'     => '\CCMBenchmark\Ting\Serializer\Bool',
+        'double'   => '\CCMBenchmark\Ting\Serializer\Double',
+        'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
+        'json'     => '\CCMBenchmark\Ting\Serializer\Json'
+    ];
 
 
     public function __construct(SerializerFactoryInterface $serializerFactory)
@@ -138,6 +146,12 @@ class Metadata
 
             if (isset($params['autoincrement']) === true && $params['autoincrement'] === true) {
                 $this->autoincrement = $params;
+            }
+        }
+
+        if (isset($params['serializer']) === false) {
+            if (isset($this->defaultSerializers[$params['type']]) === true) {
+                $params['serializer'] = $this->defaultSerializers[$params['type']];
             }
         }
 
@@ -243,21 +257,6 @@ class Metadata
                 $options = $field['serializer_options']['serialize'];
             }
             $value = $this->serializerFactory->get($field['serializer'])->serialize($value, $options);
-        } else {
-            switch ($field['type']) {
-                case 'int':
-                    $value = (int) $value;
-                    break;
-                case 'string':
-                    $value = (string) $value;
-                    break;
-                case 'bool':
-                    $value = (bool) $value;
-                    break;
-                case 'double':
-                    $value = (double) $value;
-                    break;
-            }
         }
 
         return $value;
