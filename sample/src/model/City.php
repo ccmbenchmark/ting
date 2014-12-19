@@ -95,10 +95,10 @@ class City implements NotifyPropertyInterface
         return (int) $this->population;
     }
 
-    public function setDt($dt)
+    public function setDt(\DateTime $dt)
     {
         $this->propertyChanged('dt', $this->dt, $dt);
-        $this->dt = \DateTime::createFromFormat('Y-m-d H:i:s', $dt);
+        $this->dt = $dt;
     }
 
     public function getDt()
