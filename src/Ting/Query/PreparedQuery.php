@@ -104,4 +104,14 @@ class PreparedQuery extends Query
 
         return $this->statement->execute($this->params);
     }
+
+    /**
+     * Close the preparedQuery
+     */
+    public function close()
+    {
+        if ($this->prepared === true) {
+            $this->statement->close();
+        }
+    }
 }

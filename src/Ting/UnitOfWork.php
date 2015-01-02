@@ -278,6 +278,7 @@ class UnitOfWork implements PropertyListenerInterface
                     $properties
                 );
                 $query->prepareExecute()->execute();
+                $query->close();
 
                 unset($this->entitiesChanged[$oid]);
                 unset($this->entitiesShouldBePersisted[$oid]);
@@ -304,6 +305,8 @@ class UnitOfWork implements PropertyListenerInterface
                     $entity
                 );
                 $query->prepareExecute()->execute();
+                $query->close();
+
                 $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
 
                 unset($this->entitiesChanged[$oid]);
@@ -341,6 +344,7 @@ class UnitOfWork implements PropertyListenerInterface
                     $entity
                 );
                 $query->prepareExecute()->execute();
+                $query->close();
                 $this->detach($entity);
             }
         );
