@@ -40,7 +40,7 @@ class String implements SerializerInterface
     /**
      * @param string $serialized
      * @param array  $options
-     * @return boolean
+     * @return string
      */
     public function unserialize($serialized, array $options = [])
     {

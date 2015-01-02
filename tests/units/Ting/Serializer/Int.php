@@ -22,28 +22,20 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Serializer;
+namespace tests\units\CCMBenchmark\Ting\Serializer;
 
 
-class Bool implements SerializerInterface
-{
-    /**
-     * @param boolean $toSerialize
-     * @param array $options
-     * @return string
-     */
-    public function serialize($toSerialize, array $options = [])
+use mageekguy\atoum;
+
+class Int extends atoum{
+
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
-        return $toSerialize === true ?'1' : '0';
-    }
-
-    /**
-     * @param string $serialized
-     * @param array  $options
-     * @return boolean
-     */
-    public function unserialize($serialized, array $options = [])
-    {
-        return (bool)$serialized;
+        $myInt = 165895234;
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Int())
+            ->integer($serializer->unserialize($serializer->serialize($myInt)))
+                ->isIdenticalTo($myInt)
+        ;
     }
 }
