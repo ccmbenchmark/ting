@@ -606,10 +606,10 @@ class Metadata extends atoum
             )
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->array($outerParams)
-            ->isIdenticalTo([
+            ->isEqualTo([
                 'boo_id' => (int) "333",
                 'boo_name' => (string) 3,
-                'boo_enabled' => (bool) 'yeah',
+                'boo_enabled' => false,
                 'boo_price' => (double) 7
             ]);
     }

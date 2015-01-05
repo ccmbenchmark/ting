@@ -27,6 +27,8 @@ namespace CCMBenchmark\Ting\Serializer;
 
 class DateTime implements SerializerInterface
 {
+    private static $defaultOptions = ['format' => 'Y-m-d H:i:s'];
+
     /**
      * @param \DateTime $toSerialize
      * @param array $options
@@ -34,8 +36,7 @@ class DateTime implements SerializerInterface
      */
     public function serialize($toSerialize, array $options = [])
     {
-        $defaultOptions = ['format' => 'Y-m-d H:i:s'];
-        $options = array_merge($defaultOptions, $options);
+        $options = array_merge(self::$defaultOptions, $options);
         return $toSerialize->format($options['format']);
     }
 
@@ -46,8 +47,7 @@ class DateTime implements SerializerInterface
      */
     public function unserialize($serialized, array $options = [])
     {
-        $defaultOptions = ['format' => 'Y-m-d H:i:s'];
-        $options = array_merge($defaultOptions, $options);
+        $options = array_merge(self::$defaultOptions, $options);
         return \DateTime::createFromFormat($options['format'], $serialized);
     }
 }

@@ -34,7 +34,11 @@ class Bool implements SerializerInterface
      */
     public function serialize($toSerialize, array $options = [])
     {
-        return $toSerialize === true ?'1' : '0';
+        if ($toSerialize === true) {
+            return '1';
+        }
+
+        return '0';
     }
 
     /**
