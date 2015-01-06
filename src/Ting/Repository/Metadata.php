@@ -97,6 +97,7 @@ class Metadata
 
     /**
      * Set entity name
+     * @param string $className
      * @throws \CCMBenchmark\Ting\Exception
      */
     public function setEntity($className)

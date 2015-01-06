@@ -68,6 +68,7 @@ class Repository
      * @param CollectionFactory $collectionFactory
      * @param CacheInterface $cache
      * @param UnitOfWork $unitOfWork
+     * @param SerializerFactoryInterface $serializerFactory
      */
     public function __construct(
         ConnectionPool $connectionPool,
@@ -188,6 +189,8 @@ class Repository
     }
 
     /**
+     *
+     * @param SerializerFactoryInterface $serializerFactory
      * @throws Exception
      * @return \CCMBenchmark\Ting\Repository\Metadata
      */

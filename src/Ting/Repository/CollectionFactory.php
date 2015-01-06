@@ -38,6 +38,7 @@ class CollectionFactory implements CollectionFactoryInterface
     }
 
     /**
+     * @param HydratorInterface $hydrator
      * @return Collection
      */
     public function get(HydratorInterface $hydrator = null)
