@@ -31,6 +31,7 @@ class MetadataRepository
 {
 
     protected $metadataList = array();
+    protected $entityToRepository = array();
 
     /**
      * @var SerializerFactoryInterface|null
@@ -75,7 +76,7 @@ class MetadataRepository
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
-        $repository = get_class($entity) . 'Repository';
+        $repository = $this->entityToRepository[get_class($entity)];
         if (isset($this->metadataList[$repository]) === true) {
             $callbackFound($this->metadataList[$repository]);
         } elseif ($callbackNotFound !== null) {
@@ -87,6 +88,7 @@ class MetadataRepository
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;
+            $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
         }
 
     }
