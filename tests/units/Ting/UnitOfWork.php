@@ -354,18 +354,7 @@ class UnitOfWork extends atoum
             ->exception(function () use ($unitOfWork) {
                 $unitOfWork->process();
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Exception')/*->variable($unitOfWork->process())
-                ->isNull()
-            ->boolean($unitOfWork->shouldBePersisted($entity))
-                ->isFalse()
-            ->then($unitOfWork->pushDelete($entity))
-            ->boolean($unitOfWork->shouldBePersisted($entity))
-                ->isTrue()
-            ->then($entity->setId(1))
-            ->variable($unitOfWork->process())
-                ->isNull()
-            ->boolean($unitOfWork->shouldBePersisted($entity))
-                ->isFalse()*/
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')
         ;
     }
 }
