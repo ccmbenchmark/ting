@@ -32,10 +32,10 @@ class Bool implements SerializerInterface
      */
     public function unserialize($serialized, array $options = [])
     {
-        if ($serialized === 1) {
+        if ($serialized === 1 || $serialized === '1') {
             return true;
         }
-        if ($serialized === 0) {
+        if ($serialized === 0 || $serialized === '0') {
             return false;
         }
 
