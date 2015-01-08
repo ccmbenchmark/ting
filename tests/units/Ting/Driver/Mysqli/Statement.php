@@ -37,7 +37,7 @@ class Statement extends atoum
             'id'          => 3,
             'old'         => 32.1,
             'description' => 'A very long description',
-            'date'        => \DateTime::createFromFormat('Y-m-d H:i:s', '2014-03-01 14:02:05')
+            'date' => '2014-03-01 14:02:05'
         );
         $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null);
 

@@ -22,20 +22,21 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Serializer;
+namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli\Serializer;
 
 
 use mageekguy\atoum;
 
-class Int extends atoum{
+class Bool extends atoum{
 
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
-        $myInt = 165895234;
         $this
-            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Int())
-            ->integer($serializer->unserialize($serializer->serialize($myInt)))
-                ->isIdenticalTo($myInt)
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Mysqli\Serializer\Bool())
+            ->boolean($serializer->unserialize($serializer->serialize(true)))
+                ->isTrue()
+            ->boolean($serializer->unserialize($serializer->serialize(false)))
+                ->isFalse()
         ;
     }
 }

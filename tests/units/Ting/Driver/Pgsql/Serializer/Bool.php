@@ -22,28 +22,34 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Serializer;
+namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql\Serializer;
 
 
-class Double implements SerializerInterface
+use mageekguy\atoum;
+
+class Bool extends atoum
 {
-    /**
-     * @param mixed $toSerialize
-     * @param array $options
-     * @return string
-     */
-    public function serialize($toSerialize, array $options = [])
+
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
-        return (double)$toSerialize;
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool())
+            ->boolean($serializer->unserialize($serializer->serialize(true)))
+            ->isTrue()
+            ->boolean($serializer->unserialize($serializer->serialize(false)))
+            ->isFalse()
+        ;
     }
 
-    /**
-     * @param int $serialized
-     * @param array  $options
-     * @return boolean
-     */
-    public function unserialize($serialized, array $options = [])
+    public function testSerializeShouldReturnTORF()
     {
-        return (double)$serialized;
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool())
+            ->string($serializer->serialize(true))
+            ->isIdenticalTo('t')
+            ->string($serializer->serialize(false))
+            ->isIdenticalTo('f')
+            ->variable($serializer->serialize('hi!'))
+            ->isNull();
     }
 }

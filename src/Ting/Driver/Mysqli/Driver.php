@@ -186,11 +186,6 @@ class Driver implements DriverInterface
                 $value = $params[$match[1]];
 
                 switch (gettype($value)) {
-                    case "object":
-                        if ($value instanceof \DateTime) {
-                            return '"' . $value->format('Y-m-d H:i:s') . '"';
-                        }
-                        break;
                     case "integer":
                         // integer and double doesn't need quotes
                     case "double":

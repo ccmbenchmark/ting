@@ -191,9 +191,34 @@ class Result implements ResultInterface
         return $this->iteratorOffset;
     }
 
+    /**
+     * @return array|false
+     */
+    private function fetchArray()
+    {
+        $array = pg_fetch_array($this->result, null, PGSQL_NUM);
+        if ($array === false) {
+            return false;
+        }
+
+        foreach ($array as $fieldNum => &$fieldValue) {
+            if (pg_field_type($this->result, $fieldNum) === 'boolean') {
+                if ($fieldValue === 't') {
+                    $fieldValue = true;
+                } elseif ($fieldValue === 'f') {
+                    $fieldValue = false;
+                } else {
+                    $fieldValue = null;
+                }
+            }
+        }
+
+        return $array;
+    }
+
     public function next()
     {
-        $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, PGSQL_NUM));
+        $this->iteratorCurrent = $this->format($this->fetchArray());
         $this->iteratorOffset++;
     }
 

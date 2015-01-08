@@ -48,10 +48,6 @@ class Metadata
     protected $primaries          = [];
     protected $autoincrement      = null;
     protected $defaultSerializers = [
-        'string'   => '\CCMBenchmark\Ting\Serializer\String',
-        'int'      => '\CCMBenchmark\Ting\Serializer\Int',
-        'bool'     => '\CCMBenchmark\Ting\Serializer\Bool',
-        'double'   => '\CCMBenchmark\Ting\Serializer\Double',
         'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
         'json'     => '\CCMBenchmark\Ting\Serializer\Json'
     ];
