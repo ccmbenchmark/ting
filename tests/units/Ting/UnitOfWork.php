@@ -310,4 +310,62 @@ class UnitOfWork extends atoum
                 ->isFalse()
         ;
     }
+
+    public function testTryingToProcessAnEntityWithoutRepositoryShouldRaiseAnException()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($this->services->get('SerializerFactory'));
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('', $mockConnection);
+        $this->calling($mockPreparedQuery)->prepareExecute = $mockPreparedQuery;
+        $this->calling($mockPreparedQuery)->execute = true;
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->getInsertId = 1;
+
+
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $mockConnectionPool,
+                $mockMetadataRepository,
+                $mockQueryFactory
+            ))
+            ->then($unitOfWork->pushSave($entity))
+            ->exception(function () use ($unitOfWork) {
+                $unitOfWork->process();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+            ->then($unitOfWork->pushDelete($entity))
+            ->exception(function () use ($unitOfWork) {
+                $unitOfWork->process();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+            ->and($unitOfWork->manage($entity))
+            ->then($entity->setName('newName'))
+            ->then($unitOfWork->pushSave($entity))
+            ->exception(function () use ($unitOfWork) {
+                $unitOfWork->process();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')/*->variable($unitOfWork->process())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()
+            ->then($unitOfWork->pushDelete($entity))
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isTrue()
+            ->then($entity->setId(1))
+            ->variable($unitOfWork->process())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()*/
+        ;
+    }
 }
