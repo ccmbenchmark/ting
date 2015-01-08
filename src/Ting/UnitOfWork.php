@@ -281,6 +281,9 @@ class UnitOfWork implements PropertyListenerInterface
 
                 unset($this->entitiesChanged[$oid]);
                 unset($this->entitiesShouldBePersisted[$oid]);
+            },
+            function() use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
