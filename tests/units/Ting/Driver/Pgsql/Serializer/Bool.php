@@ -22,30 +22,34 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql\Serializer;
 
-class CollectionFactory implements CollectionFactoryInterface
+
+use mageekguy\atoum;
+
+class Bool extends atoum
 {
 
-    protected $hydrator = null;
-
-    /**
-     * @param HydratorInterface $hydrator
-     */
-    public function __construct(HydratorInterface $hydrator = null)
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
-        $this->hydrator = $hydrator;
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool())
+            ->boolean($serializer->unserialize($serializer->serialize(true)))
+            ->isTrue()
+            ->boolean($serializer->unserialize($serializer->serialize(false)))
+            ->isFalse()
+        ;
     }
 
-    /**
-     * @param HydratorInterface $hydrator
-     * @return Collection
-     */
-    public function get(HydratorInterface $hydrator = null)
+    public function testSerializeShouldReturnTORF()
     {
-        if ($hydrator === null) {
-            $hydrator = $this->hydrator;
-        }
-        return new Collection($hydrator);
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool())
+            ->string($serializer->serialize(true))
+            ->isIdenticalTo('t')
+            ->string($serializer->serialize(false))
+            ->isIdenticalTo('f')
+            ->variable($serializer->serialize('hi!'))
+            ->isNull();
     }
 }

@@ -22,30 +22,21 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli\Serializer;
 
-class CollectionFactory implements CollectionFactoryInterface
-{
 
-    protected $hydrator = null;
+use mageekguy\atoum;
 
-    /**
-     * @param HydratorInterface $hydrator
-     */
-    public function __construct(HydratorInterface $hydrator = null)
+class Bool extends atoum{
+
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
-        $this->hydrator = $hydrator;
-    }
-
-    /**
-     * @param HydratorInterface $hydrator
-     * @return Collection
-     */
-    public function get(HydratorInterface $hydrator = null)
-    {
-        if ($hydrator === null) {
-            $hydrator = $this->hydrator;
-        }
-        return new Collection($hydrator);
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Mysqli\Serializer\Bool())
+            ->boolean($serializer->unserialize($serializer->serialize(true)))
+                ->isTrue()
+            ->boolean($serializer->unserialize($serializer->serialize(false)))
+                ->isFalse()
+        ;
     }
 }

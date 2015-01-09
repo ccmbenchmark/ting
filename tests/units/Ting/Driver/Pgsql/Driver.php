@@ -349,7 +349,7 @@ class Driver extends atoum
                         ->isIdenticalTo(1)
                 ->then($driver->execute(
                     'INSERT INTO "myTable" (date_field) VALUES (:date)',
-                    ['date' => new \DateTime('2014-12-31 23:59:59')]
+                    ['date' => '2014-12-31 23:59:59']
                 ))
                     ->array($outerValues)
                         ->isIdenticalTo([0 => '2014-12-31 23:59:59'])
@@ -357,24 +357,6 @@ class Driver extends atoum
                         ->isIdenticalTo('INSERT INTO "myTable" (date_field) VALUES ($1)')
                     ->integer($count)
                         ->isIdenticalTo(2)
-        ;
-    }
-
-    public function testExecuteShouldCallPGQueryParamsWithBooleanCastedIntoPostgresqlValue()
-    {
-        $outerValues = '';
-        $this->function->pg_query_params = function ($connection, $sql, $values) use (&$outerValues) {
-            $outerValues = $values;
-        };
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->then($driver->execute(
-                'SELECT 1 FROM "myTable" WHERE enabled = :enabled AND disabled = :disabled',
-                ['enabled' => true, 'disabled' => false]
-            ))
-            ->array($outerValues)
-                ->isIdenticalTo([0 => 't', 1 => 'f']);
         ;
     }
 
