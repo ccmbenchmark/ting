@@ -29,8 +29,18 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class MetadataRepository
 {
-
+    /**
+     * This array matches a repository (class name) and the corresponding metadata object
+     *
+     * @var array RepositoryClassName => MetadataObject
+     */
     protected $metadataList = array();
+
+    /**
+     * This array matches an entity name and the corresponding repository name
+     * @var array
+     */
+    protected $entityToRepository = array();
 
     /**
      * @var SerializerFactoryInterface|null
@@ -75,9 +85,11 @@ class MetadataRepository
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
-        $repository = get_class($entity) . 'Repository';
-        if (isset($this->metadataList[$repository]) === true) {
-            $callbackFound($this->metadataList[$repository]);
+        if (
+            isset($this->entityToRepository[get_class($entity)]) === true
+            && isset($this->metadataList[$this->entityToRepository[get_class($entity)]]) === true
+        ) {
+            $callbackFound($this->metadataList[$this->entityToRepository[get_class($entity)]]);
         } elseif ($callbackNotFound !== null) {
             $callbackNotFound();
         }
@@ -87,6 +99,7 @@ class MetadataRepository
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;
+            $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
         }
 
     }

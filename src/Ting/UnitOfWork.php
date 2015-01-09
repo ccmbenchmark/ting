@@ -249,6 +249,7 @@ class UnitOfWork implements PropertyListenerInterface
      * Update all applicable entities in database
      *
      * @param $oid
+     * @throws Exception
      */
     protected function processManaged($oid)
     {
@@ -281,6 +282,9 @@ class UnitOfWork implements PropertyListenerInterface
 
                 unset($this->entitiesChanged[$oid]);
                 unset($this->entitiesShouldBePersisted[$oid]);
+            },
+            function () use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
@@ -289,6 +293,7 @@ class UnitOfWork implements PropertyListenerInterface
      * Insert all applicable entities in database
      *
      * @param $oid
+     * @throws Exception
      */
     protected function processNew($oid)
     {
@@ -310,6 +315,9 @@ class UnitOfWork implements PropertyListenerInterface
                 unset($this->entitiesShouldBePersisted[$oid]);
 
                 $this->manage($entity);
+            },
+            function () use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
@@ -318,6 +326,7 @@ class UnitOfWork implements PropertyListenerInterface
      * Delete all flagged entities from database
      *
      * @param $oid
+     * @throws Exception
      */
     protected function processDelete($oid)
     {
@@ -342,6 +351,9 @@ class UnitOfWork implements PropertyListenerInterface
                 );
                 $query->prepareExecute()->execute();
                 $this->detach($entity);
+            },
+            function () use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }

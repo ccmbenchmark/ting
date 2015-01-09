@@ -101,6 +101,14 @@ class Metadata
     }
 
     /**
+     * @return string
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
+
+    /**
      * Set table name
      * @param $tableName
      */
