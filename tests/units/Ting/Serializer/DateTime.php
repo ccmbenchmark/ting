@@ -24,10 +24,10 @@
 
 namespace tests\units\CCMBenchmark\Ting\Serializer;
 
-
 use mageekguy\atoum;
 
-class DateTime extends atoum{
+class DateTime extends atoum
+{
 
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {

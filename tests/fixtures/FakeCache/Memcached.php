@@ -24,7 +24,6 @@
 
 namespace fixtures\FakeCache;
 
-
 class Memcached
 {
     public function __construct()

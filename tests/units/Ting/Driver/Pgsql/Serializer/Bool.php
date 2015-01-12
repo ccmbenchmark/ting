@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql\Serializer;
 
-
 use mageekguy\atoum;
 
 class Bool extends atoum
