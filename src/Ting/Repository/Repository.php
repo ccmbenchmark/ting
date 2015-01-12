@@ -92,6 +92,16 @@ class Repository
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
+
+    /**
+     * @param HydratorInterface $hydrator|null
+     * @return Collection
+     */
+    public function getCollection(HydratorInterface $hydrator = null)
+    {
+        return $this->collectionFactory->get($hydrator);
+    }
+
     /**
      * @param string $sql
      * @return \CCMBenchmark\Ting\Query\Query
