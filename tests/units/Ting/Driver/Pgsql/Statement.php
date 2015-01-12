@@ -38,6 +38,7 @@ class Statement extends atoum
         $this->function->pg_field_table = 'Bouh';
         $this->function->pg_result_seek = 0;
         $this->function->pg_fetch_array = false;
+        $this->function->pg_query = true;
 
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
@@ -59,6 +60,7 @@ class Statement extends atoum
         };
         $this->function->pg_result_seek = 0;
         $this->function->pg_fetch_array = false;
+        $this->function->pg_query = true;
 
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params          = array(
@@ -89,6 +91,7 @@ class Statement extends atoum
         };
         $this->function->pg_result_seek = 0;
         $this->function->pg_fetch_array = false;
+        $this->function->pg_query = true;
 
         $collection  = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params      = array('enabled' => true, 'disabled' => false);
@@ -116,6 +119,7 @@ class Statement extends atoum
                 'nom'    => 'Leune'
             )
         ));
+        $this->function->pg_query = true;
 
         $this->calling($collection)->set = function ($result) use (&$outerResult) {
             $outerResult = $result;
@@ -141,7 +145,7 @@ class Statement extends atoum
     {
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->function->pg_execute = false;
-        $this->function->pg_result_error = 'unknown error';
+        $this->function->pg_errormessage = 'unknown error';
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
@@ -154,6 +158,7 @@ class Statement extends atoum
     public function testExecuteShouldReturnTrueIfNoError()
     {
         $this->function->pg_execute = true;
+        $this->function->pg_query = true;
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
@@ -162,37 +167,12 @@ class Statement extends atoum
         ;
     }
 
-    public function testCloseShouldExecuteDeallocateQuery()
-    {
-        $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
-
-        $this->function->pg_execute = function ($connection, $statementName, $values) use (&$outerValues) {
-            $outerValues = $values;
-            return [];
-        };
-        $this->function->pg_result_seek = 0;
-        $this->function->pg_fetch_array = false;
-
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
-            $outerQuery = $query;
-        };
-
-        $this->function->pg_field_table = 'Bouh';
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('statementNameTest', []))
-            ->then($statement->setQuery('SELECT firstname FROM Bouh'))
-            ->then($statement->execute([], $collection))
-            ->then($statement->close())
-            ->string($outerQuery)
-                ->isIdenticalTo('DEALLOCATE "statementNameTest"');
-    }
-
     public function testExecuteShouldLogQuery()
     {
         $this->function->pg_execute = [];
         $this->function->pg_result_seek = 0;
         $this->function->pg_fetch_array = false;
+        $this->function->pg_query = true;
 
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 

@@ -25,6 +25,7 @@
 namespace tests\fixtures\FakeDriver;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
@@ -145,4 +146,15 @@ class Driver implements DriverInterface
     public function commit()
     {
     }
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+
+    }
+
+
 }

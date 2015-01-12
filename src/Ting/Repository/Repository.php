@@ -54,7 +54,7 @@ class Repository
      * @var UnitOfWork
      */
 
-    protected $unitOfWork;
+    public $unitOfWork;
 
     /**
      * @var CacheInterface

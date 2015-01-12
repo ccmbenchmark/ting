@@ -105,13 +105,8 @@ class PreparedQuery extends Query
         return $this->statement->execute($this->params);
     }
 
-    /**
-     * Close the preparedQuery
-     */
-    public function close()
+    public function getStatementName()
     {
-        if ($this->prepared === true) {
-            $this->statement->close();
-        }
+        return sha1($this->sql);
     }
 }

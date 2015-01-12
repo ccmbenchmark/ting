@@ -69,6 +69,11 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
+     * @var array List of already prepared queries
+     */
+    protected $preparedQueries = array();
+
+    /**
      * @param  \mysqli|Object|null $connection
      * @param \mysqli_driver|Object|null $driver
      */
@@ -249,6 +254,11 @@ class Driver implements DriverInterface
      */
     public function prepare($sql)
     {
+
+        $statementName = sha1($sql);
+        if (isset($this->preparedQueries[$statementName])) {
+            return $this->preparedQueries[$statementName];
+        }
         $paramsOrder = [];
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
@@ -278,6 +288,9 @@ class Driver implements DriverInterface
 
         $statement = new Statement($driverStatement, $paramsOrder);
         $statement->setLogger($this->logger);
+
+        $this->preparedQueries[$statementName] = $statement;
+
 
         return $statement;
     }
@@ -358,5 +371,17 @@ class Driver implements DriverInterface
         }
 
         return $this->connection->affected_rows;
+    }
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+        if (isset($this->preparedQueries[$statement]) === false) {
+            throw new Exception('Cannot close non prepared statement');
+        }
+        unset($this->preparedQueries[$statement]);
     }
 }

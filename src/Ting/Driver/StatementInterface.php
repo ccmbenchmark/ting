@@ -37,11 +37,6 @@ interface StatementInterface
     public function execute(array $params, CollectionInterface $collection = null);
 
     /**
-     * @return void
-     */
-    public function close();
-
-    /**
      * @param DriverLoggerInterface $logger
      * @return void
      */

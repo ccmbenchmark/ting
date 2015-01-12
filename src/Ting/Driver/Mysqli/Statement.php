@@ -132,7 +132,6 @@ class Statement implements StatementInterface
         }
     }
 
-
     /**
      * @param \mysqli_result $result
      * @param CollectionInterface $collection
@@ -147,8 +146,13 @@ class Statement implements StatementInterface
     /**
      * @throws Exception
      */
-    public function close()
+    protected function close()
     {
         $this->driverStatement->close();
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 }
