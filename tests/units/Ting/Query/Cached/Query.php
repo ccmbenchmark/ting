@@ -75,9 +75,14 @@ class Query extends atoum
 
     public function testQueryShouldCallOnlyCacheGetIfDataInCache()
     {
+        $services              = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
+            $services->get('MetadataRepository'),
+            $services->get('UnitOfWork'),
+            $services->get('Hydrator')
+        );
 
         $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
         $this->calling($mockMemcached)->get = function () {
@@ -85,9 +90,9 @@ class Query extends atoum
                 [
                     [
                         'name'     => 'prenom',
-                        'orgname'  => 'firstname',
+                        'orgName'  => 'firstname',
                         'table'    => 'bouh',
-                        'orgtable' => 'T_BOUH_BOO',
+                        'orgTable' => 'T_BOUH_BOO',
                         'type'     => MYSQLI_TYPE_VAR_STRING,
                         'value'    => 'Xavier',
                     ]

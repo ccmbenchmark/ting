@@ -403,7 +403,7 @@ class Metadata extends atoum
         $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
             '',
             $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
+            $services->get('CollectionFactory')
         );
         $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
             $outerParams = $params;
@@ -449,7 +449,7 @@ class Metadata extends atoum
         $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
             '',
             $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
+            $services->get('CollectionFactory')
         );
         $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
             $outerParams = $params;
@@ -498,7 +498,7 @@ class Metadata extends atoum
         $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
             '',
             $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
+            $services->get('CollectionFactory')
         );
         $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
             $outerParams = $params;
