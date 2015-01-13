@@ -159,4 +159,16 @@ class PreparedQuery extends atoum
                     ->once()
         ;
     }
+
+    public function testGetStatementNameShouldReturnAString()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+
+        $this
+            ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection, $mockCollectionFactory))
+            ->string($query->getStatementName())
+            ->isNotEmpty();
+    }
 }

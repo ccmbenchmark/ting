@@ -96,4 +96,10 @@ interface DriverInterface
      * @return string
      */
     public static function getConnectionKey(array $connectionConfig, $database);
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement);
 }

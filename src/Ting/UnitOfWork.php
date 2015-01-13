@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
@@ -42,6 +43,7 @@ class UnitOfWork implements PropertyListenerInterface
     protected $entitiesManaged           = array();
     protected $entitiesChanged           = array();
     protected $entitiesShouldBePersisted = array();
+    protected $statements = array();
 
     /**
      * @param ConnectionPool        $connectionPool
@@ -243,6 +245,11 @@ class UnitOfWork implements PropertyListenerInterface
                     break;
             }
         }
+        foreach ($this->statements as $statementName => $connections) {
+            foreach ($connections as $connection) {
+                $connection->closeStatement($statementName);
+            }
+        }
     }
 
     /**
@@ -272,12 +279,15 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function (Metadata $metadata) use ($entity, $properties, $oid) {
+                $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForUpdate(
-                    $metadata->getConnection($this->connectionPool),
+                    $connection,
                     $this->queryFactory,
                     $entity,
                     $properties
                 );
+
+                $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
 
                 unset($this->entitiesChanged[$oid]);
@@ -308,7 +318,9 @@ class UnitOfWork implements PropertyListenerInterface
                     $this->queryFactory,
                     $entity
                 );
+                $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
+
                 $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
 
                 unset($this->entitiesChanged[$oid]);
@@ -343,12 +355,14 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function (Metadata $metadata) use ($entity, $properties) {
+                $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForDelete(
-                    $metadata->getConnection($this->connectionPool),
+                    $connection,
                     $this->queryFactory,
                     $properties,
                     $entity
                 );
+                $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
                 $this->detach($entity);
             },
@@ -356,5 +370,15 @@ class UnitOfWork implements PropertyListenerInterface
                 throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
+    }
+
+    protected function addStatementToClose($statementName, DriverInterface $connection)
+    {
+        if (isset($this->statements[$statementName]) === false) {
+            $this->statements[$statementName] = array();
+        }
+        if (isset($this->statements[$statementName][spl_object_hash($connection)]) === false) {
+            $this->statements[$statementName][spl_object_hash($connection)] = $connection;
+        }
     }
 }

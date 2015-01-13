@@ -51,6 +51,7 @@ class Statement implements StatementInterface
         $this->statementName = $statementName;
         $this->paramsOrder   = $paramsOrder;
     }
+
     /**
      * @param $connection
      * @return $this
@@ -106,7 +107,7 @@ class Statement implements StatementInterface
         }
 
         if ($result === false) {
-            throw new QueryException(pg_result_error($this->connection));
+            throw new QueryException(pg_errormessage($this->connection));
         }
 
         if ($collection !== null) {
@@ -133,8 +134,13 @@ class Statement implements StatementInterface
     /**
      * Deallocate the current prepared statement
      */
-    public function close()
+    protected function close()
     {
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 }

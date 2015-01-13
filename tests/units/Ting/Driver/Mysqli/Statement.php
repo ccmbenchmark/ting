@@ -31,6 +31,7 @@ class Statement extends atoum
     public function testExecuteShouldCallDriverStatementBindParams()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params          = array(
             'firstname'   => 'Sylvain',
@@ -62,6 +63,7 @@ class Statement extends atoum
     public function testExecuteShouldCallDriverStatementExecute()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
@@ -78,6 +80,7 @@ class Statement extends atoum
     public function testSetCollectionWithResult()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $result          = new \mock\tests\fixtures\FakeDriver\MysqliResult(array(
             array(
@@ -129,6 +132,7 @@ class Statement extends atoum
     public function testExecuteShouldRaiseQueryExceptionOnError()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $driverStatement->errno = 123;
@@ -146,6 +150,7 @@ class Statement extends atoum
     public function testExecuteShouldReturnTrueIfNoError()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
 
         $this->calling($driverStatement)->get_result = true;
         $driverStatement->errno = 0;
@@ -157,26 +162,10 @@ class Statement extends atoum
         ;
     }
 
-    public function testCloseShouldCallDriverStatementClose()
-    {
-        $driverStatement = new \mock\Fake\DriverStatement();
-        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-
-        $this->calling($driverStatement)->get_result = new \mock\Iterator();
-        $driverStatement->errno = 0;
-
-        $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
-            ->then($statement->execute(array(), $collection))
-            ->then($statement->close())
-            ->mock($driverStatement)
-                ->call('close')
-                    ->once();
-    }
-
     public function testExecuteShouldLogQuery()
     {
         $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $mockLogger      = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 

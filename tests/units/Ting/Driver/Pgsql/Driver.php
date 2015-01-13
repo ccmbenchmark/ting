@@ -147,6 +147,7 @@ class Driver extends atoum
     public function testPrepareShouldRaiseQueryException()
     {
         $this->function->pg_connect = true;
+        $this->function->pg_query = true;
         $this->function->pg_prepare = false;
         $this->function->pg_last_error = 'unknown error';
 
@@ -177,6 +178,7 @@ class Driver extends atoum
     public function testPrepareShouldNotTransformEscapedColon()
     {
         $this->function->pg_connect = true;
+        $this->function->pg_query = true;
         $this->function->pg_prepare = function ($resource, $statementName, $sql) use (&$outerSql) {
             $outerSql = $sql;
         };
@@ -291,7 +293,7 @@ class Driver extends atoum
 
     }
 
-    public function testGetAffectedRowsWithouResultShouldReturn0()
+    public function testGetAffectedRowsWithoutResultShouldReturn0()
     {
         $this->function->pg_affected_rows = 12;
 
@@ -437,6 +439,7 @@ class Driver extends atoum
     public function testPrepareShouldLogQuery()
     {
         $this->function->pg_prepare      = true;
+        $this->function->pg_query = true;
         $this->function->pg_fetch_array  = 'data';
         $this->function->pg_result_seek  = true;
         $this->function->pg_field_table  = 'myTable';
@@ -451,7 +454,30 @@ class Driver extends atoum
                     ->call('startPrepare')
                         ->once()
                     ->call('stopPrepare')
-                        ->once()
+                        ->once();
+    }
+
+    public function testPrepareCalledTwiceShouldReturnTheSameObject()
+    {
+        $this->function->pg_prepare = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($statement = $driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
+            ->object($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
+            ->isIdenticalTo($statement);
+    }
+
+    public function testCloseStatementShouldRaiseExceptionOnNonExistentStatement()
+    {
+        $this->function->pg_prepare = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->exception(function () use ($driver) {
+                $driver->closeStatement('NonExistentStatement');
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Driver\Exception')
         ;
     }
 }

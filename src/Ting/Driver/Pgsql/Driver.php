@@ -63,6 +63,11 @@ class Driver implements DriverInterface
     protected $result = null;
 
     /**
+     * @var array List of already prepared queries
+     */
+    protected $preparedQueries = array();
+
+    /**
      * Return a unique connection key identifier
      * @param array  $connectionConfig
      * @param string $database
@@ -180,7 +185,12 @@ class Driver implements DriverInterface
     {
         list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
 
-        $statementName = sha1($sql);
+        $statementName = sha1($originalSQL);
+
+        if (isset($this->preparedQueries[$statementName]) === true) {
+            return $this->preparedQueries[$statementName];
+        }
+
         $statement     = new Statement($statementName, $paramsOrder);
 
         if ($this->logger !== null) {
@@ -201,6 +211,8 @@ class Driver implements DriverInterface
         $statement
             ->setConnection($this->connection)
             ->setQuery($sql);
+
+        $this->preparedQueries[$statementName] = $statement;
 
         return $statement;
     }
@@ -326,5 +338,17 @@ class Driver implements DriverInterface
         }
 
         return pg_affected_rows($this->result);
+    }
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+        if (isset($this->preparedQueries[$statement]) === false) {
+            throw new Exception('Cannot close non prepared statement');
+        }
+        unset($this->preparedQueries[$statement]);
     }
 }
