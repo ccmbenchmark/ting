@@ -33,7 +33,7 @@ class Collection extends atoum
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -62,14 +62,13 @@ class Collection extends atoum
     public function testHydrateWithHydratorShouldCallHydratorHydrate()
     {
         $services     = new \CCMBenchmark\Ting\Services();
-        $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator(
-            $services->get('MetadataRepository'),
-            $services->get('UnitOfWork')
-        );
+        $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator();
+        $mockHydrator->setMetadataRepository($services->get('MetadataRepository'));
+        $mockHydrator->setUnitOfWork($services->get('UnitOfWork'));
 
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -81,15 +80,15 @@ class Collection extends atoum
             return $fields;
         };
 
-        $data = array(
-            array(
+        $data = [
+            [
                 'name'     => 'prenom',
                 'orgName'  => 'firstname',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
-            )
-        );
+            ]
+        ];
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection($mockHydrator))
@@ -111,7 +110,7 @@ class Collection extends atoum
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -136,7 +135,7 @@ class Collection extends atoum
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -213,7 +212,7 @@ class Collection extends atoum
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';

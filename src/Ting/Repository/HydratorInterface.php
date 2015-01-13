@@ -29,11 +29,19 @@ use CCMBenchmark\Ting\UnitOfWork;
 
 interface HydratorInterface
 {
+
     /**
-     * @param MetadataRepository $metadaRepository
-     * @param UnitOfWork         $unitOfWork
+     * @param MetadataRepository $metadataRepository
+     * @return void
      */
-    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork);
+    public function setMetadataRepository(MetadataRepository $metadataRepository);
+
+    /**
+     * @param UnitOfWork $unitOfWork
+     * @return void
+     */
+    public function setUnitOfWork(UnitOfWork $unitOfWork);
+
 
     /**
      * Hydrate One object from it's values

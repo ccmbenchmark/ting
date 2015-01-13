@@ -62,7 +62,11 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'CollectionFactory',
             $this->container->factory(function () {
-                return new Repository\CollectionFactory($this->get('Hydrator'));
+                return new Repository\CollectionFactory(
+                    $this->get('MetadataRepository'),
+                    $this->get('UnitOfWork'),
+                    $this->get('Hydrator')
+                );
             })
         );
 
@@ -83,14 +87,14 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Hydrator',
             function () {
-                return new Repository\Hydrator($this->get('MetadataRepository'), $this->get('UnitOfWork'));
+                return new Repository\Hydrator();
             }
         );
 
         $this->container->offsetSet(
             'HydratorSingleObject',
             function () {
-                return new Repository\HydratorSingleObject($this->get('MetadataRepository'), $this->get('UnitOfWork'));
+                return new Repository\HydratorSingleObject();
             }
         );
 

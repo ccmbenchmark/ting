@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
-
 class DateTime implements SerializerInterface
 {
     private static $defaultOptions = ['format' => 'Y-m-d H:i:s'];

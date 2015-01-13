@@ -63,15 +63,19 @@ class Query extends atoum
 
     public function testQueryShouldCallExecuteOnSlaveDriver()
     {
-
-        $mockConnectionPool     = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockDriver             = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $mockConnection         = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-        $mockCollectionFactory  = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+        $services              = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver            = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
+            $services->get('MetadataRepository'),
+            $services->get('UnitOfWork'),
+            $services->get('Hydrator')
+        );
 
         $this->calling($mockConnection)->slave = $mockDriver;
         $this->calling($mockDriver)->execute = true;
-        $this->calling($mockCollectionFactory)->get = new Collection();
+        $this->calling($mockCollectionFactory)->get = new Collection($services->get('Hydrator'));
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Query('SELECT', $mockConnection, $mockCollectionFactory))
@@ -90,11 +94,15 @@ class Query extends atoum
 
     public function testQueryShouldCallExecuteOnMasterDriver()
     {
-
-        $mockConnectionPool     = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockDriver             = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $mockConnection         = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-        $mockCollectionFactory  = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+        $services              = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver            = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
+            $services->get('MetadataRepository'),
+            $services->get('UnitOfWork'),
+            $services->get('Hydrator')
+        );
 
         $this->calling($mockConnection)->master = $mockDriver;
         $this->calling($mockDriver)->execute = true;

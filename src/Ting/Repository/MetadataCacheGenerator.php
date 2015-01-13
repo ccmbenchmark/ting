@@ -22,9 +22,7 @@
  *
  **********************************************************************/
 
-
 namespace CCMBenchmark\Ting\Repository;
-
 
 use CCMBenchmark\Ting\Exception;
 

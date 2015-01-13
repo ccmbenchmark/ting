@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Logger;
 
-
 interface CacheLoggerInterface
 {
     const OPERATION_GET           = 'GET';

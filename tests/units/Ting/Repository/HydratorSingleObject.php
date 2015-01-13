@@ -68,10 +68,9 @@ class HydratorSingleObject extends atoum
         $collection = $services->get('CollectionFactory')->get();
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorSingleObject(
-                $services->get('MetadataRepository'),
-                $services->get('UnitOfWork')
-            ))
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorSingleObject())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
             ->then($bouh = $hydrator->hydrate($data, $collection))
             ->object($bouh)
                 ->isInstanceOf('tests\fixtures\model\Bouh')

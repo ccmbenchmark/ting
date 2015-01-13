@@ -128,12 +128,17 @@ class PreparedQuery extends atoum
 
     public function testQueryShouldCallStatementExecuteAndReturnCollection()
     {
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-        $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
-        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
-        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+        $services              = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockDriver            = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockMysqliStatement   = new \mock\Fake\mysqli_stmt();
+        $mockStatement         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
+            $services->get('MetadataRepository'),
+            $services->get('UnitOfWork'),
+            $services->get('Hydrator')
+        );
 
         $collection = new Collection();
 

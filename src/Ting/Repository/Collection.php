@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-class Collection implements CollectionInterface, \Iterator
+class Collection implements CollectionInterface, \Iterator, \Countable
 {
 
     /**

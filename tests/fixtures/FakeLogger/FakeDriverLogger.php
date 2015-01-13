@@ -24,7 +24,6 @@
 
 namespace tests\fixtures\FakeLogger;
 
-
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
 class FakeDriverLogger implements DriverLoggerInterface

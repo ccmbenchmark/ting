@@ -24,10 +24,10 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli\Serializer;
 
-
 use mageekguy\atoum;
 
-class Bool extends atoum{
+class Bool extends atoum
+{
 
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {

@@ -34,14 +34,23 @@ class Hydrator implements HydratorInterface
     protected $unitOfWork         = null;
 
     /**
-     * @param MetadataRepository $metadaRepository
-     * @param UnitOfWork         $unitOfWork
+     * @param MetadataRepository $metadataRepository
+     * @return void
      */
-    public function __construct(MetadataRepository $metadaRepository, UnitOfWork $unitOfWork)
+    public function setMetadataRepository(MetadataRepository $metadataRepository)
     {
-        $this->metadataRepository = $metadaRepository;
-        $this->unitOfWork         = $unitOfWork;
+        $this->metadataRepository = $metadataRepository;
     }
+
+    /**
+     * @param UnitOfWork $unitOfWork
+     * @return void
+     */
+    public function setUnitOfWork(UnitOfWork $unitOfWork)
+    {
+        $this->unitOfWork = $unitOfWork;
+    }
+
 
     /**
      * Hydrate one object from values and add to Collection
