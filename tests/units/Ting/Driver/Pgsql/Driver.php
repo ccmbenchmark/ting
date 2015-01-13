@@ -55,6 +55,52 @@ class Driver extends atoum
                 ->isIdenticalTo($driver);
     }
 
+    public function testSetCharset()
+    {
+        $mockDriver = new \mock\Fake\Pgsql();
+        $this->function->pg_set_client_encoding = function ($connection, $charset) use (&$outerCharset) {
+            $outerCharset = $charset;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->variable($outerCharset)
+                ->isIdenticalTo('utf8');
+    }
+
+    public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
+    {
+        $mockDriver = new \mock\Fake\Pgsql();
+        $called = 0;
+        $this->function->pg_set_client_encoding = function () use (&$called) {
+            $called++;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->then($driver->setCharset('utf8'))
+            ->variable($called)
+                ->isIdenticalTo(1);
+
+    }
+
+    public function testSetCharsetWithInvalidCharsetShouldThrowAnException()
+    {
+        $mockDriver = new \mock\Fake\Pgsql();
+        $this->function->pg_set_client_encoding = function ($connection, $charset) {
+            return -1;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                $driver->setCharset('BadCharset');
+            })
+                ->hasMessage('Can\'t set charset BadCharset');
+    }
+
     public function testSetDatabaseShouldCompleteGeneratedDsnByConnect()
     {
 

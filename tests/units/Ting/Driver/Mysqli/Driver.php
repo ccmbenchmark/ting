@@ -120,7 +120,52 @@ class Driver extends atoum
                     ->exists();
     }
 
-    public function testsetDatabase()
+    public function testSetCharset()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->set_charset = function ($charset) {
+            $this->charset = $charset;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->variable($mockDriver->charset)
+            ->isIdenticalTo('utf8');
+    }
+
+    public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->set_charset = function ($charset) {
+            $this->charset = $charset;
+        };
+
+        $this
+            ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->then($driver->setCharset('utf8'))
+            ->mock($mockDriver)
+                ->call('set_charset')
+                    ->once();
+    }
+
+    public function testSetCharsetWithInvalidCharsetShouldThrowAnException()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->set_charset = function ($charset) {
+            return false;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                $driver->setCharset('BadCharset');
+            })
+                ->hasMessage('Can\'t set charset BadCharset');
+    }
+
+    public function testSetDatabase()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';

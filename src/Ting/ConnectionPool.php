@@ -82,7 +82,13 @@ class ConnectionPool implements ConnectionPoolInterface
         $config = $this->connectionConfig[$name]['master'];
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
-        return $this->connect($config, $driverClass, $database, $name);
+        $charset = null;
+
+        if (isset($this->connectionConfig[$name]['charset']) === true) {
+            $charset = $this->connectionConfig[$name]['charset'];
+        }
+
+        return $this->connect($config, $driverClass, $database, $name, $charset);
     }
 
     /**
@@ -120,7 +126,13 @@ class ConnectionPool implements ConnectionPoolInterface
 
         $connectionConfig = $this->connectionSlaves[$name];
 
-        return $this->connect($connectionConfig, $driverClass, $database, $name);
+        $charset = null;
+
+        if (isset($this->connectionConfig[$name]['charset']) === true) {
+            $charset = $this->connectionConfig[$name]['charset'];
+        }
+
+        return $this->connect($connectionConfig, $driverClass, $database, $name, $charset);
     }
 
     /**
@@ -128,11 +140,11 @@ class ConnectionPool implements ConnectionPoolInterface
      * @param string $driverClass
      * @param string $database
      * @param string $name connection name
+     * @param string $charset
      * @return DriverInterface
      */
-    protected function connect($config, $driverClass, $database, $name)
+    protected function connect($config, $driverClass, $database, $name, $charset = null)
     {
-
         $connectionKey = $driverClass::getConnectionKey($config, $database);
 
         if (isset($this->connections[$connectionKey]) === false) {
@@ -153,6 +165,11 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         $this->connections[$connectionKey]->setDatabase($database);
+
+        if ($charset !== null) {
+            $this->connections[$connectionKey]->setCharset($charset);
+        }
+
         return $this->connections[$connectionKey];
     }
 }

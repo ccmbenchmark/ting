@@ -38,6 +38,11 @@ class Driver implements DriverInterface
     protected $database  = '';
 
     /**
+     * @var string|null
+     */
+    protected $currentCharset = null;
+
+    /**
      * @var resource pgsql
      */
     protected $connection = null;
@@ -90,6 +95,24 @@ class Driver implements DriverInterface
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
         return $this;
+    }
+
+    /**
+     * @param string $charset
+     * @return void
+     * @throws Exception
+     */
+    public function setCharset($charset)
+    {
+        if ($this->currentCharset === $charset) {
+            return $this;
+        }
+
+        if (pg_set_client_encoding($this->connection, $charset) === -1) {
+            throw new Exception('Can\'t set charset ' . $charset);
+        }
+
+        $this->currentCharset = $charset;
     }
 
     /**
