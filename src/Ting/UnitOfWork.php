@@ -306,7 +306,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $oid, &$statementsToClose) {
+            function (Metadata $metadata) use ($entity, $oid) {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
                     $connection,
@@ -362,8 +362,11 @@ class UnitOfWork implements PropertyListenerInterface
 
     protected function addStatementToClose($statementName, DriverInterface $connection)
     {
+        if (isset($this->statements[$statementName]) === false) {
+            $this->statements[$statementName] = array();
+        }
         if (isset($this->statements[$statementName][spl_object_hash($connection)]) === false) {
-            $this->statements[$statementName] = array(spl_object_hash($connection) => $connection);
+            $this->statements[$statementName][spl_object_hash($connection)] = $connection;
         }
     }
 }
