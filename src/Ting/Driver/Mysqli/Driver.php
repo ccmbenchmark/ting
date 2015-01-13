@@ -49,6 +49,11 @@ class Driver implements DriverInterface
     protected $currentDatabase = null;
 
     /**
+     * @var string|null
+     */
+    protected $currentCharset = null;
+
+    /**
      * @var bool
      */
     protected $connected = false;
@@ -126,6 +131,23 @@ class Driver implements DriverInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $charset
+     * @return void
+     * @throws Exception
+     */
+    public function setCharset($charset)
+    {
+        if ($this->currentCharset === $charset) {
+            return $this;
+        }
+
+        if ($this->connection->set_charset($charset) === false) {
+            throw new Exception('Can\'t set charset ' . $charset . ' (' . $this->connection->error . ')');
+        }
+        $this->currentCharset = $charset;
     }
 
     /**
