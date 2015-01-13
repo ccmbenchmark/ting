@@ -93,12 +93,16 @@ class Driver extends atoum
             return -1;
         };
 
+        $this->function->pg_last_error = 'ERROR:  invalid value for parameter "client_encoding": "utf8x"';
+
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
             ->exception(function () use ($driver) {
                 $driver->setCharset('BadCharset');
             })
-                ->hasMessage('Can\'t set charset BadCharset');
+                ->hasMessage(
+                    'Can\'t set charset BadCharset (ERROR:  invalid value for parameter "client_encoding": "utf8x")'
+                );
     }
 
     public function testSetDatabaseShouldCompleteGeneratedDsnByConnect()

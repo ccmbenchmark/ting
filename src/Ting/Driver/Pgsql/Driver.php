@@ -109,7 +109,7 @@ class Driver implements DriverInterface
         }
 
         if (pg_set_client_encoding($this->connection, $charset) === -1) {
-            throw new Exception('Can\'t set charset ' . $charset);
+            throw new Exception('Can\'t set charset ' . $charset . ' (' . pg_last_error($this->connection) . ')');
         }
 
         $this->currentCharset = $charset;

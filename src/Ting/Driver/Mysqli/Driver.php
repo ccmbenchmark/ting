@@ -140,7 +140,7 @@ class Driver implements DriverInterface
         }
 
         if ($this->connection->set_charset($charset) === false) {
-            throw new Exception('Can\'t set charset ' . $charset);
+            throw new Exception('Can\'t set charset ' . $charset . ' (' . $this->connection->error . ')');
         }
         $this->currentCharset = $charset;
     }

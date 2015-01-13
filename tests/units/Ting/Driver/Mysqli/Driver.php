@@ -153,6 +153,7 @@ class Driver extends atoum
     public function testSetCharsetWithInvalidCharsetShouldThrowAnException()
     {
         $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver->error = 'Invalid characterset or character set not supported';
         $this->calling($mockDriver)->set_charset = function ($charset) {
             return false;
         };
@@ -162,7 +163,7 @@ class Driver extends atoum
             ->exception(function () use ($driver) {
                 $driver->setCharset('BadCharset');
             })
-                ->hasMessage('Can\'t set charset BadCharset');
+                ->hasMessage('Can\'t set charset BadCharset (Invalid characterset or character set not supported)');
     }
 
     public function testSetDatabase()
