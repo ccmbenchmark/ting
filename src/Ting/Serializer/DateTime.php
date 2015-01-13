@@ -22,30 +22,32 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace CCMBenchmark\Ting\Serializer;
 
-class CollectionFactory implements CollectionFactoryInterface
+
+class DateTime implements SerializerInterface
 {
-
-    protected $hydrator = null;
+    private static $defaultOptions = ['format' => 'Y-m-d H:i:s'];
 
     /**
-     * @param HydratorInterface $hydrator
+     * @param \DateTime $toSerialize
+     * @param array $options
+     * @return string
      */
-    public function __construct(HydratorInterface $hydrator = null)
+    public function serialize($toSerialize, array $options = [])
     {
-        $this->hydrator = $hydrator;
+        $options = array_merge(self::$defaultOptions, $options);
+        return $toSerialize->format($options['format']);
     }
 
     /**
-     * @param HydratorInterface $hydrator
-     * @return Collection
+     * @param string $serialized
+     * @param array  $options
+     * @return \Datetime
      */
-    public function get(HydratorInterface $hydrator = null)
+    public function unserialize($serialized, array $options = [])
     {
-        if ($hydrator === null) {
-            $hydrator = $this->hydrator;
-        }
-        return new Collection($hydrator);
+        $options = array_merge(self::$defaultOptions, $options);
+        return \DateTime::createFromFormat($options['format'], $serialized);
     }
 }

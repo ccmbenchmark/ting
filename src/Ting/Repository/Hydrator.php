@@ -59,7 +59,6 @@ class Hydrator implements HydratorInterface
     /**
      * Hydrate one object from values
      * @param array               $columns
-     * @param CollectionInterface $collection
      * @return array
      */
     protected function hydrateColumns(array $columns)

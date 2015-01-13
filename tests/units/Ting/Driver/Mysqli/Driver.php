@@ -283,6 +283,9 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
+                    if ($value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
                     return addcslashes($value, '"');
                 }
             )
@@ -320,6 +323,9 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
+                    if ($value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
                     return addcslashes($value, '"');
                 }
             )
@@ -352,6 +358,10 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
+                    if ($value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
+
                     return addcslashes($value, '"');
                 }
             )

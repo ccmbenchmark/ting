@@ -135,7 +135,7 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
-     * @return @mixed
+     * @return mixed
      */
     public function first()
     {

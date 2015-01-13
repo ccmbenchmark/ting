@@ -25,10 +25,11 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
-    public static function initMetadata(\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface $serializerFactory)
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
     {
         $metadata = new Metadata($serializerFactory);
 
@@ -41,32 +42,32 @@ class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
            'primary'       => true,
            'autoincrement' => true,
            'fieldName'     => 'code',
-           'columnName' => 'cou_code',
-           'type'       => 'string'
+           'columnName'    => 'cou_code',
+            'type'         => 'int'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'name',
             'columnName' => 'cou_name',
-            'type' => 'string'
+            'type'       => 'string'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'continent',
             'columnName' => 'cou_continent',
-            'type' => 'string'
+            'type'       => 'string'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'region',
             'columnName' => 'cou_region',
-            'type' => 'string'
+            'type'       => 'string'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'president',
             'columnName' => 'cou_head_of_state',
-            'type' => 'string'
+            'type'       => 'string'
         ));
 
         return $metadata;

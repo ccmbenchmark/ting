@@ -22,30 +22,20 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Repository;
+namespace tests\units\CCMBenchmark\Ting\Serializer;
 
-class CollectionFactory implements CollectionFactoryInterface
-{
 
-    protected $hydrator = null;
+use mageekguy\atoum;
 
-    /**
-     * @param HydratorInterface $hydrator
-     */
-    public function __construct(HydratorInterface $hydrator = null)
+class DateTime extends atoum{
+
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
-        $this->hydrator = $hydrator;
-    }
-
-    /**
-     * @param HydratorInterface $hydrator
-     * @return Collection
-     */
-    public function get(HydratorInterface $hydrator = null)
-    {
-        if ($hydrator === null) {
-            $hydrator = $this->hydrator;
-        }
-        return new Collection($hydrator);
+        $datetime = new \DateTime('now');
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
+            ->object($serializer->unserialize($serializer->serialize($datetime)))
+                ->isEqualTo($datetime)
+        ;
     }
 }

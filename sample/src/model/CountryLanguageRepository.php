@@ -25,10 +25,11 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CountryLanguageRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
-    public static function initMetadata(\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface $serializerFactory)
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
     {
         $metadata = new Metadata($serializerFactory);
 
@@ -48,19 +49,19 @@ class CountryLanguageRepository extends \CCMBenchmark\Ting\Repository\Repository
             'primary'    => true,
             'fieldName'  => 'language',
             'columnName' => 'col_language',
-            'type' => 'string'
+            'type'       => 'string'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'isOfficial',
             'columnName' => 'col_is_official',
-            'type' => 'string'
+            'type'       => 'boolean'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'percentage',
             'columnName' => 'col_percentage',
-            'type' => 'string'
+            'type'       => 'double'
         ));
 
         return $metadata;
