@@ -250,6 +250,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $connection->closeStatement($statementName);
             }
         }
+        $this->statements = [];
     }
 
     /**
