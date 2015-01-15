@@ -38,4 +38,37 @@ class DateTime extends atoum
                 ->isEqualTo($datetime)
         ;
     }
+
+    public function testUnserializeInvalidValueShouldRaiseException()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
+            ->exception(function () use ($serializer) {
+                $serializer->unserialize('1345-67-89 bouh');
+            })
+                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+        ;
+    }
+
+    public function testSerializeInvalidValueShouldRaiseException()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
+            ->exception(function () use ($serializer) {
+                $serializer->serialize(new \StdClass());
+            })
+                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+        ;
+    }
+
+    public function testNullValueShouldBeReturned()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
+            ->variable($serializer->serialize(null))
+                ->isNull()
+            ->variable($serializer->unserialize(null))
+                ->isNull()
+        ;
+    }
 }

@@ -47,12 +47,14 @@ class Json extends atoum
         ;
     }
 
-    public function testSerializeShouldReturnJsonEncodedValueAndUsePassedDepth()
+    public function testSerializeShouldReturnJsonEncodedValueAndUsePassedDepthAndRaiseException()
     {
         $this
             ->if($jsonSerializer = new \CCMBenchmark\Ting\Serializer\Json())
-            ->boolean($jsonSerializer->serialize(['Bouh' => ['subBouh' => ['subSubBouh']]], ['depth' => 2]))
-                ->isFalse();
+            ->exception(function () use ($jsonSerializer) {
+                $jsonSerializer->serialize(['Bouh' => ['subBouh' => ['subSubBouh']]], ['depth' => 2]);
+            })
+                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException');
         ;
     }
 
@@ -79,10 +81,33 @@ class Json extends atoum
     public function testUnserializeShouldReturnJsonEncodedValueAndUsePassedDepth()
     {
         $encodedValue = json_encode(['Bouh' => ['subBouh']]);
+
         $this
             ->if($jsonSerializer = new \CCMBenchmark\Ting\Serializer\Json())
             ->array($jsonSerializer->unserialize($encodedValue, ['assoc' => true, 'depth' => 3]))
                 ->isIdenticalTo(json_decode($encodedValue, true, 3));
+        ;
+    }
+
+    public function testUnserializeShouldRaiseExceptionOnInvalidJson()
+    {
+        $this
+            ->if($jsonSerializer = new \CCMBenchmark\Ting\Serializer\Json())
+            ->exception(function () use ($jsonSerializer) {
+                $jsonSerializer->unserialize('bouh');
+            })
+                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException');
+        ;
+    }
+
+    public function testNullValueShouldReturnNull()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Json())
+            ->variable($serializer->serialize(null))
+                ->isNull()
+            ->variable($serializer->unserialize(null))
+                ->isNull()
         ;
     }
 }

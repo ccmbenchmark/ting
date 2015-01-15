@@ -34,9 +34,14 @@ class Json implements SerializerInterface
      * @param mixed $toSerialize
      * @param array $options
      * @return string
+     * @throws RuntimeException
      */
     public function serialize($toSerialize, array $options = [])
     {
+        if ($toSerialize === null) {
+            return null;
+        }
+
         if (isset($options['options']) === true) {
             $jsonOptions = $options['options'];
         } else {
@@ -49,16 +54,25 @@ class Json implements SerializerInterface
             $jsonDepth = self::JSON_DEFAULT_DEPTH;
         }
 
-        return json_encode($toSerialize, $jsonOptions, $jsonDepth);
+        $json = json_encode($toSerialize, $jsonOptions, $jsonDepth);
+        if ($json === false) {
+            throw new RuntimeException('Could not convert value to json. Error was : ' . json_last_error_msg());
+        }
+        return $json;
     }
 
     /**
      * @param string $serialized
      * @param array $options
+     * @throws RuntimeException
      * @return mixed
      */
     public function unserialize($serialized, array $options = [])
     {
+        if ($serialized === null) {
+            return null;
+        }
+
         if (isset($options['assoc']) === true) {
             $jsonAssoc = $options['assoc'];
         } else {
@@ -77,6 +91,11 @@ class Json implements SerializerInterface
             $jsonOptions = self::JSON_DEFAULT_OPTIONS;
         }
 
-        return json_decode($serialized, $jsonAssoc, $jsonDepth, $jsonOptions);
+        $value = json_decode($serialized, $jsonAssoc, $jsonDepth, $jsonOptions);
+
+        if ($value === null) {
+            throw new RuntimeException('Could not decode value from json. Error was : ' . json_last_error_msg());
+        }
+        return $value;
     }
 }
