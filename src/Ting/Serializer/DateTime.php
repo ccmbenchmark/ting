@@ -24,6 +24,8 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
+use CCMBenchmark\Ting\Exception;
+
 class DateTime implements SerializerInterface
 {
     private static $defaultOptions = ['format' => 'Y-m-d H:i:s'];
@@ -32,9 +34,16 @@ class DateTime implements SerializerInterface
      * @param \DateTime $toSerialize
      * @param array $options
      * @return string
+     * @throws RuntimeException
      */
     public function serialize($toSerialize, array $options = [])
     {
+        if ($toSerialize === null) {
+            return null;
+        }
+        if (($toSerialize instanceof \DateTime) === false) {
+            throw new RuntimeException('Cannot convert this value to datetime.');
+        }
         $options = array_merge(self::$defaultOptions, $options);
         return $toSerialize->format($options['format']);
     }
@@ -43,10 +52,20 @@ class DateTime implements SerializerInterface
      * @param string $serialized
      * @param array  $options
      * @return \Datetime
+     * @throws RuntimeException
      */
     public function unserialize($serialized, array $options = [])
     {
+        if ($serialized === null) {
+            return null;
+        }
+
         $options = array_merge(self::$defaultOptions, $options);
-        return \DateTime::createFromFormat($options['format'], $serialized);
+        $value = \DateTime::createFromFormat($options['format'], $serialized);
+
+        if ($value === false) {
+            throw new RuntimeException('Cannot convert '.$serialized.' to datetime.');
+        }
+        return $value;
     }
 }
