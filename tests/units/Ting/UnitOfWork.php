@@ -87,6 +87,21 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
+    public function testIsManagedWithUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+        $mockEntity->tingUUID = uniqid();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->boolean($unitOfWork->isManaged($mockEntity))
+            ->isFalse();
+    }
+
     public function testSave()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
@@ -133,6 +148,22 @@ class UnitOfWork extends atoum
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
             ->boolean($unitOfWork->isNew($mockEntity))
+                ->isFalse();
+    }
+
+    public function testIsPropertyChangedWithUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+        $mockEntity->tingUUID = uniqid();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->then($unitOfWork->propertyChanged($mockEntity, 'firstname', 'Sylvain', 'Sylvain'))
+            ->boolean($unitOfWork->isPropertyChanged($mockEntity, 'firstname'))
                 ->isFalse();
     }
 
@@ -184,6 +215,21 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
+    public function testShouldBeRemovedWithUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+        $mockEntity->tingUUID = uniqid();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
+                ->isFalse();
+    }
+
     public function testRemove()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
@@ -211,6 +257,20 @@ class UnitOfWork extends atoum
             ))
             ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
                 ->isFalse();
+    }
+
+    public function testIsNewWithoutUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->boolean($unitOfWork->isNew($mockEntity))
+            ->isFalse();
     }
 
     public function testIsNewAfterProcessShouldReturnFalse()
