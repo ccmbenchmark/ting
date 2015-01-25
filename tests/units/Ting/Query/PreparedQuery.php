@@ -162,9 +162,14 @@ class PreparedQuery extends atoum
 
     public function testGetStatementNameShouldReturnAString()
     {
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory();
+        $services              = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
+            $services->get('MetadataRepository'),
+            $services->get('UnitOfWork'),
+            $services->get('Hydrator')
+        );
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection, $mockCollectionFactory))
