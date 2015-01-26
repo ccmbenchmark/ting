@@ -96,7 +96,7 @@ try {
     $unitOfWork->pushSave($city);
 
     $city2->setName('Bouh 2');
-    $unitOfWork->persist($city2);
+    $unitOfWork->pushSave($city2);
 
     $unitOfWork->process();
 
