@@ -68,7 +68,7 @@ class Repository
      * @param CollectionFactory $collectionFactory
      * @param CacheInterface $cache
      * @param UnitOfWork $unitOfWork
-     * @throws Exception
+     * @param SerializerFactoryInterface $serializerFactory
      */
     public function __construct(
         ConnectionPool $connectionPool,
@@ -102,6 +102,16 @@ class Repository
 
         $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
+    }
+
+
+    /**
+     * @param HydratorInterface $hydrator|null
+     * @return Collection
+     */
+    public function getCollection(HydratorInterface $hydrator = null)
+    {
+        return $this->collectionFactory->get($hydrator);
     }
 
     /**
@@ -201,10 +211,10 @@ class Repository
     }
 
     /**
-     * @param SerializerFactory $serializerFactory
-     * @param array $options Options you can use to custom initialization of Metadata
-     * @throws Exception
+     * @param  SerializerFactoryInterface $serializerFactory
+     * @param  array                      $options
      * @return \CCMBenchmark\Ting\Repository\Metadata
+     * @throws Exception
      */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {

@@ -120,7 +120,53 @@ class Driver extends atoum
                     ->exists();
     }
 
-    public function testsetDatabase()
+    public function testSetCharset()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->set_charset = function ($charset) {
+            $this->charset = $charset;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->variable($mockDriver->charset)
+            ->isIdenticalTo('utf8');
+    }
+
+    public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->set_charset = function ($charset) {
+            $this->charset = $charset;
+        };
+
+        $this
+            ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->then($driver->setCharset('utf8'))
+            ->mock($mockDriver)
+                ->call('set_charset')
+                    ->once();
+    }
+
+    public function testSetCharsetWithInvalidCharsetShouldThrowAnException()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver->error = 'Invalid characterset or character set not supported';
+        $this->calling($mockDriver)->set_charset = function ($charset) {
+            return false;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                $driver->setCharset('BadCharset');
+            })
+                ->hasMessage('Can\'t set charset BadCharset (Invalid characterset or character set not supported)');
+    }
+
+    public function testSetDatabase()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
@@ -241,19 +287,7 @@ class Driver extends atoum
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->exception(function () use ($driver) {
                 $driver->prepare(
-                    'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
-                    function (
-                        $statement,
-                        $paramsOrder,
-                        $driverStatement,
-                        $collection
-                    ) use (
-                        &$outerStatement,
-                        &$outerParamsOrder,
-                        &$outerDriverStatement
-                    ) {
-                        $outerParamsOrder = $paramsOrder;
-                    }
+                    'SELECT 1 FROM bouh WHERE first = :first AND second = :second'
                 );
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
@@ -295,6 +329,9 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
+                    if ($value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
                     return addcslashes($value, '"');
                 }
             )
@@ -332,6 +369,9 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
+                    if ($value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
                     return addcslashes($value, '"');
                 }
             )
@@ -364,6 +404,10 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
                 $this->calling($driverFake)->real_escape_string = function ($value) {
+                    if ($value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
+
                     return addcslashes($value, '"');
                 }
             )
@@ -413,20 +457,48 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->prepare = function ($sql) use (&$outerSql) {
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
+
+        $this->calling($mockDriver)->prepare = function ($sql) use (&$outerSql, $driverStatement) {
             $outerSql = $sql;
+
+            return $driverStatement;
         };
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
-                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"',
-                function () {
-                }
+                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
             ))
             ->string($outerSql)
                 ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
+    }
+
+    public function testPrepareCalledTwiceShouldReturnTheSameObject()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($driverStatement)->close = true;
+
+        $this->calling($mockDriver)->prepare = function ($sql) use (&$outerSql, $driverStatement) {
+            $outerSql = $sql;
+
+            return $driverStatement;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($statement = $driver->prepare(
+                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
+            ))
+            ->object($driver->prepare(
+                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
+            ))
+            ->isIdenticalTo($statement);
     }
 
     public function testEscapeFieldShouldEscapeField()
@@ -570,9 +642,11 @@ class Driver extends atoum
     public function testPrepareShouldLogQuery()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+        $driverStatement = new \mock\Fake\DriverStatement();
+        $this->calling($mockDriver)->prepare = $driverStatement;
+        $this->calling($driverStatement)->close = true;
 
-        $this->calling($mockDriver)->prepare = new \stdClass();
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -582,7 +656,19 @@ class Driver extends atoum
                 ->call('startPrepare')
                     ->once()
                 ->call('stopPrepare')
-                    ->once()
+                    ->once();
+    }
+
+    public function testCloseStatementShouldRaiseExceptionOnNonExistentStatement()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                $driver->closeStatement('NonExistentStatementName');
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Driver\Exception')
         ;
     }
 }

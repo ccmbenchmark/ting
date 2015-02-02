@@ -68,10 +68,9 @@ class Hydrator extends atoum
         $collection = $services->get('CollectionFactory')->get();
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
-                $services->get('MetadataRepository'),
-                $services->get('UnitOfWork')
-            ))
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
             ->then($data = $hydrator->hydrate($data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
@@ -126,10 +125,9 @@ class Hydrator extends atoum
         $collection = $services->get('CollectionFactory')->get();
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
-                $services->get('MetadataRepository'),
-                $services->get('UnitOfWork')
-            ))
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
             ->then($data = $hydrator->hydrate($data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
@@ -164,10 +162,9 @@ class Hydrator extends atoum
         $collection = $services->get('CollectionFactory')->get();
 
         $this
-            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator(
-                $services->get('MetadataRepository'),
-                $services->get('UnitOfWork')
-            ))
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
             ->then($data = $hydrator->hydrate($data, $collection))
             ->string($data[0]->name)
                 ->isIdenticalTo('Robez-Masson')

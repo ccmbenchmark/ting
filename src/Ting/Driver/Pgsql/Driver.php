@@ -38,6 +38,11 @@ class Driver implements DriverInterface
     protected $database  = '';
 
     /**
+     * @var string|null
+     */
+    protected $currentCharset = null;
+
+    /**
      * @var resource pgsql
      */
     protected $connection = null;
@@ -61,6 +66,11 @@ class Driver implements DriverInterface
      * @var resource
      */
     protected $result = null;
+
+    /**
+     * @var array List of already prepared queries
+     */
+    protected $preparedQueries = array();
 
     /**
      * Return a unique connection key identifier
@@ -90,6 +100,24 @@ class Driver implements DriverInterface
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
         return $this;
+    }
+
+    /**
+     * @param string $charset
+     * @return void
+     * @throws Exception
+     */
+    public function setCharset($charset)
+    {
+        if ($this->currentCharset === $charset) {
+            return $this;
+        }
+
+        if (pg_set_client_encoding($this->connection, $charset) === -1) {
+            throw new Exception('Can\'t set charset ' . $charset . ' (' . pg_last_error($this->connection) . ')');
+        }
+
+        $this->currentCharset = $charset;
     }
 
     /**
@@ -136,16 +164,6 @@ class Driver implements DriverInterface
 
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
-            if ($params[$key] instanceof \DateTime) {
-                $params[$key] = $params[$key]->format('Y-m-d H:i:s');
-            } elseif (is_bool($params[$key]) === true) {
-                if ($params[$key] === true) {
-                    $params[$key] = 't';
-                } else {
-                    $params[$key] = 'f';
-                }
-            }
-
             $values[] = &$params[$key];
         }
 
@@ -190,7 +208,12 @@ class Driver implements DriverInterface
     {
         list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
 
-        $statementName = sha1($sql);
+        $statementName = sha1($originalSQL);
+
+        if (isset($this->preparedQueries[$statementName]) === true) {
+            return $this->preparedQueries[$statementName];
+        }
+
         $statement     = new Statement($statementName, $paramsOrder);
 
         if ($this->logger !== null) {
@@ -211,6 +234,8 @@ class Driver implements DriverInterface
         $statement
             ->setConnection($this->connection)
             ->setQuery($sql);
+
+        $this->preparedQueries[$statementName] = $statement;
 
         return $statement;
     }
@@ -336,5 +361,17 @@ class Driver implements DriverInterface
         }
 
         return pg_affected_rows($this->result);
+    }
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+        if (isset($this->preparedQueries[$statement]) === false) {
+            throw new Exception('Cannot close non prepared statement');
+        }
+        unset($this->preparedQueries[$statement]);
     }
 }

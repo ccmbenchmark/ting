@@ -29,8 +29,18 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class MetadataRepository
 {
-
+    /**
+     * This array matches a repository (class name) and the corresponding metadata object
+     *
+     * @var array RepositoryClassName => MetadataObject
+     */
     protected $metadataList = array();
+
+    /**
+     * This array matches an entity name and the corresponding repository name
+     * @var array
+     */
+    protected $entityToRepository = array();
 
     /**
      * @var SerializerFactoryInterface|null
@@ -69,35 +79,32 @@ class MetadataRepository
     }
 
     /**
-     * @param string   $repositoryName
-     * @param callable $callbackFound Called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown entity - no parameter
-     */
-    public function findMetadataForRepository($repositoryName, \Closure $callbackFound, \Closure $callbackNotFound = null)
-    {
-        if (isset($this->metadataList[$repositoryName]) === true) {
-            $callbackFound($this->metadataList[$repositoryName]);
-        } elseif ($callbackNotFound !== null) {
-            $callbackNotFound();
-        }
-    }
-
-    /**
      * @param object   $entity
      * @param callable $callbackFound Called with applicable Metadata if applicable
      * @param callable $callbackNotFound called if unknown entity - no parameter
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
-        $this->findMetadataForRepository(get_class($entity) . 'Repository', $callbackFound, $callbackNotFound);
+        if (
+            isset($this->entityToRepository[get_class($entity)]) === true
+            && isset($this->metadataList[$this->entityToRepository[get_class($entity)]]) === true
+        ) {
+            $callbackFound($this->metadataList[$this->entityToRepository[get_class($entity)]]);
+        } elseif ($callbackNotFound !== null) {
+            $callbackNotFound();
+        }
     }
 
+    /**
+     * @param string   $repositoryClass
+     * @param Metadata $metadata
+     */
     public function addMetadata($repositoryClass, Metadata $metadata)
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;
+            $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
         }
-
     }
 
     /**

@@ -55,6 +55,56 @@ class Driver extends atoum
                 ->isIdenticalTo($driver);
     }
 
+    public function testSetCharset()
+    {
+        $mockDriver = new \mock\Fake\Pgsql();
+        $this->function->pg_set_client_encoding = function ($connection, $charset) use (&$outerCharset) {
+            $outerCharset = $charset;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->variable($outerCharset)
+                ->isIdenticalTo('utf8');
+    }
+
+    public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
+    {
+        $mockDriver = new \mock\Fake\Pgsql();
+        $called = 0;
+        $this->function->pg_set_client_encoding = function () use (&$called) {
+            $called++;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->setCharset('utf8'))
+            ->then($driver->setCharset('utf8'))
+            ->variable($called)
+                ->isIdenticalTo(1);
+
+    }
+
+    public function testSetCharsetWithInvalidCharsetShouldThrowAnException()
+    {
+        $mockDriver = new \mock\Fake\Pgsql();
+        $this->function->pg_set_client_encoding = function ($connection, $charset) {
+            return -1;
+        };
+
+        $this->function->pg_last_error = 'ERROR:  invalid value for parameter "client_encoding": "utf8x"';
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                $driver->setCharset('BadCharset');
+            })
+                ->hasMessage(
+                    'Can\'t set charset BadCharset (ERROR:  invalid value for parameter "client_encoding": "utf8x")'
+                );
+    }
+
     public function testSetDatabaseShouldCompleteGeneratedDsnByConnect()
     {
 
@@ -147,6 +197,7 @@ class Driver extends atoum
     public function testPrepareShouldRaiseQueryException()
     {
         $this->function->pg_connect = true;
+        $this->function->pg_query = true;
         $this->function->pg_prepare = false;
         $this->function->pg_last_error = 'unknown error';
 
@@ -177,6 +228,7 @@ class Driver extends atoum
     public function testPrepareShouldNotTransformEscapedColon()
     {
         $this->function->pg_connect = true;
+        $this->function->pg_query = true;
         $this->function->pg_prepare = function ($resource, $statementName, $sql) use (&$outerSql) {
             $outerSql = $sql;
         };
@@ -291,7 +343,7 @@ class Driver extends atoum
 
     }
 
-    public function testGetAffectedRowsWithouResultShouldReturn0()
+    public function testGetAffectedRowsWithoutResultShouldReturn0()
     {
         $this->function->pg_affected_rows = 12;
 
@@ -349,7 +401,7 @@ class Driver extends atoum
                         ->isIdenticalTo(1)
                 ->then($driver->execute(
                     'INSERT INTO "myTable" (date_field) VALUES (:date)',
-                    ['date' => new \DateTime('2014-12-31 23:59:59')]
+                    ['date' => '2014-12-31 23:59:59']
                 ))
                     ->array($outerValues)
                         ->isIdenticalTo([0 => '2014-12-31 23:59:59'])
@@ -357,24 +409,6 @@ class Driver extends atoum
                         ->isIdenticalTo('INSERT INTO "myTable" (date_field) VALUES ($1)')
                     ->integer($count)
                         ->isIdenticalTo(2)
-        ;
-    }
-
-    public function testExecuteShouldCallPGQueryParamsWithBooleanCastedIntoPostgresqlValue()
-    {
-        $outerValues = '';
-        $this->function->pg_query_params = function ($connection, $sql, $values) use (&$outerValues) {
-            $outerValues = $values;
-        };
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->then($driver->execute(
-                'SELECT 1 FROM "myTable" WHERE enabled = :enabled AND disabled = :disabled',
-                ['enabled' => true, 'disabled' => false]
-            ))
-            ->array($outerValues)
-                ->isIdenticalTo([0 => 't', 1 => 'f']);
         ;
     }
 
@@ -455,6 +489,7 @@ class Driver extends atoum
     public function testPrepareShouldLogQuery()
     {
         $this->function->pg_prepare      = true;
+        $this->function->pg_query = true;
         $this->function->pg_fetch_array  = 'data';
         $this->function->pg_result_seek  = true;
         $this->function->pg_field_table  = 'myTable';
@@ -469,7 +504,30 @@ class Driver extends atoum
                     ->call('startPrepare')
                         ->once()
                     ->call('stopPrepare')
-                        ->once()
+                        ->once();
+    }
+
+    public function testPrepareCalledTwiceShouldReturnTheSameObject()
+    {
+        $this->function->pg_prepare = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($statement = $driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
+            ->object($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
+            ->isIdenticalTo($statement);
+    }
+
+    public function testCloseStatementShouldRaiseExceptionOnNonExistentStatement()
+    {
+        $this->function->pg_prepare = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->exception(function () use ($driver) {
+                $driver->closeStatement('NonExistentStatement');
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Driver\Exception')
         ;
     }
 }

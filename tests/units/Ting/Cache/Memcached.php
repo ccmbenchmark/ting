@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Cache;
 
-
 use mageekguy\atoum;
 
 class Memcached extends atoum
@@ -176,7 +175,7 @@ class Memcached extends atoum
             ->exception(function () use ($memcached) {
                 $memcached->get('Bouh');
             })
-                ->hasMessage('Must setConfig priory to use Memcached')
+            ->hasMessage('Must setConfig priory to use Memcached')
         ;
     }
 

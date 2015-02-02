@@ -25,6 +25,7 @@
 namespace tests\fixtures\FakeDriver;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
@@ -47,9 +48,14 @@ class Driver implements DriverInterface
 
     }
 
+    public function setCharset($charset)
+    {
+
+    }
+
     public function setLogger(DriverLoggerInterface $logger = null)
     {
-        
+
     }
 
 
@@ -61,7 +67,7 @@ class Driver implements DriverInterface
      */
     public function execute($sql, array $params = array(), CollectionInterface $collection = null)
     {
-        
+
     }
 
     /**
@@ -70,7 +76,7 @@ class Driver implements DriverInterface
      */
     public function prepare($sql)
     {
-        
+
     }
 
     /**
@@ -79,7 +85,7 @@ class Driver implements DriverInterface
      */
     public function escapeField($field)
     {
-        
+
     }
 
     /**
@@ -87,7 +93,7 @@ class Driver implements DriverInterface
      */
     public function getInsertId()
     {
-        
+
     }
 
     /**
@@ -95,7 +101,7 @@ class Driver implements DriverInterface
      */
     public function getAffectedRows()
     {
-        
+
     }
 
     /**
@@ -105,7 +111,7 @@ class Driver implements DriverInterface
      */
     public static function getConnectionKey(array $connectionConfig, $database)
     {
-        
+
     }
 
     /**
@@ -113,7 +119,7 @@ class Driver implements DriverInterface
      */
     public function setDatabase($database)
     {
-        
+
     }
 
     /**
@@ -121,7 +127,7 @@ class Driver implements DriverInterface
      */
     public function ifIsError(callable $callback)
     {
-        
+
     }
 
     /**
@@ -129,20 +135,31 @@ class Driver implements DriverInterface
      */
     public function ifIsNotConnected(callable $callback)
     {
-        
+
     }
 
     public function startTransaction()
     {
-        
+
     }
 
     public function rollback()
     {
-        
+
     }
 
     public function commit()
     {
     }
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+
+    }
+
+
 }

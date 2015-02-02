@@ -51,6 +51,7 @@ class Statement implements StatementInterface
         $this->statementName = $statementName;
         $this->paramsOrder   = $paramsOrder;
     }
+
     /**
      * @param $connection
      * @return $this
@@ -94,16 +95,6 @@ class Statement implements StatementInterface
     {
         $values = array();
         foreach (array_keys($this->paramsOrder) as $key) {
-            if ($params[$key] instanceof \DateTime) {
-                $params[$key] = $params[$key]->format('Y-m-d H:i:s');
-            } elseif (is_bool($params[$key]) === true) {
-                if ($params[$key] === true) {
-                    $params[$key] = 't';
-                } else {
-                    $params[$key] = 'f';
-                }
-            }
-
             $values[] = &$params[$key];
         }
 
@@ -116,7 +107,7 @@ class Statement implements StatementInterface
         }
 
         if ($result === false) {
-            throw new QueryException(pg_result_error($this->connection));
+            throw new QueryException(pg_errormessage($this->connection));
         }
 
         if ($collection !== null) {
@@ -143,8 +134,13 @@ class Statement implements StatementInterface
     /**
      * Deallocate the current prepared statement
      */
-    public function close()
+    protected function close()
     {
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 }

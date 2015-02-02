@@ -403,7 +403,7 @@ class Metadata extends atoum
         $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
             '',
             $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
+            $services->get('CollectionFactory')
         );
         $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
             $outerParams = $params;
@@ -449,7 +449,7 @@ class Metadata extends atoum
         $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
             '',
             $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
+            $services->get('CollectionFactory')
         );
         $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
             $outerParams = $params;
@@ -498,7 +498,7 @@ class Metadata extends atoum
         $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
             '',
             $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
+            $services->get('CollectionFactory')
         );
         $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
             $outerParams = $params;
@@ -537,81 +537,6 @@ class Metadata extends atoum
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerSql)
             ->isIdenticalTo('INSERT INTO  (boo_roles) VALUES (:boo_roles)');
-    }
-
-    public function testGenerateQueryForInsertShouldCastParameters()
-    {
-        $services = new \CCMBenchmark\Ting\Services();
-
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
-        };
-
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->master = $mockDriver;
-
-        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
-
-        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
-            '',
-            $mockConnection,
-            new \CCMBenchmark\Ting\Repository\CollectionFactory()
-        );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
-            $outerParams = $params;
-        };
-
-        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
-        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
-
-        $entity = new Bouh();
-        $entity->setId("333");
-        $entity->setName(3);
-        $entity->setFirstname('bouh');
-        $entity->setEnabled('yeah');
-        $entity->setPrice(7);
-
-        $this
-            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
-            ->and(
-                $metadata->addField([
-                    'primary'    => true,
-                    'fieldName'  => 'id',
-                    'columnName' => 'boo_id',
-                    'type'       => 'int'
-                ])
-            )
-            ->and(
-                $metadata->addField([
-                    'fieldName'  => 'name',
-                    'columnName' => 'boo_name',
-                    'type'       => 'string'
-                ])
-            )
-            ->and(
-                $metadata->addField([
-                    'fieldName'  => 'enabled',
-                    'columnName' => 'boo_enabled',
-                    'type'       => 'bool'
-                ])
-            )
-            ->and(
-                $metadata->addField([
-                    'fieldName'  => 'price',
-                    'columnName' => 'boo_price',
-                    'type'       => 'double'
-                ])
-            )
-            ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
-            ->array($outerParams)
-            ->isIdenticalTo([
-                'boo_id' => (int) "333",
-                'boo_name' => (string) 3,
-                'boo_enabled' => (bool) 'yeah',
-                'boo_price' => (double) 7
-            ]);
     }
 
     public function testGenerateQueryForUpdateShouldReturnAPreparedQuery()

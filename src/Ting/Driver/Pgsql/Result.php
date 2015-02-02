@@ -76,7 +76,7 @@ class Result implements ResultInterface
         preg_match_all('/select\s+(.+?)(\s+from|$)/is', $query, $matches, PREG_SET_ORDER);
 
         if ($matches === []) {
-            throw new queryException('Query invalid: can\'t parse columns');
+            throw new QueryException('Query invalid: can\'t parse columns');
         }
 
         $queryColumns = $matches[0][1];

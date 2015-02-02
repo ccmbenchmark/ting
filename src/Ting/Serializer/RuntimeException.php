@@ -22,23 +22,9 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver;
+namespace CCMBenchmark\Ting\Serializer;
 
-use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
-use CCMBenchmark\Ting\Repository\CollectionInterface;
-
-interface StatementInterface
+class RuntimeException extends \RuntimeException
 {
-    /**
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
-     */
-    public function execute(array $params, CollectionInterface $collection = null);
 
-    /**
-     * @param DriverLoggerInterface $logger
-     * @return void
-     */
-    public function setLogger(DriverLoggerInterface $logger = null);
 }

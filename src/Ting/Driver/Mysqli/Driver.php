@@ -49,6 +49,11 @@ class Driver implements DriverInterface
     protected $currentDatabase = null;
 
     /**
+     * @var string|null
+     */
+    protected $currentCharset = null;
+
+    /**
      * @var bool
      */
     protected $connected = false;
@@ -67,6 +72,11 @@ class Driver implements DriverInterface
      * @var string hash of current object
      */
     protected $objectHash = '';
+
+    /**
+     * @var array List of already prepared queries
+     */
+    protected $preparedQueries = array();
 
     /**
      * @param  \mysqli|Object|null $connection
@@ -121,6 +131,23 @@ class Driver implements DriverInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $charset
+     * @return void
+     * @throws Exception
+     */
+    public function setCharset($charset)
+    {
+        if ($this->currentCharset === $charset) {
+            return $this;
+        }
+
+        if ($this->connection->set_charset($charset) === false) {
+            throw new Exception('Can\'t set charset ' . $charset . ' (' . $this->connection->error . ')');
+        }
+        $this->currentCharset = $charset;
     }
 
     /**
@@ -186,11 +213,6 @@ class Driver implements DriverInterface
                 $value = $params[$match[1]];
 
                 switch (gettype($value)) {
-                    case "object":
-                        if ($value instanceof \DateTime) {
-                            return '"' . $value->format('Y-m-d H:i:s') . '"';
-                        }
-                        break;
                     case "integer":
                         // integer and double doesn't need quotes
                     case "double":
@@ -249,6 +271,11 @@ class Driver implements DriverInterface
      */
     public function prepare($sql)
     {
+
+        $statementName = sha1($sql);
+        if (isset($this->preparedQueries[$statementName])) {
+            return $this->preparedQueries[$statementName];
+        }
         $paramsOrder = [];
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
@@ -278,6 +305,9 @@ class Driver implements DriverInterface
 
         $statement = new Statement($driverStatement, $paramsOrder);
         $statement->setLogger($this->logger);
+
+        $this->preparedQueries[$statementName] = $statement;
+
 
         return $statement;
     }
@@ -358,5 +388,17 @@ class Driver implements DriverInterface
         }
 
         return $this->connection->affected_rows;
+    }
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+        if (isset($this->preparedQueries[$statement]) === false) {
+            throw new Exception('Cannot close non prepared statement');
+        }
+        unset($this->preparedQueries[$statement]);
     }
 }

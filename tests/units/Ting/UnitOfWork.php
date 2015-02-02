@@ -87,6 +87,21 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
+    public function testIsManagedWithUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+        $mockEntity->tingUUID = uniqid();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->boolean($unitOfWork->isManaged($mockEntity))
+            ->isFalse();
+    }
+
     public function testSave()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
@@ -133,6 +148,22 @@ class UnitOfWork extends atoum
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
                 ->isTrue()
             ->boolean($unitOfWork->isNew($mockEntity))
+                ->isFalse();
+    }
+
+    public function testIsPropertyChangedWithUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+        $mockEntity->tingUUID = uniqid();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->then($unitOfWork->propertyChanged($mockEntity, 'firstname', 'Sylvain', 'Sylvain'))
+            ->boolean($unitOfWork->isPropertyChanged($mockEntity, 'firstname'))
                 ->isFalse();
     }
 
@@ -184,6 +215,21 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
+    public function testShouldBeRemovedWithUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+        $mockEntity->tingUUID = uniqid();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->boolean($unitOfWork->shouldBeRemoved($mockEntity))
+                ->isFalse();
+    }
+
     public function testRemove()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
@@ -213,6 +259,20 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
+    public function testIsNewWithoutUUIDShouldReturnFalse()
+    {
+        $mockEntity = new \mock\tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->boolean($unitOfWork->isNew($mockEntity))
+            ->isFalse();
+    }
+
     public function testIsNewAfterProcessShouldReturnFalse()
     {
         $entity = new \tests\fixtures\model\Bouh();
@@ -234,7 +294,7 @@ class UnitOfWork extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->getInsertId = 1;
-
+        $this->calling($mockDriver)->closeStatement = true;
 
         $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -280,6 +340,7 @@ class UnitOfWork extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->getInsertId = 1;
+        $this->calling($mockDriver)->closeStatement = true;
 
 
         $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
@@ -308,6 +369,53 @@ class UnitOfWork extends atoum
                 ->isNull()
             ->boolean($unitOfWork->shouldBePersisted($entity))
                 ->isFalse()
+        ;
+    }
+
+    public function testTryingToProcessAnEntityWithoutRepositoryShouldRaiseAnException()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($this->services->get('SerializerFactory'));
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('', $mockConnection);
+        $this->calling($mockPreparedQuery)->prepareExecute = $mockPreparedQuery;
+        $this->calling($mockPreparedQuery)->execute = true;
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->getInsertId = 1;
+
+
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $mockConnectionPool,
+                $mockMetadataRepository,
+                $mockQueryFactory
+            ))
+            ->then($unitOfWork->pushSave($entity))
+            ->exception(function () use ($unitOfWork) {
+                $unitOfWork->process();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+            ->then($unitOfWork->pushDelete($entity))
+            ->exception(function () use ($unitOfWork) {
+                $unitOfWork->process();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+            ->and($unitOfWork->manage($entity))
+            ->then($entity->setName('newName'))
+            ->then($unitOfWork->pushSave($entity))
+            ->exception(function () use ($unitOfWork) {
+                $unitOfWork->process();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Exception')
         ;
     }
 }

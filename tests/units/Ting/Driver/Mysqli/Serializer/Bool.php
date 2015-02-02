@@ -22,23 +22,21 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver;
+namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli\Serializer;
 
-use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
-use CCMBenchmark\Ting\Repository\CollectionInterface;
+use mageekguy\atoum;
 
-interface StatementInterface
+class Bool extends atoum
 {
-    /**
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
-     */
-    public function execute(array $params, CollectionInterface $collection = null);
 
-    /**
-     * @param DriverLoggerInterface $logger
-     * @return void
-     */
-    public function setLogger(DriverLoggerInterface $logger = null);
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Mysqli\Serializer\Bool())
+            ->boolean($serializer->unserialize($serializer->serialize(true)))
+                ->isTrue()
+            ->boolean($serializer->unserialize($serializer->serialize(false)))
+                ->isFalse()
+        ;
+    }
 }

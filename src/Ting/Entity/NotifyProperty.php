@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Entity;
 
-
 trait NotifyProperty
 {
     protected $listeners = array();

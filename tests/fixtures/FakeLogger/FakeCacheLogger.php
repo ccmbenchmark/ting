@@ -24,7 +24,6 @@
 
 namespace tests\fixtures\FakeLogger;
 
-
 use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
 
 class FakeCacheLogger implements CacheLoggerInterface

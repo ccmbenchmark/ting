@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-class Collection implements CollectionInterface, \Iterator
+class Collection implements CollectionInterface, \Iterator, \Countable
 {
 
     /**
@@ -135,7 +135,7 @@ class Collection implements CollectionInterface, \Iterator
     }
 
     /**
-     * @return @mixed
+     * @return mixed
      */
     public function first()
     {

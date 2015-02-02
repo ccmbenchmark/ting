@@ -22,23 +22,43 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver;
+namespace CCMBenchmark\Ting\Driver\Pgsql\Serializer;
 
-use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
-use CCMBenchmark\Ting\Repository\CollectionInterface;
+use CCMBenchmark\Ting\Serializer\SerializerInterface;
 
-interface StatementInterface
+class Bool implements SerializerInterface
 {
     /**
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
+     * @param mixed $toSerialize
+     * @param array $options
+     * @return string|null
      */
-    public function execute(array $params, CollectionInterface $collection = null);
+    public function serialize($toSerialize, array $options = [])
+    {
+        if ($toSerialize === true) {
+            return 't';
+        }
+        if ($toSerialize === false) {
+            return 'f';
+        }
+
+        return null;
+    }
 
     /**
-     * @param DriverLoggerInterface $logger
-     * @return void
+     * @param string $serialized
+     * @param array  $options
+     * @return bool|null
      */
-    public function setLogger(DriverLoggerInterface $logger = null);
+    public function unserialize($serialized, array $options = [])
+    {
+        if ($serialized === 't') {
+            return true;
+        }
+        if ($serialized === 'f') {
+            return false;
+        }
+
+        return null;
+    }
 }

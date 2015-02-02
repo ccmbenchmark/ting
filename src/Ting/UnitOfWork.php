@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
@@ -38,10 +39,11 @@ class UnitOfWork implements PropertyListenerInterface
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
     protected $queryFactory              = null;
-    protected $entities                  = array();
-    protected $entitiesManaged           = array();
-    protected $entitiesChanged           = array();
-    protected $entitiesShouldBePersisted = array();
+    protected $entities                  = [];
+    protected $entitiesManaged           = [];
+    protected $entitiesChanged           = [];
+    protected $entitiesShouldBePersisted = [];
+    protected $statements = [];
 
     /**
      * @param ConnectionPool        $connectionPool
@@ -59,14 +61,25 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
+     * @return string
+     */
+    protected function generateUUID()
+    {
+        return uniqid(rand(), true);
+    }
+
+    /**
      * Watch changes on provided entity
      *
      * @param $entity
      */
     public function manage($entity)
     {
-        $oid = spl_object_hash($entity);
-        $this->entitiesManaged[$oid] = true;
+        if (isset($entity->tingUUID) === false) {
+            $entity->tingUUID = $this->generateUUID();
+        }
+
+        $this->entitiesManaged[$entity->tingUUID] = true;
         if ($entity instanceof NotifyPropertyInterface) {
             $entity->addPropertyListener($this);
         }
@@ -78,7 +91,11 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function isManaged($entity)
     {
-        if (isset($this->entitiesManaged[spl_object_hash($entity)]) === true) {
+        if (isset($entity->tingUUID) === false) {
+            return false;
+        }
+
+        if (isset($this->entitiesManaged[$entity->tingUUID]) === true) {
             return true;
         }
 
@@ -91,10 +108,13 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function isNew($entity)
     {
-        $oid = spl_object_hash($entity);
+        if (isset($entity->tingUUID) === false) {
+            return false;
+        }
+
         if (
-            isset($this->entitiesShouldBePersisted[$oid]) === true
-            && $this->entitiesShouldBePersisted[$oid] === self::STATE_NEW
+            isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
+            && $this->entitiesShouldBePersisted[$entity->tingUUID] === self::STATE_NEW
         ) {
             return true;
         }
@@ -109,14 +129,17 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function pushSave($entity)
     {
-        $oid   = spl_object_hash($entity);
+        if (isset($entity->tingUUID) === false) {
+            $entity->tingUUID = $this->generateUUID();
+        }
+
         $state = self::STATE_NEW;
-        if (isset($this->entitiesManaged[$oid]) === true) {
+        if (isset($this->entitiesManaged[$entity->tingUUID]) === true) {
             $state = self::STATE_MANAGED;
         }
 
-        $this->entitiesShouldBePersisted[$oid] = $state;
-        $this->entities[$oid] = $entity;
+        $this->entitiesShouldBePersisted[$entity->tingUUID] = $state;
+        $this->entities[$entity->tingUUID] = $entity;
 
         return $this;
     }
@@ -127,7 +150,11 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function shouldBePersisted($entity)
     {
-        if (isset($this->entitiesShouldBePersisted[spl_object_hash($entity)]) === true) {
+        if (isset($entity->tingUUID) === false) {
+            return false;
+        }
+
+        if (isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true) {
             return true;
         }
 
@@ -146,17 +173,19 @@ class UnitOfWork implements PropertyListenerInterface
             return;
         }
 
-        $oid = spl_object_hash($entity);
-
-        if (isset($this->entitiesChanged[$oid]) === false) {
-            $this->entitiesChanged[$oid] = array();
+        if (isset($entity->tingUUID) === false) {
+            $entity->tingUUID = $this->generateUUID();
         }
 
-        if (isset($this->entitiesChanged[$oid][$propertyName]) === false) {
-            $this->entitiesChanged[$oid][$propertyName] = array($oldValue, null);
+        if (isset($this->entitiesChanged[$entity->tingUUID]) === false) {
+            $this->entitiesChanged[$entity->tingUUID] = [];
         }
 
-        $this->entitiesChanged[$oid][$propertyName][1] = $newValue;
+        if (isset($this->entitiesChanged[$entity->tingUUID][$propertyName]) === false) {
+            $this->entitiesChanged[$entity->tingUUID][$propertyName] = [$oldValue, null];
+        }
+
+        $this->entitiesChanged[$entity->tingUUID][$propertyName][1] = $newValue;
     }
 
     /**
@@ -166,7 +195,11 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function isPropertyChanged($entity, $propertyName)
     {
-        if (isset($this->entitiesChanged[spl_object_hash($entity)][$propertyName]) === true) {
+        if (isset($entity->tingUUID) === false) {
+            return false;
+        }
+
+        if (isset($this->entitiesChanged[$entity->tingUUID][$propertyName]) === true) {
             return true;
         }
 
@@ -180,10 +213,13 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function detach($entity)
     {
-        $oid = spl_object_hash($entity);
-        unset($this->entitiesChanged[$oid]);
-        unset($this->entitiesShouldBePersisted[$oid]);
-        unset($this->entities[$oid]);
+        if (isset($entity->tingUUID) === false) {
+            return;
+        }
+
+        unset($this->entitiesChanged[$entity->tingUUID]);
+        unset($this->entitiesShouldBePersisted[$entity->tingUUID]);
+        unset($this->entities[$entity->tingUUID]);
     }
 
     /**
@@ -194,9 +230,12 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function pushDelete($entity)
     {
-        $oid = spl_object_hash($entity);
-        $this->entitiesShouldBePersisted[$oid] = self::STATE_DELETE;
-        $this->entities[$oid] = $entity;
+        if (isset($entity->tingUUID) === false) {
+            $entity->tingUUID = $this->generateUUID();
+        }
+
+        $this->entitiesShouldBePersisted[$entity->tingUUID] = self::STATE_DELETE;
+        $this->entities[$entity->tingUUID] = $entity;
 
         return $this;
     }
@@ -209,10 +248,13 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function shouldBeRemoved($entity)
     {
-        $oid = spl_object_hash($entity);
+        if (isset($entity->tingUUID) === false) {
+            return false;
+        }
+
         if (
-            isset($this->entitiesShouldBePersisted[$oid]) === true
-            && $this->entitiesShouldBePersisted[$oid] === self::STATE_DELETE
+            isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
+            && $this->entitiesShouldBePersisted[$entity->tingUUID] === self::STATE_DELETE
         ) {
             return true;
         }
@@ -228,37 +270,44 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function process()
     {
-        foreach ($this->entitiesShouldBePersisted as $oid => $state) {
+        foreach ($this->entitiesShouldBePersisted as $uuid => $state) {
             switch ($state) {
                 case self::STATE_MANAGED:
-                    $this->processManaged($oid);
+                    $this->processManaged($uuid);
                     break;
 
                 case self::STATE_NEW:
-                    $this->processNew($oid);
+                    $this->processNew($uuid);
                     break;
 
                 case self::STATE_DELETE:
-                    $this->processDelete($oid);
+                    $this->processDelete($uuid);
                     break;
             }
         }
+        foreach ($this->statements as $statementName => $connections) {
+            foreach ($connections as $connection) {
+                $connection->closeStatement($statementName);
+            }
+        }
+        $this->statements = [];
     }
 
     /**
      * Update all applicable entities in database
      *
-     * @param $oid
+     * @param $uuid
+     * @throws Exception
      */
-    protected function processManaged($oid)
+    protected function processManaged($uuid)
     {
-        if (isset($this->entitiesChanged[$oid]) === false) {
+        if (isset($this->entitiesChanged[$uuid]) === false) {
             return;
         }
 
-        $entity = $this->entities[$oid];
-        $properties = array();
-        foreach ($this->entitiesChanged[$oid] as $property => $values) {
+        $entity = $this->entities[$uuid];
+        $properties = [];
+        foreach ($this->entitiesChanged[$uuid] as $property => $values) {
             if ($values[0] !== $values[1]) {
                 $properties[$property] = $values;
             }
@@ -270,17 +319,23 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties, $oid) {
+            function (Metadata $metadata) use ($entity, $properties, $uuid) {
+                $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForUpdate(
-                    $metadata->getConnection($this->connectionPool),
+                    $connection,
                     $this->queryFactory,
                     $entity,
                     $properties
                 );
+
+                $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
 
-                unset($this->entitiesChanged[$oid]);
-                unset($this->entitiesShouldBePersisted[$oid]);
+                unset($this->entitiesChanged[$uuid]);
+                unset($this->entitiesShouldBePersisted[$uuid]);
+            },
+            function () use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
@@ -288,28 +343,34 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Insert all applicable entities in database
      *
-     * @param $oid
+     * @param $uuid
+     * @throws Exception
      */
-    protected function processNew($oid)
+    protected function processNew($uuid)
     {
-        $entity = $this->entities[$oid];
+        $entity = $this->entities[$uuid];
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $oid) {
+            function (Metadata $metadata) use ($entity, $uuid) {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
                     $connection,
                     $this->queryFactory,
                     $entity
                 );
+                $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
+
                 $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
 
-                unset($this->entitiesChanged[$oid]);
-                unset($this->entitiesShouldBePersisted[$oid]);
+                unset($this->entitiesChanged[$uuid]);
+                unset($this->entitiesShouldBePersisted[$uuid]);
 
                 $this->manage($entity);
+            },
+            function () use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
@@ -317,14 +378,15 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Delete all flagged entities from database
      *
-     * @param $oid
+     * @param $uuid
+     * @throws Exception
      */
-    protected function processDelete($oid)
+    protected function processDelete($uuid)
     {
-        $entity = $this->entities[$oid];
+        $entity = $this->entities[$uuid];
         $properties = [];
-        if (isset($this->entitiesChanged[$oid])) {
-            foreach ($this->entitiesChanged[$oid] as $property => $values) {
+        if (isset($this->entitiesChanged[$uuid])) {
+            foreach ($this->entitiesChanged[$uuid] as $property => $values) {
                 if ($values[0] !== $values[1]) {
                     $properties[$property] = $values;
                 }
@@ -334,15 +396,30 @@ class UnitOfWork implements PropertyListenerInterface
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function (Metadata $metadata) use ($entity, $properties) {
+                $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForDelete(
-                    $metadata->getConnection($this->connectionPool),
+                    $connection,
                     $this->queryFactory,
                     $properties,
                     $entity
                 );
+                $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
                 $this->detach($entity);
+            },
+            function () use ($entity) {
+                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
+    }
+
+    protected function addStatementToClose($statementName, DriverInterface $connection)
+    {
+        if (isset($this->statements[$statementName]) === false) {
+            $this->statements[$statementName] = [];
+        }
+        if (isset($this->statements[$statementName][spl_object_hash($connection)]) === false) {
+            $this->statements[$statementName][spl_object_hash($connection)] = $connection;
+        }
     }
 }

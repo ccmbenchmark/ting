@@ -26,6 +26,7 @@ namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
@@ -49,9 +50,9 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
         return $query->setParams(['population' => 20000])->query()->current();
     }
 
-    public static function initMetadata()
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
     {
-        $metadata = new Metadata();
+        $metadata = new Metadata($serializerFactory);
 
         $metadata->setEntity('sample\src\model\City');
         $metadata->setConnectionName('main');

@@ -24,27 +24,57 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\UnitOfWork;
+
 class CollectionFactory implements CollectionFactoryInterface
 {
 
+    /**
+     * @var MetadataRepository|null
+     */
+    protected $metadataRepository = null;
+
+    /**
+     * @var UnitOfWork|null
+     */
+    protected $unitOfWork = null;
+
+    /**
+     * @var HydratorInterface|null
+     */
     protected $hydrator = null;
 
     /**
+     * @param MetadataRepository $metadataRepository
+     * @param UnitOfWork $unitOfWork
      * @param HydratorInterface $hydrator
      */
-    public function __construct(HydratorInterface $hydrator = null)
-    {
+    public function __construct(
+        MetadataRepository $metadataRepository,
+        UnitOfWork $unitOfWork,
+        HydratorInterface $hydrator
+    ) {
+        $this->metadataRepository = $metadataRepository;
+        $this->unitOfWork = $unitOfWork;
         $this->hydrator = $hydrator;
+        $this->hydrator->setMetadataRepository($this->metadataRepository);
+        $this->hydrator->setUnitOfWork($this->unitOfWork);
     }
 
     /**
+     * @param HydratorInterface $hydrator
      * @return Collection
      */
     public function get(HydratorInterface $hydrator = null)
     {
         if ($hydrator === null) {
             $hydrator = $this->hydrator;
+        } else {
+            $hydrator->setMetadataRepository($this->metadataRepository);
+            $hydrator->setUnitOfWork($this->unitOfWork);
         }
+
         return new Collection($hydrator);
     }
 }

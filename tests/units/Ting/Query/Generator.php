@@ -48,6 +48,8 @@ class Generator extends atoum
 
     public function testGetByPrimariesShouldReturnAQuery()
     {
+        $services = new \CCMBenchmark\Ting\Services();
+
         $this
             ->if(
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
@@ -57,12 +59,12 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByPrimaries(['id' => 1], new CollectionFactory()))
+            ->object($generator->getByPrimaries(['id' => 1], $services->get('CollectionFactory')))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('slave')
                     ->once()
-            ->object($generator->getByPrimaries(['id' => 1], new CollectionFactory(), true))
+            ->object($generator->getByPrimaries(['id' => 1], $services->get('CollectionFactory'), true))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('master')

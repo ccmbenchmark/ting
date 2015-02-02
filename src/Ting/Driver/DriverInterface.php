@@ -40,6 +40,12 @@ interface DriverInterface
     public function connect($hostname, $username, $password, $port);
 
     /**
+     * @param string $charset
+     * @return void
+     */
+    public function setCharset($charset);
+
+    /**
      * @param string $sql
      * @param array $params
      * @param CollectionInterface $collection
@@ -96,4 +102,10 @@ interface DriverInterface
      * @return string
      */
     public static function getConnectionKey(array $connectionConfig, $database);
+
+    /**
+     * @param $statement
+     * @throws Exception
+     */
+    public function closeStatement($statement);
 }
