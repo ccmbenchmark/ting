@@ -114,7 +114,7 @@ class MetadataRepository
      *
      * @param string $namespace
      * @param string $globPattern
-     * @param array $options Options you can use to custom initialization of Metadata
+     * @param array  $options Options you can use to custom initialization of Metadata
      * @return array
      */
     public function batchLoadMetadata($namespace, $globPattern, array $options = [])
