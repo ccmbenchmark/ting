@@ -132,6 +132,54 @@ class MetadataRepository extends atoum
                 ->isNull();
     }
 
+    public function testBatchLoadMetadataShouldCallInitMetadataWithDefaultOptions()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadataRepository = $services->get('MetadataRepository'))
+            ->then($metadataRepository->batchLoadMetadata(
+                'tests\fixtures\model',
+                __DIR__ . '/../../fixtures/model/*Repository.php',
+                ['default' => ['connection' => 'connectionName', 'database' => 'databaseName']]
+            ))
+            ->object($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
+            ->array($bouhRepository::$options)
+                ->isIdenticalTo(['connection' => 'connectionName', 'database' => 'databaseName']);
+    }
+
+    public function testBatchLoadMetadataShouldCallInitMetadataWithDefaultAndRepositoryOptions()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadataRepository = $services->get('MetadataRepository'))
+            ->then($metadataRepository->batchLoadMetadata(
+                'tests\fixtures\model',
+                __DIR__ . '/../../fixtures/model/*Repository.php',
+                [
+                    'default' => ['connection' => 'connectionName', 'database' => 'databaseName'],
+                    'tests\fixtures\model\BouhRepository' => ['database' => 'dbBouh']
+                ]
+            ))
+            ->object($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
+            ->array($bouhRepository::$options)
+                ->isIdenticalTo(['connection' => 'connectionName', 'database' => 'dbBouh']);
+    }
+
+    public function testBatchLoadMetadataShouldCallInitMetadataWithRepositoryOptions()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadataRepository = $services->get('MetadataRepository'))
+            ->then($metadataRepository->batchLoadMetadata(
+                'tests\fixtures\model',
+                __DIR__ . '/../../fixtures/model/*Repository.php',
+                ['tests\fixtures\model\BouhRepository' => ['connection' => 'conBouh', 'database' => 'dbBouh']]
+            ))
+            ->object($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
+            ->array($bouhRepository::$options)
+            ->isIdenticalTo(['connection' => 'conBouh', 'database' => 'dbBouh']);
+    }
+
     public function testBatchLoadMetadataShouldLoad1Repository()
     {
         $services = new \CCMBenchmark\Ting\Services();

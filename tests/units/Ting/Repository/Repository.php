@@ -41,6 +41,11 @@ class Repository extends atoum
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
         $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
         $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
@@ -82,6 +87,11 @@ class Repository extends atoum
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
         $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
         $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
@@ -118,6 +128,11 @@ class Repository extends atoum
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
         $this->calling($mockConnectionPool)->master = $mockDriver;
 
         $this
@@ -143,6 +158,11 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
 
         $this->calling($mockConnectionPool)->master = $mockDriver;
 
@@ -170,6 +190,11 @@ class Repository extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
 
         $this->calling($mockConnectionPool)->master = $mockDriver;
 
@@ -202,6 +227,11 @@ class Repository extends atoum
         );
         $this->calling($mockUnitOfWork)->pushSave = $mockUnitOfWork;
         $this->calling($mockUnitOfWork)->process = true;
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
 
         $entity = new Bouh();
 
@@ -236,6 +266,11 @@ class Repository extends atoum
         $this->calling($mockUnitOfWork)->pushDelete = $mockUnitOfWork;
         $this->calling($mockUnitOfWork)->process  = true;
 
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
         $entity = new Bouh();
 
         $this
@@ -264,6 +299,11 @@ class Repository extends atoum
 
         $this->calling($mockQueryFactory)->get = true;
 
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
         $this
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
                 $services->get('ConnectionPool'),
@@ -287,6 +327,11 @@ class Repository extends atoum
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->getPrepared = true;
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
 
         $this
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
@@ -312,6 +357,11 @@ class Repository extends atoum
 
         $this->calling($mockQueryFactory)->getCached = true;
 
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
         $this
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
                 $services->get('ConnectionPool'),
@@ -335,6 +385,11 @@ class Repository extends atoum
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->getCachedPrepared = true;
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
 
         $this
             ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(

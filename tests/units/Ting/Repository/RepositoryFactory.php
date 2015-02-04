@@ -28,9 +28,15 @@ use mageekguy\atoum;
 
 class RepositoryFactory extends atoum
 {
+
     public function testGet()
     {
         $services = new \CCMBenchmark\Ting\Services();
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
 
         $this
             ->if($repositoryFactory = new \CCMBenchmark\Ting\Repository\RepositoryFactory(
@@ -42,8 +48,8 @@ class RepositoryFactory extends atoum
                 $services->get('Cache'),
                 $services->get('SerializerFactory')
             ))
-            ->and($repository = $repositoryFactory->get('\mock\tests\fixtures\model\BouhRepository'))
+            ->and($repository = $repositoryFactory->get('\tests\fixtures\model\BouhRepository'))
             ->object($repository)
-                ->isInstanceOf('\mock\tests\fixtures\model\BouhRepository');
+                ->isInstanceOf('\tests\fixtures\model\BouhRepository');
     }
 }
