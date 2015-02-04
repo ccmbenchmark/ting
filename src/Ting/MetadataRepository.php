@@ -79,20 +79,39 @@ class MetadataRepository
     }
 
     /**
+     * @param string $repositoryName
+     * @param callable $callbackFound Called with applicable Metadata if applicable
+     * @param callable $callbackNotFound called if unknown entity - no parameter
+     */
+    public function findMetadataForRepository(
+        $repositoryName,
+        \Closure $callbackFound,
+        \Closure $callbackNotFound = null
+    ) {
+        if (isset($this->metadataList[$repositoryName]) === true) {
+            $callbackFound($this->metadataList[$repositoryName]);
+        } elseif ($callbackNotFound !== null) {
+            $callbackNotFound();
+        }
+    }
+
+    /**
      * @param object   $entity
      * @param callable $callbackFound Called with applicable Metadata if applicable
      * @param callable $callbackNotFound called if unknown entity - no parameter
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
-        if (
-            isset($this->entityToRepository[get_class($entity)]) === true
-            && isset($this->metadataList[$this->entityToRepository[get_class($entity)]]) === true
-        ) {
-            $callbackFound($this->metadataList[$this->entityToRepository[get_class($entity)]]);
-        } elseif ($callbackNotFound !== null) {
+        if (isset($this->entityToRepository[get_class($entity)]) === false) {
             $callbackNotFound();
+            return;
         }
+
+        $this->findMetadataForRepository(
+            $this->entityToRepository[get_class($entity)],
+            $callbackFound,
+            $callbackNotFound
+        );
     }
 
     /**
@@ -127,7 +146,13 @@ class MetadataRepository
 
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata($this->serializerFactory, $options));
+            $this->addMetadata(
+                $repository,
+                $repository::initMetadata(
+                    $this->serializerFactory,
+                    $this->getOptionForRepository($repository, $options)
+                )
+            );
             $loaded[] = $repository;
         }
 
@@ -148,10 +173,36 @@ class MetadataRepository
     {
         $loaded = [];
         foreach ($paths as $repository) {
-            $this->addMetadata($repository, $repository::initMetadata($this->serializerFactory, $options));
+            $this->addMetadata(
+                $repository,
+                $repository::initMetadata(
+                    $this->serializerFactory,
+                    $this->getOptionForRepository($repository, $options)
+                )
+            );
             $loaded[] = $repository;
         }
 
         return $loaded;
+    }
+
+    /**
+     * @param string $repository
+     * @param array  $options
+     * @return array
+     */
+    protected function getOptionForRepository($repository, array $options)
+    {
+        if (isset($options['default']) === true) {
+            $repositoryOptions = $options['default'];
+        } else {
+            $repositoryOptions = [];
+        }
+
+        if (isset($options[$repository]) === true) {
+            $repositoryOptions = array_merge($repositoryOptions, $options[$repository]);
+        }
+
+        return $repositoryOptions;
     }
 }

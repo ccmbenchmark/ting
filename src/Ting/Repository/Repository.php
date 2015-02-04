@@ -86,7 +86,7 @@ class Repository
         $this->cache              = $cache;
         $this->unitOfWork         = $unitOfWork;
 
-        $class            = get_class($this);
+        $class = get_class($this);
         $this->metadataRepository->findMetadataForRepository(
             $class,
             function ($metadata) {
@@ -95,11 +95,10 @@ class Repository
             function () use ($class) {
                 throw new Exception(
                     'Metadata not found for ' . $class
-                    . ', you probably forget to call MetadataRepository::batchLoadMetadata'
+                    . ', you probably forgot to call MetadataRepository::batchLoadMetadata'
                 );
             }
         );
-
         $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
