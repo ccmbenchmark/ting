@@ -86,8 +86,19 @@ class Repository
         $this->cache              = $cache;
         $this->unitOfWork         = $unitOfWork;
 
-        $class            = get_class($this);
-        $this->metadata   = $class::initMetadata($serializerFactory);
+        $class = get_class($this);
+        $this->metadataRepository->findMetadataForRepository(
+            $class,
+            function ($metadata) {
+                $this->metadata = $metadata;
+            },
+            function () use ($class) {
+                throw new Exception(
+                    'Metadata not found for ' . $class
+                    . ', you probably forgot to call MetadataRepository::batchLoadMetadata'
+                );
+            }
+        );
         $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
@@ -199,12 +210,12 @@ class Repository
     }
 
     /**
-     *
-     * @param SerializerFactoryInterface $serializerFactory
-     * @throws Exception
+     * @param  SerializerFactoryInterface $serializerFactory
+     * @param  array                      $options
      * @return \CCMBenchmark\Ting\Repository\Metadata
+     * @throws Exception
      */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
         throw new Exception('You should add initMetadata in your class repository');
 

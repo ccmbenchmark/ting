@@ -29,8 +29,12 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class BouhRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
+    public static $options;
+
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
+        self::$options = $options;
+
         $metadata = new Metadata($serializerFactory);
 
         $metadata->setEntity('tests\fixtures\model\Bouh');

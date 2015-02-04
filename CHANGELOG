@@ -1,4 +1,5 @@
-1.1.6-DEV (xxxx-xx-xx):
+1.2.0 (2015-02-04) :
+    * initMetada can now receive database name and connection name into options
 
 1.1.5 (2015-01-26) :
-* Fixed UnitOfWork: bug risk when using spl_object_hash
+    * Fixed UnitOfWork: bug risk when using spl_object_hash

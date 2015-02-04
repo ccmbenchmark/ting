@@ -79,29 +79,51 @@ class MetadataRepository
     }
 
     /**
-     * @param          $entity
+     * @param string $repositoryName
      * @param callable $callbackFound Called with applicable Metadata if applicable
      * @param callable $callbackNotFound called if unknown entity - no parameter
      */
-    public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
-    {
-        if (
-            isset($this->entityToRepository[get_class($entity)]) === true
-            && isset($this->metadataList[$this->entityToRepository[get_class($entity)]]) === true
-        ) {
-            $callbackFound($this->metadataList[$this->entityToRepository[get_class($entity)]]);
+    public function findMetadataForRepository(
+        $repositoryName,
+        \Closure $callbackFound,
+        \Closure $callbackNotFound = null
+    ) {
+        if (isset($this->metadataList[$repositoryName]) === true) {
+            $callbackFound($this->metadataList[$repositoryName]);
         } elseif ($callbackNotFound !== null) {
             $callbackNotFound();
         }
     }
 
+    /**
+     * @param object   $entity
+     * @param callable $callbackFound Called with applicable Metadata if applicable
+     * @param callable $callbackNotFound called if unknown entity - no parameter
+     */
+    public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
+    {
+        if (isset($this->entityToRepository[get_class($entity)]) === false) {
+            $callbackNotFound();
+            return;
+        }
+
+        $this->findMetadataForRepository(
+            $this->entityToRepository[get_class($entity)],
+            $callbackFound,
+            $callbackNotFound
+        );
+    }
+
+    /**
+     * @param string   $repositoryClass
+     * @param Metadata $metadata
+     */
     public function addMetadata($repositoryClass, Metadata $metadata)
     {
         if (isset($this->metadataList[$repositoryClass]) === false) {
             $this->metadataList[$repositoryClass] = $metadata;
             $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
         }
-
     }
 
     /**
@@ -109,11 +131,12 @@ class MetadataRepository
      * This method should be used to discover the files and then create cache,
      * because glob uses directory reading at every hit.
      *
-     * @param $namespace
-     * @param $globPattern
+     * @param string $namespace
+     * @param string $globPattern
+     * @param array  $options Options you can use to custom initialization of Metadata
      * @return array
      */
-    public function batchLoadMetadata($namespace, $globPattern)
+    public function batchLoadMetadata($namespace, $globPattern, array $options = [])
     {
         $loaded = [];
 
@@ -123,7 +146,13 @@ class MetadataRepository
 
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata($repository, $repository::initMetadata($this->serializerFactory));
+            $this->addMetadata(
+                $repository,
+                $repository::initMetadata(
+                    $this->serializerFactory,
+                    $this->getOptionForRepository($repository, $options)
+                )
+            );
             $loaded[] = $repository;
         }
 
@@ -137,16 +166,43 @@ class MetadataRepository
      * are not read from disk anymore.
      *
      * @param array $paths
+     * @param array $options Options you can use to custom initialization of Metadata
      * @return array
      */
-    public function batchLoadMetadataFromCache(array $paths)
+    public function batchLoadMetadataFromCache(array $paths, array $options = [])
     {
         $loaded = [];
         foreach ($paths as $repository) {
-            $this->addMetadata($repository, $repository::initMetadata($this->serializerFactory));
+            $this->addMetadata(
+                $repository,
+                $repository::initMetadata(
+                    $this->serializerFactory,
+                    $this->getOptionForRepository($repository, $options)
+                )
+            );
             $loaded[] = $repository;
         }
 
         return $loaded;
+    }
+
+    /**
+     * @param string $repository
+     * @param array  $options
+     * @return array
+     */
+    protected function getOptionForRepository($repository, array $options)
+    {
+        if (isset($options['default']) === true) {
+            $repositoryOptions = $options['default'];
+        } else {
+            $repositoryOptions = [];
+        }
+
+        if (isset($options[$repository]) === true) {
+            $repositoryOptions = array_merge($repositoryOptions, $options[$repository]);
+        }
+
+        return $repositoryOptions;
     }
 }
