@@ -215,6 +215,18 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
+     * Stop watching changes on all entities
+     *
+     * @param $entity
+     */
+    public function detachAll()
+    {
+        $this->entitiesChanged = [];
+        $this->entitiesShouldBePersisted = [];
+        $this->entities = [];
+    }
+
+    /**
      * Flag the entity to be deleted on next process
      *
      * @param $entity
