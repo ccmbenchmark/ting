@@ -87,7 +87,7 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
-    public function testIsManagedWithUUIDShouldReturnFalse()
+    public function testIsManagedWithUUIDShouldReturnTrue()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
         $mockEntity->tingUUID = uniqid();
@@ -99,7 +99,7 @@ class UnitOfWork extends atoum
                 $this->services->get('QueryFactory')
             ))
             ->boolean($unitOfWork->isManaged($mockEntity))
-            ->isFalse();
+            ->isTrue();
     }
 
     public function testSave()
@@ -212,6 +212,26 @@ class UnitOfWork extends atoum
                 ->isTrue()
             ->then($unitOfWork->detach($mockEntity))
             ->boolean($unitOfWork->shouldBePersisted($mockEntity))
+                ->isFalse();
+    }
+
+    public function testDetachAll()
+    {
+        $entity1 = new \tests\fixtures\model\Bouh();
+        $entity2 = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $this->services->get('ConnectionPool'),
+                $this->services->get('MetadataRepository'),
+                $this->services->get('QueryFactory')
+            ))
+            ->then($unitOfWork->pushSave($entity1))
+            ->then($unitOfWork->pushSave($entity2))
+            ->then($unitOfWork->detachAll())
+            ->boolean($unitOfWork->shouldBePersisted($entity1))
+                ->isFalse()
+            ->boolean($unitOfWork->shouldBePersisted($entity2))
                 ->isFalse();
     }
 

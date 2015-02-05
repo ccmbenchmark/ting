@@ -50,7 +50,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
         return $query->setParams(['population' => 20000])->query()->current();
     }
 
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
         $metadata = new Metadata($serializerFactory);
 
