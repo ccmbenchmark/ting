@@ -40,7 +40,6 @@ class UnitOfWork implements PropertyListenerInterface
     protected $metadataRepository        = null;
     protected $queryFactory              = null;
     protected $entities                  = [];
-    protected $entitiesManaged           = [];
     protected $entitiesChanged           = [];
     protected $entitiesShouldBePersisted = [];
     protected $statements = [];
@@ -79,7 +78,6 @@ class UnitOfWork implements PropertyListenerInterface
             $entity->tingUUID = $this->generateUUID();
         }
 
-        $this->entitiesManaged[$entity->tingUUID] = true;
         if ($entity instanceof NotifyPropertyInterface) {
             $entity->addPropertyListener($this);
         }
@@ -95,11 +93,7 @@ class UnitOfWork implements PropertyListenerInterface
             return false;
         }
 
-        if (isset($this->entitiesManaged[$entity->tingUUID]) === true) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -129,13 +123,11 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function pushSave($entity)
     {
+        $state = self::STATE_MANAGED;
+
         if (isset($entity->tingUUID) === false) {
             $entity->tingUUID = $this->generateUUID();
-        }
-
-        $state = self::STATE_NEW;
-        if (isset($this->entitiesManaged[$entity->tingUUID]) === true) {
-            $state = self::STATE_MANAGED;
+            $state = self::STATE_NEW;
         }
 
         $this->entitiesShouldBePersisted[$entity->tingUUID] = $state;

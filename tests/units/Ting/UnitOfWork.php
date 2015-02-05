@@ -87,7 +87,7 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
-    public function testIsManagedWithUUIDShouldReturnFalse()
+    public function testIsManagedWithUUIDShouldReturnTrue()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
         $mockEntity->tingUUID = uniqid();
@@ -99,7 +99,7 @@ class UnitOfWork extends atoum
                 $this->services->get('QueryFactory')
             ))
             ->boolean($unitOfWork->isManaged($mockEntity))
-            ->isFalse();
+            ->isTrue();
     }
 
     public function testSave()
