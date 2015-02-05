@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CountryLanguageRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory)
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
         $metadata = new Metadata($serializerFactory);
 
