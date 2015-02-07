@@ -1,6 +1,9 @@
+2.0.1 (2015-02-07) :
+    * Fix processing of a new entity without auto increment
+
 2.0.0 (2015-02-05) :
     * Reduce memory usage of UnitOfWork
-    * UnitOfWork can now detach all entities 
+    * UnitOfWork can now detach all entities
     * initMetada can now receive database name and connection name into options
 
 1.1.5 (2015-01-26) :
