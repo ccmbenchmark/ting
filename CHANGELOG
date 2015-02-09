@@ -1,5 +1,5 @@
 2.0.1 (2015-02-07) :
-    * Fix processing of a new entity without auto increment
+    * Fix saving new entity without auto increment
 
 2.0.0 (2015-02-05) :
     * Reduce memory usage of UnitOfWork
