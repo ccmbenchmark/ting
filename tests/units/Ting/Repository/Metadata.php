@@ -247,13 +247,16 @@ class Metadata extends atoum
             'type'          => 'int'
         ));
 
+        $driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($driver)->getInsertId = 321;
+
         $bouh = $metadata->createEntity();
         $this->calling($bouh)->setId = function ($id) {
             $this->id = $id;
         };
 
         $this
-            ->if($metadata->setEntityPropertyForAutoIncrement($bouh, 321))
+            ->if($metadata->setEntityPropertyForAutoIncrement($bouh, $driver))
             ->integer($bouh->id)
                 ->isIdenticalTo(321);
     }
@@ -270,13 +273,16 @@ class Metadata extends atoum
             'type'       => 'int'
         ));
 
+        $driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($driver)->getInsertId = 321;
+
         $bouh = $metadata->createEntity();
         $this->calling($bouh)->setId = function ($id) {
             $this->id = $id;
         };
 
         $this
-            ->boolean($metadata->setEntityPropertyForAutoIncrement($bouh, 321))
+            ->boolean($metadata->setEntityPropertyForAutoIncrement($bouh, $driver))
                 ->isFalse();
     }
 

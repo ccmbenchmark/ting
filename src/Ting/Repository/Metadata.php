@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
+use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
@@ -207,18 +208,18 @@ class Metadata
 
     /**
      * Set the provided value to autoincrement if applicable
-     * @param $entity
-     * @param $value
+     * @param object          $entity
+     * @param DriverInterface $driver
      * @return $this|bool
      */
-    public function setEntityPropertyForAutoIncrement($entity, $value)
+    public function setEntityPropertyForAutoIncrement($entity, DriverInterface $driver)
     {
         if ($this->autoincrement === null) {
             return false;
         }
 
         $property = 'set' . $this->autoincrement['fieldName'];
-        $entity->$property($value);
+        $entity->$property($driver->getInsertId());
         return $this;
     }
 

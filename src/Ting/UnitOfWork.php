@@ -362,7 +362,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $this->addStatementToClose($query->getStatementName(), $connection->master());
                 $query->prepareExecute()->execute();
 
-                $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master()->getInsertId());
+                $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master());
 
                 unset($this->entitiesChanged[$uuid]);
                 unset($this->entitiesShouldBePersisted[$uuid]);
