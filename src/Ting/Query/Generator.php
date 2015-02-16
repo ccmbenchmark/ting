@@ -22,7 +22,9 @@
  *
  **********************************************************************/
 
+
 namespace CCMBenchmark\Ting\Query;
+
 
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
@@ -62,36 +64,102 @@ class Generator
         $this->fields       = $fields;
     }
 
-    /**
-     * Returns a Query, allowing to fetch an object by his primaries (associative array)
-     * @param array                      $primariesValue
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $onMaster
-     * @return Query
-     */
-    public function getByPrimaries(
-        array $primariesValue,
-        CollectionFactoryInterface $collectionFactory,
-        $onMaster = false
-    ) {
+    protected function getSelect(array $fields, DriverInterface $driver)
+    {
+        return 'SELECT ' . implode(', ', $fields) . ' FROM ' .
+            $driver->escapeField($this->tableName);
+    }
+
+    protected function getDriver($onMaster)
+    {
         if ($onMaster === true) {
             $driver = $this->connection->master();
         } else {
             $driver = $this->connection->slave();
         }
+        return $driver;
+    }
+
+    public function getAll(
+        CollectionFactoryInterface $collectionFactory,
+        $onMaster = false
+    ) {
+        $driver = $this->getDriver($onMaster);
 
         $fields = $this->escapeFields($this->fields, $driver);
 
-        $sql  = 'SELECT ' . implode(', ', $fields) . ' FROM ' .
-            $driver->escapeField($this->tableName);
+        $sql = $this->getSelect($fields, $driver);
 
-        list($conditions, $params) = $this->generateConditionAndParams($fields, $primariesValue);
+        $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
 
-        $sql .= ' WHERE '.implode(' AND ', $conditions);
+        if ($onMaster === true) {
+            $query->selectMaster(true);
+        }
 
+        return $query;
+    }
+
+    /**
+     * Returns a Query, allowing to fetch an object by an associative array (column => value)
+     * @param array                      $primariesValue
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool                       $onMaster
+     * @return Query
+     */
+    public function getOneByCriteria(
+        array $primariesValue,
+        CollectionFactoryInterface $collectionFactory,
+        $onMaster = false
+    ) {
+        $driver = $this->getDriver($onMaster);
+
+        list($sql, $params) = $this->getSqlAndParamsByCriteria($primariesValue, $driver);
+        $sql .=  ' LIMIT 1';
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
         $query->setParams($params);
+
+        if ($onMaster === true) {
+            $query->selectMaster(true);
+        }
+
+        return $query;
+    }
+
+    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver)
+    {
+        $fields = $this->escapeFields($this->fields, $driver);
+
+        $sql = $this->getSelect($fields, $driver);
+
+        list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
+        $sql .= ' WHERE '.implode(' AND ', $conditions);
+
+        return [$sql, $params];
+    }
+
+    /**
+     * Returns a Query, allowing to fetch an object by criteria (associative array)
+     * @param array                      $criteria
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool                       $onMaster
+     * @return Query
+     */
+    public function getByCriteria(
+        array $criteria,
+        CollectionFactoryInterface $collectionFactory,
+        $onMaster = false
+    ) {
+        $driver = $this->getDriver($onMaster);
+
+        list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $driver);
+
+        $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
+        $query->setParams($params);
+
+        if ($onMaster === true) {
+            $query->selectMaster(true);
+        }
 
         return $query;
     }
@@ -103,7 +171,7 @@ class Generator
      */
     public function insert(array $values)
     {
-        $driver = $this->connection->master();
+        $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($values), $driver);
 
         $sql = 'INSERT INTO ' . $driver->escapeField($this->tableName) . ' ('
@@ -123,7 +191,7 @@ class Generator
      */
     public function update(array $values, array $primariesValue)
     {
-        $driver = $this->connection->master();
+        $driver = $this->getDriver(true);
 
         $sql = 'UPDATE ' . $driver->escapeField($this->tableName) .' SET ';
         $set = [];
@@ -148,7 +216,7 @@ class Generator
 
     public function delete(array $primariesKeyValue)
     {
-        $driver = $this->connection->master();
+        $driver = $this->getDriver(true);
 
         $sql = 'DELETE FROM ' . $driver->escapeField($this->tableName);
 

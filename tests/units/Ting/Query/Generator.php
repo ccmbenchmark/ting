@@ -59,12 +59,56 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByPrimaries(['id' => 1], $services->get('CollectionFactory')))
+            ->object($generator->getOneByCriteria(['id' => 1], $services->get('CollectionFactory')))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('slave')
                     ->once()
-            ->object($generator->getByPrimaries(['id' => 1], $services->get('CollectionFactory'), true))
+            ->object($generator->getOneByCriteria(['id' => 1], $services->get('CollectionFactory'), true))
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockConnection)
+                ->call('master')
+                    ->once()
+
+        ;
+    }
+
+    public function testGetAllShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getAll($services->get('CollectionFactory'), true))
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockConnection)
+                ->call('master')
+                    ->once()
+
+        ;
+    }
+
+    public function testGetByCriteriaShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getByCriteria(['name' => 'Xavier'], $services->get('CollectionFactory'), true))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('master')

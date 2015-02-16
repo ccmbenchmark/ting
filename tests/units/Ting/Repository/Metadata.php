@@ -366,6 +366,145 @@ class Metadata extends atoum
         ;
     }
 
+    public function testGetOneByCriteriaShouldReturnAQuery()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->slave = new \tests\fixtures\FakeDriver\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and(
+                $metadata->addField([
+                    'primary'    => true,
+                    'fieldName'  => 'id',
+                    'columnName' => 'boo_id',
+                    'type'       => 'int'
+                ])
+                &&
+                $metadata->addField([
+                    'fieldName'  => 'name',
+                    'columnName' => 'boo_name',
+                    'type'       => 'string'
+                ])
+            )
+            ->object(
+                $metadata->getOneByCriteria(
+                    $mockConnection,
+                    $services->get('QueryFactory'),
+                    $services->get('CollectionFactory'),
+                    ['name' => 'Xavier']
+                )
+            )
+                ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+        ;
+    }
+
+    public function testGetOneByCriteriaShouldRaiseExceptionOnUnknownField()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->slave = new \tests\fixtures\FakeDriver\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and(
+                $metadata->addField([
+                    'primary'    => true,
+                    'fieldName'  => 'id',
+                    'columnName' => 'boo_id',
+                    'type'       => 'int'
+                ])
+                &&
+                $metadata->addField([
+                    'fieldName'  => 'name',
+                    'columnName' => 'boo_name',
+                    'type'       => 'string'
+                ])
+            )
+            ->exception(
+                function () use ($metadata, $mockConnection, $services) {
+                    $metadata->getOneByCriteria(
+                        $mockConnection,
+                        $services->get('QueryFactory'),
+                        $services->get('CollectionFactory'),
+                        ['weirdColumnName' => 'Xavier']
+                    );
+                }
+            )
+                ->isInstanceOf('CCMBenchmark\Ting\Exception')
+        ;
+    }
+
+    public function testGetAllShouldReturnAQuery()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->slave = new \tests\fixtures\FakeDriver\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and(
+                $metadata->addField([
+                    'primary'    => true,
+                    'fieldName'  => 'id',
+                    'columnName' => 'boo_id',
+                    'type'       => 'int'
+                ])
+            )
+            ->object(
+                $metadata->getAll(
+                    $mockConnection,
+                    $services->get('QueryFactory'),
+                    $services->get('CollectionFactory')
+                )
+            )
+            ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+        ;
+    }
+
+    public function testGetByCriteriaShouldReturnAQuery()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->slave = new \tests\fixtures\FakeDriver\Driver();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and(
+                $metadata->addField([
+                    'primary'    => true,
+                    'fieldName'  => 'id',
+                    'columnName' => 'boo_id',
+                    'type'       => 'int'
+                ])
+                &&
+                $metadata->addField([
+                    'fieldName'  => 'name',
+                    'columnName' => 'boo_name',
+                    'type'       => 'string'
+                ])
+            )
+            ->object(
+                $metadata->getByCriteria(
+                    ['name' => 'Xavier'],
+                    $mockConnection,
+                    $services->get('QueryFactory'),
+                    $services->get('CollectionFactory')
+                )
+            )
+            ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+        ;
+    }
+
     public function testGenerateQueryForInsertShouldReturnAPreparedQuery()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();

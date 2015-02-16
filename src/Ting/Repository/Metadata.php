@@ -296,7 +296,81 @@ class Metadata
 
         $primariesKeyValue = $this->getPrimariesKeyValuesAsArray($primariesKeyValue);
 
-        return $queryGenerator->getByPrimaries($primariesKeyValue, $collectionFactory, $onMaster);
+        return $queryGenerator->getOneByCriteria($primariesKeyValue, $collectionFactory, $onMaster);
+    }
+
+
+    /**
+     * Return a Query to get one object by an associative array of criterias
+     *
+     * @param Connection $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param $criteria array
+     * @param $onMaster boolean
+     * @return \CCMBenchmark\Ting\Query\Query
+     * @throws Exception
+     */
+    public function getOneByCriteria(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        array $criteria,
+        $onMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->table,
+            $fields
+        );
+
+        $criteriaColumn = array();
+        foreach ($criteria as $property => $value) {
+            if (isset($this->fieldsByProperty[$property]) === false) {
+                throw new Exception(sprintf('Undefined property %s in your criteria', $property));
+            }
+            $column = $this->fieldsByProperty[$property]['columnName'];
+            $criteriaColumn[$column] = $value;
+        }
+
+        return $queryGenerator->getOneByCriteria($criteriaColumn, $collectionFactory, $onMaster);
+    }
+
+    public function getAll(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        $onMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->table,
+            $fields
+        );
+
+        return $queryGenerator->getAll($collectionFactory, $onMaster);
+    }
+
+    public function getByCriteria(
+        array $criteria,
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        $onMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->table,
+            $fields
+        );
+
+        return $queryGenerator->getByCriteria($criteria, $collectionFactory, $onMaster);
     }
 
     protected function getPrimariesKeyValuesAsArray($originalValue)

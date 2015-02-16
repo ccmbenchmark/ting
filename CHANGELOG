@@ -1,3 +1,9 @@
+2.0.x-DEV (xxxx-xx-xx) :
+    * Adding methods getAll, getByCriteria and getOneByCriteria on Metadata
+    * Adding methods getAll, getByCriteria and getOneByCriteria on Repository
+    * Refactoring of Generator
+    * Added some missing unit tests
+
 2.0.1 (2015-02-07) :
     * Fix saving new entity without auto increment
 

@@ -176,10 +176,49 @@ class Repository
             (bool)$forceMaster
         );
 
-        if ($forceMaster === true) {
-            $query->selectMaster($forceMaster);
+        $collection = $query->query();
+        if ($collection->count() === 0) {
+            return null;
         }
+        $entity = $collection->current();
 
+        return current($entity);
+    }
+
+    public function getAll($forceMaster = false)
+    {
+        $query = $this->metadata->getAll(
+            $this->connection,
+            $this->queryFactory,
+            $this->collectionFactory,
+            (bool)$forceMaster
+        );
+
+        return $query->query($this->getCollection(new HydratorSingleObject()));
+    }
+
+    public function getByCriteria(array $criteria, $forceMaster = false)
+    {
+        $query = $this->metadata->getByCriteria(
+            $criteria,
+            $this->connection,
+            $this->queryFactory,
+            $this->collectionFactory,
+            (bool)$forceMaster
+        );
+
+        return $query->query($this->getCollection(new HydratorSingleObject()));
+    }
+
+    public function getOneByCriteria(array $criteria, $forceMaster = false)
+    {
+        $query = $this->metadata->getOneByCriteria(
+            $this->connection,
+            $this->queryFactory,
+            $this->collectionFactory,
+            $criteria,
+            (bool)$forceMaster
+        );
         $collection = $query->query();
         if ($collection->count() === 0) {
             return null;
