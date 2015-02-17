@@ -72,8 +72,11 @@ class Hydrator implements HydratorInterface
      */
     protected function hydrateColumns(array $columns)
     {
-        $result       = array();
-        $metadataList = array();
+        $result        = [];
+        $metadataList  = [];
+        $tmpEntities   = [];
+        $validEntities = [];
+
         foreach ($columns as $column) {
             if (isset($result[$column['table']]) === false) {
                 $this->metadataRepository->findMetadataForTable(
@@ -81,6 +84,7 @@ class Hydrator implements HydratorInterface
                     function (Metadata $metadata) use ($column, &$result, &$metadataList) {
                         $metadataList[$column['table']] = $metadata;
                         $result[$column['table']]       = $metadata->createEntity();
+                        $tmpEntities[$column['table']]  = [];
                     }
                 );
             }
@@ -89,12 +93,29 @@ class Hydrator implements HydratorInterface
                 isset($metadataList[$column['table']]) === true &&
                 $metadataList[$column['table']]->hasColumn($column['orgName']) === true
             ) {
-                $metadataList[$column['table']]->setEntityProperty(
-                    $result[$column['table']],
-                    $column['orgName'],
-                    $column['value']
-                );
+                if ($column['value'] === null && isset($validEntities[$column['table']]) === false) {
+                    $tmpEntities[$column['table']][$column['orgName']] = $result[$column['table']];
+                } else {
+                    if (isset($tmpEntities[$column['table']]) === true && $tmpEntities[$column['table']] !== []) {
+                        foreach ($tmpEntities[$column['table']] as $entityColumn => $entity) {
+                            $metadataList[$column['table']]->setEntityProperty(
+                                $entity,
+                                $entityColumn,
+                                null
+                            );
+                        }
+                    }
+
+                    $validEntities[$column['table']] = true;
+
+                    $metadataList[$column['table']]->setEntityProperty(
+                        $result[$column['table']],
+                        $column['orgName'],
+                        $column['value']
+                    );
+                }
             } else {
+                $validEntities[0] = true;
                 if (isset($result[0]) === false) {
                     $result[0] = new \stdClass();
                 }
@@ -103,7 +124,11 @@ class Hydrator implements HydratorInterface
             }
         }
 
-        foreach ($result as $entity) {
+        foreach ($result as $table => $entity) {
+            if (isset($validEntities[$table]) === false) {
+                $result[$table] = null;
+            }
+
             if (is_object($entity) === true) {
                 $this->unitOfWork->manage($entity);
             }

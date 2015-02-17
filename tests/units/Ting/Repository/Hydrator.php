@@ -30,39 +30,39 @@ class Hydrator extends atoum
 {
     public function testHydrate()
     {
-        $data = array(
-            array(
+        $data = [
+            [
                 'name'     => 'fname',
                 'orgName'  => 'boo_firstname',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
-            ),
-            array(
+            ],
+            [
                 'name'     => 'name',
                 'orgName'  => 'boo_name',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'
-            )
-        );
+            ]
+        ];
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'firstname',
             'columnName' => 'boo_firstname',
             'type'       => 'string'
-        ));
+        ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
         $collection = $services->get('CollectionFactory')->get();
@@ -78,48 +78,144 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
-    public function testHydrateShouldHydrateUnknownColumnIntoKey0()
+    public function testHydrateWithAllNullValueShouldReturnNull()
     {
-        $data = array(
-            array(
+        $data = [
+            [
                 'name'     => 'fname',
                 'orgName'  => 'boo_firstname',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ),
-            array(
+                'value'    => null
+            ],
+            [
                 'name'     => 'name',
                 'orgName'  => 'boo_name',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            ),
-            array(
-                'name'     => 'otherColumn',
-                'orgName'  => 'boo_other_column',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Happy Face'
-            )
-        );
+                'value'    => null
+            ]
+        ];
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'firstname',
             'columnName' => 'boo_firstname',
             'type'       => 'string'
-        ));
+        ]);
+
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+        $collection = $services->get('CollectionFactory')->get();
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->then($data = $hydrator->hydrate($data, $collection))
+            ->variable($data['bouh'])
+                ->isNull();
+    }
+
+    public function testHydrateWithSomeNullValueShouldNotReturnNull()
+    {
+        $data = [
+            [
+                'name'     => 'fname',
+                'orgName'  => 'boo_firstname',
+                'table'    => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => null
+            ],
+            [
+                'name'     => 'name',
+                'orgName'  => 'boo_name',
+                'table'    => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Robez-Masson'
+            ]
+        ];
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('tests\fixtures\model\Bouh');
+        $metadata->setTable('T_BOUH_BOO');
+
+        $metadata->addField([
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string'
+        ]);
+
+        $metadata->addField([
+            'fieldName'  => 'firstname',
+            'columnName' => 'boo_firstname',
+            'type'       => 'string'
+        ]);
+
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+        $collection = $services->get('CollectionFactory')->get();
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->then($data = $hydrator->hydrate($data, $collection))
+            ->string($data['bouh']->getName())
+                ->isIdenticalTo('Robez-Masson');
+    }
+
+    public function testHydrateShouldHydrateUnknownColumnIntoKey0()
+    {
+        $data = [
+            [
+                'name'     => 'fname',
+                'orgName'  => 'boo_firstname',
+                'table'    => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Sylvain'
+            ],
+            [
+                'name'     => 'name',
+                'orgName'  => 'boo_name',
+                'table'    => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Robez-Masson'
+            ],
+            [
+                'name'     => 'otherColumn',
+                'orgName'  => 'boo_other_column',
+                'table'    => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value'    => 'Happy Face'
+            ]
+        ];
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('tests\fixtures\model\Bouh');
+        $metadata->setTable('T_BOUH_BOO');
+
+        $metadata->addField([
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string'
+        ]);
+
+        $metadata->addField([
+            'fieldName'  => 'firstname',
+            'columnName' => 'boo_firstname',
+            'type'       => 'string'
+        ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
         $collection = $services->get('CollectionFactory')->get();
@@ -142,22 +238,22 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
 
-        $data = array(
-            array(
+        $data = [
+            [
                 'name'     => 'fname',
                 'orgName'  => 'boo_firstname',
                 'table'    => '',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
-            ),
-            array(
+            ],
+            [
                 'name'     => 'name',
                 'orgName'  => 'boo_name',
                 'table'    => 'my_table',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'
-            )
-        );
+            ]
+        ];
 
         $collection = $services->get('CollectionFactory')->get();
 
