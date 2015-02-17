@@ -70,9 +70,9 @@ class Generator
             $driver->escapeField($this->tableName);
     }
 
-    protected function getDriver($onMaster)
+    protected function getDriver($forceMaster)
     {
-        if ($onMaster === true) {
+        if ($forceMaster === true) {
             $driver = $this->connection->master();
         } else {
             $driver = $this->connection->slave();
@@ -82,9 +82,9 @@ class Generator
 
     public function getAll(
         CollectionFactoryInterface $collectionFactory,
-        $onMaster = false
+        $forceMaster = false
     ) {
-        $driver = $this->getDriver($onMaster);
+        $driver = $this->getDriver($forceMaster);
 
         $fields = $this->escapeFields($this->fields, $driver);
 
@@ -92,7 +92,7 @@ class Generator
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
 
-        if ($onMaster === true) {
+        if ($forceMaster === true) {
             $query->selectMaster(true);
         }
 
@@ -103,15 +103,15 @@ class Generator
      * Returns a Query, allowing to fetch an object by an associative array (column => value)
      * @param array                      $primariesValue
      * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $onMaster
+     * @param bool                       $forceMaster
      * @return Query
      */
     public function getOneByCriteria(
         array $primariesValue,
         CollectionFactoryInterface $collectionFactory,
-        $onMaster = false
+        $forceMaster = false
     ) {
-        $driver = $this->getDriver($onMaster);
+        $driver = $this->getDriver($forceMaster);
 
         list($sql, $params) = $this->getSqlAndParamsByCriteria($primariesValue, $driver);
         $sql .=  ' LIMIT 1';
@@ -119,7 +119,7 @@ class Generator
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
         $query->setParams($params);
 
-        if ($onMaster === true) {
+        if ($forceMaster === true) {
             $query->selectMaster(true);
         }
 
@@ -142,22 +142,22 @@ class Generator
      * Returns a Query, allowing to fetch an object by criteria (associative array)
      * @param array                      $criteria
      * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $onMaster
+     * @param bool                       $forceMaster
      * @return Query
      */
     public function getByCriteria(
         array $criteria,
         CollectionFactoryInterface $collectionFactory,
-        $onMaster = false
+        $forceMaster = false
     ) {
-        $driver = $this->getDriver($onMaster);
+        $driver = $this->getDriver($forceMaster);
 
         list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $driver);
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
         $query->setParams($params);
 
-        if ($onMaster === true) {
+        if ($forceMaster === true) {
             $query->selectMaster(true);
         }
 

@@ -185,6 +185,10 @@ class Repository
         return current($entity);
     }
 
+    /**
+     * @param bool $forceMaster
+     * @return CollectionInterface
+     */
     public function getAll($forceMaster = false)
     {
         $query = $this->metadata->getAll(
@@ -197,6 +201,11 @@ class Repository
         return $query->query($this->getCollection(new HydratorSingleObject()));
     }
 
+    /**
+     * @param array $criteria
+     * @param bool  $forceMaster
+     * @return CollectionInterface
+     */
     public function getByCriteria(array $criteria, $forceMaster = false)
     {
         $query = $this->metadata->getByCriteria(
@@ -210,6 +219,11 @@ class Repository
         return $query->query($this->getCollection(new HydratorSingleObject()));
     }
 
+    /**
+     * @param array $criteria
+     * @param bool  $forceMaster
+     * @return mixed|null
+     */
     public function getOneByCriteria(array $criteria, $forceMaster = false)
     {
         $query = $this->metadata->getOneByCriteria(
