@@ -1,11 +1,9 @@
-x.x.x (xxxx-xx-xx) :
-    * Fix hydrator on query with LEFT/RIGHT JOIN
-
-2.1.x-DEV (xxxx-xx-xx) :
+2.1.0 (2015-02-18) :
     * Adding methods getAll, getByCriteria and getOneByCriteria on Metadata
     * Adding methods getAll, getBy and getOneBy on Repository
     * Refactoring of Generator
     * Added some missing unit tests
+    * Fix hydrator on query with LEFT/RIGHT JOIN
 
 2.0.1 (2015-02-07) :
     * Fix saving new entity without auto increment
