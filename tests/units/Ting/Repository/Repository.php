@@ -407,4 +407,137 @@ class Repository extends atoum
                     ->once()
         ;
     }
+
+    public function testGetAllShouldReturnAQuery()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $this->calling($mockQueryFactory)->get = $mockQuery;
+
+        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+
+        $entity = new Bouh();
+        $entity->setName('Bouh');
+
+        $collection = new \CCMBenchmark\Ting\Repository\Collection();
+        $collection->add(['entity' => $entity]);
+
+        $this->calling($mockQuery)->query = $collection;
+
+        $this
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $mockQueryFactory,
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
+            ))
+            ->object($repository->getAll())
+                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface')
+        ;
+    }
+
+    public function testGetByCriteriaShouldReturnAQuery()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $this->calling($mockQueryFactory)->get = $mockQuery;
+
+        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+
+        $entity = new Bouh();
+        $entity->setName('Bouh');
+
+        $collection = new \CCMBenchmark\Ting\Repository\Collection();
+        $collection->add(['entity' => $entity]);
+
+        $this->calling($mockQuery)->query = $collection;
+
+        $this
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $mockQueryFactory,
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
+            ))
+            ->object($repository->getBy(['name' => 'bouh']))
+                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface')
+        ;
+    }
+
+    public function testGetOneByCriteriaShouldReturnAnEntityOrNull()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+
+        $this->calling($mockQueryFactory)->get = $mockQuery;
+
+        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+
+        $entity = new Bouh();
+        $entity->setName('Bouh');
+
+        $collection = new \CCMBenchmark\Ting\Repository\Collection();
+        $collection->add(['entity' => $entity]);
+
+        $this->calling($mockQuery)->query = $collection;
+
+        $this
+            ->if($repository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $mockQueryFactory,
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
+            ))
+            ->object($repository->getOneBy(['name' => 'Xavier']))
+                ->isInstanceOf($entity)
+            ->and($emptyCollection = new \CCMBenchmark\Ting\Repository\Collection())
+            ->then($this->calling($mockQuery)->query = $emptyCollection)
+            ->variable($repository->getOneBy(['name' => 'Xavier']))
+                ->isNull()
+        ;
+    }
 }

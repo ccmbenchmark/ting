@@ -34,9 +34,11 @@ class Bool extends atoum
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool())
             ->boolean($serializer->unserialize($serializer->serialize(true)))
-            ->isTrue()
+                ->isTrue()
             ->boolean($serializer->unserialize($serializer->serialize(false)))
-            ->isFalse()
+                ->isFalse()
+            ->variable($serializer->unserialize(null))
+                ->isNull()
         ;
     }
 

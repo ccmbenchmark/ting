@@ -37,6 +37,8 @@ class Bool extends atoum
                 ->isTrue()
             ->boolean($serializer->unserialize($serializer->serialize(false)))
                 ->isFalse()
+            ->variable($serializer->unserialize($serializer->serialize(null)))
+                ->isNull()
         ;
     }
 }
