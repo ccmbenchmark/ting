@@ -1,6 +1,6 @@
 2.1.x-DEV (xxxx-xx-xx) :
     * Adding methods getAll, getByCriteria and getOneByCriteria on Metadata
-    * Adding methods getAll, getByCriteria and getOneByCriteria on Repository
+    * Adding methods getAll, getBy and getOneBy on Repository
     * Refactoring of Generator
     * Added some missing unit tests
 
