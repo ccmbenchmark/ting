@@ -489,7 +489,7 @@ class Repository extends atoum
                 $services->get('UnitOfWork'),
                 $services->get('SerializerFactory')
             ))
-            ->object($repository->getByCriteria(['name' => 'bouh']))
+            ->object($repository->getBy(['name' => 'bouh']))
                 ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface')
         ;
     }
@@ -532,11 +532,11 @@ class Repository extends atoum
                 $services->get('UnitOfWork'),
                 $services->get('SerializerFactory')
             ))
-            ->object($repository->getOneByCriteria(['name' => 'Xavier']))
+            ->object($repository->getOneBy(['name' => 'Xavier']))
                 ->isInstanceOf($entity)
             ->and($emptyCollection = new \CCMBenchmark\Ting\Repository\Collection())
             ->then($this->calling($mockQuery)->query = $emptyCollection)
-            ->variable($repository->getOneByCriteria(['name' => 'Xavier']))
+            ->variable($repository->getOneBy(['name' => 'Xavier']))
                 ->isNull()
         ;
     }

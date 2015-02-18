@@ -206,7 +206,7 @@ class Repository
      * @param bool  $forceMaster
      * @return CollectionInterface
      */
-    public function getByCriteria(array $criteria, $forceMaster = false)
+    public function getBy(array $criteria, $forceMaster = false)
     {
         $query = $this->metadata->getByCriteria(
             $criteria,
@@ -224,7 +224,7 @@ class Repository
      * @param bool  $forceMaster
      * @return mixed|null
      */
-    public function getOneByCriteria(array $criteria, $forceMaster = false)
+    public function getOneBy(array $criteria, $forceMaster = false)
     {
         $query = $this->metadata->getOneByCriteria(
             $this->connection,
