@@ -49,6 +49,9 @@ class Connection
      */
     public function __construct(ConnectionPoolInterface $connectionPool, $name, $database)
     {
+        if ($name === null || $database === null) {
+            throw new \RuntimeException('Name and databases cannot be null on connection');
+        }
         $this->connectionPool = $connectionPool;
         $this->name           = $name;
         $this->database       = $database;

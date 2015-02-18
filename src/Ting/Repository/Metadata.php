@@ -276,7 +276,7 @@ class Metadata
      * @param QueryFactoryInterface $queryFactory
      * @param CollectionFactoryInterface $collectionFactory
      * @param $primariesKeyValue
-     * @param $onMaster boolean
+     * @param $forceMaster boolean
      * @return \CCMBenchmark\Ting\Query\Query
      */
     public function getByPrimaries(
@@ -284,7 +284,7 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
         $primariesKeyValue,
-        $onMaster = false
+        $forceMaster = false
     ) {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
@@ -296,9 +296,121 @@ class Metadata
 
         $primariesKeyValue = $this->getPrimariesKeyValuesAsArray($primariesKeyValue);
 
-        return $queryGenerator->getByPrimaries($primariesKeyValue, $collectionFactory, $onMaster);
+        return $queryGenerator->getOneByCriteria($primariesKeyValue, $collectionFactory, $forceMaster);
     }
 
+
+    /**
+     * Return a Query to get one object by an associative array of criterias
+     *
+     * @param Connection $connection
+     * @param QueryFactoryInterface $queryFactory
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param $criteria array
+     * @param $forceMaster boolean
+     * @return \CCMBenchmark\Ting\Query\Query
+     * @throws Exception
+     */
+    public function getOneByCriteria(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        array $criteria,
+        $forceMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->table,
+            $fields
+        );
+
+        $criteriaColumn = $this->getColumnsFromCriteria($criteria);
+
+        return $queryGenerator->getOneByCriteria($criteriaColumn, $collectionFactory, $forceMaster);
+    }
+
+    /**
+     * @param array $criteria
+     * @return array
+     * @throws Exception
+     */
+    protected function getColumnsFromCriteria(array $criteria)
+    {
+        $criteriaColumn = array();
+        foreach ($criteria as $property => $value) {
+            if (isset($this->fieldsByProperty[$property]) === false) {
+                throw new Exception(sprintf('Undefined property %s in your criteria', $property));
+            }
+            $column = $this->fieldsByProperty[$property]['columnName'];
+            $criteriaColumn[$column] = $value;
+        }
+
+        return $criteriaColumn;
+    }
+
+    /**
+     * Retrieve all lines from the table
+     *
+     * @param Connection                 $connection
+     * @param QueryFactoryInterface      $queryFactory
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool                       $forceMaster
+     * @return \CCMBenchmark\Ting\Query\Query
+     */
+    public function getAll(
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        $forceMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->table,
+            $fields
+        );
+
+        return $queryGenerator->getAll($collectionFactory, $forceMaster);
+    }
+
+    /**
+     * Retrieve matching lines from the table, according to the criteria
+     *
+     * @param array                      $criteria
+     * @param Connection                 $connection
+     * @param QueryFactoryInterface      $queryFactory
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool                       $forceMaster
+     * @return \CCMBenchmark\Ting\Query\Query
+     */
+    public function getByCriteria(
+        array $criteria,
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        $forceMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->table,
+            $fields
+        );
+
+        $criteriaColumn = $this->getColumnsFromCriteria($criteria);
+
+        return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $forceMaster);
+    }
+
+    /**
+     * @param $originalValue
+     * @return array
+     * @throws Exception
+     */
     protected function getPrimariesKeyValuesAsArray($originalValue)
     {
         if (is_array($originalValue) === false) {
@@ -411,6 +523,11 @@ class Metadata
         return $queryGenerator->delete($primariesKeyValue);
     }
 
+    /**
+     * @param $properties
+     * @param $entity
+     * @return array
+     */
     protected function getPrimariesKeyValuesByProperties($properties, $entity)
     {
         $primariesKeyValue = [];
