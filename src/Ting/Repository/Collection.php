@@ -24,6 +24,8 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\ResultInterface;
+
 class Collection implements CollectionInterface, \Iterator, \Countable
 {
 
@@ -62,10 +64,10 @@ class Collection implements CollectionInterface, \Iterator, \Countable
 
     /**
      * Fill collection from iterator
-     * @param \Iterator $result
+     * @param ResultInterface $result
      * @return void
      */
-    public function set(\Iterator $result)
+    public function set(ResultInterface $result)
     {
         if ($this->isCacheable === true) {
             $this->internalRows = iterator_to_array($result);
@@ -79,7 +81,7 @@ class Collection implements CollectionInterface, \Iterator, \Countable
                 }
                 $this->add($data);
             } else {
-                $this->hydrator->hydrate($row, $this);
+                $this->hydrator->hydrate($result->getConnectionName(), $result->getDatabase(), $row, $this);
             }
         }
     }

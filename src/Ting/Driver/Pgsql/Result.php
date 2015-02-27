@@ -32,18 +32,40 @@ class Result implements ResultInterface
     // @codingStandardsIgnoreStart
     const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
     // @codingStandardsIgnoreEnd
-    
+
+    protected $connectionName  = null;
+    protected $database        = null;
     protected $result          = null;
-    protected $fields          = array();
+    protected $fields          = [];
     protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
 
     /**
+     * @param string    $connectionName
+     * @param string    $database
      * @param resource $result
      */
-    public function __construct($result)
+    public function __construct($connectionName, $database, $result)
     {
-        $this->result = $result;
+        $this->connectionName = $connectionName;
+        $this->database       = $database;
+        $this->result         = $result;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     /**
@@ -53,8 +75,8 @@ class Result implements ResultInterface
      */
     public function setQuery($query)
     {
-        $aliasToTable = array();
-        $fields = array();
+        $aliasToTable = [];
+        $fields = [];
 
         preg_match_all(
             '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!\b('
@@ -143,17 +165,17 @@ class Result implements ResultInterface
             return null;
         }
 
-        $columns = array();
+        $columns = [];
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
-            $column = array(
+            $column = [
                 'name'     => $this->unescapeField($rawField->name),
                 'orgName'  => $this->unescapeField($rawField->orgname),
                 'table'    => $this->unescapeField($rawField->table),
                 'orgTable' => $this->unescapeField($rawField->orgtable),
                 'value'    => $data[$i]
-            );
+            ];
 
             $columns[] = $column;
         }

@@ -54,13 +54,15 @@ class Hydrator implements HydratorInterface
 
     /**
      * Hydrate one object from values and add to Collection
+     * @param string              $connectionName
+     * @param string              $database
      * @param array               $columns
      * @param CollectionInterface $collection
      * @return array
      */
-    public function hydrate(array $columns, CollectionInterface $collection)
+    public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection)
     {
-        $result = $this->hydrateColumns($columns);
+        $result = $this->hydrateColumns($connectionName, $database, $columns);
         $collection->add($result);
         return $result;
     }
@@ -73,10 +75,13 @@ class Hydrator implements HydratorInterface
      *           all Entities without any information (a "LEFT JOIN user" can return no informatoin at all about user)
      *              are set to null
      *
-     * @param array               $columns
+     * @param string $connectionName
+     * @param string $database
+     * @param array  $columns
+     *
      * @return array
      */
-    protected function hydrateColumns(array $columns)
+    protected function hydrateColumns($connectionName, $database, array $columns)
     {
         $result        = [];
         $metadataList  = [];
@@ -88,6 +93,8 @@ class Hydrator implements HydratorInterface
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
                 $this->metadataRepository->findMetadataForTable(
+                    $connectionName,
+                    $database,
                     $column['orgTable'],
                     function (Metadata $metadata) use ($column, &$result, &$metadataList) {
                         $metadataList[$column['table']] = $metadata;

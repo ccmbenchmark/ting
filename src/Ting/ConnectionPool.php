@@ -155,6 +155,7 @@ class ConnectionPool implements ConnectionPoolInterface
                 $driver->setLogger($this->logger);
             }
 
+            $driver->setName($name);
             $driver->connect(
                 $config['host'],
                 $config['user'],

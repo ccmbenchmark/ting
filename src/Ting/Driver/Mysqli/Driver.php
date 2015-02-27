@@ -34,6 +34,11 @@ class Driver implements DriverInterface
 {
 
     /**
+     * @var string
+     */
+    protected $name;
+
+    /**
      * @var \mysqli_driver|Object|null driver
      */
     protected $driver = null;
@@ -76,7 +81,7 @@ class Driver implements DriverInterface
     /**
      * @var array List of already prepared queries
      */
-    protected $preparedQueries = array();
+    protected $preparedQueries = [];
 
     /**
      * @param  \mysqli|Object|null $connection
@@ -159,6 +164,15 @@ class Driver implements DriverInterface
         $this->objectHash = spl_object_hash($this);
     }
 
+    /**
+     * @param $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
 
     /**
      * @param string $database
@@ -202,7 +216,7 @@ class Driver implements DriverInterface
      * @return mixed|CollectionInterface
      * @throws QueryException
      */
-    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    public function execute($sql, array $params = [], CollectionInterface $collection = null)
     {
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
@@ -260,7 +274,7 @@ class Driver implements DriverInterface
      */
     protected function setCollectionWithResult($result, CollectionInterface $collection)
     {
-        $collection->set(new Result($result));
+        $collection->set(new Result($this->name, $this->currentDatabase, $result));
 
         return $collection;
     }

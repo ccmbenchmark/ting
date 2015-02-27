@@ -29,18 +29,40 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class Result implements ResultInterface
 {
 
-    protected $result = null;
-    protected $fields = array();
-    protected $iteratorOffset = 0;
+    protected $connectionName  = null;
+    protected $database        = null;
+    protected $result          = null;
+    protected $fields          = [];
+    protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
 
     /**
+     * @param string    $connectionName
+     * @param string    $database
      * @param \Iterator $result
      */
-    public function __construct($result)
+    public function __construct($connectionName, $database, $result)
     {
-        $this->result = $result;
-        $this->fields = $this->result->fetch_fields();
+        $this->connectionName = $connectionName;
+        $this->database       = $database;
+        $this->result         = $result;
+        $this->fields         = $this->result->fetch_fields();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     /**
@@ -64,7 +86,7 @@ class Result implements ResultInterface
             return null;
         }
 
-        $columns = array();
+        $columns = [];
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
@@ -105,13 +127,13 @@ class Result implements ResultInterface
                 }
             }
 
-            $column = array(
+            $column = [
                 'name'     => $rawField->name,
                 'orgName'  => $rawField->orgname,
                 'table'    => $rawField->table,
                 'orgTable' => $rawField->orgtable,
                 'value'    => $value
-            );
+            ];
 
             $columns[] = $column;
         }

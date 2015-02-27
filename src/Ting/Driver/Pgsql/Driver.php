@@ -32,6 +32,12 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
+
+    /**
+     * @var string
+     */
+    protected $name;
+
     /**
      * @var string current database name
      */
@@ -121,6 +127,16 @@ class Driver implements DriverInterface
     }
 
     /**
+     * @param $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
      * Connect the driver to the given database
      * @param string $database
      * @return $this
@@ -192,7 +208,7 @@ class Driver implements DriverInterface
 
     protected function setCollectionWithResult($sql, CollectionInterface $collection)
     {
-        $result = new Result($this->result);
+        $result = new Result($this->name, $this->database, $this->result);
         $result->setQuery($sql);
         $collection->set($result);
 
