@@ -26,6 +26,13 @@ namespace CCMBenchmark\Ting\Driver;
 
 interface ResultInterface extends \Iterator
 {
+    /**
+     * @param string    $connectionName
+     * @param string    $database
+     * @param object    $result
+     */
+    public function __construct($connectionName, $database, $result);
+
     public function getConnectionName();
     public function getDatabase();
     public function dataSeek($offset);

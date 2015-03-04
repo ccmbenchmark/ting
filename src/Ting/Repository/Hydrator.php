@@ -51,7 +51,6 @@ class Hydrator implements HydratorInterface
         $this->unitOfWork = $unitOfWork;
     }
 
-
     /**
      * Hydrate one object from values and add to Collection
      * @param string              $connectionName

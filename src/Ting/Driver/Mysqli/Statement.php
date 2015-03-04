@@ -34,6 +34,16 @@ class Statement implements StatementInterface
 {
 
     /**
+     * @var string
+     */
+    protected $connectionName;
+
+    /**
+     * @var string database name
+     */
+    protected $database  = '';
+
+    /**
      * @var mixed
      */
     protected $driverStatement = null;
@@ -55,12 +65,16 @@ class Statement implements StatementInterface
 
     /**
      * @param \mysqli_stmt|Object $driverStatement
-     * @param array $paramsOrder
+     * @param array               $paramsOrder
+     * @param string              $connectionName
+     * @param string              $database
      */
-    public function __construct($driverStatement, array $paramsOrder)
+    public function __construct($driverStatement, array $paramsOrder, $connectionName, $database)
     {
         $this->driverStatement = $driverStatement;
         $this->paramsOrder     = $paramsOrder;
+        $this->connectionName  = $connectionName;
+        $this->database        = $database;
     }
 
     /**
@@ -133,7 +147,7 @@ class Statement implements StatementInterface
      */
     public function setCollectionWithResult($result, CollectionInterface $collection)
     {
-        $collection->set(new Result($result));
+        $collection->set(new Result($this->connectionName, $this->database, $result));
         return true;
     }
 

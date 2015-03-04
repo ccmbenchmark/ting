@@ -32,6 +32,16 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 class Statement implements StatementInterface
 {
 
+    /**
+     * @var string
+     */
+    protected $connectionName;
+
+    /**
+     * @var string database name
+     */
+    protected $database  = '';
+
     protected $connection    = null;
     protected $statementName = null;
     protected $queryType     = null;
@@ -46,10 +56,12 @@ class Statement implements StatementInterface
      * @param       $statementName
      * @param array $paramsOrder
      */
-    public function __construct($statementName, array $paramsOrder)
+    public function __construct($statementName, array $paramsOrder, $connectionName, $database)
     {
-        $this->statementName = $statementName;
-        $this->paramsOrder   = $paramsOrder;
+        $this->statementName  = $statementName;
+        $this->paramsOrder    = $paramsOrder;
+        $this->connectionName = $connectionName;
+        $this->database       = $database;
     }
 
     /**
@@ -124,7 +136,7 @@ class Statement implements StatementInterface
      */
     public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
     {
-        $result = new Result($resultResource);
+        $result = new Result($this->connectionName, $this->database, $resultResource);
         $result->setQuery($this->query);
 
         $collection->set($result);

@@ -165,7 +165,8 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
+     * @return $this
      */
     public function setName($name)
     {
@@ -317,7 +318,7 @@ class Driver implements DriverInterface
             $this->logger->stopPrepare(spl_object_hash($driverStatement));
         }
 
-        $statement = new Statement($driverStatement, $paramsOrder);
+        $statement = new Statement($driverStatement, $paramsOrder, $this->name, $this->currentDatabase);
         $statement->setLogger($this->logger);
 
         $this->preparedQueries[$statementName] = $statement;

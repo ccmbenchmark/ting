@@ -37,9 +37,9 @@ class Result implements ResultInterface
     protected $iteratorCurrent = null;
 
     /**
-     * @param string    $connectionName
-     * @param string    $database
-     * @param \Iterator $result
+     * @param string $connectionName
+     * @param string $database
+     * @param object $result
      */
     public function __construct($connectionName, $database, $result)
     {

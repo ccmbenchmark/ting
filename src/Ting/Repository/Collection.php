@@ -24,10 +24,21 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Collection implements CollectionInterface, \Iterator, \Countable
 {
+
+    /**
+     * @var string|null
+     */
+    protected $connectionName = null;
+
+    /**
+     * @var string|null
+     */
+    protected $database = null;
 
     /**
      * @var array
@@ -73,6 +84,9 @@ class Collection implements CollectionInterface, \Iterator, \Countable
             $this->internalRows = iterator_to_array($result);
         }
 
+        $this->connectionName = $result->getConnectionName();
+        $this->database       = $result->getDatabase();
+
         foreach ($result as $row) {
             if ($this->hydrator === null) {
                 $data = [];
@@ -81,7 +95,7 @@ class Collection implements CollectionInterface, \Iterator, \Countable
                 }
                 $this->add($data);
             } else {
-                $this->hydrator->hydrate($result->getConnectionName(), $result->getDatabase(), $row, $this);
+                $this->hydrator->hydrate($this->connectionName, $this->database, $row, $this);
             }
         }
     }
@@ -122,18 +136,18 @@ class Collection implements CollectionInterface, \Iterator, \Countable
     /**
      * @return array
      */
-    public function toArray()
+    public function toCache()
     {
-        return $this->internalRows;
+        return ['connection' => $this->connectionName, 'database' => $this->database, 'data' => $this->internalRows];
     }
 
     /**
-     * @param array $rows
+     * @param array $result
      * @return void
      */
-    public function fromArray(array $rows)
+    public function fromCache(array $result)
     {
-        $this->set(new \ArrayIterator($rows));
+        $this->set(new CacheResult($result['connection'], $result['database'], new \ArrayIterator($result['data'])));
     }
 
     /**

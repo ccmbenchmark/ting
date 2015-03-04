@@ -66,11 +66,11 @@ interface CollectionInterface
     /**
      * @return array
      */
-    public function toArray();
+    public function toCache();
 
     /**
-     * @param array $rows
+     * @param array $result
      * @return void
      */
-    public function fromArray(array $rows);
+    public function fromCache(array $result);
 }
