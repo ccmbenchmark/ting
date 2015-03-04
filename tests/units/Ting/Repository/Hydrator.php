@@ -49,6 +49,8 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -71,7 +73,7 @@ class Hydrator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($data = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
@@ -99,6 +101,8 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -121,7 +125,7 @@ class Hydrator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($data = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->variable($data['bouh'])
                 ->isNull();
     }
@@ -147,6 +151,8 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -169,7 +175,7 @@ class Hydrator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($data = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson');
     }
@@ -202,6 +208,8 @@ class Hydrator extends atoum
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -224,7 +232,7 @@ class Hydrator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($data = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
@@ -261,7 +269,7 @@ class Hydrator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($data = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->string($data[0]->name)
                 ->isIdenticalTo('Robez-Masson')
             ->string($data[0]->fname)

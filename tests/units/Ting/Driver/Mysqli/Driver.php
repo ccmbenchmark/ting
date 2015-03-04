@@ -296,7 +296,7 @@ class Driver extends atoum
     public function testExecuteShouldCallDriverQuery()
     {
         $driverFake          = new \mock\Fake\Mysqli();
-        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
 
         $this->calling($driverFake)->query = $mockMysqliResult;
 

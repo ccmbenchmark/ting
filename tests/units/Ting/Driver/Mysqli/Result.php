@@ -32,13 +32,14 @@ class Result extends atoum
     public function testDataSeekShouldCallMysqliResultDataSeek()
     {
 
-        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult();
+        $this->calling($mockMysqliResult)->fetch_fields = [];
         $this->calling($mockMysqliResult)->data_seek = function ($index) {
             return true;
         };
 
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $mockMysqliResult))
             ->then($result->dataSeek(789))
             ->mock($mockMysqliResult)
                 ->call('data_seek')
@@ -47,9 +48,9 @@ class Result extends atoum
 
     public function testFormat()
     {
-        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult();
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -102,71 +103,71 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $mockMysqliResult))
             ->array(
                 $row = $result->format(
-                    array(
+                    [
                         'firstname'     => 'Sylvain',
                         'name'          => 'Robez-Masson',
                         'age'           => '12',
                         'date_of_death' => 'null',
                         'poids'         => '61.34',
                         'argent'        => '2247483647'
-                    )
+                    ]
                 )
             )
-                ->isIdenticalTo(array(
-                    array(
+                ->isIdenticalTo([
+                    [
                         'name'     => 'prenom',
                         'orgName'  => 'firstname',
                         'table'    => 'bouh',
                         'orgTable' => 'T_BOUH_BOO',
                         'value'    => 'Sylvain'
-                    ),
-                    array(
+                    ],
+                    [
                         'name'     => 'nom',
                         'orgName'  => 'name',
                         'table'    => 'bouh',
                         'orgTable' => 'T_BOUH_BOO',
                         'value'    => 'Robez-Masson'
-                    ),
-                    array(
+                    ],
+                    [
                         'name'     => 'age',
                         'orgName'  => 'age',
                         'table'    => 'bouh',
                         'orgTable' => 'T_BOUH_BOO',
                         'value'    => 12
-                    ),
-                    array(
+                    ],
+                    [
                         'name'     => 'date_of_death',
                         'orgName'  => 'date_of_death',
                         'table'    => 'bouh',
                         'orgTable' => 'T_BOUH_BOO',
                         'value'    => null
-                    ),
-                    array(
+                    ],
+                    [
                         'name'     => 'poids',
                         'orgName'  => 'weight',
                         'table'    => 'bouh',
                         'orgTable' => 'T_BOUH_BOO',
                         'value'    => 61.34
-                    ),
-                    array(
+                    ],
+                    [
                         'name'     => 'argent',
                         'orgName'  => 'cash',
                         'table'    => 'bouh',
                         'orgTable' => 'T_BOUH_BOO',
                         'value'    => '2247483647'
-                    )
-                ));
+                    ]
+                ]);
     }
 
     public function testFormatShouldReturnNull()
     {
-        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult();
 
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $mockMysqliResult))
             ->variable($result->format(null))
                 ->isNull();
     }
@@ -174,8 +175,9 @@ class Result extends atoum
     public function testIterator()
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['value'], ['value2']]);
+
         $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -188,7 +190,11 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result(
+                'connectionName',
+                'database',
+                $mockMysqliResult
+            ))
             ->then($result->rewind())
             ->mock($result)
                 ->call('next')->once()

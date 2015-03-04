@@ -54,7 +54,11 @@ class Collection extends atoum
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
+            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result(
+                'connectionName',
+                'database',
+                $mockMysqliResult
+            )))
             ->array($collection->current())
                 ->isIdenticalTo(['prenom' => 'Sylvain', 'nom' => 'Robez-Masson']);
     }
@@ -92,10 +96,14 @@ class Collection extends atoum
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection($mockHydrator))
-            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
+            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result(
+                'connectionName',
+                'database',
+                $mockMysqliResult
+            )))
             ->mock($mockHydrator)
                 ->call('hydrate')
-                    ->withIdenticalArguments($data, $collection)->once();
+                    ->withIdenticalArguments('connectionName', 'database', $data, $collection)->once();
     }
 
     public function testFirstShouldReturnNull()
@@ -122,7 +130,7 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $mockMysqliResult);
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
@@ -147,7 +155,7 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $mockMysqliResult);
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
@@ -186,12 +194,12 @@ class Collection extends atoum
         ;
     }
 
-    public function testToArrayReturnArray()
+    public function testToCacheReturnArray()
     {
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->array($collection->toArray())
-                ->isIdenticalTo([])
+            ->array($collection->toCache())
+                ->isIdenticalTo(['connection' => null, 'database' => null, 'data' => []])
         ;
     }
 
@@ -224,7 +232,7 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $mockMysqliResult);
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())

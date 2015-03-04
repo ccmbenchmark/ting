@@ -46,7 +46,12 @@ class Statement extends atoum
         $driverStatement->errno = 0;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, $paramsOrder))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
+                $driverStatement,
+                $paramsOrder,
+                'connectionName',
+                'database'
+            ))
             ->then($statement->execute($params, $collection))
             ->mock($driverStatement)
                 ->call('bind_param')
@@ -70,7 +75,12 @@ class Statement extends atoum
         $driverStatement->errno = 0;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, array()))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
+                $driverStatement,
+                array(),
+                'connectionName',
+                'database'
+            ))
             ->then($statement->execute(array(), $collection))
             ->mock($driverStatement)
                 ->call('execute')
@@ -82,16 +92,18 @@ class Statement extends atoum
         $driverStatement = new \mock\Fake\DriverStatement();
         $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $result          = new \mock\tests\fixtures\FakeDriver\MysqliResult(array(
-            array(
-                'prenom' => 'Sylvain',
-                'nom'     => 'Robez-Masson'
-            ),
-            array(
-                'prenom' => 'Xavier',
-                'nom' => 'Leune'
-            )
-        ));
+        $result          = new \mock\tests\fixtures\FakeDriver\MysqliResult(
+            [
+                [
+                    'prenom' => 'Sylvain',
+                    'nom'    => 'Robez-Masson'
+                ],
+                [
+                    'prenom' => 'Xavier',
+                    'nom'    => 'Leune'
+                ]
+            ]
+        );
 
         $this->calling($result)->fetch_fields = function () {
             $fields = array();
@@ -120,13 +132,18 @@ class Statement extends atoum
         };
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
+                $driverStatement,
+                [],
+                'connectionName',
+                'database'
+            ))
             ->then($statement->setCollectionWithResult($result, $collection))
             ->mock($collection)
                 ->call('set')
                     ->once()
             ->object($outerResult)
-                ->isCloneOf(new \CCMBenchmark\Ting\Driver\Mysqli\Result($result));
+                ->isCloneOf(new \CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $result));
     }
 
     public function testExecuteShouldRaiseQueryExceptionOnError()
@@ -140,7 +157,12 @@ class Statement extends atoum
         $this->calling($driverStatement)->get_result = false;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
+                $driverStatement,
+                [],
+                'connectionName',
+                'database'
+            ))
             ->exception(function () use ($statement, $driverStatement, $collection) {
                 $statement->execute([], $collection);
             })
@@ -156,7 +178,12 @@ class Statement extends atoum
         $driverStatement->errno = 0;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
+                $driverStatement,
+                [],
+                'connectionName',
+                'database'
+            ))
             ->boolean($statement->execute([]))
                 ->isTrue()
         ;
@@ -173,7 +200,12 @@ class Statement extends atoum
         $driverStatement->errno = 0;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement($driverStatement, []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
+                $driverStatement,
+                [],
+                'connectionName',
+                'database'
+            ))
             ->and($statement->setLogger($mockLogger))
             ->then($statement->execute(array(), $collection))
                 ->mock($mockLogger)

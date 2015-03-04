@@ -43,7 +43,12 @@ class Statement extends atoum
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
+                'MyStatementName',
+                [],
+                'connectionName',
+                'database'
+            ))
             ->then($statement->setConnection('Awesome connection resource'))
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute([], $collection))
@@ -75,7 +80,12 @@ class Statement extends atoum
 
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', $paramsOrder))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
+                'MyStatementName',
+                $paramsOrder,
+                'connectionName',
+                'database'
+            ))
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute($params, $collection))
             ->array($outerValues)
@@ -84,17 +94,19 @@ class Statement extends atoum
 
     public function testSetCollectionWithResult()
     {
-        $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $result          = new \ArrayIterator(array(
-            array(
+        $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $result     = new \CCMBenchmark\Ting\Driver\Pgsql\Result(
+            'connectionName',
+            'database',
+            [
                 'prenom' => 'Sylvain',
                 'nom'    => 'Robez-Masson'
-            ),
-            array(
+            ],
+            [
                 'prenom' => 'Xavier',
                 'nom'    => 'Leune'
-            )
-        ));
+            ]
+        );
         $this->function->pg_query = true;
 
         $this->calling($collection)->set = function ($result) use (&$outerResult) {
@@ -103,11 +115,16 @@ class Statement extends atoum
 
         $this->function->pg_field_table = 'Bouh';
 
-        $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result($result);
+        $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result('connectionName', 'database', $result);
         $resultOk->setQuery('SELECT prenom, nom FROM Bouh');
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
+                'MyStatementName',
+                [],
+                'connectionName',
+                'database'
+            ))
             ->then($statement->setQuery('SELECT prenom, nom FROM Bouh'))
             ->then($statement->setCollectionWithResult($result, $collection))
             ->mock($collection)
@@ -124,7 +141,12 @@ class Statement extends atoum
         $this->function->pg_errormessage = 'unknown error';
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
+                'MyStatementName',
+                [],
+                'connectionName',
+                'database'
+            ))
             ->exception(function () use ($statement, $collection) {
                 $statement->execute([]);
             })
@@ -137,7 +159,12 @@ class Statement extends atoum
         $this->function->pg_query = true;
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('MyStatementName', []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
+                'MyStatementName',
+                [],
+                'connectionName',
+                'database'
+            ))
             ->boolean($statement->execute([]))
                 ->isTrue()
         ;
@@ -153,7 +180,12 @@ class Statement extends atoum
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 
         $this
-            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement('statementNameTest', []))
+            ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
+                'statementNameTest',
+                [],
+                'connectionName',
+                'database'
+            ))
             ->and($statement->setLogger($mockLogger))
             ->and($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute([]))
