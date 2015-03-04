@@ -25,7 +25,6 @@
 
 namespace CCMBenchmark\Ting\Query;
 
-
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
