@@ -149,7 +149,7 @@ class Result implements ResultInterface
      * @param $offset
      * @return bool
      */
-    public function dataSeek($offset)
+    protected function dataSeek($offset)
     {
         return pg_result_seek($this->result, $offset);
     }
@@ -159,7 +159,7 @@ class Result implements ResultInterface
      * @param $data
      * @return array
      */
-    public function format($data)
+    protected function format($data)
     {
         if ($data === false) {
             return null;

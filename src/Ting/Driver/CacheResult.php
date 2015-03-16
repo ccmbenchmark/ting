@@ -55,16 +55,6 @@ class CacheResult implements ResultInterface
         return $this->database;
     }
 
-    public function dataSeek($offset)
-    {
-        throw new Exception('CacheResult::dataSeek can\'t be called');
-    }
-
-    public function format($data)
-    {
-        throw new Exception('Cacheresult::format can\'t be called');
-    }
-
     /**
      * Iterator
      */

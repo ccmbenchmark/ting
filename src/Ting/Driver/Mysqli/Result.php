@@ -70,7 +70,7 @@ class Result implements ResultInterface
      * @param $offset
      * @return mixed
      */
-    public function dataSeek($offset)
+    protected function dataSeek($offset)
     {
         return $this->result->data_seek($offset);
     }
@@ -80,7 +80,7 @@ class Result implements ResultInterface
      * @param $data
      * @return array
      */
-    public function format($data)
+    protected function format($data)
     {
         if ($data === null) {
             return null;
