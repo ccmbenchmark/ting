@@ -10,7 +10,8 @@
     </target>
 
     <target name="atoum">
-        <exec command="php vendor/atoum/atoum/bin/atoum -d tests/ --bf tests/bootstrap.php" checkreturn="true"/>
+        <exec command="php -d error_reporting=E_ALL -d memory_limit=-1 vendor/atoum/atoum/bin/atoum -d tests/ --bf tests/bootstrap.php"
+              checkreturn="true"/>
     </target>
 
     <target name="test">
