@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="ting" default="install">
+    <target name="composer">
+        <composer command="install" composer="/usr/local/bin/composer"/>
+    </target>
+
+    <target name="install">
+        <phingcall target="composer"/>
+    </target>
+
+    <target name="atoum">
+        <exec command="php vendor/atoum/atoum/bin/atoum -d tests/ --bf tests/bootstrap.php" checkreturn="true"/>
+    </target>
+
+    <target name="test">
+        <phingcall target="atoum"/>
+    </target>
+</project>
