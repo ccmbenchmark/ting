@@ -172,4 +172,15 @@ class ConnectionPool implements ConnectionPoolInterface
 
         return $this->connections[$connectionKey];
     }
+
+    /**
+     * Close all opened connections
+     */
+    public function closeAll()
+    {
+        foreach($this->connections as $connectionKey => $connection) {
+            $connection->close();
+            unset($this->connections[$connectionKey]);
+        }
+    }
 }

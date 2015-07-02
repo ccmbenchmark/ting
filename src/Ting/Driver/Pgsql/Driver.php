@@ -103,6 +103,20 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Close the connection to the database
+     * @return $this
+     */
+    public function close()
+    {
+        if ($this->connection !== null) {
+            pg_close($this->connection);
+            $this->connection = null;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $charset
      * @return void
      * @throws Exception

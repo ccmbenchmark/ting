@@ -134,6 +134,20 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Close the connection to the database
+     * @return $this
+     */
+    public function close()
+    {
+        if ($this->connected) {
+            $this->connection->close();
+            $this->connected = false;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $charset
      * @return void
      * @throws Exception
