@@ -55,6 +55,39 @@ class Driver extends atoum
                 ->isIdenticalTo($driver);
     }
 
+    public function testCloseShouldReturnSelf()
+    {
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->object($driver->close())
+            ->isIdenticalTo($driver);
+    }
+
+    public function testIfNotConnectedCallbackAfterClosedConnection()
+    {
+        $called = false;
+
+        $this->function->pg_connect = function ($dsn) {
+            return  true;
+        };
+
+        $this->function->pg_close = function () {
+            return  true;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('database.test'))
+            ->then($driver->close())
+            ->then($driver->ifIsNotConnected(function () use (&$called) {
+                $called = true;
+            }))
+            ->boolean($called)
+            ->isTrue();
+    }
+
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Pgsql();
