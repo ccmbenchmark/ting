@@ -143,6 +143,7 @@ class ConnectionPool extends atoum
             ;
     }
 
+
     public function testCloseAllConnections()
     {
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
@@ -158,16 +159,26 @@ class ConnectionPool extends atoum
                             'user'      => 'test',
                             'password'  => 'test',
                             'port'      => 3306
+                        ],
+                        'slaves'    => [
+                            [
+                                'host'      => 'slave1',
+                                'user'      => 'test',
+                                'password'  => 'test',
+                                'port'      => 3306
+                            ]
                         ]
                     ]
                 ]
             ))
             ->then($connectionPool->master('bouh', 'bouhDb'))
+            ->then($connectionPool->slave('bouh', 'bouhDb'))
             ->then($connectionPool->closeAll())
             ->then($connectionPool->master('bouh', 'bouhDb'))
+            ->then($connectionPool->slave('bouh', 'bouhDb'))
                 ->mock($mockLogger)
                     ->call('addConnection')
-                        ->twice()
+                        ->exactly(4)
         ;
     }
 
@@ -205,7 +216,7 @@ class ConnectionPool extends atoum
             ->then($connectionPool->slave('bouh', 'bouhDb'))
                 ->mock($mockLogger)
                     ->call('addConnection')
-                        ->once()
+                        ->twice()
             ;
     }
 }

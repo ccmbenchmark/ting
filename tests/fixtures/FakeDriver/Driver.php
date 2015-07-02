@@ -116,7 +116,7 @@ class Driver implements DriverInterface
      */
     public static function getConnectionKey(array $connectionConfig, $database)
     {
-
+        return md5(var_export($connectionConfig, true) . $database);
     }
 
     /**

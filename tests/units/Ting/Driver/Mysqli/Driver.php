@@ -136,7 +136,7 @@ class Driver extends atoum
         $called = false;
 
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
