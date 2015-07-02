@@ -143,6 +143,34 @@ class ConnectionPool extends atoum
             ;
     }
 
+    public function testCloseAllConnections()
+    {
+        $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
+
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool($mockLogger))
+            ->and($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ]
+                ]
+            ))
+            ->then($connectionPool->master('bouh', 'bouhDb'))
+            ->then($connectionPool->closeAll())
+            ->then($connectionPool->master('bouh', 'bouhDb'))
+                ->mock($mockLogger)
+                    ->call('addConnection')
+                        ->twice()
+        ;
+    }
+
     public function testConnectionPoolShouldLogConnections()
     {
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();

@@ -48,6 +48,11 @@ class Driver implements DriverInterface
 
     }
 
+    public function close()
+    {
+
+    }
+
     public function setCharset($charset)
     {
 
