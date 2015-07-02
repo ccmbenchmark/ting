@@ -139,7 +139,7 @@ class Driver implements DriverInterface
      */
     public function close()
     {
-        if ($this->connected) {
+        if ($this->connected === true) {
             $this->connection->close();
             $this->connected = false;
         }
