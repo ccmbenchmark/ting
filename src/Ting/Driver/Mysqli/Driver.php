@@ -224,18 +224,8 @@ class Driver implements DriverInterface
                 if (!array_key_exists($match[1], $params)) {
                     throw new QueryException('Value has not been setted for param ' . $match[1]);
                 }
-                $value = $params[$match[1]];
 
-                switch (gettype($value)) {
-                    case "integer":
-                        // integer and double doesn't need quotes
-                    case "double":
-                        return $value;
-                        break;
-                    default:
-                        return '"' . $this->connection->real_escape_string($value) . '"';
-                    break;
-                }
+                return $this->quoteValue($params[$match[1]]);
             },
             $sql
         );
@@ -264,6 +254,24 @@ class Driver implements DriverInterface
         }
 
         return $this->setCollectionWithResult($result, $collection);
+    }
+
+    /**
+     * Quote value according to the type of variable
+     * @param mixed $value
+     */
+    public function quoteValue($value)
+    {
+        switch (gettype($value)) {
+            case "integer":
+                // integer and double doesn't need quotes
+            case "double":
+                return $value;
+                break;
+            default:
+                return '"' . $this->connection->real_escape_string($value) . '"';
+                break;
+        }
     }
 
     /**
