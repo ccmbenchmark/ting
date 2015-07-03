@@ -257,7 +257,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * Quote value (or not) according to the type of variable
+     * Quote value according to the type of variable
      * @param mixed $value
      */
     public function quoteValue($value)
