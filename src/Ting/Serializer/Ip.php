@@ -28,7 +28,7 @@ class Ip implements SerializerInterface
 {
 
     /**
-     * @param \DateTime $toSerialize
+     * @param string $toSerialize
      * @param array $options
      * @return int
      * @throws RuntimeException

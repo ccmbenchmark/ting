@@ -29,4 +29,36 @@ use mageekguy\atoum;
 class Ip extends atoum
 {
 
+    public function testSerializeThenUnSerializeShouldReturnOriginalValue()
+    {
+        $value = '127.0.0.1';
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Ip())
+            ->object($serializer->unserialize($serializer->serialize($value)))
+            ->isEqualTo($value)
+        ;
+    }
+
+    public function testSerializeInvalidValueShouldRaiseException()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Ip())
+            ->exception(function () use ($serializer) {
+                $serializer->serialize('badip');
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+        ;
+    }
+
+    public function testNullValueShouldBeReturned()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Ip())
+            ->variable($serializer->serialize(null))
+            ->isNull()
+            ->variable($serializer->unserialize(null))
+            ->isNull()
+        ;
+    }
+
 }
