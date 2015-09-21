@@ -49,7 +49,7 @@ class Ip implements SerializerInterface
     }
 
     /**
-     * @param string $serialized
+     * @param int $serialized
      * @param array  $options
      * @return string
      * @throws RuntimeException

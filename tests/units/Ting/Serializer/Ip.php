@@ -34,7 +34,7 @@ class Ip extends atoum
         $value = '127.0.0.1';
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\Ip())
-            ->object($serializer->unserialize($serializer->serialize($value)))
+            ->string($serializer->unserialize($serializer->serialize($value)))
             ->isEqualTo($value)
         ;
     }
