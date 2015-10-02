@@ -1,3 +1,6 @@
+2.5.0 (2015-10-02) :
+    * Adding Ip serializer
+
 2.4.0 (2015-07-03) :
     * Adding SphinxQL driver
     * user and password are now optional in connection configuration

@@ -42,7 +42,7 @@ class Ip implements SerializerInterface
         $value = ip2long($toSerialize);
 
         if ($value === false) {
-            throw new RuntimeException('Pv4 Internet network address is invalid');
+            throw new RuntimeException('IPv4 Internet network address is invalid');
         }
 
         return $value;
