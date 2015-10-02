@@ -1,4 +1,4 @@
-X.Y.Z (YYYY-DD-MM) :
+2.4.0 (2015-07-03) :
     * Adding SphinxQL driver
     * user and password are now optional in connection configuration
 
