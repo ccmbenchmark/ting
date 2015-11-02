@@ -40,6 +40,12 @@ interface DriverInterface
     public function connect($hostname, $username, $password, $port);
 
     /**
+     * Close the connection to the database
+     * @return $this
+     */
+    public function close();
+
+    /**
      * @param $name
      * @return $this
      */

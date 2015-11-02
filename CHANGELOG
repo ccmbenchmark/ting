@@ -1,6 +1,12 @@
 X.X.X (XXXX-XX-XX) :
     * Fix conflict when hydrating model which use the same table name but on different database
 
+2.3.0 (2015-07-02) :
+    * Adding closeAll on ConnectionsPool and close method on drivers
+
+2.2.0 (2015-03-24) :
+    * Ajout de l'hydrator array
+
 2.1.0 (2015-02-18) :
     * Adding methods getAll, getByCriteria and getOneByCriteria on Metadata
     * Adding methods getAll, getBy and getOneBy on Repository
