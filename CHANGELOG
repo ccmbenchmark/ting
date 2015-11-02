@@ -1,6 +1,13 @@
 X.X.X (XXXX-XX-XX) :
     * Fix conflict when hydrating model which use the same table name but on different database
 
+2.5.0 (2015-10-02) :
+    * Adding Ip serializer
+
+2.4.0 (2015-07-03) :
+    * Adding SphinxQL driver
+    * user and password are now optional in connection configuration
+
 2.3.0 (2015-07-02) :
     * Adding closeAll on ConnectionsPool and close method on drivers
 

@@ -50,7 +50,8 @@ class Metadata
     protected $autoincrement      = null;
     protected $defaultSerializers = [
         'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
-        'json'     => '\CCMBenchmark\Ting\Serializer\Json'
+        'json'     => '\CCMBenchmark\Ting\Serializer\Json',
+        'ip'     => '\CCMBenchmark\Ting\Serializer\Ip'
     ];
 
 

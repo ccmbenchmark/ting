@@ -145,6 +145,15 @@ class ConnectionPool implements ConnectionPoolInterface
      */
     protected function connect($config, $driverClass, $database, $name, $charset = null)
     {
+
+        if (isset($config['user']) === false) {
+            $config['user'] = null;
+        }
+
+        if (isset($config['password']) === false) {
+            $config['password'] = null;
+        }
+
         $connectionKey = $driverClass::getConnectionKey($config, $database);
 
         if (isset($this->connections[$connectionKey]) === false) {

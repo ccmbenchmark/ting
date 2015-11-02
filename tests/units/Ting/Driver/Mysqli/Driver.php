@@ -541,6 +541,22 @@ class Driver extends atoum
         ;
     }
 
+    public function testQuoteValueShouldQuoteValue()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_escape_string = function ($value) {
+            return $value;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->string($driver->quoteValue('Bouh'))
+                ->isIdenticalTo('"Bouh"')
+            ->integer($driver->quoteValue(3))
+                ->isIdenticalTo(3)
+        ;
+    }
+
     public function testStartTransactionShouldRaiseExceptionIfCalledTwice()
     {
         $mockDriver = new \mock\Fake\Mysqli();
