@@ -29,10 +29,7 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-    // @codingStandardsIgnoreStart
-    const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
-    // @codingStandardsIgnoreEnd
-    
+
     protected $result          = null;
     protected $fields          = array();
     protected $iteratorOffset  = 0;
@@ -53,47 +50,85 @@ class Result implements ResultInterface
      */
     public function setQuery($query)
     {
-        $aliasToTable = array();
-        $fields = array();
+        $aliasToTable = [];
+        $fields = [];
 
-        preg_match_all(
-            '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!\b('
-            . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z0-9_]+)?"?(\s|$)/is',
-            $query,
-            $matches,
-            PREG_SET_ORDER
-        );
-        foreach ($matches as $match) {
-            $match['table'] = strtolower($match['table']);
-            if ($match['alias'] !== '') {
-                $aliasToTable[strtolower($match['alias'])] = $match['table'];
-            } else {
-                $aliasToTable[$match['table']] = $match['table'];
+        $num = pg_num_fields($this->result);
+
+        $columns = [];
+
+        for ($i = 0; $i < $num; $i++) {
+            $columns[] = ['table' => pg_field_table($this->result, $i), 'column' => pg_field_name($this->result, $i)];
+        }
+
+        $tokens = preg_split('/(\W)/', $query, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+
+        $rawQueryColumns = '';
+        $brackets = 0;
+        $startCapture = false;
+
+        foreach ($tokens as $token) {
+            if ($token === '(') {
+                $brackets++;
+            }
+
+            if ($token === ')') {
+                $brackets--;
+            }
+
+            if (strtolower($token) === 'from' && $brackets === 0) {
+                break;
+            }
+
+            if ($startCapture === true) {
+                $rawQueryColumns .= $token;
+            }
+
+            if (strtolower($token) === 'select') {
+                $startCapture = true;
             }
         }
 
-        $tableToAlias = array_flip($aliasToTable);
-        preg_match_all('/select\s+(.+?)(\s+from|$)/is', $query, $matches, PREG_SET_ORDER);
-
-        if ($matches === []) {
+        if ($rawQueryColumns === '') {
             throw new QueryException('Query invalid: can\'t parse columns');
         }
 
-        $queryColumns = $matches[0][1];
-
         // We need a better solution
-        if (preg_match('/(^|\s*)\*(\s*|$)/', $queryColumns) === 1) {
+        if (preg_match('/(^|\s*)\*(\s*|$)/', $rawQueryColumns) === 1) {
             throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
         }
 
         preg_match_all(
-            '/(?:(?:"?(?<table>[a-z0-9_]+)"?\.)?(?<column>[^\s,]+)(?:\s*(?:as)?\s+(?<alias>[a-z0-9_]+))?)/is',
-            $queryColumns,
-            $matches,
+            '/(?J)((?P<column>\(.+\))|(?:(?P<table>[^\.\s]+)\.)?(?P<column>[^\s,]+))(\s+as)?\s*(?P<alias>[^\s,.]+)?/is',
+            $rawQueryColumns,
+            $columnsMatches,
             PREG_SET_ORDER
         );
 
-        foreach ($matches as $match) {
+        foreach ($columnsMatches as $index => $column) {
+            $tableAndColumn = [];
+
+            if ($column['table'] !== '') {
+                $tableAndColumn[] = $column['table'];
+            }
+
+            $tableAndColumn[] = $column['column'];
+
+            if (count($tableAndColumn) === 2) {
+                $regex = $columns[$index]['table'] . '(?:\sas)?\s(?P<alias>' . $tableAndColumn[0] . ')';
+                preg_match('/' . $regex . '/i', $query, $matches);
+
+                if (isset($matches['alias']) === true) {
+                    $aliasToTable[strtolower($matches['alias'])] = strtolower($columns[$index]['table']);
+                } else {
+                    $aliasToTable[strtolower($tableAndColumn[0])] = strtolower($tableAndColumn[0]);
+                }
+            }
+        }
+
+        $tableToAlias = array_flip($aliasToTable);
+
+        foreach ($columnsMatches as $match) {
             $stdClass = new \stdClass();
             $stdClass->orgname = $match['column'];
 
