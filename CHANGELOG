@@ -1,3 +1,6 @@
+X.X.X (XXXX-XX-XX) :
+    * Fix parsing PostgreSQL query with subquery
+
 2.5.0 (2015-10-02) :
     * Adding Ip serializer
 
