@@ -1,3 +1,6 @@
+X.X.X (XXXX-XX-XX) :
+    * Lazy iteration for Hydrator without aggregation mode
+
 2.5.0 (2015-10-02) :
     * Adding Ip serializer
 

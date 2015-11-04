@@ -26,6 +26,20 @@ namespace CCMBenchmark\Ting\Driver;
 
 interface ResultInterface extends \Iterator
 {
+    /**
+     * @param int $offset
+     * @return bool
+     */
     public function dataSeek($offset);
+
+    /**
+     * @param $data
+     * @return array
+     */
     public function format($data);
+
+    /**
+     * @return int
+     */
+    public function getNumRows();
 }

@@ -65,7 +65,14 @@ class HydratorArray implements HydratorInterface
             $result[$column['name']] = $column['value'];
         }
 
-        $collection->add($result);
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAggregator()
+    {
+        return false;
     }
 }

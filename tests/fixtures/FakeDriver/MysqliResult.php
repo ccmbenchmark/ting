@@ -87,4 +87,9 @@ class MysqliResult implements \Iterator
     {
         return isset($this->data[$this->offset]);
     }
+
+    public function getNumRows()
+    {
+        return count($this->data);
+    }
 }

@@ -40,7 +40,14 @@ class HydratorSingleObject extends Hydrator
     {
         $result = parent::hydrateColumns($columns);
         $result = reset($result);
-        $collection->add($result);
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAggregator()
+    {
+        return false;
     }
 }

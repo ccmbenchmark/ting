@@ -135,8 +135,10 @@ class Query extends atoum
         $this->calling($mockMemcached)->get    = null;
         $this->calling($mockMemcached)->store  = true;
         $this->calling($mockConnection)->slave = $mockDriver;
-        $this->calling($mockDriver)->execute   = true;
-
+        $this->calling($mockDriver)->execute = function ($sql, array $params, $collection) {
+            $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult(new \ArrayIterator()));
+            return $collection;
+        };
         $collection = new Collection();
 
         $this

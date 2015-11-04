@@ -61,7 +61,6 @@ class Hydrator implements HydratorInterface
     public function hydrate(array $columns, CollectionInterface $collection)
     {
         $result = $this->hydrateColumns($columns);
-        $collection->add($result);
         return $result;
     }
 
@@ -150,5 +149,13 @@ class Hydrator implements HydratorInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAggregator()
+    {
+        return false;
     }
 }
