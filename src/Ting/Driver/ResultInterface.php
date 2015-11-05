@@ -33,6 +33,13 @@ interface ResultInterface extends \Iterator
      */
     public function __construct($connectionName, $database, $result);
 
+    /**
+     * @return string|null
+     */
     public function getConnectionName();
+
+    /**
+     * @return string|null
+     */
     public function getDatabase();
 }
