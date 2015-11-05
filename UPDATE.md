@@ -6,7 +6,10 @@ This file will track changes to public interfaces between 2 major versions.
 * ResultInterface:
     * Removed method ```dataSeek```
     * Removed method ```format```
-    * Added Constructor
+    * Removed Constructor
+    * Added setter ```setConnectionName```
+    * Added setter ```setDatabase```
+    * Added setter ```setResult```
     * Added accessor ```getConnectionName```
     * Added accessor ```getDatabase```
 * StatementInterface :
