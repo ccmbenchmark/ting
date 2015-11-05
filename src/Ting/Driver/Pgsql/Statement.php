@@ -136,7 +136,10 @@ class Statement implements StatementInterface
      */
     public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
     {
-        $result = new Result($this->connectionName, $this->database, $resultResource);
+        $result = new Result();
+        $result->setConnectionName($this->connectionName);
+        $result->setDatabase($this->database);
+        $result->setResult($resultResource);
         $result->setQuery($this->query);
 
         $collection->set($result);

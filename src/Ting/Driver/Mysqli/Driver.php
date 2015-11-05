@@ -290,14 +290,18 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param \mysqli_result|Object $result
+     * @param \mysqli_result|Object $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
      * @throws QueryException
      */
-    protected function setCollectionWithResult($result, CollectionInterface $collection)
+    protected function setCollectionWithResult($resultData, CollectionInterface $collection)
     {
-        $collection->set(new Result($this->name, $this->currentDatabase, $result));
+        $result = new Result();
+        $result->setConnectionName($this->name);
+        $result->setDatabase($this->currentDatabase);
+        $result->setResult($resultData);
+        $collection->set($result);
 
         return $collection;
     }

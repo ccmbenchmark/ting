@@ -41,15 +41,33 @@ class Result implements ResultInterface
     protected $iteratorCurrent = null;
 
     /**
-     * @param string    $connectionName
-     * @param string    $database
-     * @param resource $result
+     * @param string $connectionName
+     * @return $this
      */
-    public function __construct($connectionName, $database, $result)
+    public function setConnectionName($connectionName)
     {
-        $this->connectionName = $connectionName;
-        $this->database       = $database;
-        $this->result         = $result;
+        $this->connectionName = (string) $connectionName;
+        return $this;
+    }
+
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        $this->database = (string) $database;
+        return $this;
+    }
+
+    /**
+     * @param object $result
+     * @return $this
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
+        return $this;
     }
 
     /**

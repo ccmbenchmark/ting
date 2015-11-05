@@ -38,15 +38,34 @@ class Result implements ResultInterface
 
     /**
      * @param string $connectionName
-     * @param string $database
-     * @param object $result
+     * @return $this
      */
-    public function __construct($connectionName, $database, $result)
+    public function setConnectionName($connectionName)
     {
-        $this->connectionName = $connectionName;
-        $this->database       = $database;
-        $this->result         = $result;
-        $this->fields         = $this->result->fetch_fields();
+        $this->connectionName = (string) $connectionName;
+        return $this;
+    }
+
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        $this->database = (string) $database;
+        return $this;
+
+    }
+
+    /**
+     * @param object $result
+     * @return $this
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
+        $this->fields = $this->result->fetch_fields();
+        return $this;
     }
 
     /**
@@ -72,7 +91,9 @@ class Result implements ResultInterface
      */
     protected function dataSeek($offset)
     {
-        return $this->result->data_seek($offset);
+        if ($this->result !== null) {
+            return $this->result->data_seek($offset);
+        }
     }
 
     /**
@@ -151,9 +172,11 @@ class Result implements ResultInterface
      */
     public function rewind()
     {
-        $this->result->data_seek(0);
-        $this->iteratorOffset = -1;
-        $this->next();
+        if ($this->result !== null) {
+            $this->result->data_seek(0);
+            $this->iteratorOffset = -1;
+            $this->next();
+        }
     }
 
     /**
@@ -179,8 +202,11 @@ class Result implements ResultInterface
      */
     public function next()
     {
-        $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
-        $this->iteratorOffset++;
+        if ($this->result !== null) {
+            $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
+
+            $this->iteratorOffset++;
+        }
     }
 
     /**

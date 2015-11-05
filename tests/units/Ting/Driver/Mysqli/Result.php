@@ -47,11 +47,10 @@ class Result extends atoum
         };
 
         $this
-            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result(
-                'connectionName',
-                'database',
-                $mockMysqliResult
-            ))
+            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult($mockMysqliResult))
             ->then($result->rewind())
             ->mock($result)
                 ->call('next')->once()

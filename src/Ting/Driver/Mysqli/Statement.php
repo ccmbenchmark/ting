@@ -141,13 +141,17 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param \mysqli_result $result
+     * @param \mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
-    public function setCollectionWithResult($result, CollectionInterface $collection)
+    public function setCollectionWithResult($resultData, CollectionInterface $collection)
     {
-        $collection->set(new Result($this->connectionName, $this->database, $result));
+        $result = new Result();
+        $result->setConnectionName($this->connectionName);
+        $result->setDatabase($this->database);
+        $result->setResult($resultData);
+        $collection->set($result);
         return true;
     }
 

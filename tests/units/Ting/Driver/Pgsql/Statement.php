@@ -95,9 +95,10 @@ class Statement extends atoum
     public function testSetCollectionWithResult()
     {
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $result     = new \CCMBenchmark\Ting\Driver\Pgsql\Result(
-            'connectionName',
-            'database',
+        $result     = new \CCMBenchmark\Ting\Driver\Pgsql\Result();
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
+        $result->setResult([
             [
                 'prenom' => 'Sylvain',
                 'nom'    => 'Robez-Masson'
@@ -106,7 +107,7 @@ class Statement extends atoum
                 'prenom' => 'Xavier',
                 'nom'    => 'Leune'
             ]
-        );
+        ]);
         $this->function->pg_query = true;
 
         $this->calling($collection)->set = function ($result) use (&$outerResult) {
@@ -115,8 +116,11 @@ class Statement extends atoum
 
         $this->function->pg_field_table = 'Bouh';
 
-        $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result('connectionName', 'database', $result);
-        $resultOk->setQuery('SELECT prenom, nom FROM Bouh');
+        $resultReference = new \CCMBenchmark\Ting\Driver\Pgsql\Result();
+        $resultReference->setConnectionName('connectionName');
+        $resultReference->setDatabase('database');
+        $resultReference->setResult($result);
+        $resultReference->setQuery('SELECT prenom, nom FROM Bouh');
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
@@ -131,7 +135,7 @@ class Statement extends atoum
                 ->call('set')
                     ->once()
             ->object($outerResult)
-                ->isCloneOf($resultOk);
+                ->isCloneOf($resultReference);
     }
 
     public function testExecuteShouldRaiseQueryException()

@@ -29,27 +29,63 @@ use CCMBenchmark\Ting\Exception;
 class CacheResult implements ResultInterface
 {
 
-    protected $connectionName;
-    protected $database;
-    protected $result;
+    /**
+     * @var string|null
+     */
+    protected $connectionName = null;
 
     /**
-     * @param string    $connectionName
-     * @param string    $database
-     * @param \Iterator $result
+     * @var string|null
      */
-    public function __construct($connectionName, $database, $result)
+    protected $database = null;
+
+    /**
+     * @var object|null
+     */
+    protected $result = null;
+
+
+    /**
+     * @param string $connectionName
+     * @return $this
+     */
+    public function setConnectionName($connectionName)
     {
-        $this->connectionName = $connectionName;
-        $this->database       = $database;
-        $this->result         = $result;
+        $this->connectionName = (string) $connectionName;
+        return $this;
     }
 
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        $this->database = (string) $database;
+        return $this;
+    }
+
+    /**
+     * @param object $result
+     * @return $this
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getConnectionName()
     {
         return $this->connectionName;
     }
 
+    /**
+     * @return string|null
+     */
     public function getDatabase()
     {
         return $this->database;
@@ -60,7 +96,9 @@ class CacheResult implements ResultInterface
      */
     public function rewind()
     {
-        $this->result->rewind();
+        if ($this->result !== null) {
+            $this->result->rewind();
+        }
     }
 
     /**
@@ -69,6 +107,10 @@ class CacheResult implements ResultInterface
      */
     public function current()
     {
+        if ($this->result === null) {
+            return null;
+        }
+
         return $this->result->current();
     }
 
@@ -78,6 +120,10 @@ class CacheResult implements ResultInterface
      */
     public function key()
     {
+        if ($this->result === null) {
+            return null;
+        }
+
         return $this->result->key();
     }
 
@@ -86,7 +132,9 @@ class CacheResult implements ResultInterface
      */
     public function next()
     {
-        $this->result->next();
+        if ($this->result !== null) {
+            $this->result->next();
+        }
     }
 
     /**
@@ -95,6 +143,10 @@ class CacheResult implements ResultInterface
      */
     public function valid()
     {
+        if ($this->result === null) {
+            return false;
+        }
+
         return $this->result->valid();
     }
 }

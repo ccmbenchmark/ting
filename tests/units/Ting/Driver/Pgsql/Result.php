@@ -31,7 +31,10 @@ class Result extends atoum
     public function testSetQueryShouldRaiseExceptionOnColumnAsterisk()
     {
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('connectionName', 'database', 'result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult('result resource'))
             ->exception(function () use ($result) {
                 $result->setQuery('select t.* from table as t');
             })
@@ -41,7 +44,10 @@ class Result extends atoum
     public function testSetQueryShouldRaiseExceptionParseColumns()
     {
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('connectionName', 'database', 'result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult('result resource'))
             ->exception(function () use ($result) {
                 $result->setQuery('selectcolumn from table');
             })
@@ -54,11 +60,10 @@ class Result extends atoum
         $this->function->pg_fetch_array = [];
 
         $this
-            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Pgsql\Result(
-                'connectionName',
-                'database',
-                'result resource'
-            ))
+            ->if($result = new \mock\CCMBenchmark\Ting\Driver\Pgsql\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult('result resource'))
             ->then($result->rewind())
             ->mock($result)
                 ->call('next')->once()
@@ -82,7 +87,10 @@ class Result extends atoum
         $this->function->pg_fetch_array = false;
 
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('connectionName', 'database', 'result resource'))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult('result resource'))
             ->then($result->rewind())
             ->then($result->next())
             ->boolean($result->valid())

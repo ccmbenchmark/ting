@@ -223,7 +223,10 @@ class Driver implements DriverInterface
 
     protected function setCollectionWithResult($sql, CollectionInterface $collection)
     {
-        $result = new Result($this->name, $this->database, $this->result);
+        $result = new Result();
+        $result->setConnectionName($this->name);
+        $result->setDatabase($this->database);
+        $result->setResult($this->result);
         $result->setQuery($sql);
         $collection->set($result);
 

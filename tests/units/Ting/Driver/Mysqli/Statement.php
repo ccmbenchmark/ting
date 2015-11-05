@@ -131,6 +131,11 @@ class Statement extends atoum
             $outerResult = $result;
         };
 
+        $resultReference = new \CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $resultReference->setConnectionName('connectionName');
+        $resultReference->setDatabase('database');
+        $resultReference->setResult($result);
+
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
                 $driverStatement,
@@ -143,7 +148,7 @@ class Statement extends atoum
                 ->call('set')
                     ->once()
             ->object($outerResult)
-                ->isCloneOf(new \CCMBenchmark\Ting\Driver\Mysqli\Result('connectionName', 'database', $result));
+                ->isCloneOf($resultReference);
     }
 
     public function testExecuteShouldRaiseQueryExceptionOnError()
