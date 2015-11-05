@@ -114,7 +114,7 @@ class Result implements ResultInterface
             $value = $data[$i];
 
             if (gettype($value) === 'string') {
-                switch ($rawField->type){
+                switch ($rawField->type) {
                     case MYSQLI_TYPE_DECIMAL:
                         // Decimal
                         // Next lines are all mapped to float

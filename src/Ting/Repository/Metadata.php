@@ -178,8 +178,7 @@ class Metadata
      */
     public function ifTableKnown($connectionName, $database, $table, \Closure $callback)
     {
-        if (
-            $this->table === $table
+        if ($this->table === $table
             && $this->connectionName === $connectionName && $this->databaseName === $database
         ) {
             $callback($this);

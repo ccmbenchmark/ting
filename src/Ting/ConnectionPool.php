@@ -112,9 +112,7 @@ class ConnectionPool implements ConnectionPoolInterface
             return $this->master($name, $database);
         }
 
-        if (
-            !isset($this->connectionSlaves[$name])
-        ) {
+        if (isset($this->connectionSlaves[$name]) === false) {
             /**
              * It's a slave connection and we do not have choosen a slave. We randomly take one & store datas.
              * In this way we avoid opening one connection per slave because of round-robin.
@@ -188,7 +186,7 @@ class ConnectionPool implements ConnectionPoolInterface
      */
     public function closeAll()
     {
-        foreach($this->connections as $connectionKey => $connection) {
+        foreach ($this->connections as $connectionKey => $connection) {
             $connection->close();
             unset($this->connections[$connectionKey]);
         }

@@ -104,8 +104,7 @@ class Hydrator implements HydratorInterface
             }
 
             // We have a metadata defined for the column
-            if (
-                isset($metadataList[$column['table']]) === true &&
+            if (isset($metadataList[$column['table']]) === true &&
                 $metadataList[$column['table']]->hasColumn($column['orgName']) === true
             ) {
                 // Column value is null or entity is still not marked as valid
