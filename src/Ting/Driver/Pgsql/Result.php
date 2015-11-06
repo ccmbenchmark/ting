@@ -30,6 +30,12 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class Result implements ResultInterface
 {
 
+    const PARSE_RAW_COLUMN =
+        '/^\s*(?:(?P<table>[0-9a-z_]+)\.)?(?P<column>[0-9a-z_]+)(?:\s+as\s+(?P<alias>[0-9a-z_]+))?\s*$/i';
+
+    const PARSE_DYNAMIC_COLUMN =
+        '/^\s*(?P<column>.+?(?=as|$))\s*(?:as)?\s*(?P<alias>.+)?$/i';
+
     protected $result          = null;
     protected $fields          = array();
     protected $iteratorOffset  = 0;
@@ -50,7 +56,6 @@ class Result implements ResultInterface
      */
     public function setQuery($query)
     {
-        $aliasToTable = [];
         $fields = [];
 
         $num = pg_num_fields($this->result);
@@ -86,44 +91,46 @@ class Result implements ResultInterface
                 $brackets--;
             }
 
-            if (strtolower($token) === 'from' && $brackets === 0) {
-                break;
-            }
-
             if ($startCapture === true) {
                 if ($brackets === 0) {
-                    if ($token === ',') {
+                    if ($token === ',' || strtolower($token) === 'from') {
                         $scope = 'column';
 
                         /**
                          * Match column format table.column (as alias)
                          */
                         preg_match(
-                            '/^\s*(?P<table>[0-9a-z_]+)\.(?P<column>[0-9a-z_]+)\s*(?:as(?P<alias>[0-9a-z_]+))?$/i',
+                            self::PARSE_RAW_COLUMN,
                             $column,
                             $matches
                         );
 
                         if ($matches !== []) {
-                            $columnComposant = [
-                                'table' => trim($matches['table']),
+                            $columnComponent = [
+                                'complex' => false,
                                 'column' => trim($matches['column'])
                             ];
+
+                            if (isset($matches['table']) === true) {
+                                $columnComponent['table'] = trim($matches['table']);
+                            }
+
                             if (isset($matches['alias']) === true) {
-                                $columnComposant['alias'] = trim($matches['alias']);
+                                $columnComponent['alias'] = trim($matches['alias']);
                             }
                         } else { // Match complex column, ie : max(table.column), table.column || table.id, ...
-                            preg_match('/^\s*(?P<column>.+?(?=as|$))\s*(?:as)?\s*(?P<alias>.+)?$/i', $column, $matches);
-                            $columnComposant = [
+                            preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
+                            $columnComponent = [
+                                'complex' => true,
                                 'table' => '',
                                 'column' => trim($matches['column'])
                             ];
                             if (isset($matches['alias']) === true) {
-                                $columnComposant['alias'] = trim($matches['alias']);
+                                $columnComponent['alias'] = trim($matches['alias']);
                             }
                         }
 
-                        $columnsMatches[] = $columnComposant;
+                        $columnsMatches[] = $columnComponent;
                         $column = '';
                         continue;
                     }
@@ -132,6 +139,14 @@ class Result implements ResultInterface
                 if ($scope === 'column' || $scope === 'string') {
                     $column .= $token;
                 }
+
+                if ($scope === 'column' && $token === '*') {
+                    throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
+                }
+            }
+
+            if (strtolower($token) === 'from' && $brackets === 0) {
+                break;
             }
 
             if (strtolower($token) === 'select') {
@@ -143,17 +158,6 @@ class Result implements ResultInterface
             throw new QueryException('Query invalid: can\'t parse columns');
         }
 
-        // We need a better solution
-        /*
-        if (preg_match('/(^|\s*)\*(\s*|$)/', $rawQueryColumns) === 1) {
-            throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
-        }
-
-        '/(?J)(?:(?P<table>[^\.\s]+)\.)?(?P<column>[^\s,]+))(\s+as)?\s*(?P<alias>[^\s,.]+)?/is',
-
-*/
-
-        var_dump($columnsMatches);
         foreach ($columnsMatches as $match) {
             $stdClass = new \stdClass();
             $stdClass->orgname = $match['column'];
@@ -164,7 +168,12 @@ class Result implements ResultInterface
                 $stdClass->name = $stdClass->orgname;
             }
 
-            $stdClass->orgtable = strtolower(pg_field_table($this->result, count($fields)));
+            if ($match['complex'] === false) {
+                $stdClass->orgtable = strtolower(pg_field_table($this->result, count($fields)));
+            } else {
+                $stdClass->orgtable = '';
+            }
+
             if ($match['table'] !== '') {
                 $stdClass->table = strtolower($match['table']);
             } else {
