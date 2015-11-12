@@ -1,6 +1,7 @@
 # Ting - PHP Datamapper
 
-Ting is a simple DataMapper implementation for PHP. It runs with MySQL and PostgreSQL.
+Ting is a simple DataMapper implementation for PHP. It runs with MySQL and PostgreSQL and is
+under Apache-2.0 licence.
 
 It has some distinctive features and design choices :
 
