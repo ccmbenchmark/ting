@@ -24,7 +24,7 @@ or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
 ## Simple query
 
     <?php
-    # This query supports the same syntax as prepared statements, but it'll we a regular query
+    # This query supports the same syntax as prepared statements, but it'll be a regular query
     $query = $cityRepository->getQuery(
         "select cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
             co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
@@ -43,9 +43,9 @@ or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
 ## Prepared Statement
 
     <?php
-    ## Simple query :
+    // Simple query :
     $query = $cityRepository->getQuery('/*SQL Statement*/');"
-    Prepared statement :
+    // Prepared statement :
     $query = $cityRepository->getPreparedQuery('/*SQL Statement*/');"
 
 ## More :
