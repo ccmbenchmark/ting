@@ -44,9 +44,9 @@ or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
 
     <?php
     // Simple query :
-    $query = $cityRepository->getQuery('/*SQL Statement*/');"
+    $query = $cityRepository->getQuery('SQL Statement');"
     // Prepared statement :
-    $query = $cityRepository->getPreparedQuery('/*SQL Statement*/');"
+    $query = $cityRepository->getPreparedQuery('SQL Statement');"
 
 ## More :
 * [Documentation](http://tech.ccmbg.com/ting/doc/en/index.html)
