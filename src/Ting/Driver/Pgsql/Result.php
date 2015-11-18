@@ -30,11 +30,9 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class Result implements ResultInterface
 {
 
-    const PARSE_RAW_COLUMN =
-        '/^\s*(?:(?P<table>[0-9a-z_]+)\.)?(?P<column>[0-9a-z_]+)(?:\s+as\s+(?P<alias>[0-9a-z_]+))?\s*$/i';
-
-    const PARSE_DYNAMIC_COLUMN =
-        '/^\s*(?P<column>.+?(?=as|$))\s*(?:as)?\s*(?P<alias>.+)?$/i';
+    const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
+    const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
+    const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/';
 
     protected $result          = null;
     protected $fields          = array();
@@ -57,16 +55,26 @@ class Result implements ResultInterface
     public function setQuery($query)
     {
         $fields = [];
+        $tableToAlias = [];
 
-        $num = pg_num_fields($this->result);
+        preg_match_all(
+            '/(?:join|from)\s+"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
+            . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z_][a-z0-9_$]*)?"?(\s|$)/is',
+            $query,
+            $matches,
+            PREG_SET_ORDER
+        );
 
-        $columns = [];
-
-        for ($i = 0; $i < $num; $i++) {
-            $columns[] = ['table' => pg_field_table($this->result, $i), 'column' => pg_field_name($this->result, $i)];
+        foreach ($matches as $match) {
+            $match['table'] = strtolower($match['table']);
+            if ($match['alias'] !== '') {
+                $tableToAlias[$match['table']] = strtolower($match['alias']);
+            } else {
+                $tableToAlias[$match['table']] = $match['table'];
+            }
         }
 
-        $tokens = preg_split('/(\W)/', $query, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+        $tokens = preg_split('/(\W)/', strtolower($query), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 
         $startCapture = false;
         $columnsMatches = [];
@@ -93,7 +101,7 @@ class Result implements ResultInterface
 
             if ($startCapture === true) {
                 if ($brackets === 0) {
-                    if ($token === ',' || strtolower($token) === 'from') {
+                    if ($token === ',' || $token === 'from') {
                         $scope = 'column';
 
                         /**
@@ -108,25 +116,42 @@ class Result implements ResultInterface
                         if ($matches !== []) {
                             $columnComponent = [
                                 'complex' => false,
-                                'column' => trim($matches['column'])
+                                'column' => $matches['column']
                             ];
 
                             if (isset($matches['table']) === true) {
-                                $columnComponent['table'] = trim($matches['table']);
+                                $columnComponent['table'] = $matches['table'];
                             }
 
                             if (isset($matches['alias']) === true) {
-                                $columnComponent['alias'] = trim($matches['alias']);
+                                $columnComponent['alias'] = $matches['alias'];
                             }
-                        } else { // Match complex column, ie : max(table.column), table.column || table.id, ...
+                        } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
+                            $column = ltrim($column);
                             preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
+
+                            $cut = 0;
+
+                            if (isset($matches['prefix']) === true) {
+                                $cut += strlen($matches['prefix']);
+                            }
+                            if (isset($matches['alias']) === true) {
+                                $cut += strlen($matches['alias']);
+                            }
+
+                            if ($cut > 0) {
+                                $matches['column'] = substr($column, 0, - $cut);
+                            } else {
+                                $matches['column'] = $column;
+                            }
+
                             $columnComponent = [
                                 'complex' => true,
                                 'table' => '',
-                                'column' => trim($matches['column'])
+                                'column' => $matches['column']
                             ];
                             if (isset($matches['alias']) === true) {
-                                $columnComponent['alias'] = trim($matches['alias']);
+                                $columnComponent['alias'] = $matches['alias'];
                             }
                         }
 
@@ -145,11 +170,11 @@ class Result implements ResultInterface
                 }
             }
 
-            if (strtolower($token) === 'from' && $brackets === 0) {
+            if ($token === 'from' && $brackets === 0) {
                 break;
             }
 
-            if (strtolower($token) === 'select') {
+            if ($token === 'select') {
                 $startCapture = true;
             }
         }
@@ -176,6 +201,8 @@ class Result implements ResultInterface
 
             if ($match['table'] !== '') {
                 $stdClass->table = strtolower($match['table']);
+            } elseif ($match['complex'] === false) {
+                $stdClass->table = $tableToAlias[$stdClass->orgtable];
             } else {
                 $stdClass->table = $stdClass->orgtable;
             }
@@ -184,6 +211,7 @@ class Result implements ResultInterface
         }
 
         $this->fields = $fields;
+
     }
 
     /**
