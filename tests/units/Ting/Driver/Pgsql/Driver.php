@@ -451,7 +451,9 @@ class Driver extends atoum
         $this->function->pg_query_params = true;
         $this->function->pg_fetch_array  = 'data';
         $this->function->pg_result_seek  = true;
+        $this->function->pg_num_fields   = 1;
         $this->function->pg_field_table  = 'myTable';
+        $this->function->pg_field_name   = '1';
 
         $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->calling($mockCollection)->set = true;
