@@ -1,4 +1,4 @@
-X.X.X (XXXX-XX-XX) :
+2.5.1 (2015-11-18) :
     * Fix parsing PostgreSQL query with subquery
 
 2.5.0 (2015-10-02) :
