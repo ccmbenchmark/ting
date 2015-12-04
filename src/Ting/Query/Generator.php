@@ -248,7 +248,7 @@ class Generator
         );
     }
 
-    /**
+/**
      * @param $fields
      * @param $values
      * @return array
@@ -259,12 +259,30 @@ class Generator
         $i = 0;
 
         foreach ($values as $field => $value) {
-            $conditions[] = $fields[$i] . ' = :#' . $field;
-            $values['#' . $field] = $value;
-            unset($values[$field]);
-            $i++;
-        }
 
+            if(is_array($value) === true){     
+                
+                $j = 0;
+                $condition =  $fields[$i] . ' IN (';
+                foreach($value as $v){
+                    $j++;
+                    $condition .= ':'.$field.'__'.$j.',';
+                    
+                    $values[$field.'__'.$j] = $v;
+                }
+                $condition = rtrim($condition,',');
+                $condition .= ')';
+
+                
+                $conditions[] = $condition;
+                unset($values[$field]);
+            }else{
+                $conditions[] = $fields[$i] . ' = :#' . $field;
+                $values['#' . $field] = $value;
+                unset($values[$field]);
+            }
+            $i++;
+        }        
         return [$conditions, $values];
     }
 }
