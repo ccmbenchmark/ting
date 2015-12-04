@@ -260,7 +260,7 @@ class Generator
 
         foreach ($values as $field => $value) {
 
-            if(is_array($value) === true){     
+            if(is_array($value) === true){
                 // handle array values...
                 $j = 0;
                 $condition =  $fields[$i] . ' IN (';
@@ -275,12 +275,11 @@ class Generator
 
                 
                 $conditions[] = $condition;
-                unset($values[$field]);
             }else{
                 $conditions[] = $fields[$i] . ' = :#' . $field;
                 $values['#' . $field] = $value;
-                unset($values[$field]);
             }
+            unset($values[$field]);
             $i++;
         }        
         return [$conditions, $values];
