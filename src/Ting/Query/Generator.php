@@ -248,7 +248,7 @@ class Generator
         );
     }
 
-/**
+    /**
      * @param $fields
      * @param $values
      * @return array
