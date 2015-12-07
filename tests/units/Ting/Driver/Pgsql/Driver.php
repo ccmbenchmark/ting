@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
 class Driver extends atoum
@@ -545,6 +544,7 @@ class Driver extends atoum
     public function testPrepareCalledTwiceShouldReturnTheSameObject()
     {
         $this->function->pg_prepare = true;
+        $this->function->pg_query = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
