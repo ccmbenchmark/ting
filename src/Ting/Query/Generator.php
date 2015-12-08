@@ -259,8 +259,8 @@ class Generator
 
     /**
      * @param $fields
-     * @param $values
-     *
+     * @param $values each values can be a value or an array
+     * 
      * @return array
      */
     protected function generateConditionAndParams($fields, $values)
