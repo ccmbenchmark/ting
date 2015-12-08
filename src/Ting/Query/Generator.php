@@ -231,7 +231,7 @@ class Generator
 
         list($conditions, $params) = $this->generateConditionAndParams($primaryFields, $primariesKeyValue);
 
-        $sql .= ' WHERE '.implode(' AND ', $conditions);
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
         $query->setParams($params);
