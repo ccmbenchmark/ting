@@ -1,3 +1,6 @@
+X.X.X (XXXX-XX-XX) :
+    * Hydrator setting entity property now properly use metadata to cast value
+
 2.5.1 (2015-11-18) :
     * Fix parsing PostgreSQL query with subquery
 

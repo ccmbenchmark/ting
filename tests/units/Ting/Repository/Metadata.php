@@ -187,6 +187,94 @@ class Metadata extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
+    public function testSetEntityPropertyShouldKeepNull()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField(array(
+            'fieldName'  => 'old',
+            'columnName' => 'boo_old',
+            'type'       => 'int'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->setOld = function ($old) {
+            $this->old = $old;
+        };
+
+        $this
+            ->if($metadata->setEntityProperty($bouh, 'boo_old', null))
+            ->variable($bouh->old)
+                ->isIdenticalTo(null);
+    }
+
+    public function testSetEntityPropertyShouldCastToInt()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField(array(
+            'fieldName'  => 'old',
+            'columnName' => 'boo_old',
+            'type'       => 'int'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->setOld = function ($old) {
+            $this->old = $old;
+        };
+
+        $this
+            ->if($metadata->setEntityProperty($bouh, 'boo_old', '32'))
+            ->integer($bouh->old)
+                ->isIdenticalTo(32);
+    }
+
+    public function testSetEntityPropertyShouldCastToDouble()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField(array(
+            'fieldName'  => 'old',
+            'columnName' => 'boo_old',
+            'type'       => 'double'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->setOld = function ($old) {
+            $this->old = $old;
+        };
+
+        $this
+            ->if($metadata->setEntityProperty($bouh, 'boo_old', '32.3'))
+            ->float($bouh->old)
+                ->isIdenticalTo(32.3);
+    }
+
+    public function testSetEntityPropertyShouldCastToBool()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField(array(
+            'fieldName'  => 'swag',
+            'columnName' => 'boo_swag',
+            'type'       => 'bool'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->setSwag = function ($isSwag) {
+            $this->swag = $isSwag;
+        };
+
+        $this
+            ->if($metadata->setEntityProperty($bouh, 'boo_swag', '1'))
+            ->variable($bouh->swag)
+                ->isIdenticalTo(true);
+    }
+
     public function testSetEntityPropertyShouldUnserializeData()
     {
         $services = new \CCMBenchmark\Ting\Services();
