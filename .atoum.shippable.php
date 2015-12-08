@@ -33,11 +33,11 @@ $runner->addReport($xunit);
 /*
  * Xunit writer
  */
-$writer = new atoum\writers\file('shippable/codecoverage/atoum.xunit.xml');
+$writer = new atoum\writers\file('shippable/testresults/atoum.xunit.xml');
 $xunit->addWriter($writer);
 
 $clover = new atoum\reports\asynchronous\clover();
 $runner->addReport($clover);
 
-$cloverWriter = new atoum\writers\file('shippable/testresults/atoum.clover.xml');
+$cloverWriter = new atoum\writers\file('shippable/codecoverage/atoum.clover.xml');
 $clover->addWriter($cloverWriter);
