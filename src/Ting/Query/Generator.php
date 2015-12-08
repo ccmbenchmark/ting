@@ -200,7 +200,7 @@ class Generator
     {
         $driver = $this->getDriver(true);
 
-        $sql = 'UPDATE ' . $driver->escapeField($this->tableName).' SET ';
+        $sql = 'UPDATE ' . $driver->escapeField($this->tableName) . ' SET ';
         $set = [];
         foreach ($values as $column => $value) {
             $set[] = $driver->escapeField($column) . ' = :' . $column;
