@@ -276,20 +276,20 @@ class Generator
 
                 // handle array values...
                 $j = 0;
-                $condition = $fields[$i].' IN (';
+                $condition = $fields[$i] . ' IN (';
                 foreach ($value as $v) {
                     $j++;
-                    $condition .= ':' . $field.'__' . $j . ',';
+                    $condition .= ':' . $field . '__' . $j . ',';
 
-                    $values[$field.'__'.$j] = $v;
+                    $values[$field.'__' . $j] = $v;
                 }
                 $condition = rtrim($condition, ',');
                 $condition .= ')';
 
                 $conditions[] = $condition;
             } else {
-                $conditions[] = $fields[$i].' = :#'.$field;
-                $values['#'.$field] = $value;
+                $conditions[] = $fields[$i] . ' = :#' . $field;
+                $values['#' . $field] = $value;
             }
             unset($values[$field]);
             $i++;
