@@ -63,7 +63,7 @@ class Generator
 
     protected function getSelect(array $fields, DriverInterface $driver)
     {
-        return 'SELECT ' . implode(', ', $fields) . ' FROM '.
+        return 'SELECT ' . implode(', ', $fields) . ' FROM ' .
             $driver->escapeField($this->tableName);
     }
 
