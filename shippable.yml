@@ -1,0 +1,19 @@
+language: php
+
+php: 
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+
+services:
+  - memcached
+
+before_script: 
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+script:
+  - composer install
+  - vendor/bin/atoum -bf tests/bootstrap.php -d tests/
