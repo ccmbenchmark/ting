@@ -16,4 +16,4 @@ before_script:
 
 script:
   - composer install
-  - vendor/bin/atoum -bf tests/bootstrap.php -d tests/
+  - vendor/bin/atoum -bf tests/bootstrap.php -d tests/ -c .atoum.shippable.php
