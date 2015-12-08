@@ -261,8 +261,6 @@ class Generator
      * @param array $fields fields names
      * @param array $values each values can be a value or an array
      * 
-     * @throws \LogicException if values contains empty array
-     * 
      * @return array
      */
     protected function generateConditionAndParams($fields, $values)
@@ -272,9 +270,6 @@ class Generator
 
         foreach ($values as $field => $value) {
             if (is_array($value) === true) {
-                if ($value === []) {
-                    throw new \LogicException('Array should not be empty');
-                }
 
                 // handle array values...
                 $j = 0;

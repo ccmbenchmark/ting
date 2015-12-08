@@ -94,29 +94,6 @@ class Generator extends atoum
 
         ;
     }
-
-    
-    public function testGetByCriteriaWithEmptyArrayValueShouldRaiseException()
-    {   
-        $services = new \CCMBenchmark\Ting\Services();
-
-        $this
-            ->if(
-                $generator = new \CCMBenchmark\Ting\Query\Generator(
-                    $this->mockConnection,
-                    $this->mockQueryFactory,
-                    'table',
-                    ['id', 'population']
-                )
-            )
-            ->exception(function() use ($generator, $services) { 
-                $generator->getByCriteria(['name' => []], $services->get('CollectionFactory'), true);
-            })
-            ->isInstanceOf('\LogicException')
-            ;
-    }
-    
-    
     
     public function testGetByCriteriaWithArrayValueShouldReturnAQuery()
     {   
