@@ -261,6 +261,8 @@ class Generator
      * @param array $fields fields names
      * @param array $values each values can be a value or an array
      * 
+     * @throws \LogicException if values contains empty array
+     * 
      * @return array
      */
     protected function generateConditionAndParams($fields, $values)
