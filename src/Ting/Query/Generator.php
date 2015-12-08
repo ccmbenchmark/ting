@@ -133,7 +133,7 @@ class Generator
         $sql = $this->getSelect($fields, $driver);
 
         list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
-        $sql .= ' WHERE '.implode(' AND ', $conditions);
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
         return [$sql, $params];
     }
