@@ -63,7 +63,7 @@ class Generator
 
     protected function getSelect(array $fields, DriverInterface $driver)
     {
-        return 'SELECT '.implode(', ', $fields).' FROM '.
+        return 'SELECT ' . implode(', ', $fields) . ' FROM '.
             $driver->escapeField($this->tableName);
     }
 
@@ -178,8 +178,8 @@ class Generator
         $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($values), $driver);
 
-        $sql = 'INSERT INTO '.$driver->escapeField($this->tableName).' ('
-            .implode($fields, ', ').') VALUES (:'.implode(array_keys($values), ', :').')';
+        $sql = 'INSERT INTO ' . $driver->escapeField($this->tableName) . ' ('
+            . implode($fields, ', ') . ') VALUES (:' . implode(array_keys($values), ', :') . ')';
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
 
@@ -200,10 +200,10 @@ class Generator
     {
         $driver = $this->getDriver(true);
 
-        $sql = 'UPDATE '.$driver->escapeField($this->tableName).' SET ';
+        $sql = 'UPDATE ' . $driver->escapeField($this->tableName).' SET ';
         $set = [];
         foreach ($values as $column => $value) {
-            $set[] = $driver->escapeField($column).' = :'.$column;
+            $set[] = $driver->escapeField($column) . ' = :' . $column;
         }
         $sql .= implode(', ', $set);
 
@@ -213,7 +213,7 @@ class Generator
 
         $params = array_merge($values, $params);
 
-        $sql .= ' WHERE '.implode(' AND ', $conditions);
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
         $query->setParams($params);
@@ -225,7 +225,7 @@ class Generator
     {
         $driver = $this->getDriver(true);
 
-        $sql = 'DELETE FROM '.$driver->escapeField($this->tableName);
+        $sql = 'DELETE FROM ' . $driver->escapeField($this->tableName);
 
         $primaryFields = $this->escapeFields(array_keys($primariesKeyValue), $driver);
 
@@ -278,8 +278,8 @@ class Generator
                 $j = 0;
                 $condition = $fields[$i].' IN (';
                 foreach ($value as $v) {
-                    ++$j;
-                    $condition .= ':'.$field.'__'.$j.',';
+                    $j++;
+                    $condition .= ':' . $field.'__' . $j . ',';
 
                     $values[$field.'__'.$j] = $v;
                 }
@@ -292,7 +292,7 @@ class Generator
                 $values['#'.$field] = $value;
             }
             unset($values[$field]);
-            ++$i;
+            $i++;
         }
 
         return [$conditions, $values];
