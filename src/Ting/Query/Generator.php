@@ -270,8 +270,8 @@ class Generator
 
         foreach ($values as $field => $value) {
             if (is_array($value) === true) {
-                if (count($value) === 0) {
-                    $value = array(-1);
+                if ($value === []) {
+                    throw new \LogicException('Array should not be empty');
                 }
 
                 // handle array values...
