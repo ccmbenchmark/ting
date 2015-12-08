@@ -258,8 +258,8 @@ class Generator
     }
 
     /**
-     * @param $fields
-     * @param $values each values can be a value or an array
+     * @param array $fields fields names
+     * @param array $values each values can be a value or an array
      * 
      * @return array
      */
