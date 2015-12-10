@@ -13,6 +13,11 @@
         "mysql",
         "pgsql"
     ],
+    "support": {
+        "issues": "https://bitbucket.org/ccmbenchmark/ting/issues",
+        "source": "https://bitbucket.org/ccmbenchmark/ting",
+        "docs": "http://tech.ccmbg.com/ting/doc/en/"
+    },
     "type": "library",
     "license": "Apache-2.0",
     "require": {
