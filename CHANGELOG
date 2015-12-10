@@ -1,3 +1,6 @@
+2.6.1 (YYYY-MM-DD) :
+    * Datetime serializer : Allow psql timestamp to be unserialized
+
 2.6.0 (2015-12-10) :
     * Generator can now create query with in criteria
     * Performance improvement : add a pseudo cache over MetadataRepository::findMetadataForTable
