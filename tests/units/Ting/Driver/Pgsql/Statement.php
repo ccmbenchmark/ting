@@ -136,6 +136,7 @@ class Statement extends atoum
     {
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->function->pg_execute = false;
+        $this->function->pg_query = true;
         $this->function->pg_errormessage = 'unknown error';
 
         $this
