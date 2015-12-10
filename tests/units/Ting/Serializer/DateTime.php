@@ -50,6 +50,16 @@ class DateTime extends atoum
         ;
     }
 
+    public function testUnserializeAutoShouldWorkWithCommonFormat()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
+            ->object($serializer->unserialize('2009-10-20 17:43:15', ['unserializeDetectFormat' => true]))
+            ->object($serializer->unserialize('2008-08-04 12:47:54.659698', ['unserializeDetectFormat' => true]))
+            ->object($serializer->unserialize('2008-08-04 12:47', ['unserializeDetectFormat' => true]))
+            ->object($serializer->unserialize('2008-08-04', ['unserializeDetectFormat' => true]));
+    }
+
     public function testSerializeInvalidValueShouldRaiseException()
     {
         $this
