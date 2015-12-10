@@ -212,7 +212,8 @@ class Result extends atoum
             ->then($result->setQuery('
               SELECT firstname, (select old+3 from t_bouh_boo) as old, T_BOUH_BOO.name
               FROM T_BOUH_BOO
-              WHERE firstname in (select firstname from t_bouh_boo)')
+              WHERE firstname in (select firstname from t_bouh_boo)
+              ORDER BY toto, tata')
             )
             ->then($row = $result->format(array('firstname' => 'Sylvain', 'old' => 33, 'name' => 'Robez-Masson')))
             ->string($row[0]['name'])
