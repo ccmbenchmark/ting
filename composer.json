@@ -1,6 +1,18 @@
 {
     "name": "ccmbenchmark/ting",
     "description": "Ting : a lightweight datamapper",
+    "homepage": "http://tech.ccmbg.com/ting/",
+    "keywords": [
+        "datamapper",
+        "database",
+        "mapper",
+        "model",
+        "entity",
+        "unitofwork",
+        "repository",
+        "mysql",
+        "pgsql"
+    ],
     "type": "library",
     "license": "Apache-2.0",
     "require": {
@@ -8,7 +20,8 @@
         "pimple/pimple": "3.0.0"
     },
     "require-dev": {
-        "atoum/atoum": "dev-master"
+        "atoum/atoum": "dev-master",
+        "atoum/stubs": "^2.2"
     },
     "autoload": {
         "psr-4" : {
