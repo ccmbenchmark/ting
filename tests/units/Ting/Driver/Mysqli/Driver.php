@@ -120,6 +120,35 @@ class Driver extends atoum
                     ->exists();
     }
 
+    public function testCloseShouldReturnSelf()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->object($driver->close())
+            ->isIdenticalTo($driver);
+    }
+
+    public function testIfNotConnectedCallbackAfterClosedConnection()
+    {
+        $called = false;
+
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->close())
+            ->then($driver->ifIsNotConnected(function () use (&$called) {
+                $called = true;
+            }))
+            ->boolean($called)
+            ->isTrue();
+    }
+
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Mysqli();
@@ -509,6 +538,22 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->string($driver->escapeField('Bouh'))
                 ->isIdenticalTo('`Bouh`')
+        ;
+    }
+
+    public function testQuoteValueShouldQuoteValue()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_escape_string = function ($value) {
+            return $value;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->string($driver->quoteValue('Bouh'))
+                ->isIdenticalTo('"Bouh"')
+            ->integer($driver->quoteValue(3))
+                ->isIdenticalTo(3)
         ;
     }
 

@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use mageekguy\atoum;
 
 class Driver extends atoum
@@ -53,6 +52,39 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->object($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
                 ->isIdenticalTo($driver);
+    }
+
+    public function testCloseShouldReturnSelf()
+    {
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->object($driver->close())
+            ->isIdenticalTo($driver);
+    }
+
+    public function testIfNotConnectedCallbackAfterClosedConnection()
+    {
+        $called = false;
+
+        $this->function->pg_connect = function ($dsn) {
+            return  true;
+        };
+
+        $this->function->pg_close = function () {
+            return  true;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('database.test'))
+            ->then($driver->close())
+            ->then($driver->ifIsNotConnected(function () use (&$called) {
+                $called = true;
+            }))
+            ->boolean($called)
+            ->isTrue();
     }
 
     public function testSetCharset()
@@ -418,7 +450,9 @@ class Driver extends atoum
         $this->function->pg_query_params = true;
         $this->function->pg_fetch_array  = 'data';
         $this->function->pg_result_seek  = true;
+        $this->function->pg_num_fields   = 1;
         $this->function->pg_field_table  = 'myTable';
+        $this->function->pg_field_name   = '1';
 
         $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->calling($mockCollection)->set = true;
@@ -510,6 +544,7 @@ class Driver extends atoum
     public function testPrepareCalledTwiceShouldReturnTheSameObject()
     {
         $this->function->pg_prepare = true;
+        $this->function->pg_query = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())

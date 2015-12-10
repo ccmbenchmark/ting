@@ -145,6 +145,15 @@ class ConnectionPool implements ConnectionPoolInterface
      */
     protected function connect($config, $driverClass, $database, $name, $charset = null)
     {
+
+        if (isset($config['user']) === false) {
+            $config['user'] = null;
+        }
+
+        if (isset($config['password']) === false) {
+            $config['password'] = null;
+        }
+
         $connectionKey = $driverClass::getConnectionKey($config, $database);
 
         if (isset($this->connections[$connectionKey]) === false) {
@@ -171,5 +180,16 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         return $this->connections[$connectionKey];
+    }
+
+    /**
+     * Close all opened connections
+     */
+    public function closeAll()
+    {
+        foreach($this->connections as $connectionKey => $connection) {
+            $connection->close();
+            unset($this->connections[$connectionKey]);
+        }
     }
 }

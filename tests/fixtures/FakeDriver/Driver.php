@@ -48,6 +48,11 @@ class Driver implements DriverInterface
 
     }
 
+    public function close()
+    {
+
+    }
+
     public function setCharset($charset)
     {
 
@@ -111,7 +116,7 @@ class Driver implements DriverInterface
      */
     public static function getConnectionKey(array $connectionConfig, $database)
     {
-
+        return md5(var_export($connectionConfig, true) . $database);
     }
 
     /**
