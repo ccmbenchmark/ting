@@ -1,4 +1,4 @@
-2.6.0 (2015-xx-xx) :
+2.6.0 (2015-12-10) :
     * Generator can now create query with in criteria
     * Performance improvement : add a pseudo cache over MetadataRepository::findMetadataForTable
 
