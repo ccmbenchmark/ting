@@ -89,6 +89,10 @@ class Result implements ResultInterface
                 } else {
                     $scope = 'string';
                 }
+            } elseif ($token === 'case' && $scope === 'column') {
+                $scope = 'condition';
+            } elseif ($token === 'end' && $scope === 'condition') {
+                $scope = 'column';
             }
 
             if ($token === '(' && $scope !== 'string') {

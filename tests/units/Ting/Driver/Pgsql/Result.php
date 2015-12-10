@@ -55,6 +55,38 @@ class Result extends atoum
                 ->hasMessage('Query invalid: usage of asterisk in column definition is forbidden');
     }
 
+    public function testSetQueryShouldNotRaiseExceptionWhenAsteriskIsInACondition()
+    {
+        $this->function->pg_num_fields = 1;
+        $this->function->pg_field_table = function ($result, $index) {
+            if ($index === 1) {
+                return 'table';
+            }
+
+            return false;
+        };
+
+        $this->function->pg_field_name = function ($result, $index) {
+            switch ($index) {
+                case 0:
+                    return 't.*';
+                default:
+                    return false;
+            }
+        };
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
+            ->variable(
+                $result->setQuery(
+                    'select t.tata CASE WHEN COALESCE(t_avis.note,0) > -5
+                    THEN (length(t_avis.en_bref) > 200)::integer*100 ELSE 0 END +
+                    COALESCE(t_avis.note,0) as my_note_avis from table as t'
+                )
+            )
+            ->isNull();;
+    }
+
     public function testSetQueryShouldRaiseExceptionParseColumns()
     {
         $this->function->pg_num_fields = 0;
@@ -210,7 +242,7 @@ class Result extends atoum
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->setQuery('
-              SELECT firstname, (select old+3 from t_bouh_boo) as old, T_BOUH_BOO.name
+              SELECT firstname, (select old+3 from t_bouh_boo ORDER BY bouh, da) as old, T_BOUH_BOO.name
               FROM T_BOUH_BOO
               WHERE firstname in (select firstname from t_bouh_boo)
               ORDER BY toto, tata')
@@ -229,7 +261,7 @@ class Result extends atoum
             ->string($row[1]['name'])
                 ->isIdenticalTo('old')
             ->string($row[1]['orgName'])
-                ->isIdenticalTo('(select old+3 from t_bouh_boo)')
+            ->isIdenticalTo('(select old+3 from t_bouh_boo order by bouh, da)')
             ->string($row[1]['table'])
                 ->isIdenticalTo('')
             ->string($row[1]['orgTable'])
