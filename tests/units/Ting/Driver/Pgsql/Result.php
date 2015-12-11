@@ -84,7 +84,7 @@ class Result extends atoum
                     COALESCE(t_avis.note,0) as my_note_avis from table as t'
                 )
             )
-            ->isNull();;
+            ->isNull();
     }
 
     public function testSetQueryShouldRaiseExceptionParseColumns()
