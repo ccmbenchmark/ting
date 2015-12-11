@@ -89,6 +89,10 @@ class Result implements ResultInterface
                 } else {
                     $scope = 'string';
                 }
+            } elseif ($token === 'case' && $scope === 'column') {
+                $scope = 'condition';
+            } elseif ($token === 'end' && $scope === 'condition') {
+                $scope = 'column';
             }
 
             if ($token === '(' && $scope !== 'string') {
@@ -157,6 +161,9 @@ class Result implements ResultInterface
 
                         $columnsMatches[] = $columnComponent;
                         $column = '';
+                        if ($token === 'from') {
+                            break;
+                        }
                         continue;
                     }
                 }
@@ -168,10 +175,6 @@ class Result implements ResultInterface
                 if ($scope === 'column' && $token === '*') {
                     throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
                 }
-            }
-
-            if ($token === 'from' && $brackets === 0) {
-                break;
             }
 
             if ($token === 'select') {
