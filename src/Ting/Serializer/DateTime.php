@@ -39,6 +39,7 @@ class DateTime implements SerializerInterface
         if ($toSerialize === null) {
             return null;
         }
+
         if (($toSerialize instanceof \DateTime) === false) {
             throw new RuntimeException(
                 'Cannot convert this value to datetime. Type was : ' . gettype($toSerialize) .

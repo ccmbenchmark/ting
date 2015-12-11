@@ -1,4 +1,5 @@
-2.6.1 (2015-12-10) :
+2.6.1 (2015-12-11) :
+    * Hydrator setting entity property now properly use metadata to cast value
     * Better parsing for postgresql : we stop to parse the query after FROM
 
 2.6.0 (2015-12-10) :
