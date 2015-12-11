@@ -245,6 +245,18 @@ class Metadata
                 $options = $this->fields[$column]['serializer_options']['unserialize'];
             }
             $value = $this->serializerFactory->get($this->fields[$column]['serializer'])->unserialize($value, $options);
+        } elseif ($value !== null) {
+            switch ($this->fields[$column]['type']) {
+                case "int":
+                    $value = (int) $value;
+                    break;
+                case "double":
+                    $value = (double) $value;
+                    break;
+                case "bool":
+                    $value = (bool) $value;
+                    break;
+            }
         }
 
         $entity->$property($value);

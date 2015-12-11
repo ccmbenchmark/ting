@@ -22,7 +22,6 @@
  *
  **********************************************************************/
 
-
 namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Connection;
@@ -31,7 +30,6 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 class Generator
 {
-
     /**
      * @var Connection
      */
@@ -57,10 +55,10 @@ class Generator
         $table,
         array $fields
     ) {
-        $this->connection   = $connection;
+        $this->connection = $connection;
         $this->queryFactory = $queryFactory;
-        $this->tableName   = $table;
-        $this->fields       = $fields;
+        $this->tableName = $table;
+        $this->fields = $fields;
     }
 
     protected function getSelect(array $fields, DriverInterface $driver)
@@ -76,6 +74,7 @@ class Generator
         } else {
             $driver = $this->connection->slave();
         }
+
         return $driver;
     }
 
@@ -99,10 +98,12 @@ class Generator
     }
 
     /**
-     * Returns a Query, allowing to fetch an object by an associative array (column => value)
+     * Returns a Query, allowing to fetch an object by an associative array (column => value).
+     *
      * @param array                      $primariesValue
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
+     *
      * @return Query
      */
     public function getOneByCriteria(
@@ -132,16 +133,18 @@ class Generator
         $sql = $this->getSelect($fields, $driver);
 
         list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
-        $sql .= ' WHERE '.implode(' AND ', $conditions);
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
         return [$sql, $params];
     }
 
     /**
-     * Returns a Query, allowing to fetch an object by criteria (associative array)
+     * Returns a Query, allowing to fetch an object by criteria (associative array).
+     *
      * @param array                      $criteria
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
+     *
      * @return Query
      */
     public function getByCriteria(
@@ -164,8 +167,10 @@ class Generator
     }
 
     /**
-     * Returns a PreparedQuery to insert an object in database
+     * Returns a PreparedQuery to insert an object in database.
+     *
      * @param array $values associative array : columnName => value
+     *
      * @return PreparedQuery
      */
     public function insert(array $values)
@@ -179,20 +184,23 @@ class Generator
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
 
         $query->setParams($values);
+
         return $query;
     }
 
     /**
-     * Returns a prepared query to update values in database
-     * @param array $values associative array : columnName => value
+     * Returns a prepared query to update values in database.
+     *
+     * @param array $values         associative array : columnName => value
      * @param array $primariesValue
+     *
      * @return PreparedQuery
      */
     public function update(array $values, array $primariesValue)
     {
         $driver = $this->getDriver(true);
 
-        $sql = 'UPDATE ' . $driver->escapeField($this->tableName) .' SET ';
+        $sql = 'UPDATE ' . $driver->escapeField($this->tableName) . ' SET ';
         $set = [];
         foreach ($values as $column => $value) {
             $set[] = $driver->escapeField($column) . ' = :' . $column;
@@ -232,9 +240,11 @@ class Generator
     }
 
     /**
-     * Protect every fields provided, using the driver provided
+     * Protect every fields provided, using the driver provided.
+     *
      * @param array           $fields
      * @param DriverInterface $driver
+     *
      * @return array
      */
     protected function escapeFields(array $fields, DriverInterface $driver)
@@ -248,8 +258,9 @@ class Generator
     }
 
     /**
-     * @param $fields
-     * @param $values
+     * @param array $fields fields names
+     * @param array $values each values can be a value or an array
+     * 
      * @return array
      */
     protected function generateConditionAndParams($fields, $values)
@@ -258,8 +269,25 @@ class Generator
         $i = 0;
 
         foreach ($values as $field => $value) {
-            $conditions[] = $fields[$i] . ' = :#' . $field;
-            $values['#' . $field] = $value;
+            if (is_array($value) === true) {
+
+                // handle array values...
+                $j = 0;
+                $condition = $fields[$i] . ' IN (';
+                foreach ($value as $v) {
+                    $j++;
+                    $condition .= ':' . $field . '__' . $j . ',';
+
+                    $values[$field.'__' . $j] = $v;
+                }
+                $condition = rtrim($condition, ',');
+                $condition .= ')';
+
+                $conditions[] = $condition;
+            } else {
+                $conditions[] = $fields[$i] . ' = :#' . $field;
+                $values['#' . $field] = $value;
+            }
             unset($values[$field]);
             $i++;
         }

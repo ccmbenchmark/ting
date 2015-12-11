@@ -35,6 +35,8 @@ class Statement extends atoum
             $outerConnection = $connection;
             return [];
         };
+
+        $this->function->pg_num_fields  = 0;
         $this->function->pg_field_table = 'Bouh';
         $this->function->pg_result_seek = 0;
         $this->function->pg_fetch_array = false;
@@ -58,6 +60,7 @@ class Statement extends atoum
 
     public function testExecuteShouldCallDriverExecuteWithParameters()
     {
+        $this->function->pg_num_fields  = 0;
         $this->function->pg_field_table = 'Bouh';
         $this->function->pg_execute     = function ($connection, $statementName, $values) use (&$outerValues) {
             $outerValues = $values;
@@ -114,13 +117,25 @@ class Statement extends atoum
             $outerResult = $result;
         };
 
+        $this->function->pg_num_fields  = 2;
         $this->function->pg_field_table = 'Bouh';
 
-        $resultReference = new \CCMBenchmark\Ting\Driver\Pgsql\Result();
-        $resultReference->setConnectionName('connectionName');
-        $resultReference->setDatabase('database');
-        $resultReference->setResult($result);
-        $resultReference->setQuery('SELECT prenom, nom FROM Bouh');
+        $this->function->pg_field_name = function ($result, $index) {
+            switch ($index) {
+                case 0:
+                    return 'prenom';
+                case 1:
+                    return 'nom';
+                default:
+                    return false;
+            }
+        };
+
+        $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result($result);
+        $resultOk->setConnectionName('connectionName');
+        $resultOk->setDatabase('database');
+        $resultOk->setResult($result);
+        $resultOk->setQuery('SELECT prenom, nom FROM Bouh');
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
@@ -142,6 +157,7 @@ class Statement extends atoum
     {
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->function->pg_execute = false;
+        $this->function->pg_query = true;
         $this->function->pg_errormessage = 'unknown error';
 
         $this
