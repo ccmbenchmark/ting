@@ -26,7 +26,13 @@ namespace CCMBenchmark\Ting\Serializer;
 
 class DateTime implements SerializerInterface
 {
-    private static $defaultOptions = ['format' => 'Y-m-d H:i:s', 'unserializeDetectFormat' => false];
+    /**
+     * @var array
+     * format => Always used for serialization. Used for unserialization only if unSerializeUseFormat is true
+     * unSerializeUseFormat => if false, any valid datetime format is automatically used
+     * @see http://php.net/manual/en/datetime.formats.compound.php
+     */
+    private static $defaultOptions = ['format' => 'Y-m-d H:i:s', 'unSerializeUseFormat' => true];
 
     /**
      * @param \DateTime $toSerialize
@@ -63,16 +69,16 @@ class DateTime implements SerializerInterface
         }
 
         $options = array_merge(self::$defaultOptions, $options);
-        if ($options['unserializeDetectFormat'] === true) {
+        if ($options['unSerializeUseFormat'] === true) {
+            $value = \DateTime::createFromFormat($options['format'], $serialized);
+            if ($value === false) {
+                throw new RuntimeException('Cannot convert ' . $serialized . ' to datetime.');
+            }
+        } else {
             try {
                 $value = new \DateTime($serialized);
             } catch (\Exception $e) {
                 throw new RuntimeException('Cannot convert ' . $serialized . ' to datetime. Error is : ' . $e->getMessage());
-            }
-        } else {
-            $value = \DateTime::createFromFormat($options['format'], $serialized);
-            if ($value === false) {
-                throw new RuntimeException('Cannot convert ' . $serialized . ' to datetime.');
             }
         }
 
