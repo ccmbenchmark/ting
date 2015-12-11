@@ -285,7 +285,7 @@ class Result implements ResultInterface
 
     public function next()
     {
-        $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, PGSQL_NUM));
+        $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, \PGSQL_NUM));
         $this->iteratorOffset++;
     }
 

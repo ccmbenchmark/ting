@@ -107,7 +107,6 @@ class Result extends atoum
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->setQuery('SELECT "firstname", b.name as nom FROM T_BOUH_BOO as b'))
             ->then($row = $result->format(array('firstname' => 'Sylvain', 'name' => 'Robez-Masson')))
-            ->dump($row)
             ->string($row[0]['name'])
                 ->isIdenticalTo('firstname')
             ->string($row[0]['orgName'])
