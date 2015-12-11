@@ -1,3 +1,6 @@
+2.6.2 (2015-12-11) :
+    * Datetime serializer : Allow psql timestamp to be unserialized
+
 2.6.1 (2015-12-11) :
     * Hydrator setting entity property now properly use metadata to cast value
     * Better parsing for postgresql : we stop to parse the query after FROM
