@@ -29,10 +29,11 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-    // @codingStandardsIgnoreStart
+
     const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
-    // @codingStandardsIgnoreEnd
-    
+    const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
+    const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/';
+
     protected $result          = null;
     protected $fields          = array();
     protected $iteratorOffset  = 0;
@@ -53,47 +54,139 @@ class Result implements ResultInterface
      */
     public function setQuery($query)
     {
-        $aliasToTable = array();
-        $fields = array();
+        $fields = [];
+        $tableToAlias = [];
 
         preg_match_all(
-            '/(?:join|from)\s+"?(?<table>[a-z0-9_]+)"?\s*(?:as)?\s*"?(?!\b('
-            . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z0-9_]+)?"?(\s|$)/is',
+            '/(?:join|from)\s+"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
+            . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z_][a-z0-9_$]*)?"?(\s|$)/is',
             $query,
             $matches,
             PREG_SET_ORDER
         );
+
         foreach ($matches as $match) {
             $match['table'] = strtolower($match['table']);
             if ($match['alias'] !== '') {
-                $aliasToTable[strtolower($match['alias'])] = $match['table'];
+                $tableToAlias[$match['table']] = strtolower($match['alias']);
             } else {
-                $aliasToTable[$match['table']] = $match['table'];
+                $tableToAlias[$match['table']] = $match['table'];
             }
         }
 
-        $tableToAlias = array_flip($aliasToTable);
-        preg_match_all('/select\s+(.+?)(\s+from|$)/is', $query, $matches, PREG_SET_ORDER);
+        $tokens = preg_split('/(\W)/', strtolower($query), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 
-        if ($matches === []) {
+        $startCapture = false;
+        $columnsMatches = [];
+        $column = '';
+        $scope  = 'column';
+        $brackets = 0;
+
+        foreach ($tokens as $token) {
+            if ($token === '\'') {
+                if ($scope === 'string') {
+                    $scope = 'column';
+                } else {
+                    $scope = 'string';
+                }
+            } elseif ($token === 'case' && $scope === 'column') {
+                $scope = 'condition';
+            } elseif ($token === 'end' && $scope === 'condition') {
+                $scope = 'column';
+            }
+
+            if ($token === '(' && $scope !== 'string') {
+                $brackets++;
+            }
+
+            if ($token === ')' && $scope !== 'string') {
+                $brackets--;
+            }
+
+            if ($startCapture === true) {
+                if ($brackets === 0) {
+                    if ($token === ',' || $token === 'from') {
+                        $scope = 'column';
+
+                        /**
+                         * Match column format table.column (as alias)
+                         */
+                        preg_match(
+                            self::PARSE_RAW_COLUMN,
+                            $column,
+                            $matches
+                        );
+
+                        if ($matches !== []) {
+                            $columnComponent = [
+                                'complex' => false,
+                                'column' => $matches['column']
+                            ];
+
+                            if (isset($matches['table']) === true) {
+                                $columnComponent['table'] = $matches['table'];
+                            }
+
+                            if (isset($matches['alias']) === true) {
+                                $columnComponent['alias'] = $matches['alias'];
+                            }
+                        } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
+                            $column = ltrim($column);
+                            preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
+
+                            $cut = 0;
+
+                            if (isset($matches['prefix']) === true) {
+                                $cut += strlen($matches['prefix']);
+                            }
+                            if (isset($matches['alias']) === true) {
+                                $cut += strlen($matches['alias']);
+                            }
+
+                            if ($cut > 0) {
+                                $matches['column'] = substr($column, 0, - $cut);
+                            } else {
+                                $matches['column'] = $column;
+                            }
+
+                            $columnComponent = [
+                                'complex' => true,
+                                'table' => '',
+                                'column' => $matches['column']
+                            ];
+                            if (isset($matches['alias']) === true) {
+                                $columnComponent['alias'] = $matches['alias'];
+                            }
+                        }
+
+                        $columnsMatches[] = $columnComponent;
+                        $column = '';
+                        if ($token === 'from') {
+                            break;
+                        }
+                        continue;
+                    }
+                }
+
+                if ($scope === 'column' || $scope === 'string') {
+                    $column .= $token;
+                }
+
+                if ($scope === 'column' && $token === '*') {
+                    throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
+                }
+            }
+
+            if ($token === 'select') {
+                $startCapture = true;
+            }
+        }
+
+        if ($columnsMatches === []) {
             throw new QueryException('Query invalid: can\'t parse columns');
         }
 
-        $queryColumns = $matches[0][1];
-
-        // We need a better solution
-        if (preg_match('/(^|\s*)\*(\s*|$)/', $queryColumns) === 1) {
-            throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
-        }
-
-        preg_match_all(
-            '/(?:(?:"?(?<table>[a-z0-9_]+)"?\.)?(?<column>[^\s,]+)(?:\s*(?:as)?\s+(?<alias>[a-z0-9_]+))?)/is',
-            $queryColumns,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $match) {
+        foreach ($columnsMatches as $match) {
             $stdClass = new \stdClass();
             $stdClass->orgname = $match['column'];
 
@@ -103,23 +196,25 @@ class Result implements ResultInterface
                 $stdClass->name = $stdClass->orgname;
             }
 
-            if ($match['table'] !== '') {
-                $stdClass->table    = strtolower($match['table']);
-                $stdClass->orgtable = $aliasToTable[$stdClass->table];
-            } else {
+            if ($match['complex'] === false) {
                 $stdClass->orgtable = strtolower(pg_field_table($this->result, count($fields)));
+            } else {
+                $stdClass->orgtable = '';
+            }
 
-                if (isset($tableToAlias[$stdClass->orgtable]) === false) {
-                    $stdClass->table = $stdClass->orgtable;
-                } else {
-                    $stdClass->table = $tableToAlias[$stdClass->orgtable];
-                }
+            if ($match['table'] !== '') {
+                $stdClass->table = strtolower($match['table']);
+            } elseif ($match['complex'] === false) {
+                $stdClass->table = $tableToAlias[$stdClass->orgtable];
+            } else {
+                $stdClass->table = $stdClass->orgtable;
             }
 
             $fields[] = $stdClass;
         }
 
         $this->fields = $fields;
+
     }
 
     /**

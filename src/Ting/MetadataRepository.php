@@ -43,6 +43,11 @@ class MetadataRepository
     protected $entityToRepository = array();
 
     /**
+     * @var array This array is a pseudo cache to reduce findMetadataForTable work
+     */
+    private $tableToMetadata = array();
+
+    /**
      * @var SerializerFactoryInterface|null
      */
     protected $serializerFactory = null;
@@ -54,11 +59,22 @@ class MetadataRepository
 
     /**
      * @param          $table
-     * @param callable $callbackFound   called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown table - no parameter
+     * @param \Closure $callbackFound called with applicable Metadata if applicable
+     * @param \Closure $callbackNotFound called if unknown table - no parameter
      */
     public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
+        // If we have the table in pseudo cache array
+        if (isset($this->tableToMetadata[$table]) === true) {
+            if ($this->tableToMetadata[$table] !== false) {
+                $callbackFound($this->tableToMetadata[$table]);
+            } else {
+                $callbackNotFound();
+            }
+
+            return;
+        }
+
         $found = false;
         foreach ($this->metadataList as $metadata) {
             $found = $metadata->ifTableKnown(
@@ -69,19 +85,21 @@ class MetadataRepository
             );
 
             if ($found === true) {
+                $this->tableToMetadata[$table] = $metadata;
                 break;
             }
         }
 
         if ($found === false && $callbackNotFound !== null) {
             $callbackNotFound();
+            $this->tableToMetadata[$table] = false;
         }
     }
 
     /**
      * @param string $repositoryName
-     * @param callable $callbackFound Called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown entity - no parameter
+     * @param \Closure $callbackFound Called with applicable Metadata if applicable
+     * @param \Closure $callbackNotFound called if unknown entity - no parameter
      */
     public function findMetadataForRepository(
         $repositoryName,
@@ -97,8 +115,8 @@ class MetadataRepository
 
     /**
      * @param object   $entity
-     * @param callable $callbackFound Called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown entity - no parameter
+     * @param \Closure $callbackFound Called with applicable Metadata if applicable
+     * @param \Closure $callbackNotFound called if unknown entity - no parameter
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
