@@ -30,25 +30,27 @@ class HydratorSingleObject extends atoum
 {
     public function testHydrateShouldReturnBouhObject()
     {
-        $data = array(
-            array(
+        $data = [
+            [
                 'name'     => 'fname',
                 'orgName'  => 'boo_firstname',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Sylvain'
-            ),
-            array(
+            ],
+            [
                 'name'     => 'name',
                 'orgName'  => 'boo_name',
                 'table'    => 'bouh',
                 'orgTable' => 'T_BOUH_BOO',
                 'value'    => 'Robez-Masson'
-            )
-        );
+            ]
+        ];
 
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -71,7 +73,7 @@ class HydratorSingleObject extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorSingleObject())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($bouh = $hydrator->hydrate($data, $collection))
+            ->then($bouh = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->object($bouh)
                 ->isInstanceOf('tests\fixtures\model\Bouh')
             ->string($bouh->getName())

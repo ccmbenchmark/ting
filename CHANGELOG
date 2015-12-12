@@ -1,3 +1,6 @@
+3.X.X (XXXX-XX-XX) :
+    * Fix conflict when hydrating model which use the same table name but on different database
+
 2.6.2 (2015-12-11) :
     * Datetime serializer : Allow psql timestamp to be unserialized
 

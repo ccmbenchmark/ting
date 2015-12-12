@@ -77,7 +77,11 @@ class Query extends atoum
     {
         $services              = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection(
+            $mockConnectionPool,
+            'connectionName',
+            'database'
+        );
         $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
             $services->get('MetadataRepository'),
             $services->get('UnitOfWork'),
@@ -87,16 +91,21 @@ class Query extends atoum
         $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
         $this->calling($mockMemcached)->get = function () {
             return [
-                [
+                'connection' => 'connectionName',
+                'database'   => 'database',
+                'data'       =>
                     [
-                        'name'     => 'prenom',
-                        'orgName'  => 'firstname',
-                        'table'    => 'bouh',
-                        'orgTable' => 'T_BOUH_BOO',
-                        'type'     => MYSQLI_TYPE_VAR_STRING,
-                        'value'    => 'Xavier',
+                        [
+                            [
+                                'name'     => 'prenom',
+                                'orgName'  => 'firstname',
+                                'table'    => 'bouh',
+                                'orgTable' => 'T_BOUH_BOO',
+                                'type'     => MYSQLI_TYPE_VAR_STRING,
+                                'value'    => 'Xavier',
+                            ]
+                        ]
                     ]
-                ]
             ];
         };
 

@@ -52,7 +52,7 @@ class HydratorArray extends atoum
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorArray())
-            ->then($bouh = $hydrator->hydrate($data, $collection))
+            ->then($bouh = $hydrator->hydrate('connectionName', 'database', $data, $collection))
             ->array($bouh)
                 ->isIdenticalTo(['fname' => 'Sylvain', 'name' => 'Robez-Masson']);
     }

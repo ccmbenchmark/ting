@@ -31,14 +31,16 @@ class HydratorSingleObject extends Hydrator
 {
 
     /**
-     * Hydrate one object from values
+     * Hydrate one object from values and add to Collection
+     * @param string              $connectionName
+     * @param string              $database
      * @param array               $columns
      * @param CollectionInterface $collection
      * @return array
      */
-    public function hydrate(array $columns, CollectionInterface $collection)
+    public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection)
     {
-        $result = parent::hydrateColumns($columns);
+        $result = parent::hydrateColumns($connectionName, $database, $columns);
         $result = reset($result);
         $collection->add($result);
         return $result;

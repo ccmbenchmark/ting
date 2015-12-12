@@ -34,17 +34,57 @@ class Result implements ResultInterface
     const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
     const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/';
 
+    protected $connectionName  = null;
+    protected $database        = null;
     protected $result          = null;
-    protected $fields          = array();
+    protected $fields          = [];
     protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
 
     /**
-     * @param resource $result
+     * @param string $connectionName
+     * @return $this
      */
-    public function __construct($result)
+    public function setConnectionName($connectionName)
+    {
+        $this->connectionName = (string) $connectionName;
+        return $this;
+    }
+
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        $this->database = (string) $database;
+        return $this;
+    }
+
+    /**
+     * @param object $result
+     * @return $this
+     */
+    public function setResult($result)
     {
         $this->result = $result;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     /**
@@ -54,8 +94,8 @@ class Result implements ResultInterface
      */
     public function setQuery($query)
     {
+        $aliasToTable = [];
         $fields = [];
-        $tableToAlias = [];
 
         preg_match_all(
             '/(?:join|from)\s+"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
@@ -222,7 +262,7 @@ class Result implements ResultInterface
      * @param $offset
      * @return bool
      */
-    public function dataSeek($offset)
+    protected function dataSeek($offset)
     {
         return pg_result_seek($this->result, $offset);
     }
@@ -232,23 +272,23 @@ class Result implements ResultInterface
      * @param $data
      * @return array
      */
-    public function format($data)
+    protected function format($data)
     {
         if ($data === false) {
             return null;
         }
 
-        $columns = array();
+        $columns = [];
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
-            $column = array(
+            $column = [
                 'name'     => $this->unescapeField($rawField->name),
                 'orgName'  => $this->unescapeField($rawField->orgname),
                 'table'    => $this->unescapeField($rawField->table),
                 'orgTable' => $this->unescapeField($rawField->orgtable),
                 'value'    => $data[$i]
-            );
+            ];
 
             $columns[] = $column;
         }
