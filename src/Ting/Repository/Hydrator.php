@@ -156,4 +156,12 @@ class Hydrator implements HydratorInterface
 
         return $result;
     }
+
+    /**
+     * @return bool
+     */
+    public function isAggregator()
+    {
+        return false;
+    }
 }

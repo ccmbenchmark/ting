@@ -147,4 +147,16 @@ class Result extends atoum
             ->boolean($result->valid())
                 ->isFalse();
     }
+
+    public function testGetNumRows()
+    {
+        $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+        $mockPgsqlResult->num_rows = 10;
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))
+            ->then($result->setResult($mockPgsqlResult))
+            ->variable($result->getNumRows())
+                ->isEqualTo(10);
+    }
 }

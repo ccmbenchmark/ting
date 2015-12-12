@@ -117,7 +117,10 @@ class PreparedQuery extends atoum
         $this->calling($mockConnection)->slave  = $mockDriver;
         $this->calling($mockDriver)->execute    = true;
         $this->calling($mockDriver)->prepare    = $mockStatement;
-        $this->calling($mockStatement)->execute = true;
+        $this->calling($mockStatement)->execute = function (array $params, $collection) {
+            $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult());
+            return true;
+        };
 
         $collection = new Collection();
 

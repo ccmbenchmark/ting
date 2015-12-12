@@ -163,6 +163,14 @@ class Result implements ResultInterface
     }
 
     /**
+     * @return int
+     */
+    public function getNumRows()
+    {
+        return $this->result->num_rows;
+    }
+
+    /**
      * Iterator
      *
      * @internal Don't use mysqli_result iterator system

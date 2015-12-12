@@ -42,7 +42,6 @@ interface HydratorInterface
      */
     public function setUnitOfWork(UnitOfWork $unitOfWork);
 
-
     /**
      * Hydrate One object from it's values
      * @param string              $connectionName
@@ -53,4 +52,9 @@ interface HydratorInterface
      * @return mixed
      */
     public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection);
+
+    /**
+     * @return bool
+     */
+    public function isAggregator();
 }

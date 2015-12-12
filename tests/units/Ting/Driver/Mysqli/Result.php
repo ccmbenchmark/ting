@@ -67,4 +67,19 @@ class Result extends atoum
             ->mock($result)
                 ->call('current')->once();
     }
+
+    /**
+     * @tags test
+     */
+    public function testGetNumRows()
+    {
+        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+        $mockMysqliResult->num_rows = 10;
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result())
+            ->then($result->setResult($mockMysqliResult))
+            ->variable($result->getNumRows())
+                ->isEqualTo(10);
+    }
 }

@@ -41,9 +41,19 @@ class Collection implements CollectionInterface, \Iterator, \Countable
     protected $database = null;
 
     /**
+     * Use when Hydrator is not an aggregator
+     *
+     * @var \Iterator
+     */
+    protected $iterator = null;
+
+    /**
+     * Used when Hydrator is an aggregator
+     *
      * @var array
      */
     protected $rows = [];
+
 
     /**
      * @var HydratorInterface|null
@@ -80,8 +90,9 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function set(ResultInterface $result)
     {
-        if ($this->isCacheable === true) {
-            $this->internalRows = iterator_to_array($result);
+        if ($this->shouldUseArray() === false) {
+            $this->iterator = $result;
+            return;
         }
 
         $this->connectionName = $result->getConnectionName();
@@ -95,9 +106,42 @@ class Collection implements CollectionInterface, \Iterator, \Countable
                 }
                 $this->add($data);
             } else {
-                $this->hydrator->hydrate($this->connectionName, $this->database, $row, $this);
+                $this->hydrate($row);
             }
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldUseArray()
+    {
+
+        if ($this->hydrator !== null) {
+            return $this->hydrator->isAggregator();
+        }
+
+        if ($this->iterator === null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function hydrate($data)
+    {
+        if ($this->hydrator === null) {
+            return $data;
+        }
+
+        if ($data === null) {
+            return false;
+        }
+
+        return $this->hydrator->hydrate($this->connectionName, $this->database, $data, $this);
     }
 
     /**
@@ -138,6 +182,10 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function toCache()
     {
+        if ($this->shouldUseArray() === false) {
+            return iterator_to_array($this->iterator);
+        }
+
         return ['connection' => $this->connectionName, 'database' => $this->database, 'data' => $this->internalRows];
     }
 
@@ -157,6 +205,10 @@ class Collection implements CollectionInterface, \Iterator, \Countable
     {
         $result = $this->rewind()->current();
 
+        if ($this->shouldUseArray() === false) {
+            $result = $this->hydrate($result, $this);
+        }
+
         if ($result === false) {
             return null;
         }
@@ -173,7 +225,11 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function rewind()
     {
-        reset($this->rows);
+        if ($this->shouldUseArray() === false) {
+            $this->iterator->rewind();
+        } else {
+            reset($this->rows);
+        }
         return $this;
     }
 
@@ -182,7 +238,13 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function current()
     {
-        return current($this->rows);
+        if ($this->shouldUseArray() === false) {
+            $result = $this->hydrate($this->iterator->current(), $this);
+        } else {
+            $result = current($this->rows);
+        }
+
+        return $result;
     }
 
     /**
@@ -190,7 +252,13 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function key()
     {
-        return key($this->rows);
+        if ($this->shouldUseArray() === false) {
+            $key = $this->iterator->key();
+        } else {
+            $key = key($this->rows);
+        }
+
+        return $key;
     }
 
     /**
@@ -198,7 +266,14 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function next()
     {
-        return next($this->rows);
+        if ($this->shouldUseArray() === false) {
+            $this->iterator->next();
+            $result = $this->current();
+        } else {
+            $result = next($this->rows);
+        }
+
+        return $result;
     }
 
     /**
@@ -206,7 +281,7 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function valid()
     {
-        if (current($this->rows) === false) {
+        if ($this->current() === false) {
             return false;
         }
 
@@ -218,6 +293,10 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function count()
     {
-        return count($this->rows);
+        if ($this->shouldUseArray() === true) {
+            return count($this->rows);
+        }
+
+        return $this->iterator->getNumRows();
     }
 }

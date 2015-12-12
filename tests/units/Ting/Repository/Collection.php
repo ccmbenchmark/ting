@@ -63,7 +63,7 @@ class Collection extends atoum
                 ->isIdenticalTo(['prenom' => 'Sylvain', 'nom' => 'Robez-Masson']);
     }
 
-    public function testHydrateWithHydratorShouldCallHydratorHydrate()
+    public function testHydrateWithHydratorShouldNotCallHydratorHydrate()
     {
         $services     = new \CCMBenchmark\Ting\Services();
         $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator();
@@ -83,6 +83,39 @@ class Collection extends atoum
 
             return $fields;
         };
+
+        $this->calling($mockHydrator)->isAggregator = false;
+
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection($mockHydrator))
+            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
+            ->mock($mockHydrator)
+                ->call('hydrate')
+                    ->never();
+    }
+
+    public function testHydrateWithHydratorAggregatorShouldCallHydratorHydrate()
+    {
+        $services     = new \CCMBenchmark\Ting\Services();
+        $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator();
+        $mockHydrator->setMetadataRepository($services->get('MetadataRepository'));
+        $mockHydrator->setUnitOfWork($services->get('UnitOfWork'));
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $this->calling($mockHydrator)->isAggregator = true;
 
         $data = [
             [

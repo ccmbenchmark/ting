@@ -259,7 +259,7 @@ class Result implements ResultInterface
 
     /**
      * Move the internal pointer to an arbitrary row in the result set
-     * @param $offset
+     * @param int $offset
      * @return bool
      */
     protected function dataSeek($offset)
@@ -294,6 +294,14 @@ class Result implements ResultInterface
         }
 
         return $columns;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumRows()
+    {
+        return $this->result->num_rows;
     }
 
     /**
