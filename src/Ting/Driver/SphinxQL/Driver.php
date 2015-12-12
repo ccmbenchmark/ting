@@ -32,6 +32,8 @@ class Driver extends Mysqli\Driver
     /**
      * Quote value according to the type of variable
      * @param mixed $value
+     *
+     * @internal
      */
     public function quoteValue($value)
     {

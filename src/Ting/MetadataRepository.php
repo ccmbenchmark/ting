@@ -52,6 +52,9 @@ class MetadataRepository
      */
     protected $serializerFactory = null;
 
+    /**
+     * @param SerializerFactoryInterface $serializerFactory
+     */
     public function __construct(SerializerFactoryInterface $serializerFactory)
     {
         $this->serializerFactory = $serializerFactory;
@@ -98,6 +101,8 @@ class MetadataRepository
      * @param string $repositoryName
      * @param \Closure $callbackFound Called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown entity - no parameter
+     *
+     * @internal
      */
     public function findMetadataForRepository(
         $repositoryName,
@@ -115,6 +120,8 @@ class MetadataRepository
      * @param object   $entity
      * @param \Closure $callbackFound Called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown entity - no parameter
+     *
+     * @internal
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
@@ -133,6 +140,8 @@ class MetadataRepository
     /**
      * @param string   $repositoryClass
      * @param Metadata $metadata
+     *
+     * @internal
      */
     public function addMetadata($repositoryClass, Metadata $metadata)
     {

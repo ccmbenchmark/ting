@@ -40,6 +40,12 @@ class MetadataCacheGenerator
         return <array>;
     ';
 
+    /**
+     * @param      $cacheDir
+     * @param null $filename
+     *
+     * @internal
+     */
     public function __construct($cacheDir, $filename = null)
     {
         $this->cacheDir = $cacheDir;
@@ -62,6 +68,8 @@ class MetadataCacheGenerator
      *
      * @param array $repositories
      * @return string $filename complete path to cache file
+     *
+     * @internal
      */
     public function createCache(array $repositories)
     {
