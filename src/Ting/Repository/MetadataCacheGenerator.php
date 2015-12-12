@@ -41,8 +41,8 @@ class MetadataCacheGenerator
     ';
 
     /**
-     * @param      $cacheDir
-     * @param null $filename
+     * @param string $cacheDir
+     * @param string $filename
      *
      * @internal
      */
