@@ -160,7 +160,6 @@ class Query extends \CCMBenchmark\Ting\Query\Query
         $result = $this->cache->get($key);
 
         if ($result !== null) {
-            $collection->setFromCache(true);
             $collection->fromCache($result);
             return true;
         }

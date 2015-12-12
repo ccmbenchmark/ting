@@ -38,7 +38,7 @@ class CacheResult implements ResultInterface
     protected $database = null;
 
     /**
-     * @var object|null
+     * @var \Iterator|null
      */
     protected $result = null;
 
@@ -64,7 +64,7 @@ class CacheResult implements ResultInterface
     }
 
     /**
-     * @param object $result
+     * @param \Iterator $result
      * @return $this
      */
     public function setResult($result)
@@ -153,6 +153,6 @@ class CacheResult implements ResultInterface
      */
     public function getNumRows()
     {
-        return $this->result->num_rows;
+        return iterator_count($this->result);
     }
 }

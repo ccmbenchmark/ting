@@ -260,7 +260,7 @@ class Generator
     /**
      * @param array $fields fields names
      * @param array $values each values can be a value or an array
-     * 
+     *
      * @return array
      */
     protected function generateConditionAndParams($fields, $values)
@@ -270,7 +270,6 @@ class Generator
 
         foreach ($values as $field => $value) {
             if (is_array($value) === true) {
-
                 // handle array values...
                 $j = 0;
                 $condition = $fields[$i] . ' IN (';

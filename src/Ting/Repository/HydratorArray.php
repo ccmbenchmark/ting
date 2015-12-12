@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
@@ -32,6 +33,11 @@ class HydratorArray implements HydratorInterface
 
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
+
+    /**
+     * @var ResultInterface
+     */
+    protected $result = null;
 
     /**
      * @param MetadataRepository $metadataRepository
@@ -52,29 +58,39 @@ class HydratorArray implements HydratorInterface
     }
 
     /**
-     * Hydrate one object from values and add to Collection
-     * @param string              $connectionName
-     * @param string              $database
-     * @param array               $columns
-     * @param CollectionInterface $collection
-     * @return array
+     * @param ResultInterface $result
+     * @return $this
      */
-    public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection)
+    public function setResult(ResultInterface $result)
     {
-        $result = [];
-
-        foreach ($columns as $column) {
-            $result[$column['name']] = $column['value'];
-        }
-
-        return $result;
+        $this->result = $result;
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return \Generator
      */
-    public function isAggregator()
+    public function getIterator()
     {
-        return false;
+        foreach ($this->result as $key => $row) {
+            $data = [];
+            foreach ($row as $column) {
+                $data[$column['name']] = $column['value'];
+            }
+
+            yield $key => $data;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        if ($this->result === null) {
+            return 0;
+        }
+
+        return $this->result->getNumRows();
     }
 }

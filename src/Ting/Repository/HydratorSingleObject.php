@@ -24,32 +24,17 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\UnitOfWork;
-
 class HydratorSingleObject extends Hydrator
 {
 
     /**
-     * Hydrate one object from values and add to Collection
-     * @param string              $connectionName
-     * @param string              $database
-     * @param array               $columns
-     * @param CollectionInterface $collection
-     * @return array
+     * @return \Generator
      */
-    public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection)
+    public function getIterator()
     {
-        $result = parent::hydrateColumns($connectionName, $database, $columns);
-        $result = reset($result);
-        return $result;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAggregator()
-    {
-        return false;
+        foreach ($this->result as $key => $row) {
+            $data = parent::hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $row);
+            yield $key => reset($data);
+        }
     }
 }

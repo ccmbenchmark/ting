@@ -27,33 +27,13 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
-class Collection implements CollectionInterface, \Iterator, \Countable
+class Collection implements CollectionInterface
 {
 
     /**
-     * @var string|null
+     * @var ResultInterface
      */
-    protected $connectionName = null;
-
-    /**
-     * @var string|null
-     */
-    protected $database = null;
-
-    /**
-     * Use when Hydrator is not an aggregator
-     *
-     * @var \Iterator
-     */
-    protected $iterator = null;
-
-    /**
-     * Used when Hydrator is an aggregator
-     *
-     * @var array
-     */
-    protected $rows = [];
-
+    protected $result = null;
 
     /**
      * @var HydratorInterface|null
@@ -66,21 +46,15 @@ class Collection implements CollectionInterface, \Iterator, \Countable
     protected $fromCache = false;
 
     /**
-     * @var bool
-     */
-    protected $isCacheable = false;
-
-    /**
-     * @var array
-     */
-    protected $internalRows = [];
-
-    /**
      * @param HydratorInterface $hydrator
      */
     public function __construct(HydratorInterface $hydrator = null)
     {
-        $this->hydrator = $hydrator;
+        if ($hydrator === null) {
+            $this->hydrator = new HydratorArray();
+        } else {
+            $this->hydrator = $hydrator;
+        }
     }
 
     /**
@@ -90,73 +64,8 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function set(ResultInterface $result)
     {
-        if ($this->shouldUseArray() === false) {
-            $this->iterator = $result;
-            return;
-        }
-
-        $this->connectionName = $result->getConnectionName();
-        $this->database       = $result->getDatabase();
-
-        foreach ($result as $row) {
-            if ($this->hydrator === null) {
-                $data = [];
-                foreach ($row as $column) {
-                    $data[$column['name']] = $column['value'];
-                }
-                $this->add($data);
-            } else {
-                $this->hydrate($row);
-            }
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    private function shouldUseArray()
-    {
-
-        if ($this->hydrator !== null) {
-            return $this->hydrator->isAggregator();
-        }
-
-        if ($this->iterator === null) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function hydrate($data)
-    {
-        if ($this->hydrator === null) {
-            return $data;
-        }
-
-        if ($data === null) {
-            return false;
-        }
-
-        return $this->hydrator->hydrate($this->connectionName, $this->database, $data, $this);
-    }
-
-    /**
-     * Add a row in the collection
-     * @param mixed $data
-     * @param string|null $key
-     * @return void
-     */
-    public function add($data, $key = null)
-    {
-        if ($key === null) {
-            $this->rows[] = $data;
-        } else {
-            $this->rows[$key] = $data;
-        }
+        $this->result = $result;
+        $this->hydrator->setResult($result);
     }
 
     /**
@@ -165,8 +74,7 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function setFromCache($value)
     {
-        $this->fromCache   = (bool) $value;
-        $this->isCacheable = true;
+        $this->fromCache = (bool) $value;
     }
 
     /**
@@ -182,11 +90,21 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function toCache()
     {
-        if ($this->shouldUseArray() === false) {
-            return iterator_to_array($this->iterator);
+        $connectionName = null;
+        $database = null;
+        $data = [];
+
+        if ($this->result !== null) {
+            $connectionName = $this->result->getConnectionName();
+            $database = $this->result->getDatabase();
+            $data = iterator_to_array($this->result);
         }
 
-        return ['connection' => $this->connectionName, 'database' => $this->database, 'data' => $this->internalRows];
+        return [
+            'connection' => $connectionName,
+            'database' => $database,
+            'data' => $data
+        ];
     }
 
     /**
@@ -195,7 +113,12 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function fromCache(array $result)
     {
-        $this->set(new CacheResult($result['connection'], $result['database'], new \ArrayIterator($result['data'])));
+        $this->setFromCache(true);
+        $cacheResult = new CacheResult();
+        $cacheResult->setConnectionName($result['connection']);
+        $cacheResult->setDatabase($result['database']);
+        $cacheResult->setResult(new \ArrayIterator($result['data']));
+        $this->set($cacheResult);
     }
 
     /**
@@ -203,89 +126,27 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function first()
     {
-        $result = $this->rewind()->current();
-
-        if ($this->shouldUseArray() === false) {
-            $result = $this->hydrate($result, $this);
-        }
-
-        if ($result === false) {
+        if ($this->result === null) {
             return null;
         }
 
-        return $result;
+        $iterator = $this->getIterator();
+
+        /**
+         * Some iterator need to be rewind to use current
+         */
+        $iterator->rewind();
+
+        return $iterator->current();
     }
 
-    /**
-     * Iterator
-     */
 
     /**
-     * @return $this
+     * @return \Generator
      */
-    public function rewind()
+    public function getIterator()
     {
-        if ($this->shouldUseArray() === false) {
-            $this->iterator->rewind();
-        } else {
-            reset($this->rows);
-        }
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function current()
-    {
-        if ($this->shouldUseArray() === false) {
-            $result = $this->hydrate($this->iterator->current(), $this);
-        } else {
-            $result = current($this->rows);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function key()
-    {
-        if ($this->shouldUseArray() === false) {
-            $key = $this->iterator->key();
-        } else {
-            $key = key($this->rows);
-        }
-
-        return $key;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function next()
-    {
-        if ($this->shouldUseArray() === false) {
-            $this->iterator->next();
-            $result = $this->current();
-        } else {
-            $result = next($this->rows);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid()
-    {
-        if ($this->current() === false) {
-            return false;
-        }
-
-        return true;
+        return $this->hydrator->getIterator();
     }
 
     /**
@@ -293,10 +154,6 @@ class Collection implements CollectionInterface, \Iterator, \Countable
      */
     public function count()
     {
-        if ($this->shouldUseArray() === true) {
-            return count($this->rows);
-        }
-
-        return $this->iterator->getNumRows();
+        return $this->hydrator->count();
     }
 }

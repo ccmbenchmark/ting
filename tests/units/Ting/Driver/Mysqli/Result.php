@@ -68,9 +68,6 @@ class Result extends atoum
                 ->call('current')->once();
     }
 
-    /**
-     * @tags test
-     */
     public function testGetNumRows()
     {
         $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
