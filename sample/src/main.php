@@ -25,9 +25,7 @@
 namespace sample\src;
 
 // ting autoloader
-use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\Exception;
-use CCMBenchmark\Ting\Query\Generator;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -83,9 +81,6 @@ $memcached = [
 ];
 
 $services->get('ConnectionPool')->setConfig($connections);
-/** @var Generator $cp */
-$cp = $services->get('ConnectionPool');
-$cp->getAll("bouh", "a");
 
 $services->get('Cache')->setConfig($memcached);
 $services->get('Cache')->store('key', 'storedInCacheValue', 10);
