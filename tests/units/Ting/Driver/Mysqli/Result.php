@@ -76,9 +76,9 @@ class Result extends atoum
         $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
         $mockMysqliResult->num_rows = 10;
 
-
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result())
+            ->then($result->setResult($mockMysqliResult))
             ->variable($result->getNumRows())
                 ->isEqualTo(10);
     }

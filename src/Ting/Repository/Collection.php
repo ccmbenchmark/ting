@@ -141,7 +141,7 @@ class Collection implements CollectionInterface, \Iterator, \Countable
             return false;
         }
 
-        return $this->hydrator->hydrate($data, $this);
+        return $this->hydrator->hydrate($this->connectionName, $this->database, $data, $this);
     }
 
     /**

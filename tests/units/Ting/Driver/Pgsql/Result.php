@@ -150,12 +150,12 @@ class Result extends atoum
 
     public function testGetNumRows()
     {
-        $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
-        $mockMysqliResult->num_rows = 10;
-
+        $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+        $mockPgsqlResult->num_rows = 10;
 
         $this
-            ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult))
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))
+            ->then($result->setResult($mockPgsqlResult))
             ->variable($result->getNumRows())
                 ->isEqualTo(10);
     }

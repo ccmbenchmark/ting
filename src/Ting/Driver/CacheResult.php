@@ -24,8 +24,6 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
-use CCMBenchmark\Ting\Exception;
-
 class CacheResult implements ResultInterface
 {
 
@@ -148,5 +146,13 @@ class CacheResult implements ResultInterface
         }
 
         return $this->result->valid();
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumRows()
+    {
+        return $this->result->num_rows;
     }
 }

@@ -54,4 +54,9 @@ interface ResultInterface extends \Iterator
      * @return string|null
      */
     public function getDatabase();
+
+    /**
+     * @return int
+     */
+    public function getNumRows();
 }
