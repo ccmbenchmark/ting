@@ -150,7 +150,7 @@ class Statement extends atoum
                 ->call('set')
                     ->once()
             ->object($outerResult)
-                ->isCloneOf($resultReference);
+                ->isCloneOf($resultOk);
     }
 
     public function testExecuteShouldRaiseQueryException()
