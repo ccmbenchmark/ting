@@ -12,6 +12,7 @@ This file will track changes to public interfaces between 2 major versions.
     * Added setter ```setResult```
     * Added accessor ```getConnectionName```
     * Added accessor ```getDatabase```
+    * Added method ```getNumRows```
 * StatementInterface :
     * Added Constructor
 * CollectionInterface:
@@ -20,3 +21,4 @@ This file will track changes to public interfaces between 2 major versions.
     * Renamed method ```fromArray``` to ```fromCache```
 * HydratorInterface:
     * New mandatory parameters for ```hydrate``` method
+    * New method ```isAggregator```
