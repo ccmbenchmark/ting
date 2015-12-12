@@ -53,11 +53,13 @@ class HydratorArray implements HydratorInterface
 
     /**
      * Hydrate one object from values and add to Collection
+     * @param string              $connectionName
+     * @param string              $database
      * @param array               $columns
      * @param CollectionInterface $collection
      * @return array
      */
-    public function hydrate(array $columns, CollectionInterface $collection)
+    public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection)
     {
         $result = [];
 

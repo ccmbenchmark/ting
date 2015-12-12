@@ -1,5 +1,20 @@
-X.X.X (XXXX-XX-XX) :
+3.X.X (XXXX-XX-XX) :
+    * Fix conflict when hydrating model which use the same table name but on different database
     * Lazy iteration for Hydrator without aggregation mode
+
+2.6.2 (2015-12-11) :
+    * Datetime serializer : Allow psql timestamp to be unserialized
+
+2.6.1 (2015-12-11) :
+    * Hydrator setting entity property now properly use metadata to cast value
+    * Better parsing for postgresql : we stop to parse the query after FROM
+
+2.6.0 (2015-12-10) :
+    * Generator can now create query with in criteria
+    * Performance improvement : add a pseudo cache over MetadataRepository::findMetadataForTable
+
+2.5.1 (2015-11-18) :
+    * Fix parsing PostgreSQL query with subquery
 
 2.5.0 (2015-10-02) :
     * Adding Ip serializer

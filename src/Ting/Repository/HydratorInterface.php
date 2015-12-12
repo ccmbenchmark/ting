@@ -44,11 +44,14 @@ interface HydratorInterface
 
     /**
      * Hydrate One object from it's values
+     * @param string              $connectionName
+     * @param string              $database
      * @param array               $columns
      * @param CollectionInterface $collection
+     *
      * @return mixed
      */
-    public function hydrate(array $columns, CollectionInterface $collection);
+    public function hydrate($connectionName, $database, array $columns, CollectionInterface $collection);
 
     /**
      * @return bool

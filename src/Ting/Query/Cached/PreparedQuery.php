@@ -49,7 +49,7 @@ class PreparedQuery extends Query
         if ($this->prepared === true) {
             return $this;
         }
-        
+
         $this->statement = $this->connection->slave()->prepare($this->sql);
         $this->prepared  = true;
 
@@ -95,7 +95,7 @@ class PreparedQuery extends Query
         $this->prepareQuery();
 
         $this->statement->execute($this->params, $collection);
-        $this->cache->store($this->cacheKey, $collection->toArray(), $this->ttl);
+        $this->cache->store($this->cacheKey, $collection->toCache(), $this->ttl);
 
         return $collection;
     }

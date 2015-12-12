@@ -24,9 +24,11 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\ResultInterface;
+
 interface CollectionInterface
 {
-    public function set(\Iterator $result);
+    public function set(ResultInterface $result);
 
     /**
      * @return mixed
@@ -64,11 +66,11 @@ interface CollectionInterface
     /**
      * @return array
      */
-    public function toArray();
+    public function toCache();
 
     /**
-     * @param array $rows
+     * @param array $result
      * @return void
      */
-    public function fromArray(array $rows);
+    public function fromCache(array $result);
 }

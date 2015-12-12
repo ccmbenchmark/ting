@@ -34,13 +34,18 @@ class MetadataRepository
      *
      * @var array RepositoryClassName => MetadataObject
      */
-    protected $metadataList = array();
+    protected $metadataList = [];
 
     /**
      * This array matches an entity name and the corresponding repository name
      * @var array
      */
-    protected $entityToRepository = array();
+    protected $entityToRepository = [];
+
+    /**
+     * @var array This array is a pseudo cache to reduce findMetadataForTable work
+     */
+    private $tableToMetadata = array();
 
     /**
      * @var SerializerFactoryInterface|null
@@ -53,15 +58,24 @@ class MetadataRepository
     }
 
     /**
-     * @param          $table
-     * @param callable $callbackFound   called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown table - no parameter
+     * @param string   $connectionName
+     * @param string   $database
+     * @param string   $table
+     * @param \Closure $callbackFound   called with applicable Metadata if applicable
+     * @param \Closure $callbackNotFound called if unknown table - no parameter
      */
-    public function findMetadataForTable($table, \Closure $callbackFound, \Closure $callbackNotFound = null)
-    {
+    public function findMetadataForTable(
+        $connectionName,
+        $database,
+        $table,
+        \Closure $callbackFound,
+        \Closure $callbackNotFound = null
+    ) {
         $found = false;
         foreach ($this->metadataList as $metadata) {
             $found = $metadata->ifTableKnown(
+                $connectionName,
+                $database,
                 $table,
                 function (Metadata $metadata) use ($callbackFound) {
                     $callbackFound($metadata);
@@ -69,19 +83,21 @@ class MetadataRepository
             );
 
             if ($found === true) {
+                $this->tableToMetadata[$table] = $metadata;
                 break;
             }
         }
 
         if ($found === false && $callbackNotFound !== null) {
             $callbackNotFound();
+            $this->tableToMetadata[$table] = false;
         }
     }
 
     /**
      * @param string $repositoryName
-     * @param callable $callbackFound Called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown entity - no parameter
+     * @param \Closure $callbackFound Called with applicable Metadata if applicable
+     * @param \Closure $callbackNotFound called if unknown entity - no parameter
      */
     public function findMetadataForRepository(
         $repositoryName,
@@ -97,8 +113,8 @@ class MetadataRepository
 
     /**
      * @param object   $entity
-     * @param callable $callbackFound Called with applicable Metadata if applicable
-     * @param callable $callbackNotFound called if unknown entity - no parameter
+     * @param \Closure $callbackFound Called with applicable Metadata if applicable
+     * @param \Closure $callbackNotFound called if unknown entity - no parameter
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {

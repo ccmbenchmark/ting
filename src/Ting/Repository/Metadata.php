@@ -170,13 +170,17 @@ class Metadata
 
     /**
      * Execute callback if the provided table is the actual
-     * @param          $table
+     * @param string   $connectionName
+     * @param string   $database
+     * @param string   $table
      * @param callable $callback
      * @return bool
      */
-    public function ifTableKnown($table, \Closure $callback)
+    public function ifTableKnown($connectionName, $database, $table, \Closure $callback)
     {
-        if ($this->table === $table) {
+        if ($this->table === $table
+            && $this->connectionName === $connectionName && $this->databaseName === $database
+        ) {
             $callback($this);
             return true;
         }
@@ -241,6 +245,18 @@ class Metadata
                 $options = $this->fields[$column]['serializer_options']['unserialize'];
             }
             $value = $this->serializerFactory->get($this->fields[$column]['serializer'])->unserialize($value, $options);
+        } elseif ($value !== null) {
+            switch ($this->fields[$column]['type']) {
+                case "int":
+                    $value = (int) $value;
+                    break;
+                case "double":
+                    $value = (double) $value;
+                    break;
+                case "bool":
+                    $value = (bool) $value;
+                    break;
+            }
         }
 
         $entity->$property($value);
