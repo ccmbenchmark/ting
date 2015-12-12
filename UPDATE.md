@@ -2,6 +2,7 @@
 This file will track changes to public interfaces between 2 major versions.
 
 ## 3.0:
+* Cache data are incompatibles with previous major version, you should clean your cache data
 * DriverInterface: new ```setName``` method
 * ResultInterface:
     * Removed method ```dataSeek```
@@ -19,6 +20,8 @@ This file will track changes to public interfaces between 2 major versions.
     * Changed type hinting : method ```set``` now type hints the new ```ResultInterface``` (was ```\Iterator```)
     * Renamed method ```toArray``` to ```toCache```
     * Renamed method ```fromArray``` to ```fromCache```
+    * Now implement ```IteratorAggregate``` and ```Countable```
+    * Removed all methods ```rewind```, ```current```, ```key```, ```next```, ```valid```, ```count```, ```add```
 * HydratorInterface:
-    * New mandatory parameters for ```hydrate``` method
-    * New method ```isAggregator```
+    * Now implement ```IteratorAggregate```, ```Countable```
+    * Old method ```hydrate``` is now ```setResult``` with a single argument ```ResultInterface```
