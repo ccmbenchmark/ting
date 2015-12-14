@@ -38,6 +38,8 @@ interface CollectionInterface extends \IteratorAggregate, \Countable
     /**
      * @param bool $value
      * @return void
+     *
+     * @internal
      */
     public function setFromCache($value);
 
