@@ -67,6 +67,8 @@ class Statement implements StatementInterface
     /**
      * @param $connection
      * @return $this
+     *
+     * @internal
      */
     public function setConnection($connection)
     {
@@ -78,6 +80,8 @@ class Statement implements StatementInterface
     /**
      * @param $query
      * @return $this
+     *
+     * @internal
      */
     public function setQuery($query)
     {
@@ -133,6 +137,8 @@ class Statement implements StatementInterface
      * @param $resultResource
      * @param CollectionInterface $collection
      * @return bool
+     *
+     * @internal
      */
     public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
     {
@@ -154,6 +160,9 @@ class Statement implements StatementInterface
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
     }
 
+    /**
+     * @internal
+     */
     public function __destruct()
     {
         $this->close();

@@ -101,21 +101,4 @@ class Connection extends atoum
                         ->once()
         ;
     }
-
-    public function testForCacheKeyShouldAlwaysGiveSameParams()
-    {
-        $this
-            ->if($connection = new \CCMBenchmark\Ting\Connection($this->mockConnectionPool, 'main', 'db'))
-            ->and($callback = function ($key) use (&$outer1) {
-                $outer1 = $key;
-            })
-            ->then($connection->forCacheKey($callback))
-            ->and($callback = function ($key) use (&$outer2) {
-                $outer2 = $key;
-            })
-            ->then($connection->forCacheKey($callback))
-            ->string($outer1)
-                ->isIdenticalTo($outer2)
-        ;
-    }
 }

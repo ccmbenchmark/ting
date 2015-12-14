@@ -4,7 +4,8 @@ This file will track changes to public interfaces between 2 major versions.
 ## 3.0:
 * PHP required version is now 5.5
 * Cache data are incompatibles with previous major version, you should clean your cache data
-* DriverInterface: new ```setName``` method
+* DriverInterface:
+    * New ```setName``` method
 * ResultInterface:
     * Removed method ```dataSeek```
     * Removed method ```format```

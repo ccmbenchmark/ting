@@ -144,6 +144,8 @@ class Statement implements StatementInterface
      * @param \mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
+     *
+     * @internal
      */
     public function setCollectionWithResult($resultData, CollectionInterface $collection)
     {
@@ -157,12 +159,17 @@ class Statement implements StatementInterface
 
     /**
      * @throws Exception
+     *
+     * @internal
      */
     protected function close()
     {
         $this->driverStatement->close();
     }
 
+    /**
+     * @internal
+     */
     public function __destruct()
     {
         $this->close();

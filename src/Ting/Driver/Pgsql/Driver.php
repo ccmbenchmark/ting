@@ -221,6 +221,14 @@ class Driver implements DriverInterface
         return $this->setCollectionWithResult($sql, $collection);
     }
 
+    /**
+     * @param string $sql
+     * @param CollectionInterface $collection
+     * @return CollectionInterface
+     * @throws QueryException
+     *
+     * @internal
+     */
     protected function setCollectionWithResult($sql, CollectionInterface $collection)
     {
         $result = new Result();
