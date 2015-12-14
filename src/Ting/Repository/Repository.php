@@ -182,9 +182,9 @@ class Repository
         if ($collection->count() === 0) {
             return null;
         }
-        $entity = $collection->current();
+        $entity = $collection->getIterator()->current();
 
-        return current($entity);
+        return reset($entity);
     }
 
     /**
@@ -239,9 +239,9 @@ class Repository
         if ($collection->count() === 0) {
             return null;
         }
-        $entity = $collection->current();
+        $entity = $collection->first();
 
-        return current($entity);
+        return reset($entity);
     }
 
     /**

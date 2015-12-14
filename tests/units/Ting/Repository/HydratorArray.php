@@ -24,36 +24,64 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\Mysqli\Result;
 use mageekguy\atoum;
 
 class HydratorArray extends atoum
 {
     public function testHydrateShouldReturnArray()
     {
-        $data = array(
-            array(
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ),
-            array(
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            )
-        );
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
 
-        $services = new \CCMBenchmark\Ting\Services();
-        $collection = $services->get('CollectionFactory')->get();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorArray())
-            ->then($bouh = $hydrator->hydrate('connectionName', 'database', $data, $collection))
-            ->array($bouh)
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->array($iterator->current())
                 ->isIdenticalTo(['fname' => 'Sylvain', 'name' => 'Robez-Masson']);
+    }
+
+
+    public function testCountShouldReturn2()
+    {
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $this->calling($result)->getNumRows = 2;
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorArray())
+            ->then($hydrator->setResult($result))
+            ->integer(count($hydrator))
+                ->isIdenticalTo(2);
+    }
+
+    public function testCountWithoutResultShoulddReturn0()
+    {
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorArray())
+            ->integer(count($hydrator))
+                ->isIdenticalTo(0);
     }
 }

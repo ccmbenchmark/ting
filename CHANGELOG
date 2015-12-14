@@ -1,6 +1,6 @@
 3.X.X (XXXX-XX-XX) :
     * Fix conflict when hydrating model which use the same table name but on different database
-    * Lazy iteration for Hydrator without aggregation mode
+    * New concept for Hydrator based on Generator to simplify the code and allow more possibility
 
 2.6.2 (2015-12-11) :
     * Datetime serializer : Allow psql timestamp to be unserialized

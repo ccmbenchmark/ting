@@ -26,7 +26,7 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
-interface CollectionInterface
+interface CollectionInterface extends \IteratorAggregate, \Countable
 {
     public function set(ResultInterface $result);
 
@@ -34,23 +34,6 @@ interface CollectionInterface
      * @return mixed
      */
     public function first();
-
-    /**
-     * Iterator
-     */
-    public function rewind();
-
-    public function current();
-
-    public function key();
-
-    public function next();
-
-    public function valid();
-
-    public function count();
-
-    public function add($data, $key = null);
 
     /**
      * @param bool $value

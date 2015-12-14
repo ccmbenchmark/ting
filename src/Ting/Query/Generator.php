@@ -297,7 +297,6 @@ class Generator
 
         foreach ($values as $field => $value) {
             if (is_array($value) === true) {
-
                 // handle array values...
                 $j = 0;
                 $condition = $fields[$i] . ' IN (';
