@@ -34,6 +34,16 @@ class Statement implements StatementInterface
 {
 
     /**
+     * @var string
+     */
+    protected $connectionName;
+
+    /**
+     * @var string database name
+     */
+    protected $database  = '';
+
+    /**
      * @var mixed
      */
     protected $driverStatement = null;
@@ -55,12 +65,16 @@ class Statement implements StatementInterface
 
     /**
      * @param \mysqli_stmt|Object $driverStatement
-     * @param array $paramsOrder
+     * @param array               $paramsOrder
+     * @param string              $connectionName
+     * @param string              $database
      */
-    public function __construct($driverStatement, array $paramsOrder)
+    public function __construct($driverStatement, array $paramsOrder, $connectionName, $database)
     {
         $this->driverStatement = $driverStatement;
         $this->paramsOrder     = $paramsOrder;
+        $this->connectionName  = $connectionName;
+        $this->database        = $database;
     }
 
     /**
@@ -127,24 +141,35 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param \mysqli_result $result
+     * @param \mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
+     *
+     * @internal
      */
-    public function setCollectionWithResult($result, CollectionInterface $collection)
+    public function setCollectionWithResult($resultData, CollectionInterface $collection)
     {
-        $collection->set(new Result($result));
+        $result = new Result();
+        $result->setConnectionName($this->connectionName);
+        $result->setDatabase($this->database);
+        $result->setResult($resultData);
+        $collection->set($result);
         return true;
     }
 
     /**
      * @throws Exception
+     *
+     * @internal
      */
     protected function close()
     {
         $this->driverStatement->close();
     }
 
+    /**
+     * @internal
+     */
     public function __destruct()
     {
         $this->close();

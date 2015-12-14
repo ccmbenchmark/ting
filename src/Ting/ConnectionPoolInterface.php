@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
 interface ConnectionPoolInterface
@@ -38,4 +39,20 @@ interface ConnectionPoolInterface
      * @param array $config
      */
     public function setConfig($config);
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @return DriverInterface
+     */
+    public function master($name, $database);
+
+    /**
+     * @param string $name
+     * @param string $database
+     * @return DriverInterface
+     */
+    public function slave($name, $database);
+
+    public function closeAll();
 }

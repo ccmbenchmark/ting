@@ -34,6 +34,11 @@ class Driver implements DriverInterface
 {
 
     /**
+     * @var string
+     */
+    protected $name;
+
+    /**
      * @var \mysqli_driver|Object|null driver
      */
     protected $driver = null;
@@ -76,7 +81,7 @@ class Driver implements DriverInterface
     /**
      * @var array List of already prepared queries
      */
-    protected $preparedQueries = array();
+    protected $preparedQueries = [];
 
     /**
      * @param  \mysqli|Object|null $connection
@@ -173,6 +178,16 @@ class Driver implements DriverInterface
         $this->objectHash = spl_object_hash($this);
     }
 
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
 
     /**
      * @param string $database
@@ -216,7 +231,7 @@ class Driver implements DriverInterface
      * @return mixed|CollectionInterface
      * @throws QueryException
      */
-    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    public function execute($sql, array $params = [], CollectionInterface $collection = null)
     {
         $sql = preg_replace_callback(
             '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
@@ -260,7 +275,7 @@ class Driver implements DriverInterface
      * Quote value according to the type of variable
      * @param mixed $value
      */
-    public function quoteValue($value)
+    protected function quoteValue($value)
     {
         switch (gettype($value)) {
             case "integer":
@@ -275,14 +290,18 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param \mysqli_result|Object $result
+     * @param \mysqli_result|Object $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
      * @throws QueryException
      */
-    protected function setCollectionWithResult($result, CollectionInterface $collection)
+    protected function setCollectionWithResult($resultData, CollectionInterface $collection)
     {
-        $collection->set(new Result($result));
+        $result = new Result();
+        $result->setConnectionName($this->name);
+        $result->setDatabase($this->currentDatabase);
+        $result->setResult($resultData);
+        $collection->set($result);
 
         return $collection;
     }
@@ -325,7 +344,7 @@ class Driver implements DriverInterface
             $this->logger->stopPrepare(spl_object_hash($driverStatement));
         }
 
-        $statement = new Statement($driverStatement, $paramsOrder);
+        $statement = new Statement($driverStatement, $paramsOrder, $this->name, $this->currentDatabase);
         $statement->setLogger($this->logger);
 
         $this->preparedQueries[$statementName] = $statement;

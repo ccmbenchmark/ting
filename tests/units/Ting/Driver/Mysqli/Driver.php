@@ -325,7 +325,7 @@ class Driver extends atoum
     public function testExecuteShouldCallDriverQuery()
     {
         $driverFake          = new \mock\Fake\Mysqli();
-        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult(array());
+        $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
 
         $this->calling($driverFake)->query = $mockMysqliResult;
 
@@ -538,22 +538,6 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->string($driver->escapeField('Bouh'))
                 ->isIdenticalTo('`Bouh`')
-        ;
-    }
-
-    public function testQuoteValueShouldQuoteValue()
-    {
-        $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_escape_string = function ($value) {
-            return $value;
-        };
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->string($driver->quoteValue('Bouh'))
-                ->isIdenticalTo('"Bouh"')
-            ->integer($driver->quoteValue(3))
-                ->isIdenticalTo(3)
         ;
     }
 

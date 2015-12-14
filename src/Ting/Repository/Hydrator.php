@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
@@ -32,6 +33,11 @@ class Hydrator implements HydratorInterface
 
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
+
+    /**
+     * @var ResultInterface
+     */
+    protected $result = null;
 
     /**
      * @param MetadataRepository $metadataRepository
@@ -51,18 +57,28 @@ class Hydrator implements HydratorInterface
         $this->unitOfWork = $unitOfWork;
     }
 
+    /**
+     * @param ResultInterface $result
+     * @return $this
+     */
+    public function setResult(ResultInterface $result)
+    {
+        $this->result = $result;
+        return $this;
+    }
 
     /**
-     * Hydrate one object from values and add to Collection
-     * @param array               $columns
-     * @param CollectionInterface $collection
-     * @return array
+     * @return \Generator
      */
-    public function hydrate(array $columns, CollectionInterface $collection)
+    public function getIterator()
     {
-        $result = $this->hydrateColumns($columns);
-        $collection->add($result);
-        return $result;
+        foreach ($this->result as $key => $columns) {
+            yield $key => $this->hydrateColumns(
+                $this->result->getConnectionName(),
+                $this->result->getDatabase(),
+                $columns
+            );
+        }
     }
 
     /**
@@ -73,10 +89,13 @@ class Hydrator implements HydratorInterface
      *           all Entities without any information (a "LEFT JOIN user" can return no informatoin at all about user)
      *              are set to null
      *
-     * @param array               $columns
+     * @param string $connectionName
+     * @param string $database
+     * @param array  $columns
+     *
      * @return array
      */
-    protected function hydrateColumns(array $columns)
+    protected function hydrateColumns($connectionName, $database, array $columns)
     {
         $result        = [];
         $metadataList  = [];
@@ -88,6 +107,8 @@ class Hydrator implements HydratorInterface
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
                 $this->metadataRepository->findMetadataForTable(
+                    $connectionName,
+                    $database,
                     $column['orgTable'],
                     function (Metadata $metadata) use ($column, &$result, &$metadataList) {
                         $metadataList[$column['table']] = $metadata;
@@ -149,5 +170,17 @@ class Hydrator implements HydratorInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        if ($this->result === null) {
+            return 0;
+        }
+
+        return $this->result->getNumRows();
     }
 }

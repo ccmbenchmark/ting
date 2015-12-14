@@ -46,6 +46,8 @@ class Connection
      * @param ConnectionPoolInterface $connectionPool
      * @param string $name
      * @param string $database
+     *
+     * @internal
      */
     public function __construct(ConnectionPoolInterface $connectionPool, $name, $database)
     {
@@ -55,16 +57,6 @@ class Connection
         $this->connectionPool = $connectionPool;
         $this->name           = $name;
         $this->database       = $database;
-    }
-
-    /**
-     * Return a unique id for a connection and a database
-     *
-     * @param callable $callback
-     */
-    public function forCacheKey(callable $callback)
-    {
-        $callback($this->name . '|' . $this->database);
     }
 
     /**

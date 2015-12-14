@@ -25,15 +25,21 @@
 namespace tests\units\CCMBenchmark\Ting\Query\Cached;
 
 use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\CollectionInterface;
 use mageekguy\atoum;
 
 class PreparedQuery extends atoum
 {
+
     public function testQueryShouldCallOnlyCacheGetIfDataInCache()
     {
         $services              = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection(
+            $mockConnectionPool,
+            'connectionName',
+            'database'
+        );
         $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
             $services->get('MetadataRepository'),
             $services->get('UnitOfWork'),
@@ -43,16 +49,21 @@ class PreparedQuery extends atoum
         $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
         $this->calling($mockMemcached)->get = function () {
             return [
-                [
+                'connection' => 'connectionName',
+                'database'   => 'database',
+                'data' =>
                     [
-                        'name'     => 'prenom',
-                        'orgName'  => 'firstname',
-                        'table'    => 'bouh',
-                        'orgTable' => 'T_BOUH_BOO',
-                        'type'     => MYSQLI_TYPE_VAR_STRING,
-                        'value'    => 'Xavier',
+                        [
+                            [
+                                'name'     => 'prenom',
+                                'orgName'  => 'firstname',
+                                'table'    => 'bouh',
+                                'orgTable' => 'T_BOUH_BOO',
+                                'type'     => MYSQLI_TYPE_VAR_STRING,
+                                'value'    => 'Xavier',
+                            ]
+                        ]
                     ]
-                ]
             ];
         };
 
@@ -85,19 +96,31 @@ class PreparedQuery extends atoum
     public function testQueryShouldCallCacheGetThenStoreIfDataNotInCache()
     {
         $mockConnectionPool  = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection      = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockConnection      = new \mock\CCMBenchmark\Ting\Connection(
+            $mockConnectionPool,
+            'connectionName',
+            'database'
+        );
         $fakeDriver          = new \mock\Fake\Mysqli();
         $mockDriver          = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
         $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
-        $mockStatement       = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
-        $mockMemcached       = new \mock\CCMBenchmark\Ting\Cache\Memcached();
+        $mockStatement       = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(
+            $mockMysqliStatement,
+            [],
+            'connectionName',
+            'database'
+        );
+        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
 
         $this->calling($mockMemcached)->get     = null;
         $this->calling($mockMemcached)->store   = true;
         $this->calling($mockConnection)->slave  = $mockDriver;
         $this->calling($mockDriver)->execute    = true;
         $this->calling($mockDriver)->prepare    = $mockStatement;
-        $this->calling($mockStatement)->execute = true;
+        $this->calling($mockStatement)->execute = function (array $params, $collection) {
+            $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult());
+            return true;
+        };
 
         $collection = new Collection();
 
@@ -119,12 +142,21 @@ class PreparedQuery extends atoum
     public function testPrepareExecuteShouldCallConnectionPrepare()
     {
         $mockConnectionPool  = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection      = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockConnection      = new \mock\CCMBenchmark\Ting\Connection(
+            $mockConnectionPool,
+            'connectionName',
+            'database'
+        );
         $fakeDriver          = new \mock\Fake\Mysqli();
         $mockDriver          = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
         $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
-        $mockStatement       = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
-        $mockMemcached       = new \mock\CCMBenchmark\Ting\Cache\Memcached();
+        $mockStatement       = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(
+            $mockMysqliStatement,
+            [],
+            'connectionName',
+            'database'
+        );
+        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
 
         $this->calling($mockMemcached)->get     = null;
         $this->calling($mockMemcached)->store   = true;
@@ -146,12 +178,21 @@ class PreparedQuery extends atoum
     public function testExecuteShouldCallStatementExecute()
     {
         $mockConnectionPool  = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection      = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockConnection      = new \mock\CCMBenchmark\Ting\Connection(
+            $mockConnectionPool,
+            'connectionName',
+            'database'
+        );
         $fakeDriver          = new \mock\Fake\Mysqli();
         $mockDriver          = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
         $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
-        $mockStatement       = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement($mockMysqliStatement, []);
-        $mockMemcached       = new \mock\CCMBenchmark\Ting\Cache\Memcached();
+        $mockStatement       = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(
+            $mockMysqliStatement,
+            [],
+            'connectionName',
+            'database'
+        );
+        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
 
         $this->calling($mockMemcached)->get     = null;
         $this->calling($mockMemcached)->store   = true;
