@@ -156,16 +156,17 @@ class Driver extends atoum
 
     public function testSetDatabaseWhenWrongAuthOrPortShouldRaiseDriverException()
     {
+        $this->function->pg_connect = function ($dsn) {
+            return false;
+        };
+
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->exception(function () use ($driver) {
                 $driver->setDatabase('bouh');
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception')
-                ->error()
-                    ->withType(E_WARNING)
-                    ->exists();
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception');
     }
 
     public function testsetDatabaseWithDatabaseAlreadySetShouldDoNothing()
@@ -188,6 +189,7 @@ class Driver extends atoum
     public function testsetDatabaseShouldReturnSelf()
     {
         $this->function->pg_connect = true;
+
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
@@ -421,6 +423,8 @@ class Driver extends atoum
             $outerSql = $sql;
             $outerValues = $values;
         };
+        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
+        $this->function->pg_fetch_assoc   = null;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -470,7 +474,7 @@ class Driver extends atoum
         $this->function->pg_connect       = true;
         $this->function->pg_query_params  = true;
         $this->function->pg_fetch_assoc   = ['Bouh' => 'Hop'];
-        $this->function->pg_result_status = PGSQL_TUPLES_OK;
+        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -505,6 +509,8 @@ class Driver extends atoum
         $this->function->pg_fetch_array  = 'data';
         $this->function->pg_result_seek  = true;
         $this->function->pg_field_table  = 'myTable';
+        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
+        $this->function->pg_fetch_assoc   = null;
 
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 

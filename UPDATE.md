@@ -4,6 +4,9 @@ This file will track changes to public interfaces between 2 major versions.
 ## 3.0:
 * PHP required version is now 5.5
 * Cache data are incompatibles with previous major version, you should clean your cache data
+* Serializers Bool are renamed to Boolean for PHP7 compatibility
+    So you should check your repository if you use CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool or
+    CCMBenchmark\Ting\Driver\Mysqli\Serializer\Bool change Bool to Boolean
 * DriverInterface:
     * New ```setName``` method
 * ResultInterface:

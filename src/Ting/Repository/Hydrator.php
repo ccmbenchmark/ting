@@ -154,7 +154,7 @@ class Hydrator implements HydratorInterface
                     $result[0] = new \stdClass();
                 }
 
-                $result[0]->$column['name'] = $column['value'];
+                $result[0]->{$column['name']} = $column['value'];
             }
         }
 

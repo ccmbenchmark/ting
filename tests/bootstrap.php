@@ -22,6 +22,14 @@
  *
  **********************************************************************/
 
+if (defined('PGSQL_TUPLES_OK') === false) {
+    define('PGSQL_TUPLES_OK', 2);
+}
+
+if (defined('PGSQL_NUM') === false) {
+    define('PGSQL_NUM', 2);
+}
+
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/fixtures/model/Bouh.php';
 require __DIR__ . '/fixtures/model/BouhRepository.php';
