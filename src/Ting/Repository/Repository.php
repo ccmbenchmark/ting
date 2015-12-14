@@ -69,6 +69,8 @@ class Repository
      * @param CacheInterface $cache
      * @param UnitOfWork $unitOfWork
      * @param SerializerFactoryInterface $serializerFactory
+     *
+     * @internal
      */
     public function __construct(
         ConnectionPool $connectionPool,
@@ -267,6 +269,8 @@ class Repository
      * @param  array                      $options
      * @return \CCMBenchmark\Ting\Repository\Metadata
      * @throws Exception
+     *
+     * @internal
      */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {

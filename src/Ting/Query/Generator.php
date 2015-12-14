@@ -78,6 +78,13 @@ class Generator
         return $driver;
     }
 
+    /**
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool|false                 $forceMaster
+     * @return QueryInterface
+     *
+     * @internal
+     */
     public function getAll(
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false
@@ -105,6 +112,8 @@ class Generator
      * @param bool                       $forceMaster
      *
      * @return Query
+     *
+     * @internal
      */
     public function getOneByCriteria(
         array $primariesValue,
@@ -126,6 +135,11 @@ class Generator
         return $query;
     }
 
+    /**
+     * @param array           $criteria
+     * @param DriverInterface $driver
+     * @return array
+     */
     protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver)
     {
         $fields = $this->escapeFields($this->fields, $driver);
@@ -146,6 +160,8 @@ class Generator
      * @param bool                       $forceMaster
      *
      * @return Query
+     *
+     * @internal
      */
     public function getByCriteria(
         array $criteria,
@@ -172,6 +188,8 @@ class Generator
      * @param array $values associative array : columnName => value
      *
      * @return PreparedQuery
+     *
+     * @internal
      */
     public function insert(array $values)
     {
@@ -195,6 +213,8 @@ class Generator
      * @param array $primariesValue
      *
      * @return PreparedQuery
+     *
+     * @internal
      */
     public function update(array $values, array $primariesValue)
     {
@@ -221,6 +241,13 @@ class Generator
         return $query;
     }
 
+    /**
+     * @param array $primariesKeyValue
+     *
+     * @return PreparedQuery
+     *
+     * @internal
+     */
     public function delete(array $primariesKeyValue)
     {
         $driver = $this->getDriver(true);
@@ -260,7 +287,7 @@ class Generator
     /**
      * @param array $fields fields names
      * @param array $values each values can be a value or an array
-     * 
+     *
      * @return array
      */
     protected function generateConditionAndParams($fields, $values)

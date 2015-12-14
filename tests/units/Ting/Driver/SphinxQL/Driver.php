@@ -40,20 +40,4 @@ class Driver extends atoum
                 ->isIdenticalTo('Bouh')
         ;
     }
-
-    public function testQuoteValueShouldQuoteValue()
-    {
-        $mockDriver = new \mock\Fake\SphinxQL();
-        $this->calling($mockDriver)->real_escape_string = function ($value) {
-            return $value;
-        };
-
-        $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\SphinxQL\Driver($mockDriver))
-            ->string($driver->quoteValue('Bouh'))
-                ->isIdenticalTo("'Bouh'")
-            ->integer($driver->quoteValue(3))
-                ->isIdenticalTo(3)
-        ;
-    }
 }

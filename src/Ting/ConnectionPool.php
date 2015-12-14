@@ -94,8 +94,8 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * Return always the same slave connection
      *
-     * @param $name
-     * @param $database
+     * @param string $name
+     * @param string $database
      * @throws Exception
      * @return DriverInterface
      */

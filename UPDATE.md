@@ -2,7 +2,8 @@
 This file will track changes to public interfaces between 2 major versions.
 
 ## 3.0:
-* DriverInterface: new ```setName``` method
+* DriverInterface:
+    * New ```setName``` method
 * ResultInterface:
     * Removed method ```dataSeek```
     * Removed method ```format```

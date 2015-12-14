@@ -91,6 +91,8 @@ class Result implements ResultInterface
      * Analyze the given query
      * @param $query
      * @throws QueryException
+     *
+     * @internal
      */
     public function setQuery($query)
     {
