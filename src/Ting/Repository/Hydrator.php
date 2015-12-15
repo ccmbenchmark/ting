@@ -35,6 +35,7 @@ class Hydrator implements HydratorInterface
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
     protected $mapAliases         = [];
+    protected $mapObjects         = [];
 
     /**
      * @var ResultInterface
@@ -108,6 +109,23 @@ class Hydrator implements HydratorInterface
             $this->mapAliases[$to] = [];
         }
         $this->mapAliases[$to][] = [$from, $column];
+
+        return $this;
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function mapObjectTo($from, $to, $column)
+    {
+        if (isset($this->mapObjects[$to]) === false) {
+            $this->mapObjects[$to] = [];
+        }
+        $this->mapObjects[$to][] = [$from, $column];
 
         return $this;
     }
@@ -197,8 +215,17 @@ class Hydrator implements HydratorInterface
 
             if (isset($this->mapAliases[$table]) === true) {
                 foreach ($this->mapAliases[$table] as $fromAndColumn) {
-                    $entity->{'set' . $fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
+                    $entity->{$fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
                     unset($result[0]->$fromAndColumn[0]);
+                }
+            }
+
+            if (isset($this->mapObjects[$table]) === true) {
+                foreach ($this->mapObjects[$table] as $fromAndColumn) {
+                    if (isset($result[$fromAndColumn[0]]) === true) {
+                        $entity->{$fromAndColumn[1]}($result[$fromAndColumn[0]]);
+                        unset($result[$fromAndColumn[0]]);
+                    }
                 }
             }
 

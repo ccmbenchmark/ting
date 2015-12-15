@@ -119,4 +119,9 @@ class City implements NotifyPropertyInterface
     {
         $this->broum = $value;
     }
+
+    public function countryIs(Country $country)
+    {
+        $this->country = $country;
+    }
 }
