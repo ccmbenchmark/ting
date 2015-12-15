@@ -109,4 +109,14 @@ class City implements NotifyPropertyInterface
 
         return $this->dt;
     }
+
+    public function setTutu($value)
+    {
+        $this->tutu = $value;
+    }
+
+    public function setBroum($value)
+    {
+        $this->broum = $value;
+    }
 }

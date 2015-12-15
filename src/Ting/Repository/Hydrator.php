@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
+use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
@@ -33,6 +34,7 @@ class Hydrator implements HydratorInterface
 
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
+    protected $mapAliases         = [];
 
     /**
      * @var ResultInterface
@@ -79,6 +81,35 @@ class Hydrator implements HydratorInterface
                 $columns
             );
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        if ($this->result === null) {
+            return 0;
+        }
+
+        return $this->result->getNumRows();
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function mapAliasTo($from, $to, $column)
+    {
+        if (isset($this->mapAliases[$to]) === false) {
+            $this->mapAliases[$to] = [];
+        }
+        $this->mapAliases[$to][] = [$from, $column];
+
+        return $this;
     }
 
     /**
@@ -164,23 +195,23 @@ class Hydrator implements HydratorInterface
                 $result[$table] = null;
             }
 
-            if (is_object($entity) === true) {
+            if (isset($this->mapAliases[$table]) === true) {
+                foreach ($this->mapAliases[$table] as $fromAndColumn) {
+                    $entity->{'set' . $fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
+                    unset($result[0]->$fromAndColumn[0]);
+                }
+            }
+
+            if (is_object($entity) === true && ($entity instanceof \stdClass) === false) {
                 $this->unitOfWork->manage($entity);
             }
+        }
+
+        if (get_object_vars($result[0]) === []) {
+            unset($result[0]);
         }
 
         return $result;
     }
 
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        if ($this->result === null) {
-            return 0;
-        }
-
-        return $this->result->getNumRows();
-    }
 }

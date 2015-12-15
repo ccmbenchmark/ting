@@ -26,6 +26,8 @@ namespace sample\src;
 
 // ting autoloader
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\Hydrator;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -87,10 +89,10 @@ $services->get('Cache')->store('key', 'storedInCacheValue', 10);
 echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
 /**
- * @var $cityRepository CityRepository
+ * @var $cityRepository CityReposiths aory
  */
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
-
+/*
 $queryCached = $cityRepository->getCachedQuery(
     "select cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
                 co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
@@ -175,19 +177,26 @@ try {
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
-
+*/
 
 echo 'City3'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     $query = $cityRepository->getQuery(
-        "select * from t_city_cit as c
+        "select c.*, SUM(1) as toto, SUM(6) as broum from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
         where co.cou_code = :code limit 3"
     );
     $query->selectMaster(true);
-    $collection = $query->setParams(['code' => 'FRA'])->query();
+
+    $hydrator = new Hydrator();
+    $hydrator->setMetadataRepository($services->get('MetadataRepository'));
+    $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+    $hydrator
+        ->mapAliasTo('broum', 'c', 'broum')
+        ->mapAliasTo('toto', 'c', 'tutu');
+    $collection = $query->setParams(['code' => 'FRA'])->query(new Collection($hydrator));
 
     foreach ($collection as $result) {
         var_dump($result);
@@ -196,7 +205,7 @@ try {
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
-
+die;
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $collection = $cityRepository->getZCountryWithLotsPopulation();
