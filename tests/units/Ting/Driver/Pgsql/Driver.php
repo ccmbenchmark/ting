@@ -565,4 +565,29 @@ class Driver extends atoum
             ->isInstanceOf('CCMBenchmark\Ting\Driver\Exception')
         ;
     }
+
+    public function testPingShouldCallPingIfConnected()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_ping = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
+            ->boolean($driver->ping())
+                ->isTrue()
+        ;
+    }
+
+    public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
+    {
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->exception(function () use ($driver) {
+                $driver->ping();
+            })
+            ->isInstanceOf('CCMBenchmark\Ting\Driver\NeverConnectedException')
+        ;
+    }
 }
