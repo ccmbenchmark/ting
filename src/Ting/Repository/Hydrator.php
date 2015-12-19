@@ -216,7 +216,7 @@ class Hydrator implements HydratorInterface
             if (isset($this->mapAliases[$table]) === true) {
                 foreach ($this->mapAliases[$table] as $fromAndColumn) {
                     $entity->{$fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
-                    unset($result[0]->$fromAndColumn[0]);
+                    unset($result[0]->{$fromAndColumn[0]});
                 }
             }
 
@@ -234,11 +234,10 @@ class Hydrator implements HydratorInterface
             }
         }
 
-        if (get_object_vars($result[0]) === []) {
+        if (isset($result[0]) === true && get_object_vars($result[0]) === []) {
             unset($result[0]);
         }
 
         return $result;
     }
-
 }
