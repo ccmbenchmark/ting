@@ -93,7 +93,7 @@ echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
  * @var $cityRepository CityReposiths aory
  */
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
-/*
+
 $queryCached = $cityRepository->getCachedQuery(
     "select cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
                 co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
@@ -109,7 +109,6 @@ foreach ($collection as $result) {
     var_dump($result);
     echo str_repeat("-", 40) . "\n";
 }
-
 
 echo 'City1'."\n";
 try {
@@ -178,7 +177,7 @@ try {
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
-*/
+
 
 echo 'City3'."\n";
 try {
@@ -213,7 +212,7 @@ try {
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
-die;
+
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     $collection = $cityRepository->getZCountryWithLotsPopulation();
