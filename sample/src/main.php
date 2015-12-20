@@ -90,7 +90,7 @@ $services->get('Cache')->store('key', 'storedInCacheValue', 10);
 echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
 /**
- * @var $cityRepository CityReposiths aory
+ * @var $cityRepository CityRepository
  */
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
