@@ -27,19 +27,14 @@ namespace tests\fixtures\model;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class Bouh implements NotifyPropertyInterface
+class City implements NotifyPropertyInterface
 {
 
     use NotifyProperty;
 
     protected $id        = null;
-    protected $firstname = null;
     protected $name      = null;
-    protected $enabled   = null;
-    protected $price     = null;
-    protected $roles     = ['USER'];
-    protected $city      = null;
-    protected $retrievedTime = null;
+    protected $zipcode   = null;
 
     public function setId($id)
     {
@@ -47,34 +42,16 @@ class Bouh implements NotifyPropertyInterface
         $this->id = $id;
     }
 
-    public function setFirstname($firstname)
-    {
-        $this->propertyChanged('firstname', $this->firstname, $firstname);
-        $this->firstname = $firstname;
-    }
-
     public function setName($name)
     {
         $this->propertyChanged('name', $this->name, $name);
-        $this->name = (string) $name;
+        $this->name = $name;
     }
 
-    public function setRoles(array $roles)
+    public function setZipcode($zipcode)
     {
-        $this->propertyChanged('roles', $this->roles, $roles);
-        $this->roles = $roles;
-    }
-
-    public function setEnabled($enabled)
-    {
-        $this->propertyChanged('enabled', $this->enabled, $enabled);
-        $this->enabled = $enabled;
-    }
-
-    public function setPrice($price)
-    {
-        $this->propertyChanged('price', $this->price, $price);
-        $this->price = $price;
+        $this->propertyChanged('zipcode', $this->zipcode, $zipcode);
+        $this->zipcode = (string) $zipcode;
     }
 
     public function getId()
@@ -82,48 +59,13 @@ class Bouh implements NotifyPropertyInterface
         return $this->id;
     }
 
-    public function getFirstname()
-    {
-        return $this->firstname;
-    }
-
     public function getName()
     {
         return $this->name;
     }
 
-    public function getRoles()
+    public function getZipcode()
     {
-        return $this->roles;
-    }
-
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
-
-    public function getPrice()
-    {
-        return $this->price;
-    }
-
-    public function setRetrievedStringTime($time)
-    {
-        $this->retrievedTime = $time;
-    }
-
-    public function getRetrievedTime()
-    {
-        return $this->retrievedTime;
-    }
-
-    public function setCity(City $city)
-    {
-        $this->city = $city;
-    }
-
-    public function getCity()
-    {
-        return $this->city;
+        return $this->zipcode;
     }
 }

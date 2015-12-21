@@ -33,6 +33,8 @@ if (defined('PGSQL_NUM') === false) {
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/fixtures/model/Bouh.php';
 require __DIR__ . '/fixtures/model/BouhRepository.php';
+require __DIR__ . '/fixtures/model/City.php';
+require __DIR__ . '/fixtures/model/CityRepository.php';
 require __DIR__ . '/fixtures/FakeCache/Memcached.php';
 require __DIR__ . '/fixtures/FakeDriver/Driver.php';
 require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
