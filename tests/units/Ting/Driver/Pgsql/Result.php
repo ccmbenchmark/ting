@@ -151,7 +151,10 @@ class Result extends atoum
     public function testGetNumRows()
     {
         $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
-        $mockPgsqlResult->num_rows = 10;
+
+        $this->function->pg_num_rows = function ($result) {
+            return 10;
+        };
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))

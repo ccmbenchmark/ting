@@ -303,7 +303,7 @@ class Result implements ResultInterface
      */
     public function getNumRows()
     {
-        return $this->result->num_rows;
+        return pg_num_rows($this->result);
     }
 
     /**
