@@ -105,6 +105,9 @@ class Result extends atoum
                 ->hasMessage('Query invalid: can\'t parse columns');
     }
 
+    /**
+     *
+     */
     public function testIterator()
     {
         $this->function->pg_result_seek = true;
