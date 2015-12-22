@@ -139,7 +139,6 @@ class Result extends atoum
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
             ->then($result->setQuery('SELECT "firstname", b.name as nom FROM T_BOUH_BOO as b'))
             ->then($row = $result->format(array('firstname' => 'Sylvain', 'name' => 'Robez-Masson')))
-            ->dump($row)
             ->string($row[0]['name'])
                 ->isIdenticalTo('firstname')
             ->string($row[0]['orgName'])
@@ -261,7 +260,7 @@ class Result extends atoum
             ->string($row[1]['name'])
                 ->isIdenticalTo('old')
             ->string($row[1]['orgName'])
-            ->isIdenticalTo('(select old+3 from t_bouh_boo order by bouh, da)')
+            ->isIdenticalTo('(select old+3 from t_bouh_boo ORDER BY bouh, da)')
             ->string($row[1]['table'])
                 ->isIdenticalTo('')
             ->string($row[1]['orgTable'])
@@ -323,5 +322,32 @@ class Result extends atoum
             ->then($result->next())
             ->boolean($result->valid())
                 ->isFalse();
+    }
+
+    public function testFormatShouldKeepCase()
+    {
+
+        $this->function->pg_num_fields = 2;
+        $this->function->pg_field_table = function ($result, $index) {
+            if ($index < 2) {
+                return 'T_BOUH_BOO';
+            }
+            return false;
+        };
+
+        $this->function->pg_field_name = function ($result, $index) {
+            switch ($index) {
+                case 0:
+                    return 'myAwesomeValue';
+                    return false;
+            }
+        };
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
+            ->then($result->setQuery('SELECT SUM(1) as myAwesomeValue FROM T_BOUH_BOO as b'))
+            ->then($row = $result->format(array('myAwesomeValue' => '342')))
+            ->string($row[0]['name'])
+                ->isIdenticalTo('myAwesomeValue');
     }
 }
