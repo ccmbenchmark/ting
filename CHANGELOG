@@ -1,3 +1,8 @@
+X.X.X (XXXX-XX-XX) :
+    * Fix case on virtual column : if you used case on virtual ```COUNT(*) as NbUser``` that update can break your
+      application, because on the version 2.5.1 ```NbUser``` was changed to lowercase ```nbuser``` due to a bug. This fix
+      restore the previous behavior, and the column is not longer in lowercase.
+
 2.7.0 (2015-12-18) :
     * Allow user to ping connection if available on the driver
 
