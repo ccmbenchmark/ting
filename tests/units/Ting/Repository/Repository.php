@@ -590,7 +590,7 @@ class Repository extends atoum
             ->exception(function () use ($bouhRepository) {
                 $bouhRepository->getQueryBuilder($bouhRepository::QUERY_SELECT);
             })
-                ->hasMessage('Driver \Unknown\Driver\Mysqli\Driver is unknown to build QueryBuilder');
+                ->hasMessage('Driver Unknown\Driver\Mysqli\Driver is unknown to build QueryBuilder');
     }
 
     public function testGetQueryBuilder()
@@ -609,7 +609,7 @@ class Repository extends atoum
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_SELECT))
                 ->isInstanceOf('Aura\SqlQuery\Common\SelectInterface')
             ->if($services->get('ConnectionPool')
-                ->setConfig(['main' => ['namespace' => '\CCMBenchmark\Ting\Driver\Pgsql']]))
+                ->setConfig(['main' => ['namespace' => 'CCMBenchmark\Ting\Driver\Pgsql']]))
             ->object($queryBuilder = $bouhRepository->getQueryBuilder("unkwnon"))
                 ->isInstanceOf('Aura\SqlQuery\Common\SelectInterface')
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_UPDATE))

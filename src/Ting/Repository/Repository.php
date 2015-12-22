@@ -33,6 +33,9 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
+use CCMBenchmark\Ting\Driver\Mysqli;
+use CCMBenchmark\Ting\Driver\SphinxQL;
+use CCMBenchmark\Ting\Driver\Pgsql;
 use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 
 class Repository
@@ -177,13 +180,15 @@ class Repository
     public function getQueryBuilder($type)
     {
         $driver = $this->connectionPool->getDriverClass($this->metadata->getConnectionName());
+        $driver = ltrim($driver, '\\');
+
         switch ($driver) {
-            case '\CCMBenchmark\Ting\Driver\Pgsql\Driver':
+            case Pgsql\Driver::class:
                 $queryFactory = new AuraQueryFactory('pgsql');
                 break;
-            case '\CCMBenchmark\Ting\Driver\Mysqli\Driver':
-                // no break
-            case '\CCMBenchmark\Ting\Driver\SphinxQL\Driver':
+            case SphinxQL\Driver::class:
+                // SphinxQL and Mysqli are sharing the same driver
+            case Mysqli\Driver::class:
                 $queryFactory = new AuraQueryFactory('mysql');
                 break;
             default:
@@ -201,7 +206,7 @@ class Repository
                 $queryBuilder = $queryFactory->newInsert();
                 break;
             case self::QUERY_SELECT:
-                // no break
+                // We fallback on select for default case
             default:
                 $queryBuilder = $queryFactory->newSelect();
         }
