@@ -200,7 +200,7 @@ class MetadataRepository extends atoum
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
                 ->size
-                    ->isIdenticalTo(1);
+                    ->isIdenticalTo(2);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()

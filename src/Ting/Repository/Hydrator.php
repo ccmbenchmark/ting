@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
+use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
@@ -33,6 +34,8 @@ class Hydrator implements HydratorInterface
 
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
+    protected $mapAliases         = [];
+    protected $mapObjects         = [];
 
     /**
      * @var ResultInterface
@@ -79,6 +82,52 @@ class Hydrator implements HydratorInterface
                 $columns
             );
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        if ($this->result === null) {
+            return 0;
+        }
+
+        return $this->result->getNumRows();
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function mapAliasTo($from, $to, $column)
+    {
+        if (isset($this->mapAliases[$to]) === false) {
+            $this->mapAliases[$to] = [];
+        }
+        $this->mapAliases[$to][] = [$from, $column];
+
+        return $this;
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function mapObjectTo($from, $to, $column)
+    {
+        if (isset($this->mapObjects[$to]) === false) {
+            $this->mapObjects[$to] = [];
+        }
+        $this->mapObjects[$to][] = [$from, $column];
+
+        return $this;
     }
 
     /**
@@ -164,23 +213,31 @@ class Hydrator implements HydratorInterface
                 $result[$table] = null;
             }
 
-            if (is_object($entity) === true) {
+            if (isset($this->mapAliases[$table]) === true) {
+                foreach ($this->mapAliases[$table] as $fromAndColumn) {
+                    $entity->{$fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
+                    unset($result[0]->{$fromAndColumn[0]});
+                }
+            }
+
+            if (isset($this->mapObjects[$table]) === true) {
+                foreach ($this->mapObjects[$table] as $fromAndColumn) {
+                    if (isset($result[$fromAndColumn[0]]) === true) {
+                        $entity->{$fromAndColumn[1]}($result[$fromAndColumn[0]]);
+                        unset($result[$fromAndColumn[0]]);
+                    }
+                }
+            }
+
+            if (is_object($entity) === true && ($entity instanceof \stdClass) === false) {
                 $this->unitOfWork->manage($entity);
             }
         }
 
-        return $result;
-    }
-
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        if ($this->result === null) {
-            return 0;
+        if (isset($result[0]) === true && get_object_vars($result[0]) === []) {
+            unset($result[0]);
         }
 
-        return $this->result->getNumRows();
+        return $result;
     }
 }
