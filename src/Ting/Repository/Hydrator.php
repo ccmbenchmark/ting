@@ -32,15 +32,23 @@ use CCMBenchmark\Ting\UnitOfWork;
 class Hydrator implements HydratorInterface
 {
 
-    protected $metadataRepository = null;
-    protected $unitOfWork         = null;
-    protected $mapAliases         = [];
-    protected $mapObjects         = [];
+    protected $mapAliases = [];
+    protected $mapObjects = [];
 
     /**
      * @var ResultInterface
      */
     protected $result = null;
+
+    /**
+     * @var MetadataRepository
+     */
+    protected $metadataRepository = null;
+
+    /**
+     * @var UnitOfWork
+     */
+    protected $unitOfWork = null;
 
     /**
      * @param MetadataRepository $metadataRepository
