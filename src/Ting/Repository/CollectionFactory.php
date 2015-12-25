@@ -69,7 +69,7 @@ class CollectionFactory implements CollectionFactoryInterface
     public function get(HydratorInterface $hydrator = null)
     {
         if ($hydrator === null) {
-            $hydrator = $this->hydrator;
+            $hydrator = clone $this->hydrator;
         } else {
             $hydrator->setMetadataRepository($this->metadataRepository);
             $hydrator->setUnitOfWork($this->unitOfWork);
