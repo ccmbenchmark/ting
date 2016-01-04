@@ -29,6 +29,8 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\HydratorSingleObject;
+use CCMBenchmark\Ting\Serializer\DateTime;
+use CCMBenchmark\Ting\Serializer\Json;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -185,7 +187,7 @@ try {
 
     $query = $cityRepository->getQuery(
         "select
-          c.*, SUM(1) as toto, SUM(6) as broum,
+          c.*, SUM(1) as toto, NOW() as broum,
           co.cou_code, co.cou_name, cou_continent, cou_region, cou_head_of_state,
           col.cou_code, col.col_language, col_is_official, col_percentage
         from t_city_cit as c
@@ -202,6 +204,7 @@ try {
         ->mapAliasTo('broum', 'c', 'setBroum')
         ->mapAliasTo('toto', 'c', 'setTutu')
         ->mapObjectTo('co', 'c', 'countryIs')
+        ->unserializeAliasWith('broum', new DateTime())
         ->mapObjectTo('col', 'co', 'countryLanguageIs');
     $collection = $query->setParams(['code' => 'FRA'])->query(new Collection($hydrator));
 

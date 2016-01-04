@@ -76,7 +76,7 @@ class ConnectionPool implements ConnectionPoolInterface
      */
     public function master($name, $database)
     {
-        if (!isset($this->connectionConfig[$name]['master'])) {
+        if (isset($this->connectionConfig[$name]['master']) === false) {
             throw new Exception('Connection not found: ' . $name);
         }
         $config = $this->connectionConfig[$name]['master'];
