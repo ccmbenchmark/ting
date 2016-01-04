@@ -27,13 +27,15 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\MetadataRepository;
+use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 
 class Hydrator implements HydratorInterface
 {
 
-    protected $mapAliases = [];
-    protected $mapObjects = [];
+    protected $mapAliases         = [];
+    protected $mapObjects         = [];
+    protected $unserializeAliases = [];
 
     /**
      * @var ResultInterface
@@ -103,6 +105,23 @@ class Hydrator implements HydratorInterface
 
         return $this->result->getNumRows();
     }
+
+    /**
+     * @param string $alias
+     * @param UnserializeInterface $unserialize
+     * @param array $options
+     * @return $this
+     */
+    public function unserializeAliasWith($alias, UnserializeInterface $unserialize, array $options = [])
+    {
+        if (isset($this->unserializeAliases[$alias]) === false) {
+            $this->unserializeAliases[$alias] = [];
+        }
+        $this->unserializeAliases[$alias] = [$unserialize, $options];
+
+        return $this;
+    }
+
 
     /**
      * @param string $from
@@ -212,6 +231,15 @@ class Hydrator implements HydratorInterface
                 }
 
                 $result[0]->{$column['name']} = $column['value'];
+            }
+        }
+
+        // Virtual object
+        if (isset($result[0]) === true) {
+            foreach ($this->unserializeAliases as $aliasName => list($unserialize, $options)) {
+                if (isset($result[0]->$aliasName) === true) {
+                    $result[0]->$aliasName = $unserialize->unserialize($result[0]->$aliasName, $options);
+                }
             }
         }
 

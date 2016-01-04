@@ -3,6 +3,7 @@
     * New concept for Hydrator based on Generator to simplify the code and allow more possibility
     * New feature ```mapAliasTo``` on Hydrator to inject virtual column (COUNT(*), IFNULL(...), ...) into object
     * New feature ```mapObjectTo``` on Hydrator to inject object into object
+    * New feature ```unserializeAliasWith``` on Hydrator to unserialize virtual column
 
 2.6.2 (2015-12-11) :
     * Datetime serializer : Allow psql timestamp to be unserialized
