@@ -111,7 +111,7 @@ class Statement implements StatementInterface
     {
         $values = array();
         foreach (array_keys($this->paramsOrder) as $key) {
-            $values[] = &$params[$key];
+            $values[] = $params[$key];
         }
 
         if ($this->logger !== null) {
