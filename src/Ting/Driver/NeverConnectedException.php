@@ -22,9 +22,9 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Serializer;
+namespace CCMBenchmark\Ting\Driver;
 
-interface SerializerInterface extends SerializeInterface, UnserializeInterface
+class NeverConnectedException extends Exception
 {
 
 }

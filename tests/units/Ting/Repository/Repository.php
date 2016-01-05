@@ -93,10 +93,10 @@ class Repository extends atoum
             ))
             ->then($retrievedEntity = $repository->get([]))
             ->string($retrievedEntity->getName())
-            ->isIdenticalTo($entity->getName())
+                ->isIdenticalTo($entity->getName())
             ->mock($mockQuery)
-            ->call('query')
-            ->once();
+                ->call('query')
+                    ->once();
     }
 
     public function testGetOnMaster()
@@ -131,13 +131,13 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->variable($repository->get([], true))
-            ->isNull()
+                ->isNull()
             ->mock($mockQuery)
-            ->call('selectMaster')
-            ->withArguments(true)
-            ->once()
-            ->call('query')
-            ->once();
+                ->call('selectMaster')
+                    ->withArguments(true)
+                        ->once()
+                ->call('query')
+                    ->once();
     }
 
     public function testStartTransactionShouldOpenTransaction()
@@ -166,8 +166,8 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->startTransaction())
             ->mock($mockDriver)
-            ->call('startTransaction')
-            ->once();
+                ->call('startTransaction')
+                    ->once();
     }
 
     public function testCommitShouldCloseTransaction()
@@ -197,8 +197,8 @@ class Repository extends atoum
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->commit())
             ->mock($mockDriver)
-            ->call('commit')
-            ->once();
+                ->call('commit')
+                    ->once();
     }
 
     public function testRollbackShouldCloseTransaction()
@@ -228,8 +228,8 @@ class Repository extends atoum
             ->then($bouhRepository->startTransaction())
             ->then($bouhRepository->rollback())
             ->mock($mockDriver)
-            ->call('rollback')
-            ->once();
+                ->call('rollback')
+                    ->once();
     }
 
     public function testSaveShouldCallUnitOfWorkSaveThenProcess()
@@ -263,10 +263,10 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->save($entity))
             ->mock($mockUnitOfWork)
-            ->call('pushSave')
-            ->once()
-            ->call('process')
-            ->once();
+                ->call('pushSave')
+                    ->once()
+                ->call('process')
+                    ->once();
     }
 
     public function testDeleteShouldCallUnitOfWorkDeleteThenProcess()
@@ -300,10 +300,10 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->delete($entity))
             ->mock($mockUnitOfWork)
-            ->call('pushDelete')
-            ->once()
-            ->call('process')
-            ->once();
+                ->call('pushDelete')
+                    ->once()
+                ->call('process')
+                    ->once();
     }
 
     public function testGetQueryShouldCallQueryFactoryGet()
@@ -330,8 +330,8 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->getQuery('QUERY'))
             ->mock($mockQueryFactory)
-            ->call('get')
-            ->once();
+                ->call('get')
+                    ->once();
     }
 
     public function testGetPreparedQueryShouldCallQueryFactoryGetPrepared()
@@ -358,8 +358,8 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->getPreparedQuery('QUERY'))
             ->mock($mockQueryFactory)
-            ->call('getPrepared')
-            ->once();
+                ->call('getPrepared')
+                    ->once();
     }
 
     public function testGetCachedQueryShouldCallQueryFactoryGetCached()
@@ -386,8 +386,8 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->getCachedQuery('QUERY'))
             ->mock($mockQueryFactory)
-            ->call('getCached')
-            ->once();
+                ->call('getCached')
+                    ->once();
     }
 
     public function testGetCachedPreparedQueryShouldCallQueryFactoryGetCachedPreparedQuery()
@@ -414,8 +414,8 @@ class Repository extends atoum
             ))
             ->then($bouhRepository->getCachedPreparedQuery('QUERY'))
             ->mock($mockQueryFactory)
-            ->call('getCachedPrepared')
-            ->once();
+                ->call('getCachedPrepared')
+                    ->once();
     }
 
     public function testGetAllShouldReturnAQuery()
@@ -456,7 +456,7 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getAll())
-            ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
+                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
     }
 
     public function testGetByCriteriaShouldReturnAQuery()
@@ -497,7 +497,7 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getBy(['name' => 'bouh']))
-            ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
+                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
     }
 
     public function testGetOneByCriteriaShouldReturnAnEntityOrNull()
@@ -563,11 +563,11 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getOneBy(['name' => 'Xavier']))
-            ->isInstanceOf($entity)
+                ->isInstanceOf($entity)
             ->and($emptyCollection = new \CCMBenchmark\Ting\Repository\Collection())
             ->then($this->calling($mockQuery)->query = $emptyCollection)
             ->variable($repository->getOneBy(['name' => 'Xavier']))
-            ->isNull();
+                ->isNull();
     }
 
     public function testGetQueryBuilderShouldThrowExceptionOnUnknownDriver()
@@ -620,6 +620,45 @@ class Repository extends atoum
                 ->isInstanceOf('Aura\SqlQuery\Common\DeleteInterface')
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_INSERT))
                 ->isInstanceOf('Aura\SqlQuery\Common\InsertInterface')
+        ;
+    }
+
+    public function testPingShouldPingMethodsShouldCallPingOnTheGoodConnections()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriverSlave    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockDriverMaster   = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $this->calling($mockConnectionPool)->slave = $mockDriverSlave;
+        $this->calling($mockConnectionPool)->master = $mockDriverMaster;
+        $this->calling($mockDriverMaster)->ping = true;
+        $this->calling($mockDriverSlave)->ping = true;
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('QueryFactory'),
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
+            ))
+            ->then($bouhRepository->ping())
+                ->mock($mockDriverSlave)
+                    ->call('ping')
+                        ->once()
+            ->then($bouhRepository->pingMaster())
+                ->mock($mockDriverMaster)
+                    ->call('ping')
+                        ->once()
         ;
     }
 }

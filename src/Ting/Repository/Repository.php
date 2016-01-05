@@ -388,4 +388,28 @@ class Repository
     {
         $this->connection->master()->commit();
     }
+
+    /**
+     * @return bool
+     */
+    public function ping()
+    {
+        if (method_exists($this->connection->slave(), 'ping')) {
+            return $this->connection->slave()->ping();
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function pingMaster()
+    {
+        if (method_exists($this->connection->master(), 'ping')) {
+            return $this->connection->master()->ping();
+        }
+
+        return false;
+    }
 }

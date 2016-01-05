@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting\Driver\Pgsql;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
+use CCMBenchmark\Ting\Driver\NeverConnectedException;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
@@ -415,5 +416,17 @@ class Driver implements DriverInterface
             throw new Exception('Cannot close non prepared statement');
         }
         unset($this->preparedQueries[$statement]);
+    }
+
+    /**
+     * @return bool true on success, false on failure
+     * @throws NeverConnectedException when you have not been connected to your database before trying to pint it.
+     */
+    public function ping()
+    {
+        if ($this->connection === null) {
+            throw new NeverConnectedException('Please connect to your database before trying to ping it.');
+        }
+        return pg_ping($this->connection);
     }
 }

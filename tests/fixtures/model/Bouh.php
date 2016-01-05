@@ -107,7 +107,7 @@ class Bouh implements NotifyPropertyInterface
         return $this->price;
     }
 
-    public function setRetrievedStringTime($time)
+    public function setRetrievedTime($time)
     {
         $this->retrievedTime = $time;
     }
