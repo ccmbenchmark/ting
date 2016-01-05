@@ -24,15 +24,24 @@
 
 namespace tests\fixtures\FakeDriver;
 
-class MysqliResult implements \Iterator
+use CCMBenchmark\Ting\Driver\ResultInterface;
+
+class MysqliResult implements ResultInterface
 {
 
     protected $offset = 0;
     protected $data   = null;
 
-    public function __construct($data)
+    public function __construct(array $data = [])
     {
         $this->data = $data;
+    }
+
+    public function setResult($iterator)
+    {
+        $this->data = iterator_to_array($iterator);
+
+        return $this;
     }
 
     // @codingStandardsIgnoreStart
@@ -86,5 +95,30 @@ class MysqliResult implements \Iterator
     public function valid()
     {
         return isset($this->data[$this->offset]);
+    }
+
+    public function getNumRows()
+    {
+        return count($this->data);
+    }
+
+    public function setConnectionName($connectionName)
+    {
+
+    }
+
+    public function setDatabase($database)
+    {
+
+    }
+
+    public function getConnectionName()
+    {
+
+    }
+
+    public function getDatabase()
+    {
+
     }
 }

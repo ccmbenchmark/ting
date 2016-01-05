@@ -78,7 +78,9 @@ class DateTime implements SerializerInterface
             try {
                 $value = new \DateTime($serialized);
             } catch (\Exception $e) {
-                throw new RuntimeException('Cannot convert ' . $serialized . ' to datetime. Error is : ' . $e->getMessage());
+                throw new RuntimeException(
+                    'Cannot convert ' . $serialized . ' to datetime. Error is : ' . $e->getMessage()
+                );
             }
         }
 

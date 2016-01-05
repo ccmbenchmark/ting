@@ -22,42 +22,25 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 {
-
-    public function getZCountryWithLotsPopulation()
-    {
-
-        $query = $this->getQuery(
-            'select cit_id, cit_name, cou_code, cit_district, cit_population, last_modified
-                    from t_city_cit as a where cit_name like :name and cit_population > :population limit 3'
-        );
-
-        return $query->setParams(['name' => 'Z%', 'population' => 200000])->query();
-    }
-
-    public function getNumberOfCities()
-    {
-
-        $query = $this->getQuery('select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population');
-
-        return $query->setParams(['population' => 20000])->query()->first();
-    }
+    public static $options;
 
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
+        self::$options = $options;
+
         $metadata = new Metadata($serializerFactory);
 
-        $metadata->setEntity('sample\src\model\City');
+        $metadata->setEntity('tests\fixtures\model\City');
         $metadata->setConnectionName('main');
-        $metadata->setDatabase('world');
-        $metadata->setTable('t_city_cit');
+        $metadata->setDatabase('bouh_world');
+        $metadata->setTable('T_CITY_CIT');
 
         $metadata->addField(array(
             'primary'       => true,
@@ -70,31 +53,13 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata->addField(array(
             'fieldName'  => 'name',
             'columnName' => 'cit_name',
+            'type'      => 'string'
+        ));
+
+        $metadata->addField(array(
+            'fieldName'  => 'zipcode',
+            'columnName' => 'cit_zipcode',
             'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'countryCode',
-            'columnName' => 'cou_code',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'district',
-            'columnName' => 'cit_district',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'population',
-            'columnName' => 'cit_population',
-            'type'       => 'int'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'dt',
-            'columnName' => 'last_modified',
-            'type'       => 'datetime'
         ));
 
         return $metadata;

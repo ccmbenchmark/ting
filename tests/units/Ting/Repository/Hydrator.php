@@ -24,31 +24,19 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\Mysqli\Result;
+use CCMBenchmark\Ting\Serializer\DateTime;
+use CCMBenchmark\Ting\Serializer\Json;
 use mageekguy\atoum;
 
 class Hydrator extends atoum
 {
     public function testHydrate()
     {
-        $data = [
-            [
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ],
-            [
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            ]
-        ];
-
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -65,13 +53,39 @@ class Hydrator extends atoum
         ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
-        $collection = $services->get('CollectionFactory')->get();
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
@@ -80,25 +94,10 @@ class Hydrator extends atoum
 
     public function testHydrateWithAllNullValueShouldReturnNull()
     {
-        $data = [
-            [
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => null
-            ],
-            [
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => null
-            ]
-        ];
-
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -115,38 +114,49 @@ class Hydrator extends atoum
         ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
-        $collection = $services->get('CollectionFactory')->get();
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([[null, null]]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
             ->variable($data['bouh'])
                 ->isNull();
     }
 
     public function testHydrateWithSomeNullValueShouldNotReturnNull()
     {
-        $data = [
-            [
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => null
-            ],
-            [
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            ]
-        ];
-
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -163,45 +173,49 @@ class Hydrator extends atoum
         ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
-        $collection = $services->get('CollectionFactory')->get();
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([[null, 'Robez-Masson']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson');
     }
 
     public function testHydrateShouldHydrateUnknownColumnIntoKey0()
     {
-        $data = [
-            [
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ],
-            [
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            ],
-            [
-                'name'     => 'otherColumn',
-                'orgName'  => 'boo_other_column',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Happy Face'
-            ]
-        ];
-
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
@@ -218,13 +232,47 @@ class Hydrator extends atoum
         ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
-        $collection = $services->get('CollectionFactory')->get();
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson', 'Happy Face']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'otherColumn';
+            $stdClass->orgname  = 'boo_other_column';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
                 ->isIdenticalTo('Robez-Masson')
             ->string($data['bouh']->getFirstname())
@@ -235,36 +283,282 @@ class Hydrator extends atoum
 
     public function testHydrateShouldHydrateIntoKey0()
     {
-
         $services = new \CCMBenchmark\Ting\Services();
 
-        $data = [
-            [
-                'name'     => 'fname',
-                'orgName'  => 'boo_firstname',
-                'table'    => '',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ],
-            [
-                'name'     => 'name',
-                'orgName'  => 'boo_name',
-                'table'    => 'my_table',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Robez-Masson'
-            ]
-        ];
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
 
-        $collection = $services->get('CollectionFactory')->get();
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->then($data = $hydrator->hydrate($data, $collection))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
             ->string($data[0]->name)
                 ->isIdenticalTo('Robez-Masson')
             ->string($data[0]->fname)
                 ->isIdenticalTo('Sylvain');
     }
+
+    public function testCountShouldReturn3()
+    {
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $this->calling($result)->getNumRows = 3;
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->then($hydrator->setResult($result))
+            ->integer(count($hydrator))
+                ->isIdenticalTo(3);
+    }
+
+    public function testCountWithoutResultShoulddReturn0()
+    {
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->integer(count($hydrator))
+                ->isIdenticalTo(0);
+    }
+
+    public function testHydrateWithMapAliasShouldHydrateToMethodOfObject()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')
+            ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
+
+        $time = time();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson', $time]]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'current_time';
+            $stdClass->orgname  = '';
+            $stdClass->table    = '';
+            $stdClass->orgtable = '';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->mapAliasTo('current_time', 'bouh', 'setRetrievedTime'))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->integer($data['bouh']->getRetrievedTime())
+                ->isIdenticalTo($time)
+            ->array($data)
+                ->notHasKey(0);
+    }
+
+    public function testHydrateWithMapObjectShouldHydrateToMethodOfObject()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')
+            ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
+                ['Sylvain', 'Robez-Masson', 3, 'Palaiseau']
+            ]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'cityId';
+            $stdClass->orgname  = 'cit_id';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_LONG;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'citname';
+            $stdClass->orgname  = 'cit_name';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->mapObjectTo('cit', 'bouh', 'setCity'))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->object($city = $data['bouh']->getCity())
+            ->integer($city->getId())
+                ->isIdenticalTo(3)
+            ->string($city->getName())
+                ->isIdenticalTo('Palaiseau');
+    }
+
+    public function testHydrateWithUnserializeAlias()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')
+            ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
+            ['{"name": "Sylvain"}', 'Palaiseau']
+        ]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'data';
+            $stdClass->orgname  = '';
+            $stdClass->table    = '';
+            $stdClass->orgtable = '';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'citname';
+            $stdClass->orgname  = 'cit_name';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->unserializeAliasWith('data', new Json(), ['assoc' => true]))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($result = $iterator->current())
+            ->array($data = $result[0]->data)
+            ->string($data['name'])
+                ->isIdenticalTo('Sylvain');
+    }
+
+    public function testHydrateWithUnserializeAliasAndMapAlias()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')
+            ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
+
+        $time = time();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson', $time]]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'current_time';
+            $stdClass->orgname  = '';
+            $stdClass->table    = '';
+            $stdClass->orgtable = '';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->mapAliasTo('current_time', 'bouh', 'setRetrievedTime'))
+            ->and($hydrator->unserializeAliasWith('current_time', new DateTime(), ['format' => 'U']))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->object($datetime = $data['bouh']->getRetrievedTime())
+            ->integer($datetime->getTimestamp())
+                ->isIdenticalTo($time);
+    }
+
 }

@@ -22,39 +22,14 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\SphinxQL;
+namespace CCMBenchmark\Ting\Serializer;
 
-use CCMBenchmark\Ting\Driver\Mysqli;
-
-class Driver extends Mysqli\Driver
+interface SerializeInterface
 {
-
     /**
-     * Quote value according to the type of variable
-     * @param mixed $value
-     *
-     * @internal
-     */
-    protected function quoteValue($value)
-    {
-        switch (gettype($value)) {
-            case "integer":
-                // integer and double doesn't need quotes
-            case "double":
-                return $value;
-                break;
-            default:
-                return "'" . $this->connection->real_escape_string($value) . "'";
-                break;
-        }
-    }
-
-    /**
-     * @param $field
+     * @param mixed $toSerialize
+     * @param array $options
      * @return string
      */
-    public function escapeField($field)
-    {
-        return $field;
-    }
+    public function serialize($toSerialize, array $options = []);
 }

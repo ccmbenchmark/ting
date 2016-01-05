@@ -22,23 +22,35 @@
  *
  **********************************************************************/
 
-namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli\Serializer;
+namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql\Serializer;
 
 use mageekguy\atoum;
 
-class Bool extends atoum
+class Boolean extends atoum
 {
 
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
         $this
-            ->if($serializer = new \CCMBenchmark\Ting\Driver\Mysqli\Serializer\Bool())
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Boolean())
             ->boolean($serializer->unserialize($serializer->serialize(true)))
                 ->isTrue()
             ->boolean($serializer->unserialize($serializer->serialize(false)))
                 ->isFalse()
-            ->variable($serializer->unserialize($serializer->serialize(null)))
+            ->variable($serializer->unserialize(null))
                 ->isNull()
         ;
+    }
+
+    public function testSerializeShouldReturnTORF()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Driver\Pgsql\Serializer\Boolean())
+            ->string($serializer->serialize(true))
+            ->isIdenticalTo('t')
+            ->string($serializer->serialize(false))
+            ->isIdenticalTo('f')
+            ->variable($serializer->serialize('hi!'))
+            ->isNull();
     }
 }

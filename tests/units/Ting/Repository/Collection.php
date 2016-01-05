@@ -24,6 +24,8 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\ResultInterface;
+use CCMBenchmark\Ting\Repository\Hydrator;
 use mageekguy\atoum;
 
 class Collection extends atoum
@@ -54,48 +56,13 @@ class Collection extends atoum
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
-            ->array($collection->current())
+            ->then($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult($mockMysqliResult))
+            ->then($collection->set($result))
+            ->array($collection->first())
                 ->isIdenticalTo(['prenom' => 'Sylvain', 'nom' => 'Robez-Masson']);
-    }
-
-    public function testHydrateWithHydratorShouldCallHydratorHydrate()
-    {
-        $services     = new \CCMBenchmark\Ting\Services();
-        $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator();
-        $mockHydrator->setMetadataRepository($services->get('MetadataRepository'));
-        $mockHydrator->setUnitOfWork($services->get('UnitOfWork'));
-
-        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
-        $this->calling($mockMysqliResult)->fetch_fields = function () {
-            $fields = [];
-            $stdClass = new \stdClass();
-            $stdClass->name     = 'prenom';
-            $stdClass->orgname  = 'firstname';
-            $stdClass->table    = 'bouh';
-            $stdClass->orgtable = 'T_BOUH_BOO';
-            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
-            $fields[] = $stdClass;
-
-            return $fields;
-        };
-
-        $data = [
-            [
-                'name'     => 'prenom',
-                'orgName'  => 'firstname',
-                'table'    => 'bouh',
-                'orgTable' => 'T_BOUH_BOO',
-                'value'    => 'Sylvain'
-            ]
-        ];
-
-        $this
-            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection($mockHydrator))
-            ->then($collection->set(new \CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult)))
-            ->mock($mockHydrator)
-                ->call('hydrate')
-                    ->withIdenticalArguments($data, $collection)->once();
     }
 
     public function testFirstShouldReturnNull()
@@ -122,16 +89,20 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
+        $result->setResult($mockMysqliResult);
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->then($collection->set($result))
-            ->array($collection->first())
+            ->then($data = $collection->first())
+            ->array($data)
                 ->isEqualTo(['prenom' => 'Sylvain']);
     }
 
-    public function testIterator()
+    public function testGetIterator()
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain']]);
         $this->calling($mockMysqliResult)->fetch_fields = function () {
@@ -147,30 +118,16 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
+        $result->setResult($mockMysqliResult);
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
             ->and($collection->set($result))
-            ->and($collection->rewind())
-            ->boolean($collection->valid())
-                ->isTrue()
-            ->array($collection->current())
-                ->isEqualTo(['prenom' => 'Sylvain'])
-            ->integer($collection->key())
-                ->isEqualTo(0)
-            ->and($collection->next())
-            ->boolean($collection->valid())
-                ->isFalse();
-    }
-
-    public function testAddWithKey()
-    {
-        $this
-            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->and($collection->add(['Bouh'], 'MyKey'))
-            ->string($collection->key())
-                ->isIdenticalTo('MyKey');
+            ->object($collection->getIterator())
+                ->isInstanceOf('\Iterator');
     }
 
     public function testIsFromCache()
@@ -186,26 +143,43 @@ class Collection extends atoum
         ;
     }
 
-    public function testToArrayReturnArray()
+    public function testToCacheReturnArray()
     {
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->array($collection->toArray())
-                ->isIdenticalTo([])
+            ->array($collection->toCache())
+                ->isIdenticalTo(['connection' => null, 'database' => null, 'data' => []])
         ;
     }
 
-    public function testCount()
+    public function testFromCacheShouldSetCacheResult()
     {
+
+        $outerResult = null;
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
+        $this->calling($mockCollection)->set = function(ResultInterface $result) use (&$outerResult) {
+            $outerResult = $result;
+        };
+
         $this
-            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
-            ->then($collection->add(['data' => 'field']))
-            ->integer($collection->count())
-                ->isIdenticalTo(1)
-            ->then($collection->add(['2nddata' => 'field']))
-            ->integer($collection->count())
-                ->isIdenticalTo(2)
+            ->if($mockCollection->fromCache(
+                ['connection' => 'connection_name', 'database' => 'database_name', 'data' => ['bouh']]
+            ))
+            ->object($outerResult)
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\CacheResult')
         ;
+    }
+
+    public function testCountShouldCallHydratorCount()
+    {
+        $mockHydrator = new \mock\CCMBenchmark\Ting\Repository\Hydrator();
+
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection($mockHydrator))
+            ->then($collection->count())
+            ->mock($mockHydrator)
+                ->call('count')
+                    ->once();
     }
 
     public function testSetFromCache()
@@ -224,7 +198,10 @@ class Collection extends atoum
             return $fields;
         };
 
-        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result($mockMysqliResult);
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
+        $result->setResult($mockMysqliResult);
 
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())

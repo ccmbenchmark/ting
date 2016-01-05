@@ -60,5 +60,4 @@ class Ip extends atoum
             ->isNull()
         ;
     }
-
 }

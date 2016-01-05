@@ -22,43 +22,50 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\Pgsql\Serializer;
+namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Serializer\SerializerInterface;
+use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class Bool implements SerializerInterface
+class City implements NotifyPropertyInterface
 {
-    /**
-     * @param mixed $toSerialize
-     * @param array $options
-     * @return string|null
-     */
-    public function serialize($toSerialize, array $options = [])
-    {
-        if ($toSerialize === true) {
-            return 't';
-        }
-        if ($toSerialize === false) {
-            return 'f';
-        }
 
-        return null;
+    use NotifyProperty;
+
+    protected $id        = null;
+    protected $name      = null;
+    protected $zipcode   = null;
+
+    public function setId($id)
+    {
+        $this->propertyChanged('id', $this->id, $id);
+        $this->id = $id;
     }
 
-    /**
-     * @param string $serialized
-     * @param array  $options
-     * @return bool|null
-     */
-    public function unserialize($serialized, array $options = [])
+    public function setName($name)
     {
-        if ($serialized === 't') {
-            return true;
-        }
-        if ($serialized === 'f') {
-            return false;
-        }
+        $this->propertyChanged('name', $this->name, $name);
+        $this->name = $name;
+    }
 
-        return null;
+    public function setZipcode($zipcode)
+    {
+        $this->propertyChanged('zipcode', $this->zipcode, $zipcode);
+        $this->zipcode = (string) $zipcode;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getZipcode()
+    {
+        return $this->zipcode;
     }
 }

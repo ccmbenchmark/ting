@@ -86,6 +86,8 @@ class MetadataRepository extends atoum
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
         $metadata->setTable('T_BOUH_BOO');
 
         $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
@@ -93,6 +95,8 @@ class MetadataRepository extends atoum
 
         $this
             ->if($metadataRepository->findMetadataForTable(
+                'connectionName',
+                'database',
                 'T_BOUH_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -118,6 +122,8 @@ class MetadataRepository extends atoum
 
         $this
             ->if($metadataRepository->findMetadataForTable(
+                'connectionName',
+                'database',
                 'T_BOUH2_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -194,7 +200,7 @@ class MetadataRepository extends atoum
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
                 ->size
-                    ->isIdenticalTo(1);
+                    ->isIdenticalTo(2);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()

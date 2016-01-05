@@ -54,7 +54,9 @@ class Metadata
         'ip'     => '\CCMBenchmark\Ting\Serializer\Ip'
     ];
 
-
+    /**
+     * @param SerializerFactoryInterface $serializerFactory
+     */
     public function __construct(SerializerFactoryInterface $serializerFactory)
     {
         $this->serializerFactory = $serializerFactory;
@@ -64,6 +66,8 @@ class Metadata
      * Return applicable connection
      * @param ConnectionPoolInterface $connectionPool
      * @return Connection
+     *
+     * @internal
      */
     public function getConnection(ConnectionPoolInterface $connectionPool)
     {
@@ -85,6 +89,7 @@ class Metadata
     /**
      * @param $databaseName
      * @return $this
+     *
      */
     public function setDatabase($databaseName)
     {
@@ -109,6 +114,8 @@ class Metadata
 
     /**
      * @return string
+     *
+     * @internal
      */
     public function getEntity()
     {
@@ -170,13 +177,19 @@ class Metadata
 
     /**
      * Execute callback if the provided table is the actual
-     * @param          $table
+     * @param string   $connectionName
+     * @param string   $database
+     * @param string   $table
      * @param callable $callback
      * @return bool
+     *
+     * @internal
      */
-    public function ifTableKnown($table, \Closure $callback)
+    public function ifTableKnown($connectionName, $database, $table, \Closure $callback)
     {
-        if ($this->table === $table) {
+        if ($this->table === $table
+            && $this->connectionName === $connectionName && $this->databaseName === $database
+        ) {
             $callback($this);
             return true;
         }
@@ -188,6 +201,8 @@ class Metadata
      * Returns true if the column is present in this metadata
      * @param $column
      * @return bool
+     *
+     * @internal
      */
     public function hasColumn($column)
     {
@@ -201,6 +216,8 @@ class Metadata
     /**
      * Create a new entity
      * @return mixed
+     *
+     * @internal
      */
     public function createEntity()
     {
@@ -212,6 +229,8 @@ class Metadata
      * @param object          $entity
      * @param DriverInterface $driver
      * @return $this|bool
+     *
+     * @internal
      */
     public function setEntityPropertyForAutoIncrement($entity, DriverInterface $driver)
     {
@@ -229,6 +248,8 @@ class Metadata
      * @param $entity
      * @param $column
      * @param $value
+     *
+     * @internal
      */
     public function setEntityProperty($entity, $column, $value)
     {
@@ -263,6 +284,7 @@ class Metadata
      * @param object $entity
      * @param array $field
      * @return mixed
+     *
      */
     protected function getEntityProperty($entity, $field)
     {
@@ -291,6 +313,8 @@ class Metadata
      * @param $primariesKeyValue
      * @param $forceMaster boolean
      * @return \CCMBenchmark\Ting\Query\Query
+     *
+     * @internal
      */
     public function getByPrimaries(
         Connection $connection,
@@ -323,6 +347,8 @@ class Metadata
      * @param $forceMaster boolean
      * @return \CCMBenchmark\Ting\Query\Query
      * @throws Exception
+     *
+     * @internal
      */
     public function getOneByCriteria(
         Connection $connection,
@@ -371,6 +397,8 @@ class Metadata
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
      * @return \CCMBenchmark\Ting\Query\Query
+     *
+     * @internal
      */
     public function getAll(
         Connection $connection,
@@ -398,6 +426,8 @@ class Metadata
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
      * @return \CCMBenchmark\Ting\Query\Query
+     *
+     * @internal
      */
     public function getByCriteria(
         array $criteria,
@@ -448,6 +478,8 @@ class Metadata
      * @param QueryFactoryInterface $queryFactory
      * @param $entity
      * @return PreparedQuery
+     *
+     * @internal
      */
     public function generateQueryForInsert(
         Connection $connection,
@@ -483,6 +515,8 @@ class Metadata
      * @param                       $entity
      * @param                       $properties
      * @return PreparedQuery
+     *
+     * @internal
      */
     public function generateQueryForUpdate(
         Connection $connection,
@@ -517,6 +551,8 @@ class Metadata
      * @param                       $properties
      * @param                       $entity
      * @return PreparedQuery
+     *
+     * @internal
      */
     public function generateQueryForDelete(
         Connection $connection,

@@ -38,6 +38,8 @@ class Bouh implements NotifyPropertyInterface
     protected $enabled   = null;
     protected $price     = null;
     protected $roles     = ['USER'];
+    protected $city      = null;
+    protected $retrievedTime = null;
 
     public function setId($id)
     {
@@ -103,5 +105,25 @@ class Bouh implements NotifyPropertyInterface
     public function getPrice()
     {
         return $this->price;
+    }
+
+    public function setRetrievedTime($time)
+    {
+        $this->retrievedTime = $time;
+    }
+
+    public function getRetrievedTime()
+    {
+        return $this->retrievedTime;
+    }
+
+    public function setCity(City $city)
+    {
+        $this->city = $city;
+    }
+
+    public function getCity()
+    {
+        return $this->city;
     }
 }

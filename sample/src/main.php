@@ -26,6 +26,11 @@ namespace sample\src;
 
 // ting autoloader
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Repository\Collection;
+use CCMBenchmark\Ting\Repository\Hydrator;
+use CCMBenchmark\Ting\Repository\HydratorSingleObject;
+use CCMBenchmark\Ting\Serializer\DateTime;
+use CCMBenchmark\Ting\Serializer\Json;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -107,7 +112,6 @@ foreach ($collection as $result) {
     echo str_repeat("-", 40) . "\n";
 }
 
-
 echo 'City1'."\n";
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
@@ -182,12 +186,27 @@ try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
     $query = $cityRepository->getQuery(
-        "select * from t_city_cit as c
+        "select
+          c.*, SUM(1) as toto, NOW() as broum,
+          co.cou_code, co.cou_name, cou_continent, cou_region, cou_head_of_state,
+          col.cou_code, col.col_language, col_is_official, col_percentage
+        from t_city_cit as c
         inner join t_country_cou as co on (c.cou_code = co.cou_code)
+        inner join t_countrylanguage_col as col on (col.cou_code = co.cou_code)
         where co.cou_code = :code limit 3"
     );
     $query->selectMaster(true);
-    $collection = $query->setParams(['code' => 'FRA'])->query();
+
+    $hydrator = new HydratorSingleObject();
+    $hydrator->setMetadataRepository($services->get('MetadataRepository'));
+    $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+    $hydrator
+        ->mapAliasTo('broum', 'c', 'setBroum')
+        ->mapAliasTo('toto', 'c', 'setTutu')
+        ->mapObjectTo('co', 'c', 'countryIs')
+        ->unserializeAliasWith('broum', new DateTime())
+        ->mapObjectTo('col', 'co', 'countryLanguageIs');
+    $collection = $query->setParams(['code' => 'FRA'])->query(new Collection($hydrator));
 
     foreach ($collection as $result) {
         var_dump($result);

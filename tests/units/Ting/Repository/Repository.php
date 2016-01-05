@@ -24,12 +24,9 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Connection;
-use CCMBenchmark\Ting\ConnectionPool;
-use CCMBenchmark\Ting\Repository\CollectionFactory;
+use CCMBenchmark\Ting\Driver\Mysqli\Result;
 use mageekguy\atoum;
 use tests\fixtures\model\Bouh;
-use tests\fixtures\model\BouhRepository;
 
 class Repository extends atoum
 {
@@ -37,7 +34,7 @@ class Repository extends atoum
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'bouh_world');
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
@@ -56,10 +53,32 @@ class Repository extends atoum
         $entity = new Bouh();
         $entity->setName('Bouh');
 
-        $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Bouh']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
 
-        $this->calling($mockQuery)->query = $collection;
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $hydrator = new \CCMBenchmark\Ting\Repository\Hydrator();
+        $hydrator->setMetadataRepository($services->get('MetadataRepository'));
+        $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection($hydrator);
+        $mockCollection->set($result);
+        $this->calling($mockCollection)->count = 1;
+        $this->calling($mockQuery)->query = $mockCollection;
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -71,8 +90,9 @@ class Repository extends atoum
                 $services->get('UnitOfWork'),
                 $services->get('SerializerFactory')
             ))
-            ->variable($repository->get([]))
-                ->isIdenticalTo($entity)
+            ->then($retrievedEntity = $repository->get([]))
+            ->string($retrievedEntity->getName())
+                ->isIdenticalTo($entity->getName())
             ->mock($mockQuery)
                 ->call('query')
                     ->once()
@@ -432,7 +452,6 @@ class Repository extends atoum
         $entity->setName('Bouh');
 
         $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
 
         $this->calling($mockQuery)->query = $collection;
 
@@ -475,7 +494,6 @@ class Repository extends atoum
         $entity->setName('Bouh');
 
         $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
 
         $this->calling($mockQuery)->query = $collection;
 
@@ -498,7 +516,7 @@ class Repository extends atoum
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'bouh_world');
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
@@ -512,15 +530,38 @@ class Repository extends atoum
 
         $this->calling($mockQueryFactory)->get = $mockQuery;
 
-        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+        $this->calling($mockConnectionPool)->slave = $mockDriver;
 
         $entity = new Bouh();
         $entity->setName('Bouh');
 
-        $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Bouh']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
 
-        $this->calling($mockQuery)->query = $collection;
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $hydrator = new \CCMBenchmark\Ting\Repository\Hydrator();
+        $hydrator->setMetadataRepository($services->get('MetadataRepository'));
+        $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection($hydrator);
+        $mockCollection->set($result);
+        $this->calling($mockCollection)->count = 1;
+
+        $this->calling($mockQuery)->query = $mockCollection;
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(

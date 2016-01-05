@@ -24,19 +24,7 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
-interface SerializerInterface
+interface SerializerInterface extends SerializeInterface, UnserializeInterface
 {
-    /**
-     * @param mixed $toSerialize
-     * @param array $options
-     * @return string
-     */
-    public function serialize($toSerialize, array $options = []);
 
-    /**
-     * @param string $serialized
-     * @param array $options
-     * @return mixed
-     */
-    public function unserialize($serialized, array $options = []);
 }

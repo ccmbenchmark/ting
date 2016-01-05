@@ -106,8 +106,7 @@ class UnitOfWork implements PropertyListenerInterface
             return false;
         }
 
-        if (
-            isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
+        if (isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
             && $this->entitiesShouldBePersisted[$entity->tingUUID] === self::STATE_NEW
         ) {
             return true;
@@ -256,8 +255,7 @@ class UnitOfWork implements PropertyListenerInterface
             return false;
         }
 
-        if (
-            isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
+        if (isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
             && $this->entitiesShouldBePersisted[$entity->tingUUID] === self::STATE_DELETE
         ) {
             return true;

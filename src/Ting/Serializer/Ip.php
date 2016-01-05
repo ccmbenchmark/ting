@@ -64,5 +64,4 @@ class Ip implements SerializerInterface
 
         return $value;
     }
-
 }
