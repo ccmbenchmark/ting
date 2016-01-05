@@ -48,6 +48,16 @@ or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
     // Prepared statement :
     $query = $cityRepository->getPreparedQuery('SQL Statement');
 
+## QueryBuilder provided by [aura/sqlquery](https://github.com/auraphp/Aura.SqlQuery)
+
+    <?php
+    $queryBuilder = $cityRepository->getQueryBuilder($cityRepository::QUERY_SELECT);
+    $queryBuilder
+        ->cols(['cit_id', 'cit_name as name'])
+        ->from('t_city_cit');
+    $query = $cityRepository->getQuery($queryBuilder->getStatement());
+
+
 ## More :
 * [Documentation](http://tech.ccmbg.com/ting/doc/en/index.html)
 * [Issues](https://bitbucket.org/ccmbenchmark/ting/issues)

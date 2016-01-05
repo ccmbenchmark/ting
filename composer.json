@@ -22,7 +22,8 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=5.5",
-        "pimple/pimple": "3.0.0"
+        "pimple/pimple": "3.0.0",
+        "aura/sqlquery": "^2.6"
     },
     "require-dev": {
         "atoum/atoum": "dev-master",

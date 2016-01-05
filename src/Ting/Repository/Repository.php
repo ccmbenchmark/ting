@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use Aura\SqlQuery\QueryInterface;
 use CCMBenchmark\Ting\Cache\CacheInterface;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
@@ -32,9 +33,18 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
+use CCMBenchmark\Ting\Driver\Mysqli;
+use CCMBenchmark\Ting\Driver\SphinxQL;
+use CCMBenchmark\Ting\Driver\Pgsql;
+use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 
 class Repository
 {
+
+    const QUERY_SELECT = 'select';
+    const QUERY_INSERT = 'insert';
+    const QUERY_UPDATE = 'update';
+    const QUERY_DELETE = 'delete';
 
     /**
      * @var ContainerInterface
@@ -159,6 +169,49 @@ class Repository
             $this->cache,
             $this->collectionFactory
         );
+    }
+
+
+    /**
+     * @param string $type One of the QUERY_ constant
+     * @return QueryInterface
+     * @throws Exception
+     */
+    public function getQueryBuilder($type)
+    {
+        $driver = $this->connectionPool->getDriverClass($this->metadata->getConnectionName());
+        $driver = ltrim($driver, '\\');
+
+        switch ($driver) {
+            case Pgsql\Driver::class:
+                $queryFactory = new AuraQueryFactory('pgsql');
+                break;
+            case SphinxQL\Driver::class:
+                // SphinxQL and Mysqli are sharing the same driver
+            case Mysqli\Driver::class:
+                $queryFactory = new AuraQueryFactory('mysql');
+                break;
+            default:
+                throw new Exception('Driver ' . $driver . ' is unknown to build QueryBuilder');
+        }
+
+        switch ($type) {
+            case self::QUERY_UPDATE:
+                $queryBuilder = $queryFactory->newUpdate();
+                break;
+            case self::QUERY_DELETE:
+                $queryBuilder = $queryFactory->newDelete();
+                break;
+            case self::QUERY_INSERT:
+                $queryBuilder = $queryFactory->newInsert();
+                break;
+            case self::QUERY_SELECT:
+                // We fallback on select for default case
+            default:
+                $queryBuilder = $queryFactory->newSelect();
+        }
+
+        return $queryBuilder;
     }
 
     /**

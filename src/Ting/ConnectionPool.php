@@ -101,7 +101,7 @@ class ConnectionPool implements ConnectionPoolInterface
      */
     public function slave($name, $database)
     {
-        if (!isset($this->connectionConfig[$name])) {
+        if (isset($this->connectionConfig[$name]) === false) {
             throw new Exception('Connection not found: ' . $name);
         }
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
@@ -190,5 +190,19 @@ class ConnectionPool implements ConnectionPoolInterface
             $connection->close();
             unset($this->connections[$connectionKey]);
         }
+    }
+
+    /**
+     * @param string $name connection name
+     * @return string
+     * @throws Exception
+     */
+    public function getDriverClass($name)
+    {
+        if (isset($this->connectionConfig[$name]) === false) {
+            throw new Exception('Connection not found: ' . $name);
+        }
+
+        return $this->connectionConfig[$name]['namespace'] . '\\Driver';
     }
 }

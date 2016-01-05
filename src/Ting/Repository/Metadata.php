@@ -87,6 +87,15 @@ class Metadata
     }
 
     /**
+     * Retrieve the connection name
+     * @return string
+     */
+    public function getConnectionName()
+    {
+        return $this->connectionName;
+    }
+
+    /**
      * @param $databaseName
      * @return $this
      *

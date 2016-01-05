@@ -4,6 +4,7 @@
     * New feature ```mapAliasTo``` on Hydrator to inject virtual column (COUNT(*), IFNULL(...), ...) into object
     * New feature ```mapObjectTo``` on Hydrator to inject object into object
     * New feature ```unserializeAliasWith``` on Hydrator to unserialize virtual column
+    * New feature : QueryBuilder available with Repository::getQueryBuilder and provided by aura/sqlquery
     * Fix case on virtual column : if you used case on virtual ```COUNT(*) as NbUser``` that update can break your
       application, because on the version 2.5.1 ```NbUser``` was changed to lowercase ```nbuser``` due to a bug. This fix
       restore the previous behavior, and the column is not longer in lowercase.
