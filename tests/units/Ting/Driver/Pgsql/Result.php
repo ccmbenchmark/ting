@@ -148,6 +148,33 @@ class Result extends atoum
                 ->isFalse();
     }
 
+    public function testFormatShouldKeepCase()
+    {
+
+        $this->function->pg_num_fields = 2;
+        $this->function->pg_field_table = function ($result, $index) {
+            if ($index < 2) {
+                return 'T_BOUH_BOO';
+            }
+            return false;
+        };
+
+        $this->function->pg_field_name = function ($result, $index) {
+            switch ($index) {
+                case 0:
+                    return 'myAwesomeValue';
+                    return false;
+            }
+        };
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
+            ->then($result->setQuery('SELECT SUM(1) as myAwesomeValue FROM T_BOUH_BOO as b'))
+            ->then($row = $result->format(array('myAwesomeValue' => '342')))
+            ->string($row[0]['name'])
+                ->isIdenticalTo('myAwesomeValue');
+    }
+
     public function testGetNumRows()
     {
         $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();

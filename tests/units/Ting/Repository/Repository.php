@@ -581,4 +581,43 @@ class Repository extends atoum
                 ->isNull()
         ;
     }
+
+    public function testPingShouldPingMethodsShouldCallPingOnTheGoodConnections()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriverSlave    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockDriverMaster   = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $this->calling($mockConnectionPool)->slave = $mockDriverSlave;
+        $this->calling($mockConnectionPool)->master = $mockDriverMaster;
+        $this->calling($mockDriverMaster)->ping = true;
+        $this->calling($mockDriverSlave)->ping = true;
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $services->get('MetadataRepository'),
+                $services->get('QueryFactory'),
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
+            ))
+            ->then($bouhRepository->ping())
+                ->mock($mockDriverSlave)
+                    ->call('ping')
+                        ->once()
+            ->then($bouhRepository->pingMaster())
+                ->mock($mockDriverMaster)
+                    ->call('ping')
+                        ->once()
+        ;
+    }
 }

@@ -700,4 +700,34 @@ class Driver extends atoum
             ->isInstanceOf('CCMBenchmark\Ting\Driver\Exception')
         ;
     }
+
+    public function testPingShouldCallPingIfConnected()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = true;
+        $this->calling($mockDriver)->ping = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->boolean($driver->ping())
+                ->isTrue()
+            ->mock($mockDriver)
+                ->call('ping')
+                    ->once()
+        ;
+    }
+
+    public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->exception(function () use ($driver) {
+                $driver->ping();
+            })
+                ->isInstanceOf('CCMBenchmark\Ting\Driver\NeverConnectedException')
+        ;
+    }
 }
