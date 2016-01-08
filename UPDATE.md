@@ -22,7 +22,7 @@ This file will track changes to public interfaces between 2 major versions.
 * StatementInterface :
     * Added Constructor
 * CollectionInterface:
-    * Changed type hinting : method ```set``` now type hints the new ```ResultInterface``` (was ```\Iterator```)
+    * ```set(\Iterator $result)``` changed to ```set(ResultInterface $result)```
     * Renamed method ```toArray``` to ```toCache```
     * Renamed method ```fromArray``` to ```fromCache```
     * Now implement ```IteratorAggregate``` and ```Countable```
@@ -30,3 +30,16 @@ This file will track changes to public interfaces between 2 major versions.
 * HydratorInterface:
     * Now implement ```IteratorAggregate```, ```Countable```
     * Old method ```hydrate``` is now ```setResult``` with a single argument ```ResultInterface```
+* UnitOfWork
+    * ```manage($entity)``` changed to ```manage(NotifyPropertyInterface $entity)```
+    * ```isManaged($entity)``` changed to ```isManaged(NotifyPropertyInterface $entity)```
+    * ```isNew($entity)``` changed to ```isNew(NotifyPropertyInterface $entity)```
+    * ```pushSave($entity)``` changed to ```pushSave(NotifyPropertyInterface $entity)```
+    * ```shouldBePersisted($entity)``` changed to ```shouldBePersisted(NotifyPropertyInterface $entity)```
+    * ```propertyChanged($entity, $propertyName, $oldValue, $newValue)``` changed to ```propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue)```
+    * ```isPropertyChanged($entity, $propertyName)``` changed to ```isPropertyChanged(NotifyPropertyInterface $entity, $propertyName)```
+    * ```detach($entity)``` changed to ```detach(NotifyPropertyInterface $entity)```
+    * ```pushDelete($entity)``` changed to ```pushDelete(NotifyPropertyInterface $entity)```
+    * ```shouldBeRemoved($entity)``` changed to ```shouldBeRemoved(NotifyPropertyInterface $entity)```
+* PropertyListenerInterface
+    * ```propertyChanged($entity, $propertyName, $oldValue, $newValue)``` changed to ```propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue)```
