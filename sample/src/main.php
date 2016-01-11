@@ -197,9 +197,7 @@ try {
     );
     $query->selectMaster(true);
 
-    $hydrator = new HydratorSingleObject();
-    $hydrator->setMetadataRepository($services->get('MetadataRepository'));
-    $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+    $hydrator = $services->get('HydratorSingleObject');
     $hydrator
         ->mapAliasTo('broum', 'c', 'setBroum')
         ->mapAliasTo('toto', 'c', 'setTutu')

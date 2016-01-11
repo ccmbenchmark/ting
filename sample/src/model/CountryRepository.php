@@ -25,9 +25,10 @@
 namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
-class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository
+class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
 {
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
