@@ -22,12 +22,15 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=5.5",
-        "pimple/pimple": "3.0.0",
         "aura/sqlquery": "^2.6"
     },
     "require-dev": {
         "atoum/atoum": "dev-master",
         "atoum/stubs": "^2.2"
+    },
+    "suggest": {
+        "pimple/pimple": "Simplify dependency injection pimple can be used with CCMBenchmark\\Ting\\Services (Use version 3.*)",
+        "ccmbenchmark/ting_bundle": "Use Ting with Symfony"
     },
     "autoload": {
         "psr-4" : {
