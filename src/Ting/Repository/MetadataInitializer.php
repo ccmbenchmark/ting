@@ -33,8 +33,6 @@ interface MetadataInitializer
      * @param  SerializerFactoryInterface $serializerFactory
      * @param  array                      $options
      * @return \CCMBenchmark\Ting\Repository\Metadata
-     *
-     * @internal
      */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []);
 }
