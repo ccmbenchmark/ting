@@ -1,6 +1,7 @@
 3.X.X (XXXX-XX-XX) :
     * Fix conflict when hydrating model which use the same table name but on different database
     * New concept for Hydrator based on Generator to simplify the code and allow more possibility
+    * New concept for Metadatata, class must now implement MetadataInitializer
     * New feature ```mapAliasTo``` on Hydrator to inject virtual column (COUNT(*), IFNULL(...), ...) into object
     * New feature ```mapObjectTo``` on Hydrator to inject object into object
     * New feature ```unserializeAliasWith``` on Hydrator to unserialize virtual column

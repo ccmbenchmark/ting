@@ -25,12 +25,20 @@
 namespace tests\fixtures\model;
 
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Repository\Repository;
 
-class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
+class CityRepository extends Repository implements MetadataInitializer
 {
     public static $options;
 
+    /**
+     * @param SerializerFactoryInterface $serializerFactory
+     * @param array                      $options
+     *
+     * @return Metadata
+     */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
         self::$options = $options;

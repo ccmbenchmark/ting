@@ -232,7 +232,37 @@ class MetadataRepository extends atoum
             )
             ->array($metadataRepository->batchLoadMetadataFromCache($paths))
                 ->size
-                ->isIdenticalTo(1)
+                    ->isIdenticalTo(1)
         ;
+    }
+
+    public function testBatchLoadMetadataForRepositoryWhichNotImplementMetadataInitializerShouldDoNothing()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if(
+                $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
+                    $services->get('SerializerFactory')
+                )
+            )
+            ->array($metadataRepository->batchLoadMetadata(
+                'tests\fixtures\model',
+                '/not/valid/path/NoMetadataRepository.php'
+            ))
+                ->isEmpty();
+    }
+
+    public function testBatchLoadMetadataFroMCacheForRepositoryWhichNotImplementMetadataInitializerShouldDoNothing()
+    {
+        $paths = ['tests\fixtures\model\NoMetadataRepository'];
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if(
+                $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
+                    $services->get('SerializerFactory')
+                )
+            )
+            ->array($metadataRepository->batchLoadMetadataFromCache($paths))
+                ->isEmpty();
     }
 }

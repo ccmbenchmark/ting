@@ -38,7 +38,7 @@ use CCMBenchmark\Ting\Driver\SphinxQL;
 use CCMBenchmark\Ting\Driver\Pgsql;
 use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 
-class Repository
+abstract class Repository
 {
 
     const QUERY_SELECT = 'select';
@@ -315,48 +315,6 @@ class Repository
     public function delete($entity)
     {
         $this->unitOfWork->pushDelete($entity)->process();
-    }
-
-    /**
-     * @param  SerializerFactoryInterface $serializerFactory
-     * @param  array                      $options
-     * @return \CCMBenchmark\Ting\Repository\Metadata
-     * @throws Exception
-     *
-     * @internal
-     */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
-    {
-        throw new Exception('You should add initMetadata in your class repository');
-
-        /**
-         * Example for your repository :
-         *
-         *  $metadata = new Metadata($serializerFactory);
-         *
-         *  $metadata->setEntity('myProject\model\Bouh');
-         *  $metadata->setConnectionName('main');
-         *  $metadata->setDatabase('bouh');
-         *  $metadata->setTable('T_BOUH_BOO');
-         *
-         *  $metadata->addField(array(
-         *     'primary'    => true,
-         *     'fieldName'  => 'aField',
-         *     'columnName' => 'COLUMN_NAME',
-         *     'type'       => 'int'
-         *  ));
-         *
-         * return $metadata;
-         *
-         * Supported types:
-         *
-         * int
-         * datetime
-         * string
-         * double
-         * bool
-         *
-         */
     }
 
     /**
