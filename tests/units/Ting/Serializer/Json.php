@@ -110,4 +110,15 @@ class Json extends atoum
                 ->isNull()
         ;
     }
+
+    public function testEmptyStringValueShouldReturnNull()
+    {
+        $this
+            ->if($serializer = new \CCMBenchmark\Ting\Serializer\Json())
+            ->variable($serializer->serialize(''))
+                ->isIdenticalTo('""')
+            ->variable($serializer->unserialize(''))
+                ->isNull()
+        ;
+    }
 }
