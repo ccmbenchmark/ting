@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class MetadataRepository
@@ -171,14 +172,16 @@ class MetadataRepository
 
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
-            $this->addMetadata(
-                $repository,
-                $repository::initMetadata(
-                    $this->serializerFactory,
-                    $this->getOptionForRepository($repository, $options)
-                )
-            );
-            $loaded[] = $repository;
+            if (is_subclass_of($repository, MetadataInitializer::class) === true) {
+                $this->addMetadata(
+                    $repository,
+                    $repository::initMetadata(
+                        $this->serializerFactory,
+                        $this->getOptionForRepository($repository, $options)
+                    )
+                );
+                $loaded[] = $repository;
+            }
         }
 
         return $loaded;
@@ -198,14 +201,16 @@ class MetadataRepository
     {
         $loaded = [];
         foreach ($paths as $repository) {
-            $this->addMetadata(
-                $repository,
-                $repository::initMetadata(
-                    $this->serializerFactory,
-                    $this->getOptionForRepository($repository, $options)
-                )
-            );
-            $loaded[] = $repository;
+            if (is_subclass_of($repository, MetadataInitializer::class) === true) {
+                $this->addMetadata(
+                    $repository,
+                    $repository::initMetadata(
+                        $this->serializerFactory,
+                        $this->getOptionForRepository($repository, $options)
+                    )
+                );
+                $loaded[] = $repository;
+            }
         }
 
         return $loaded;
