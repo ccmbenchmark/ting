@@ -44,7 +44,7 @@ class RepositoryFactory
     protected $metadataRepository;
 
     /**
-     * @var Cache
+     * @var MetadataFactoryInterface
      */
     protected $metadataFactory;
 
