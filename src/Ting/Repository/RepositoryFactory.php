@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Cache\CacheInterface;
+use Doctrine\Common\Cache\Cache;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
@@ -44,7 +44,7 @@ class RepositoryFactory
     protected $metadataRepository;
 
     /**
-     * @var MetadataFactoryInterface
+     * @var Cache
      */
     protected $metadataFactory;
 
@@ -59,7 +59,7 @@ class RepositoryFactory
     protected $unitOfWork;
 
     /**
-     * @var CacheInterface
+     * @var Cache
      */
     protected $cache;
 
@@ -69,7 +69,7 @@ class RepositoryFactory
      * @param QueryFactory $queryFactory
      * @param CollectionFactory $collectionFactory
      * @param UnitOfWork $unitOfWork
-     * @param CacheInterface $cache
+     * @param Cache $cache
      * @param SerializerFactoryInterface $serializerFactory
      */
     public function __construct(
@@ -78,7 +78,7 @@ class RepositoryFactory
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
         UnitOfWork $unitOfWork,
-        CacheInterface $cache,
+        Cache $cache,
         SerializerFactoryInterface $serializerFactory
     ) {
         $this->connectionPool     = $connectionPool;
