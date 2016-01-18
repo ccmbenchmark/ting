@@ -23,7 +23,8 @@
     "require": {
         "php": ">=5.5",
         "pimple/pimple": "3.0.0",
-        "aura/sqlquery": "^2.6"
+        "aura/sqlquery": "^2.6",
+        "doctrine/cache": ">=1.6.0"
     },
     "require-dev": {
         "atoum/atoum": "dev-master",
@@ -33,5 +34,11 @@
         "psr-4" : {
             "CCMBenchmark\\Ting\\": "src/Ting/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/doctrine/cache"
+        }
+    ]
 }
