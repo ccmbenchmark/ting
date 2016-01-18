@@ -26,9 +26,10 @@ namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
-class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
+class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
 {
 
     public function getZCountryWithLotsPopulation()
