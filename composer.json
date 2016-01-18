@@ -34,11 +34,5 @@
         "psr-4" : {
             "CCMBenchmark\\Ting\\": "src/Ting/"
         }
-    },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/doctrine/cache"
-        }
-    ]
+    }
 }
