@@ -129,11 +129,11 @@ class Services implements ContainerInterface
                 if (isset($this->serviceOptions['Cache']) === true) {
 
                     if (isset($this->serviceOptions['Cache']['persistent_id']) === true) {
-                        $persistantId = $this->serviceOptions['Cache']['persistent_id'];
+                        $persistentId = $this->serviceOptions['Cache']['persistent_id'];
                     } else {
-                        $persistantId = null;
+                        $persistentId = null;
                     }
-                    $memcached = new \Memcached($persistantId);
+                    $memcached = new \Memcached($persistentId);
 
                     if (isset($this->serviceOptions['Cache']['options']) === true
                         && is_array($this->serviceOptions['Cache']['options']) === true) {
