@@ -159,7 +159,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
         $this->checkTtl();
         $result = $this->cache->fetch($key);
 
-        if ($result !== null && $result !== false) {
+        if ($result !== false) {
             $collection->fromCache($result);
             return true;
         }
