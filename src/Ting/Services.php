@@ -122,8 +122,6 @@ class Services implements ContainerInterface
             }
         );
 
-        $config = ['aa'];
-
         $this->container->offsetSet(
             'Cache',
             function () {
