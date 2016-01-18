@@ -140,8 +140,9 @@ class Services implements ContainerInterface
                         $memcached->setOptions($this->serviceOptions['Cache']['options']);
                     }
 
-                    if (count($memcached->getServerList()) !== count($this->serviceOptions['Cache']['servers'])) {
-                        $memcached->resetServerList();
+                    if (isset($this->serviceOptions['Cache']['servers']) === true
+                        && is_array($this->serviceOptions['Cache']['servers']) === true
+                        && $this->serviceOptions['Cache']['servers'] !== []) {
                         $memcached->addServers($this->serviceOptions['Cache']['servers']);
                     }
 
