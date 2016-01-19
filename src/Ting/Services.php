@@ -127,7 +127,6 @@ class Services implements ContainerInterface
             function () {
                 // If no option specified, just return a simple Memcached object.
                 if (isset($this->serviceOptions['Cache']) === true) {
-
                     if (isset($this->serviceOptions['Cache']['persistent_id']) === true) {
                         $persistentId = $this->serviceOptions['Cache']['persistent_id'];
                     } else {
