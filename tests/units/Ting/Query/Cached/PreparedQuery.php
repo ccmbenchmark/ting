@@ -46,7 +46,7 @@ class PreparedQuery extends atoum
             $services->get('Hydrator')
         );
 
-        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcacheCache();
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
         $this->calling($mockMemcached)->fetch = function () {
             return [
                 'connection' => 'connectionName',
@@ -110,7 +110,7 @@ class PreparedQuery extends atoum
             'connectionName',
             'database'
         );
-        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcacheCache();
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
 
         $this->calling($mockMemcached)->fetch   = false;
         $this->calling($mockMemcached)->save    = true;

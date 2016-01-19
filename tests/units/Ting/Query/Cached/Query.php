@@ -88,7 +88,7 @@ class Query extends atoum
             $services->get('Hydrator')
         );
 
-        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcacheCache();
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
         $this->calling($mockMemcached)->fetch = function () {
             return [
                 'connection' => 'connectionName',
@@ -140,7 +140,7 @@ class Query extends atoum
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
-        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcacheCache();
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
         $this->calling($mockMemcached)->fetch  = false;
         $this->calling($mockMemcached)->save  = true;
         $this->calling($mockConnection)->slave = $mockDriver;
