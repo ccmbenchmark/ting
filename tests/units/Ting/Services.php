@@ -50,8 +50,6 @@ class Services extends atoum
                 ->isInstanceOf('\CCMBenchmark\Ting\Repository\HydratorSingleObject')
             ->object($services->get('RepositoryFactory'))
                 ->isInstanceOf('\CCMBenchmark\Ting\Repository\RepositoryFactory')
-            ->object($services->get('Cache'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Cache\Memcached')
         ;
     }
 

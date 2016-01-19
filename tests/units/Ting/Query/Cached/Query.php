@@ -88,8 +88,8 @@ class Query extends atoum
             $services->get('Hydrator')
         );
 
-        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
-        $this->calling($mockMemcached)->get = function () {
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcacheCache();
+        $this->calling($mockMemcached)->fetch = function () {
             return [
                 'connection' => 'connectionName',
                 'database'   => 'database',
@@ -126,9 +126,9 @@ class Query extends atoum
                     ->call('get')
                         ->once()
             ->mock($mockMemcached)
-                ->call('get')
+                ->call('fetch')
                     ->twice()
-                ->call('store')
+                ->call('save')
                     ->never()
         ;
     }
@@ -140,9 +140,9 @@ class Query extends atoum
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
-        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
-        $this->calling($mockMemcached)->get    = null;
-        $this->calling($mockMemcached)->store  = true;
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcacheCache();
+        $this->calling($mockMemcached)->fetch  = false;
+        $this->calling($mockMemcached)->save  = true;
         $this->calling($mockConnection)->slave = $mockDriver;
         $this->calling($mockDriver)->execute = function ($sql, array $params, $collection) {
             $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult());
@@ -157,9 +157,9 @@ class Query extends atoum
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
             ->mock($mockMemcached)
-                ->call('get')
+                ->call('fetch')
                     ->once()
-                ->call('store')
+                ->call('save')
                     ->once()
         ;
     }
