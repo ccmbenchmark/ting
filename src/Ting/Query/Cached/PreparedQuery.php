@@ -95,7 +95,7 @@ class PreparedQuery extends Query
         $this->prepareQuery();
 
         $this->statement->execute($this->params, $collection);
-        $this->cache->store($this->cacheKey, $collection->toCache(), $this->ttl);
+        $this->cache->save($this->cacheKey, $collection->toCache(), $this->ttl);
 
         return $collection;
     }

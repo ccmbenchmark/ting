@@ -25,7 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use Aura\SqlQuery\QueryInterface;
-use CCMBenchmark\Ting\Cache\CacheInterface;
+use Doctrine\Common\Cache\Cache;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Exception;
@@ -67,7 +67,7 @@ abstract class Repository
     protected $unitOfWork;
 
     /**
-     * @var CacheInterface
+     * @var Cache
      */
     protected $cache;
 
@@ -76,7 +76,7 @@ abstract class Repository
      * @param MetadataRepository $metadataRepository
      * @param QueryFactory $queryFactory
      * @param CollectionFactory $collectionFactory
-     * @param CacheInterface $cache
+     * @param Cache $cache
      * @param UnitOfWork $unitOfWork
      * @param SerializerFactoryInterface $serializerFactory
      *
@@ -87,7 +87,7 @@ abstract class Repository
         MetadataRepository $metadataRepository,
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
-        CacheInterface $cache,
+        Cache $cache,
         UnitOfWork $unitOfWork,
         SerializerFactoryInterface $serializerFactory
     ) {

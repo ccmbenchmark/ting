@@ -4,6 +4,8 @@ This file will track changes to public interfaces between 2 major versions.
 ## 3.0:
 * PHP required version is now 5.5
 * Cache data are incompatibles with previous major version, you should clean your cache data
+* Cache interface is now provided by Doctrine/Cache, you need to rewrite all your code using CacheInterface
+    or check if Doctrine/Cache provides an implementation for the cache datastore you need.
 * Serializers Bool are renamed to Boolean for PHP7 compatibility
     So you should check your repository if you use CCMBenchmark\Ting\Driver\Pgsql\Serializer\Bool or
     CCMBenchmark\Ting\Driver\Mysqli\Serializer\Bool change Bool to Boolean

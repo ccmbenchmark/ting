@@ -46,8 +46,8 @@ class PreparedQuery extends atoum
             $services->get('Hydrator')
         );
 
-        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
-        $this->calling($mockMemcached)->get = function () {
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
+        $this->calling($mockMemcached)->fetch = function () {
             return [
                 'connection' => 'connectionName',
                 'database'   => 'database',
@@ -86,9 +86,9 @@ class PreparedQuery extends atoum
                     ->call('get')
                         ->once()
             ->mock($mockMemcached)
-                ->call('get')
+                ->call('fetch')
                     ->twice()
-                ->call('store')
+                ->call('save')
                     ->never()
         ;
     }
@@ -110,10 +110,10 @@ class PreparedQuery extends atoum
             'connectionName',
             'database'
         );
-        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
 
-        $this->calling($mockMemcached)->get     = null;
-        $this->calling($mockMemcached)->store   = true;
+        $this->calling($mockMemcached)->fetch   = false;
+        $this->calling($mockMemcached)->save    = true;
         $this->calling($mockConnection)->slave  = $mockDriver;
         $this->calling($mockDriver)->execute    = true;
         $this->calling($mockDriver)->prepare    = $mockStatement;
@@ -132,9 +132,9 @@ class PreparedQuery extends atoum
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
             ->mock($mockMemcached)
-                ->call('get')
+                ->call('fetch')
                     ->once()
-                ->call('store')
+                ->call('save')
                     ->once()
         ;
     }

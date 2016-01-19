@@ -24,7 +24,7 @@
 
 namespace CCMBenchmark\Ting\Query\Cached;
 
-use CCMBenchmark\Ting\Cache\CacheInterface;
+use Doctrine\Common\Cache\Cache;
 use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Query\QueryException;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
@@ -33,7 +33,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
 {
 
     /**
-     * @var CacheInterface|null
+     * @var Cache|null
      */
     protected $cache = null;
 
@@ -59,10 +59,10 @@ class Query extends \CCMBenchmark\Ting\Query\Query
 
     /**
      * Set the cache interface to the actual query
-     * @param CacheInterface $cache
+     * @param Cache $cache
      * @return void
      */
-    public function setCache(CacheInterface $cache)
+    public function setCache(Cache $cache)
     {
         $this->cache = $cache;
     }
@@ -132,7 +132,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
         }
 
         parent::query($collection);
-        $this->cache->store($this->cacheKey, $collection->toCache(), $this->ttl);
+        $this->cache->save($this->cacheKey, $collection->toCache(), $this->ttl);
 
         return $collection;
     }
@@ -157,9 +157,9 @@ class Query extends \CCMBenchmark\Ting\Query\Query
         }
 
         $this->checkTtl();
-        $result = $this->cache->get($key);
+        $result = $this->cache->fetch($key);
 
-        if ($result !== null) {
+        if ($result !== false) {
             $collection->fromCache($result);
             return true;
         }
