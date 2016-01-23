@@ -44,11 +44,6 @@ class RepositoryFactory
     protected $metadataRepository;
 
     /**
-     * @var MetadataFactoryInterface
-     */
-    protected $metadataFactory;
-
-    /**
      * @var Collection
      */
     protected $collection;
