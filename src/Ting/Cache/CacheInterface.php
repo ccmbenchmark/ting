@@ -33,7 +33,6 @@ interface CacheInterface extends DoctrineCache
      * Add the ability to log operations
      *
      * @param CacheLoggerInterface $logger
-     * @return void
      */
-    public function setLogger(CacheLoggerInterface $logger = null);
+    public function setLogger(CacheLoggerInterface $logger);
 }

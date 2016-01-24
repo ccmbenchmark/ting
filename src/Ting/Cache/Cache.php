@@ -51,9 +51,8 @@ class Cache implements CacheInterface
      * Add the ability to log operations
      *
      * @param CacheLoggerInterface $logger
-     * @return void
      */
-    public function setLogger(CacheLoggerInterface $logger = null)
+    public function setLogger(CacheLoggerInterface $logger)
     {
         $this->logger = $logger;
     }
