@@ -22,29 +22,17 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Logger;
+namespace CCMBenchmark\Ting\Cache;
 
-interface CacheLoggerInterface
+use Doctrine\Common\Cache\Cache as DoctrineCache;
+use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
+
+interface CacheInterface extends DoctrineCache
 {
-    const OPERATION_GET    = 'GET';
-    const OPERATION_STORE  = 'STORE';
-    const OPERATION_DELETE = 'DELETE';
-    const OPERATION_EXIST  = 'EXIST';
-
     /**
-     * Log an operation
+     * Add the ability to log operations
      *
-     * @param $operation string one of defined constant starting with OPERATION_
-     * @param $keys array|string impacted keys by the operation
-     * @return void
+     * @param CacheLoggerInterface $logger
      */
-    public function startOperation($operation, $keys);
-
-    /**
-     * Flag the previously operation as stopped. Useful for time logging.
-     *
-     * @param $miss boolean tells if the last get was a miss if it was a read operation
-     * @return void
-     */
-    public function stopOperation($miss = false);
+    public function setLogger(CacheLoggerInterface $logger);
 }
