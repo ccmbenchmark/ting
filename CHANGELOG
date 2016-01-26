@@ -1,4 +1,4 @@
-3.X.X (XXXX-XX-XX) :
+3.0.0 (2016-01-26) :
     * Fix conflict when hydrating model which use the same table name but on different database
     * Fix error on Json Serializer for empty string
     * New concept for Hydrator based on Generator to simplify the code and allow more possibility
