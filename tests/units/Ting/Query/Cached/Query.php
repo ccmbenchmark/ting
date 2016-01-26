@@ -77,26 +77,35 @@ class Query extends atoum
     {
         $services              = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool    = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        $mockConnection        = new \mock\CCMBenchmark\Ting\Connection(
+            $mockConnectionPool,
+            'connectionName',
+            'database'
+        );
         $mockCollectionFactory = new \mock\CCMBenchmark\Ting\Repository\CollectionFactory(
             $services->get('MetadataRepository'),
             $services->get('UnitOfWork'),
             $services->get('Hydrator')
         );
 
-        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
-        $this->calling($mockMemcached)->get = function () {
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
+        $this->calling($mockMemcached)->fetch = function () {
             return [
-                [
+                'connection' => 'connectionName',
+                'database'   => 'database',
+                'data'       =>
                     [
-                        'name'     => 'prenom',
-                        'orgName'  => 'firstname',
-                        'table'    => 'bouh',
-                        'orgTable' => 'T_BOUH_BOO',
-                        'type'     => MYSQLI_TYPE_VAR_STRING,
-                        'value'    => 'Xavier',
+                        [
+                            [
+                                'name'     => 'prenom',
+                                'orgName'  => 'firstname',
+                                'table'    => 'bouh',
+                                'orgTable' => 'T_BOUH_BOO',
+                                'type'     => MYSQLI_TYPE_VAR_STRING,
+                                'value'    => 'Xavier',
+                            ]
+                        ]
                     ]
-                ]
             ];
         };
 
@@ -117,9 +126,9 @@ class Query extends atoum
                     ->call('get')
                         ->once()
             ->mock($mockMemcached)
-                ->call('get')
+                ->call('fetch')
                     ->twice()
-                ->call('store')
+                ->call('save')
                     ->never()
         ;
     }
@@ -131,12 +140,14 @@ class Query extends atoum
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
-        $mockMemcached = new \mock\CCMBenchmark\Ting\Cache\Memcached();
-        $this->calling($mockMemcached)->get    = null;
-        $this->calling($mockMemcached)->store  = true;
+        $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
+        $this->calling($mockMemcached)->fetch  = false;
+        $this->calling($mockMemcached)->save  = true;
         $this->calling($mockConnection)->slave = $mockDriver;
-        $this->calling($mockDriver)->execute   = true;
-
+        $this->calling($mockDriver)->execute = function ($sql, array $params, $collection) {
+            $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult());
+            return $collection;
+        };
         $collection = new Collection();
 
         $this
@@ -146,9 +157,9 @@ class Query extends atoum
             ->object($query->query($collection))
                 ->isIdenticalTo($collection)
             ->mock($mockMemcached)
-                ->call('get')
+                ->call('fetch')
                     ->once()
-                ->call('store')
+                ->call('save')
                     ->once()
         ;
     }

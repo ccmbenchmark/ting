@@ -25,11 +25,14 @@
 namespace CCMBenchmark\Ting;
 
 use Pimple\Container;
+use Doctrine\Common\Cache\MemcachedCache;
 
 class Services implements ContainerInterface
 {
 
     protected $container = null;
+
+    protected $serviceOptions = null;
 
     public function __construct()
     {
@@ -86,16 +89,22 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'Hydrator',
-            function () {
-                return new Repository\Hydrator();
-            }
+            $this->container->factory(function () {
+                $hydrator = new Repository\Hydrator();
+                $hydrator->setMetadataRepository($this->get('MetadataRepository'));
+                $hydrator->setUnitOfWork($this->get('UnitOfWork'));
+                return $hydrator;
+            })
         );
 
         $this->container->offsetSet(
             'HydratorSingleObject',
-            function () {
-                return new Repository\HydratorSingleObject();
-            }
+            $this->container->factory(function () {
+                $hydrator = new Repository\HydratorSingleObject();
+                $hydrator->setMetadataRepository($this->get('MetadataRepository'));
+                $hydrator->setUnitOfWork($this->get('UnitOfWork'));
+                return $hydrator;
+            })
         );
 
         $this->container->offsetSet(
@@ -116,9 +125,33 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Cache',
             function () {
-                $cache = new Cache\Memcached();
-                $cache->setConnection(new \Memcached($cache->getPersistentId()));
-                return $cache;
+                // If no option specified, just return a simple Memcached object.
+                if (isset($this->serviceOptions['Cache']) === true) {
+                    if (isset($this->serviceOptions['Cache']['persistent_id']) === true) {
+                        $persistentId = $this->serviceOptions['Cache']['persistent_id'];
+                    } else {
+                        $persistentId = null;
+                    }
+                    $memcached = new \Memcached($persistentId);
+
+                    if (isset($this->serviceOptions['Cache']['options']) === true
+                        && is_array($this->serviceOptions['Cache']['options']) === true) {
+                        $memcached->setOptions($this->serviceOptions['Cache']['options']);
+                    }
+
+                    if (isset($this->serviceOptions['Cache']['servers']) === true
+                        && is_array($this->serviceOptions['Cache']['servers']) === true
+                        && $this->serviceOptions['Cache']['servers'] !== []) {
+                        $memcached->addServers($this->serviceOptions['Cache']['servers']);
+                    }
+
+                } else {
+                    $memcached = new \Memcached();
+                }
+
+                $memcachedCache = new MemcachedCache();
+                $memcachedCache->setMemcached($memcached);
+                return $memcachedCache;
             }
         );
     }
@@ -133,8 +166,15 @@ class Services implements ContainerInterface
         return $this;
     }
 
-    public function get($id)
+    public function get($id, array $options = null)
     {
+        if ($options !== null) {
+            if (isset($this->serviceOptions[$id]) && $this->serviceOptions[$id] !== $options) {
+                throw new \RuntimeException(sprintf('Cannot call service %s with another configuration', $id));
+            }
+            $this->serviceOptions[$id] = $options;
+        }
+
         return $this->container->offsetGet($id);
     }
 

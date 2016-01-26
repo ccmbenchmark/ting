@@ -28,11 +28,11 @@ interface PropertyListenerInterface
 {
     /**
      * Notify all observers with old and new values
-     * @param $entity
-     * @param $propertyName
-     * @param $oldValue
-     * @param $newValue
+     * @param NotifyPropertyInterface $entity
+     * @param string $propertyName
+     * @param mixed $oldValue
+     * @param mixed $newValue
      * @return void
      */
-    public function propertyChanged($entity, $propertyName, $oldValue, $newValue);
+    public function propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue);
 }

@@ -92,4 +92,10 @@ class Country implements NotifyPropertyInterface
     {
         return (string) $this->president;
     }
+
+    public function countryLanguageIs(CountryLanguage $countryLanguage)
+    {
+        $this->countryLanguage = $countryLanguage;
+    }
+
 }

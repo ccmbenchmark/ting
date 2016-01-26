@@ -22,24 +22,24 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\Pgsql\Serializer;
+namespace CCMBenchmark\Ting\Driver\Mysqli\Serializer;
 
 use CCMBenchmark\Ting\Serializer\SerializerInterface;
 
-class Bool implements SerializerInterface
+class Boolean implements SerializerInterface
 {
     /**
      * @param mixed $toSerialize
      * @param array $options
-     * @return string|null
+     * @return int|null
      */
     public function serialize($toSerialize, array $options = [])
     {
         if ($toSerialize === true) {
-            return 't';
+            return 1;
         }
         if ($toSerialize === false) {
-            return 'f';
+            return 0;
         }
 
         return null;
@@ -52,10 +52,10 @@ class Bool implements SerializerInterface
      */
     public function unserialize($serialized, array $options = [])
     {
-        if ($serialized === 't') {
+        if ($serialized === 1 || $serialized === '1') {
             return true;
         }
-        if ($serialized === 'f') {
+        if ($serialized === 0 || $serialized === '0') {
             return false;
         }
 

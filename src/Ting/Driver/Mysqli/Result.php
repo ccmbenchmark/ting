@@ -29,18 +29,59 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 class Result implements ResultInterface
 {
 
-    protected $result = null;
-    protected $fields = array();
-    protected $iteratorOffset = 0;
+    protected $connectionName  = null;
+    protected $database        = null;
+    protected $result          = null;
+    protected $fields          = [];
+    protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
 
     /**
-     * @param \Iterator $result
+     * @param string $connectionName
+     * @return $this
      */
-    public function __construct($result)
+    public function setConnectionName($connectionName)
+    {
+        $this->connectionName = (string) $connectionName;
+        return $this;
+    }
+
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        $this->database = (string) $database;
+        return $this;
+
+    }
+
+    /**
+     * @param object $result
+     * @return $this
+     */
+    public function setResult($result)
     {
         $this->result = $result;
         $this->fields = $this->result->fetch_fields();
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     /**
@@ -48,9 +89,11 @@ class Result implements ResultInterface
      * @param $offset
      * @return mixed
      */
-    public function dataSeek($offset)
+    protected function dataSeek($offset)
     {
-        return $this->result->data_seek($offset);
+        if ($this->result !== null) {
+            return $this->result->data_seek($offset);
+        }
     }
 
     /**
@@ -58,20 +101,20 @@ class Result implements ResultInterface
      * @param $data
      * @return array
      */
-    public function format($data)
+    protected function format($data)
     {
         if ($data === null) {
             return null;
         }
 
-        $columns = array();
+        $columns = [];
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
             $value = $data[$i];
 
             if (gettype($value) === 'string') {
-                switch ($rawField->type){
+                switch ($rawField->type) {
                     case MYSQLI_TYPE_DECIMAL:
                         // Decimal
                         // Next lines are all mapped to float
@@ -105,18 +148,26 @@ class Result implements ResultInterface
                 }
             }
 
-            $column = array(
+            $column = [
                 'name'     => $rawField->name,
                 'orgName'  => $rawField->orgname,
                 'table'    => $rawField->table,
                 'orgTable' => $rawField->orgtable,
                 'value'    => $value
-            );
+            ];
 
             $columns[] = $column;
         }
 
         return $columns;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumRows()
+    {
+        return $this->result->num_rows;
     }
 
     /**
@@ -129,9 +180,11 @@ class Result implements ResultInterface
      */
     public function rewind()
     {
-        $this->result->data_seek(0);
-        $this->iteratorOffset = -1;
-        $this->next();
+        if ($this->result !== null) {
+            $this->result->data_seek(0);
+            $this->iteratorOffset = -1;
+            $this->next();
+        }
     }
 
     /**
@@ -157,8 +210,11 @@ class Result implements ResultInterface
      */
     public function next()
     {
-        $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
-        $this->iteratorOffset++;
+        if ($this->result !== null) {
+            $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
+
+            $this->iteratorOffset++;
+        }
     }
 
     /**

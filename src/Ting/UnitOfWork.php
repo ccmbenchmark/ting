@@ -70,9 +70,9 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Watch changes on provided entity
      *
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      */
-    public function manage($entity)
+    public function manage(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             $entity->tingUUID = $this->generateUUID();
@@ -84,10 +84,10 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      * @return bool - true if the entity is managed
      */
-    public function isManaged($entity)
+    public function isManaged(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -97,17 +97,16 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      * @return bool - true if the entity has not been persisted yet
      */
-    public function isNew($entity)
+    public function isNew(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             return false;
         }
 
-        if (
-            isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
+        if (isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
             && $this->entitiesShouldBePersisted[$entity->tingUUID] === self::STATE_NEW
         ) {
             return true;
@@ -118,10 +117,10 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Flag the entity to be persisted (insert or update) on next process
      *
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      * @return $this
      */
-    public function pushSave($entity)
+    public function pushSave(NotifyPropertyInterface $entity)
     {
         $state = self::STATE_MANAGED;
 
@@ -137,10 +136,10 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      * @return bool
      */
-    public function shouldBePersisted($entity)
+    public function shouldBePersisted(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -154,12 +153,12 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * @param $entity
-     * @param $propertyName
-     * @param $oldValue
-     * @param $newValue
+     * @param NotifyPropertyInterface $entity
+     * @param string $propertyName
+     * @param mixed $oldValue
+     * @param mixed $newValue
      */
-    public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
+    public function propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue)
     {
         if ($oldValue === $newValue) {
             return;
@@ -181,11 +180,11 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * @param $entity
-     * @param $propertyName
+     * @param NotifyPropertyInterface $entity
+     * @param string $propertyName
      * @return bool
      */
-    public function isPropertyChanged($entity, $propertyName)
+    public function isPropertyChanged(NotifyPropertyInterface $entity, $propertyName)
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -201,9 +200,9 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Stop watching changes on the entity
      *
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      */
-    public function detach($entity)
+    public function detach(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             return;
@@ -216,8 +215,6 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Stop watching changes on all entities
-     *
-     * @param $entity
      */
     public function detachAll()
     {
@@ -229,10 +226,10 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Flag the entity to be deleted on next process
      *
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      * @return $this
      */
-    public function pushDelete($entity)
+    public function pushDelete(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             $entity->tingUUID = $this->generateUUID();
@@ -247,17 +244,16 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Returns true if delete($entity) has been called
      *
-     * @param $entity
+     * @param NotifyPropertyInterface $entity
      * @return bool
      */
-    public function shouldBeRemoved($entity)
+    public function shouldBeRemoved(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
             return false;
         }
 
-        if (
-            isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
+        if (isset($this->entitiesShouldBePersisted[$entity->tingUUID]) === true
             && $this->entitiesShouldBePersisted[$entity->tingUUID] === self::STATE_DELETE
         ) {
             return true;

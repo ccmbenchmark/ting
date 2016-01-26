@@ -32,6 +32,16 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 class Statement implements StatementInterface
 {
 
+    /**
+     * @var string
+     */
+    protected $connectionName;
+
+    /**
+     * @var string database name
+     */
+    protected $database  = '';
+
     protected $connection    = null;
     protected $statementName = null;
     protected $queryType     = null;
@@ -46,15 +56,19 @@ class Statement implements StatementInterface
      * @param       $statementName
      * @param array $paramsOrder
      */
-    public function __construct($statementName, array $paramsOrder)
+    public function __construct($statementName, array $paramsOrder, $connectionName, $database)
     {
-        $this->statementName = $statementName;
-        $this->paramsOrder   = $paramsOrder;
+        $this->statementName  = $statementName;
+        $this->paramsOrder    = $paramsOrder;
+        $this->connectionName = $connectionName;
+        $this->database       = $database;
     }
 
     /**
      * @param $connection
      * @return $this
+     *
+     * @internal
      */
     public function setConnection($connection)
     {
@@ -66,6 +80,8 @@ class Statement implements StatementInterface
     /**
      * @param $query
      * @return $this
+     *
+     * @internal
      */
     public function setQuery($query)
     {
@@ -95,7 +111,7 @@ class Statement implements StatementInterface
     {
         $values = array();
         foreach (array_keys($this->paramsOrder) as $key) {
-            $values[] = &$params[$key];
+            $values[] = $params[$key];
         }
 
         if ($this->logger !== null) {
@@ -121,10 +137,15 @@ class Statement implements StatementInterface
      * @param $resultResource
      * @param CollectionInterface $collection
      * @return bool
+     *
+     * @internal
      */
     public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
     {
-        $result = new Result($resultResource);
+        $result = new Result();
+        $result->setConnectionName($this->connectionName);
+        $result->setDatabase($this->database);
+        $result->setResult($resultResource);
         $result->setQuery($this->query);
 
         $collection->set($result);
@@ -139,6 +160,9 @@ class Statement implements StatementInterface
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
     }
 
+    /**
+     * @internal
+     */
     public function __destruct()
     {
         $this->close();

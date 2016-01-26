@@ -32,30 +32,72 @@ class Result implements ResultInterface
 
     const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
     const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
-    const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/';
+    const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/i';
 
+    protected $connectionName  = null;
+    protected $database        = null;
     protected $result          = null;
-    protected $fields          = array();
+    protected $fields          = [];
     protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
 
     /**
-     * @param resource $result
+     * @param string $connectionName
+     * @return $this
      */
-    public function __construct($result)
+    public function setConnectionName($connectionName)
+    {
+        $this->connectionName = (string) $connectionName;
+        return $this;
+    }
+
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        $this->database = (string) $database;
+        return $this;
+    }
+
+    /**
+     * @param object $result
+     * @return $this
+     */
+    public function setResult($result)
     {
         $this->result = $result;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     /**
      * Analyze the given query
      * @param $query
      * @throws QueryException
+     *
+     * @internal
      */
     public function setQuery($query)
     {
+        $aliasToTable = [];
         $fields = [];
-        $tableToAlias = [];
 
         preg_match_all(
             '/(?:join|from)\s+"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
@@ -75,6 +117,7 @@ class Result implements ResultInterface
         }
 
         $tokens = preg_split('/(\W)/', strtolower($query), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+        $tokensWithCase = preg_split('/(\W)/', $query, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 
         $startCapture = false;
         $columnsMatches = [];
@@ -82,7 +125,7 @@ class Result implements ResultInterface
         $scope  = 'column';
         $brackets = 0;
 
-        foreach ($tokens as $token) {
+        foreach ($tokens as $index => $token) {
             if ($token === '\'') {
                 if ($scope === 'string') {
                     $scope = 'column';
@@ -104,72 +147,70 @@ class Result implements ResultInterface
             }
 
             if ($startCapture === true) {
-                if ($brackets === 0) {
-                    if ($token === ',' || $token === 'from') {
-                        $scope = 'column';
+                if ($brackets === 0 && ($token === ',' || $token === 'from')) {
+                    $scope = 'column';
 
-                        /**
-                         * Match column format table.column (as alias)
-                         */
-                        preg_match(
-                            self::PARSE_RAW_COLUMN,
-                            $column,
-                            $matches
-                        );
+                    /**
+                     * Match column format table.column (as alias)
+                     */
+                    preg_match(
+                        self::PARSE_RAW_COLUMN,
+                        $column,
+                        $matches
+                    );
 
-                        if ($matches !== []) {
-                            $columnComponent = [
-                                'complex' => false,
-                                'column' => $matches['column']
-                            ];
+                    if ($matches !== []) {
+                        $columnComponent = [
+                            'complex' => false,
+                            'column' => $matches['column']
+                        ];
 
-                            if (isset($matches['table']) === true) {
-                                $columnComponent['table'] = $matches['table'];
-                            }
-
-                            if (isset($matches['alias']) === true) {
-                                $columnComponent['alias'] = $matches['alias'];
-                            }
-                        } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
-                            $column = ltrim($column);
-                            preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
-
-                            $cut = 0;
-
-                            if (isset($matches['prefix']) === true) {
-                                $cut += strlen($matches['prefix']);
-                            }
-                            if (isset($matches['alias']) === true) {
-                                $cut += strlen($matches['alias']);
-                            }
-
-                            if ($cut > 0) {
-                                $matches['column'] = substr($column, 0, - $cut);
-                            } else {
-                                $matches['column'] = $column;
-                            }
-
-                            $columnComponent = [
-                                'complex' => true,
-                                'table' => '',
-                                'column' => $matches['column']
-                            ];
-                            if (isset($matches['alias']) === true) {
-                                $columnComponent['alias'] = $matches['alias'];
-                            }
+                        if (isset($matches['table']) === true) {
+                            $columnComponent['table'] = $matches['table'];
                         }
 
-                        $columnsMatches[] = $columnComponent;
-                        $column = '';
-                        if ($token === 'from') {
-                            break;
+                        if (isset($matches['alias']) === true) {
+                            $columnComponent['alias'] = $matches['alias'];
                         }
-                        continue;
+                    } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
+                        $column = ltrim($column);
+                        preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
+
+                        $cut = 0;
+
+                        if (isset($matches['prefix']) === true) {
+                            $cut += strlen($matches['prefix']);
+                        }
+                        if (isset($matches['alias']) === true) {
+                            $cut += strlen($matches['alias']);
+                        }
+
+                        if ($cut > 0) {
+                            $matches['column'] = substr($column, 0, - $cut);
+                        } else {
+                            $matches['column'] = $column;
+                        }
+
+                        $columnComponent = [
+                            'complex' => true,
+                            'table' => '',
+                            'column' => $matches['column']
+                        ];
+                        if (isset($matches['alias']) === true) {
+                            $columnComponent['alias'] = $matches['alias'];
+                        }
                     }
+
+                    $columnsMatches[] = $columnComponent;
+                    $column = '';
+                    if ($token === 'from') {
+                        break;
+                    }
+                    continue;
                 }
 
                 if ($scope === 'column' || $scope === 'string') {
-                    $column .= $token;
+                    $column .= $tokensWithCase[$index];
                 }
 
                 if ($scope === 'column' && $token === '*') {
@@ -219,10 +260,10 @@ class Result implements ResultInterface
 
     /**
      * Move the internal pointer to an arbitrary row in the result set
-     * @param $offset
+     * @param int $offset
      * @return bool
      */
-    public function dataSeek($offset)
+    protected function dataSeek($offset)
     {
         return pg_result_seek($this->result, $offset);
     }
@@ -232,28 +273,36 @@ class Result implements ResultInterface
      * @param $data
      * @return array
      */
-    public function format($data)
+    protected function format($data)
     {
         if ($data === false) {
             return null;
         }
 
-        $columns = array();
+        $columns = [];
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
-            $column = array(
+            $column = [
                 'name'     => $this->unescapeField($rawField->name),
                 'orgName'  => $this->unescapeField($rawField->orgname),
                 'table'    => $this->unescapeField($rawField->table),
                 'orgTable' => $this->unescapeField($rawField->orgtable),
                 'value'    => $data[$i]
-            );
+            ];
 
             $columns[] = $column;
         }
 
         return $columns;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumRows()
+    {
+        return pg_num_rows($this->result);
     }
 
     /**
@@ -288,7 +337,7 @@ class Result implements ResultInterface
 
     public function next()
     {
-        $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, PGSQL_NUM));
+        $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, \PGSQL_NUM));
         $this->iteratorOffset++;
     }
 

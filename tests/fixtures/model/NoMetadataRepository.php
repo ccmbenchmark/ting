@@ -22,39 +22,14 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\SphinxQL;
+namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Driver\Mysqli;
+use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataInitializer;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Repository\Repository;
 
-class Driver extends Mysqli\Driver
+class NoMetadataRepository extends Repository
 {
 
-    /**
-     * Quote value according to the type of variable
-     * @param mixed $value
-     *
-     * @internal
-     */
-    protected function quoteValue($value)
-    {
-        switch (gettype($value)) {
-            case "integer":
-                // integer and double doesn't need quotes
-            case "double":
-                return $value;
-                break;
-            default:
-                return "'" . $this->connection->real_escape_string($value) . "'";
-                break;
-        }
-    }
-
-    /**
-     * @param $field
-     * @return string
-     */
-    public function escapeField($field)
-    {
-        return $field;
-    }
 }

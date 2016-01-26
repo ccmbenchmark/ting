@@ -1,3 +1,18 @@
+3.X.X (XXXX-XX-XX) :
+    * Fix conflict when hydrating model which use the same table name but on different database
+    * Fix error on Json Serializer for empty string
+    * New concept for Hydrator based on Generator to simplify the code and allow more possibility
+    * New concept for Metadatata, class must now implement MetadataInitializer
+    * New feature ```mapAliasTo``` on Hydrator to inject virtual column (COUNT(*), IFNULL(...), ...) into object
+    * New feature ```mapObjectTo``` on Hydrator to inject object into object
+    * New feature ```unserializeAliasWith``` on Hydrator to unserialize virtual column
+    * New feature : QueryBuilder available with Repository::getQueryBuilder and provided by aura/sqlquery
+    * Cache interface is now provided by Doctrine/Cache
+    * Fix case on virtual column : if you used case on virtual ```COUNT(*) as NbUser``` that update can break your
+      application, because on the version 2.5.1 ```NbUser``` was changed to lowercase ```nbuser``` due to a bug. This fix
+      restore the previous behavior, and the column is not longer in lowercase.
+    * UnitOfWork has now signature "NotifyPropertyInterface $entity" instead of $entity for many methods (see UPDATE)
+
 2.7.0 (2015-12-18) :
     * Allow user to ping connection if available on the driver
 

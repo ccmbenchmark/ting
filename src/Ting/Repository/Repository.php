@@ -24,7 +24,8 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Cache\CacheInterface;
+use Aura\SqlQuery\QueryInterface;
+use Doctrine\Common\Cache\Cache;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Exception;
@@ -32,9 +33,18 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
+use CCMBenchmark\Ting\Driver\Mysqli;
+use CCMBenchmark\Ting\Driver\SphinxQL;
+use CCMBenchmark\Ting\Driver\Pgsql;
+use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 
-class Repository
+abstract class Repository
 {
+
+    const QUERY_SELECT = 'select';
+    const QUERY_INSERT = 'insert';
+    const QUERY_UPDATE = 'update';
+    const QUERY_DELETE = 'delete';
 
     /**
      * @var ContainerInterface
@@ -57,7 +67,7 @@ class Repository
     protected $unitOfWork;
 
     /**
-     * @var CacheInterface
+     * @var Cache
      */
     protected $cache;
 
@@ -66,16 +76,18 @@ class Repository
      * @param MetadataRepository $metadataRepository
      * @param QueryFactory $queryFactory
      * @param CollectionFactory $collectionFactory
-     * @param CacheInterface $cache
+     * @param Cache $cache
      * @param UnitOfWork $unitOfWork
      * @param SerializerFactoryInterface $serializerFactory
+     *
+     * @internal
      */
     public function __construct(
         ConnectionPool $connectionPool,
         MetadataRepository $metadataRepository,
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
-        CacheInterface $cache,
+        Cache $cache,
         UnitOfWork $unitOfWork,
         SerializerFactoryInterface $serializerFactory
     ) {
@@ -159,6 +171,49 @@ class Repository
         );
     }
 
+
+    /**
+     * @param string $type One of the QUERY_ constant
+     * @return QueryInterface
+     * @throws Exception
+     */
+    public function getQueryBuilder($type)
+    {
+        $driver = $this->connectionPool->getDriverClass($this->metadata->getConnectionName());
+        $driver = ltrim($driver, '\\');
+
+        switch ($driver) {
+            case Pgsql\Driver::class:
+                $queryFactory = new AuraQueryFactory('pgsql');
+                break;
+            case SphinxQL\Driver::class:
+                // SphinxQL and Mysqli are sharing the same driver
+            case Mysqli\Driver::class:
+                $queryFactory = new AuraQueryFactory('mysql');
+                break;
+            default:
+                throw new Exception('Driver ' . $driver . ' is unknown to build QueryBuilder');
+        }
+
+        switch ($type) {
+            case self::QUERY_UPDATE:
+                $queryBuilder = $queryFactory->newUpdate();
+                break;
+            case self::QUERY_DELETE:
+                $queryBuilder = $queryFactory->newDelete();
+                break;
+            case self::QUERY_INSERT:
+                $queryBuilder = $queryFactory->newInsert();
+                break;
+            case self::QUERY_SELECT:
+                // We fallback on select for default case
+            default:
+                $queryBuilder = $queryFactory->newSelect();
+        }
+
+        return $queryBuilder;
+    }
+
     /**
      * Retrieve one object from database
      *
@@ -180,9 +235,9 @@ class Repository
         if ($collection->count() === 0) {
             return null;
         }
-        $entity = $collection->current();
+        $entity = $collection->getIterator()->current();
 
-        return current($entity);
+        return reset($entity);
     }
 
     /**
@@ -237,9 +292,9 @@ class Repository
         if ($collection->count() === 0) {
             return null;
         }
-        $entity = $collection->current();
+        $entity = $collection->first();
 
-        return current($entity);
+        return reset($entity);
     }
 
     /**
@@ -260,46 +315,6 @@ class Repository
     public function delete($entity)
     {
         $this->unitOfWork->pushDelete($entity)->process();
-    }
-
-    /**
-     * @param  SerializerFactoryInterface $serializerFactory
-     * @param  array                      $options
-     * @return \CCMBenchmark\Ting\Repository\Metadata
-     * @throws Exception
-     */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
-    {
-        throw new Exception('You should add initMetadata in your class repository');
-
-        /**
-         * Example for your repository :
-         *
-         *  $metadata = new Metadata($serializerFactory);
-         *
-         *  $metadata->setEntity('myProject\model\Bouh');
-         *  $metadata->setConnectionName('main');
-         *  $metadata->setDatabase('bouh');
-         *  $metadata->setTable('T_BOUH_BOO');
-         *
-         *  $metadata->addField(array(
-         *     'primary'    => true,
-         *     'fieldName'  => 'aField',
-         *     'columnName' => 'COLUMN_NAME',
-         *     'type'       => 'int'
-         *  ));
-         *
-         * return $metadata;
-         *
-         * Supported types:
-         *
-         * int
-         * datetime
-         * string
-         * double
-         * bool
-         *
-         */
     }
 
     /**

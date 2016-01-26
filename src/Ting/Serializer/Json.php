@@ -55,9 +55,11 @@ class Json implements SerializerInterface
         }
 
         $json = json_encode($toSerialize, $jsonOptions, $jsonDepth);
-        if ($json === false) {
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException('Could not convert value to json. Error was : ' . json_last_error_msg());
         }
+
         return $json;
     }
 
@@ -93,9 +95,14 @@ class Json implements SerializerInterface
 
         $value = json_decode($serialized, $jsonAssoc, $jsonDepth, $jsonOptions);
 
-        if ($value === null) {
+        /**
+         * On PHP 7, json_last_error return JSON_ERROR_SYNTAX on empty string
+         */
+        if ((json_last_error() === JSON_ERROR_SYNTAX && $serialized !== '')
+            || (json_last_error() !== JSON_ERROR_SYNTAX && json_last_error() !== JSON_ERROR_NONE)) {
             throw new RuntimeException('Could not decode value from json. Error was : ' . json_last_error_msg());
         }
+
         return $value;
     }
 }

@@ -22,10 +22,19 @@
  *
  **********************************************************************/
 
+if (defined('PGSQL_TUPLES_OK') === false) {
+    define('PGSQL_TUPLES_OK', 2);
+}
+
+if (defined('PGSQL_NUM') === false) {
+    define('PGSQL_NUM', 2);
+}
+
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/fixtures/model/Bouh.php';
 require __DIR__ . '/fixtures/model/BouhRepository.php';
-require __DIR__ . '/fixtures/FakeCache/Memcached.php';
+require __DIR__ . '/fixtures/model/City.php';
+require __DIR__ . '/fixtures/model/CityRepository.php';
 require __DIR__ . '/fixtures/FakeDriver/Driver.php';
 require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
 require __DIR__ . '/fixtures/FakeLogger/FakeDriverLogger.php';

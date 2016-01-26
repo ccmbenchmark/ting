@@ -219,4 +219,26 @@ class ConnectionPool extends atoum
                         ->twice()
             ;
     }
+
+    public function testGetDriveClassShouldreturnFakeDriver()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'connectionName' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ]
+                ]
+            ))
+            ->string($connectionPool->getDriverClass('connectionName'))
+                ->isIdenticalTo('\tests\fixtures\FakeDriver\Driver')
+        ;
+    }
 }

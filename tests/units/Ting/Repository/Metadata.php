@@ -43,6 +43,20 @@ class Metadata extends atoum
         ;
     }
 
+    public function testGetConnectionName()
+    {
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setDatabase('myDatabase'))
+            ->and($metadata->setConnectionName('myConnection'))
+            ->string($metadata->getConnectionName())
+                ->isIdenticalTo('myConnection')
+        ;
+    }
+
     public function testSetDatabaseShouldReturnThis()
     {
         $services = new \CCMBenchmark\Ting\Services();
@@ -110,10 +124,17 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->then($metadata->setConnectionName('connectionName'))
+            ->then($metadata->setDatabase('database'))
             ->then($metadata->setTable('Bouh'))
-            ->boolean($metadata->ifTableKnown('Bouh', function ($metadata) use (&$outerMetadata) {
-                $outerMetadata = $metadata;
-            }))
+            ->boolean($metadata->ifTableKnown(
+                'connectionName',
+                'database',
+                'Bouh',
+                function ($metadata) use (&$outerMetadata) {
+                    $outerMetadata = $metadata;
+                }
+            ))
                 ->isTrue()
             ->object($outerMetadata)
                 ->isIdenticalTo($metadata);
@@ -126,6 +147,8 @@ class Metadata extends atoum
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->then($metadata->setTable('Bouh'))
             ->boolean($metadata->ifTableKnown(
+                'connectionName',
+                'database',
                 'Bim',
                 function () {
                 }

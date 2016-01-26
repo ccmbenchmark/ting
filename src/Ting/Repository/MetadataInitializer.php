@@ -22,43 +22,17 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\Mysqli\Serializer;
+namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Serializer\SerializerInterface;
+use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
-class Bool implements SerializerInterface
+interface MetadataInitializer
 {
     /**
-     * @param mixed $toSerialize
-     * @param array $options
-     * @return int|null
+     * @param  SerializerFactoryInterface $serializerFactory
+     * @param  array                      $options
+     * @return \CCMBenchmark\Ting\Repository\Metadata
      */
-    public function serialize($toSerialize, array $options = [])
-    {
-        if ($toSerialize === true) {
-            return 1;
-        }
-        if ($toSerialize === false) {
-            return 0;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $serialized
-     * @param array  $options
-     * @return bool|null
-     */
-    public function unserialize($serialized, array $options = [])
-    {
-        if ($serialized === 1 || $serialized === '1') {
-            return true;
-        }
-        if ($serialized === 0 || $serialized === '0') {
-            return false;
-        }
-
-        return null;
-    }
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []);
 }

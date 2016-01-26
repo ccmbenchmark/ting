@@ -26,9 +26,10 @@ namespace sample\src\model;
 
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Metadata;
+use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
-class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
+class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
 {
 
     public function getZCountryWithLotsPopulation()
@@ -39,7 +40,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
                     from t_city_cit as a where cit_name like :name and cit_population > :population limit 3'
         );
 
-        return $query->setParams(['name' => 'Z%', 'population' => 200000])->query(new Collection());
+        return $query->setParams(['name' => 'Z%', 'population' => 200000])->query();
     }
 
     public function getNumberOfCities()
@@ -47,7 +48,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository
 
         $query = $this->getQuery('select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population');
 
-        return $query->setParams(['population' => 20000])->query()->current();
+        return $query->setParams(['population' => 20000])->query()->first();
     }
 
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])

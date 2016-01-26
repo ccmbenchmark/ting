@@ -24,10 +24,11 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
-interface HydratorInterface
+interface HydratorInterface extends \IteratorAggregate, \Countable
 {
 
     /**
@@ -42,12 +43,9 @@ interface HydratorInterface
      */
     public function setUnitOfWork(UnitOfWork $unitOfWork);
 
-
     /**
-     * Hydrate One object from it's values
-     * @param array               $columns
-     * @param CollectionInterface $collection
-     * @return mixed
+     * @param ResultInterface $result
+     * @return $this
      */
-    public function hydrate(array $columns, CollectionInterface $collection);
+    public function setResult(ResultInterface $result);
 }

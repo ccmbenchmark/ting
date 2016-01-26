@@ -22,23 +22,50 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Cache;
+namespace tests\fixtures\model;
 
-/**
- * This class is here to implement a false cache storage to force retrieve of values
- * Class ForceMemcached
- * @package CCMBenchmark\Ting\Cache
- */
-class ForceMemcached extends Memcached
+use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+
+class City implements NotifyPropertyInterface
 {
 
-    public function get($key)
+    use NotifyProperty;
+
+    protected $id        = null;
+    protected $name      = null;
+    protected $zipcode   = null;
+
+    public function setId($id)
     {
-        return null;
+        $this->propertyChanged('id', $this->id, $id);
+        $this->id = $id;
     }
 
-    public function getMulti(array $keys)
+    public function setName($name)
     {
-        return null;
+        $this->propertyChanged('name', $this->name, $name);
+        $this->name = $name;
+    }
+
+    public function setZipcode($zipcode)
+    {
+        $this->propertyChanged('zipcode', $this->zipcode, $zipcode);
+        $this->zipcode = (string) $zipcode;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getZipcode()
+    {
+        return $this->zipcode;
     }
 }

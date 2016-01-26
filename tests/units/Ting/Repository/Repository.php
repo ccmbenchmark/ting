@@ -24,12 +24,9 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Connection;
-use CCMBenchmark\Ting\ConnectionPool;
-use CCMBenchmark\Ting\Repository\CollectionFactory;
+use CCMBenchmark\Ting\Driver\Mysqli\Result;
 use mageekguy\atoum;
 use tests\fixtures\model\Bouh;
-use tests\fixtures\model\BouhRepository;
 
 class Repository extends atoum
 {
@@ -37,7 +34,7 @@ class Repository extends atoum
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'bouh_world');
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
@@ -46,20 +43,43 @@ class Repository extends atoum
             __DIR__ . '/../../../fixtures/model/*Repository.php'
         );
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
-        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockQuery        = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->get = $mockQuery;
 
-        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+        $this->calling($mockConnectionPool)->slave = $mockDriver;
 
         $entity = new Bouh();
         $entity->setName('Bouh');
 
-        $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
+        $mockMysqliResult                               = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Bouh']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields             = [];
+            $stdClass           = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[]           = $stdClass;
 
-        $this->calling($mockQuery)->query = $collection;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $hydrator = new \CCMBenchmark\Ting\Repository\Hydrator();
+        $hydrator->setMetadataRepository($services->get('MetadataRepository'));
+        $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection($hydrator);
+        $mockCollection->set($result);
+        $this->calling($mockCollection)->count = 1;
+        $this->calling($mockQuery)->query      = $mockCollection;
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -71,12 +91,12 @@ class Repository extends atoum
                 $services->get('UnitOfWork'),
                 $services->get('SerializerFactory')
             ))
-            ->variable($repository->get([]))
-                ->isIdenticalTo($entity)
+            ->then($retrievedEntity = $repository->get([]))
+            ->string($retrievedEntity->getName())
+                ->isIdenticalTo($entity->getName())
             ->mock($mockQuery)
                 ->call('query')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testGetOnMaster()
@@ -92,13 +112,13 @@ class Repository extends atoum
             __DIR__ . '/../../../fixtures/model/*Repository.php'
         );
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
-        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockQuery        = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->get = $mockQuery;
 
-        $this->calling($mockConnectionPool)->master  = $mockDriver;
-        $this->calling($mockQuery)->query = new \CCMBenchmark\Ting\Repository\Collection();
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+        $this->calling($mockQuery)->query           = new \CCMBenchmark\Ting\Repository\Collection();
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -115,10 +135,9 @@ class Repository extends atoum
             ->mock($mockQuery)
                 ->call('selectMaster')
                     ->withArguments(true)
-                    ->once()
+                        ->once()
                 ->call('query')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testStartTransactionShouldOpenTransaction()
@@ -148,8 +167,7 @@ class Repository extends atoum
             ->then($bouhRepository->startTransaction())
             ->mock($mockDriver)
                 ->call('startTransaction')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testCommitShouldCloseTransaction()
@@ -180,8 +198,7 @@ class Repository extends atoum
             ->then($bouhRepository->commit())
             ->mock($mockDriver)
                 ->call('commit')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testRollbackShouldCloseTransaction()
@@ -212,21 +229,20 @@ class Repository extends atoum
             ->then($bouhRepository->rollback())
             ->mock($mockDriver)
                 ->call('rollback')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testSaveShouldCallUnitOfWorkSaveThenProcess()
     {
-        $services           = new \CCMBenchmark\Ting\Services();
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockUnitOfWork = new \mock\CCMBenchmark\Ting\UnitOfWork(
+        $services                                 = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool                       = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockUnitOfWork                           = new \mock\CCMBenchmark\Ting\UnitOfWork(
             $mockConnectionPool,
             $services->get('MetadataRepository'),
             $services->get('QueryFactory')
         );
         $this->calling($mockUnitOfWork)->pushSave = $mockUnitOfWork;
-        $this->calling($mockUnitOfWork)->process = true;
+        $this->calling($mockUnitOfWork)->process  = true;
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
@@ -250,21 +266,20 @@ class Repository extends atoum
                 ->call('pushSave')
                     ->once()
                 ->call('process')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testDeleteShouldCallUnitOfWorkDeleteThenProcess()
     {
-        $services           = new \CCMBenchmark\Ting\Services();
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockUnitOfWork = new \mock\CCMBenchmark\Ting\UnitOfWork(
+        $services                                   = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool                         = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockUnitOfWork                             = new \mock\CCMBenchmark\Ting\UnitOfWork(
             $mockConnectionPool,
             $services->get('MetadataRepository'),
             $services->get('QueryFactory')
         );
         $this->calling($mockUnitOfWork)->pushDelete = $mockUnitOfWork;
-        $this->calling($mockUnitOfWork)->process  = true;
+        $this->calling($mockUnitOfWork)->process    = true;
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
@@ -288,8 +303,7 @@ class Repository extends atoum
                 ->call('pushDelete')
                     ->once()
                 ->call('process')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testGetQueryShouldCallQueryFactoryGet()
@@ -317,8 +331,7 @@ class Repository extends atoum
             ->then($bouhRepository->getQuery('QUERY'))
             ->mock($mockQueryFactory)
                 ->call('get')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testGetPreparedQueryShouldCallQueryFactoryGetPrepared()
@@ -346,8 +359,7 @@ class Repository extends atoum
             ->then($bouhRepository->getPreparedQuery('QUERY'))
             ->mock($mockQueryFactory)
                 ->call('getPrepared')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testGetCachedQueryShouldCallQueryFactoryGetCached()
@@ -375,8 +387,7 @@ class Repository extends atoum
             ->then($bouhRepository->getCachedQuery('QUERY'))
             ->mock($mockQueryFactory)
                 ->call('getCached')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testGetCachedPreparedQueryShouldCallQueryFactoryGetCachedPreparedQuery()
@@ -404,8 +415,7 @@ class Repository extends atoum
             ->then($bouhRepository->getCachedPreparedQuery('QUERY'))
             ->mock($mockQueryFactory)
                 ->call('getCachedPrepared')
-                    ->once()
-        ;
+                    ->once();
     }
 
     public function testGetAllShouldReturnAQuery()
@@ -421,18 +431,17 @@ class Repository extends atoum
             __DIR__ . '/../../../fixtures/model/*Repository.php'
         );
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
-        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockQuery        = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->get = $mockQuery;
 
-        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+        $this->calling($mockConnectionPool)->slave = $mockDriver;
 
         $entity = new Bouh();
         $entity->setName('Bouh');
 
         $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
 
         $this->calling($mockQuery)->query = $collection;
 
@@ -447,8 +456,7 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getAll())
-                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface')
-        ;
+                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
     }
 
     public function testGetByCriteriaShouldReturnAQuery()
@@ -464,18 +472,17 @@ class Repository extends atoum
             __DIR__ . '/../../../fixtures/model/*Repository.php'
         );
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
-        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockQuery        = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->get = $mockQuery;
 
-        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+        $this->calling($mockConnectionPool)->slave = $mockDriver;
 
         $entity = new Bouh();
         $entity->setName('Bouh');
 
         $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
 
         $this->calling($mockQuery)->query = $collection;
 
@@ -490,15 +497,14 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getBy(['name' => 'bouh']))
-                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface')
-        ;
+                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
     }
 
     public function testGetOneByCriteriaShouldReturnAnEntityOrNull()
     {
         $services           = new \CCMBenchmark\Ting\Services();
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'bouh_world');
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
 
@@ -507,20 +513,44 @@ class Repository extends atoum
             __DIR__ . '/../../../fixtures/model/*Repository.php'
         );
 
-        $mockQuery = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
-        $mockQueryFactory  = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockQuery        = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
 
         $this->calling($mockQueryFactory)->get = $mockQuery;
 
-        $this->calling($mockConnectionPool)->slave  = $mockDriver;
+        $this->calling($mockConnectionPool)->slave = $mockDriver;
 
         $entity = new Bouh();
         $entity->setName('Bouh');
 
-        $collection = new \CCMBenchmark\Ting\Repository\Collection();
-        $collection->add(['entity' => $entity]);
+        $mockMysqliResult                               = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Bouh']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields             = [];
+            $stdClass           = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[]           = $stdClass;
 
-        $this->calling($mockQuery)->query = $collection;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $hydrator = new \CCMBenchmark\Ting\Repository\Hydrator();
+        $hydrator->setMetadataRepository($services->get('MetadataRepository'));
+        $hydrator->setUnitOfWork($services->get('UnitOfWork'));
+
+        $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection($hydrator);
+        $mockCollection->set($result);
+        $this->calling($mockCollection)->count = 1;
+
+        $this->calling($mockQuery)->query = $mockCollection;
 
         $this
             ->if($repository = new \tests\fixtures\model\BouhRepository(
@@ -537,7 +567,59 @@ class Repository extends atoum
             ->and($emptyCollection = new \CCMBenchmark\Ting\Repository\Collection())
             ->then($this->calling($mockQuery)->query = $emptyCollection)
             ->variable($repository->getOneBy(['name' => 'Xavier']))
-                ->isNull()
+                ->isNull();
+    }
+
+    public function testGetQueryBuilderShouldThrowExceptionOnUnknownDriver()
+    {
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $services->get('ConnectionPool')->setConfig([
+            'main' => [
+                'namespace' => '\Unknown\Driver\Mysqli'
+            ]
+        ]);
+
+        $this
+            ->if($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
+            ->exception(function () use ($bouhRepository) {
+                $bouhRepository->getQueryBuilder($bouhRepository::QUERY_SELECT);
+            })
+                ->hasMessage('Driver Unknown\Driver\Mysqli\Driver is unknown to build QueryBuilder');
+    }
+
+    public function testGetQueryBuilder()
+    {
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')->batchLoadMetadata(
+            'tests\fixtures\model',
+            __DIR__ . '/../../../fixtures/model/*Repository.php'
+        );
+
+        $this
+            ->if($services->get('ConnectionPool')
+                ->setConfig(['main' => ['namespace' => '\CCMBenchmark\Ting\Driver\SphinxQL']]))
+            ->then($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
+            ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_SELECT))
+                ->isInstanceOf('Aura\SqlQuery\Common\SelectInterface')
+            ->if($services->get('ConnectionPool')
+                ->setConfig(['main' => ['namespace' => 'CCMBenchmark\Ting\Driver\Pgsql']]))
+            ->object($queryBuilder = $bouhRepository->getQueryBuilder("unkwnon"))
+                ->isInstanceOf('Aura\SqlQuery\Common\SelectInterface')
+            ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_UPDATE))
+                ->isInstanceOf('Aura\SqlQuery\Common\UpdateInterface')
+            ->if($services->get('ConnectionPool')
+                ->setConfig(['main' => ['namespace' => '\CCMBenchmark\Ting\Driver\Mysqli']]))
+            ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_DELETE))
+                ->isInstanceOf('Aura\SqlQuery\Common\DeleteInterface')
+            ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_INSERT))
+                ->isInstanceOf('Aura\SqlQuery\Common\InsertInterface')
         ;
     }
 

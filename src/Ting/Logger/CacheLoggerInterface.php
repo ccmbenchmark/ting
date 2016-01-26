@@ -26,14 +26,10 @@ namespace CCMBenchmark\Ting\Logger;
 
 interface CacheLoggerInterface
 {
-    const OPERATION_GET           = 'GET';
-    const OPERATION_GET_MULTI     = 'GET_MULTI';
-    const OPERATION_STORE         = 'STORE';
-    const OPERATION_STORE_MULTI   = 'STORE_MULTI';
-    const OPERATION_DELETE        = 'DELETE_MULTI';
-    const OPERATION_DELETE_MULTI  = 'DELETE_MULTI';
-    const OPERATION_REPLACE       = 'REPLACE';
-    const OPERATION_REPLACE_MULTI = 'REPLACE_MULTI';
+    const OPERATION_GET    = 'GET';
+    const OPERATION_STORE  = 'STORE';
+    const OPERATION_DELETE = 'DELETE';
+    const OPERATION_EXIST  = 'EXIST';
 
     /**
      * Log an operation
