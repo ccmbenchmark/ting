@@ -108,6 +108,15 @@ class Metadata
     }
 
     /**
+     * @return string
+     *
+     */
+    public function getDatabase()
+    {
+        return $this->databaseName;
+    }
+
+    /**
      * Set entity name
      * @param string $className
      * @throws \CCMBenchmark\Ting\Exception
@@ -138,6 +147,16 @@ class Metadata
     public function setTable($tableName)
     {
         $this->table = (string) $tableName;
+    }
+
+
+    /**
+     * Get table name
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
     }
 
     /**

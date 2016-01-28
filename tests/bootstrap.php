@@ -35,6 +35,8 @@ require __DIR__ . '/fixtures/model/Bouh.php';
 require __DIR__ . '/fixtures/model/BouhRepository.php';
 require __DIR__ . '/fixtures/model/City.php';
 require __DIR__ . '/fixtures/model/CityRepository.php';
+require __DIR__ . '/fixtures/model/CitySecond.php';
+require __DIR__ . '/fixtures/model/CitySecondRepository.php';
 require __DIR__ . '/fixtures/FakeDriver/Driver.php';
 require __DIR__ . '/fixtures/FakeDriver/MysqliResult.php';
 require __DIR__ . '/fixtures/FakeLogger/FakeDriverLogger.php';

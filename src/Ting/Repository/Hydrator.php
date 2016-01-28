@@ -35,6 +35,7 @@ class Hydrator implements HydratorInterface
 
     protected $mapAliases         = [];
     protected $mapObjects         = [];
+    protected $objectDatabase     = [];
     protected $unserializeAliases = [];
 
     /**
@@ -157,6 +158,20 @@ class Hydrator implements HydratorInterface
         return $this;
     }
 
+
+    /**
+     * @param string $object
+     * @param string $database
+     *
+     * @return $this
+     */
+    public function objectDatabaseIs($object, $database)
+    {
+        $this->objectDatabase[$object] = $database;
+
+        return $this;
+    }
+
     /**
      * Hydrate one object from values
      *
@@ -182,6 +197,11 @@ class Hydrator implements HydratorInterface
         foreach ($columns as $column) {
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
+
+                if (isset($this->objectDatabase[$column['table']]) === true) {
+                    $database = $this->objectDatabase[$column['table']];
+                }
+
                 $this->metadataRepository->findMetadataForTable(
                     $connectionName,
                     $database,
