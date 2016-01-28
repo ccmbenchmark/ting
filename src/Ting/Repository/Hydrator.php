@@ -197,7 +197,6 @@ class Hydrator implements HydratorInterface
         foreach ($columns as $column) {
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
-
                 if (isset($this->objectDatabase[$column['table']]) === true) {
                     $database = $this->objectDatabase[$column['table']];
                 }
