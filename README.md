@@ -10,7 +10,7 @@ It has some distinctive features and design choices :
 * Fast, low memory consumption
 * Simple to use, simple to extend
 
-You can read this few examples, or go to the [Documentation](http://tech.ccmbg.com/ting/doc/en/index.html)
+You can read this few examples, or go to the [Documentation](http://tech.ccmbg.com/ting/doc/)
 or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
 
 ## Retrieve object by ID
@@ -59,5 +59,5 @@ or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
 
 
 ## More :
-* [Documentation](http://tech.ccmbg.com/ting/doc/en/index.html)
+* [Documentation](http://tech.ccmbg.com/ting/doc/)
 * [Issues](https://bitbucket.org/ccmbenchmark/ting/issues)
