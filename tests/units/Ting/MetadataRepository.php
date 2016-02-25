@@ -200,7 +200,7 @@ class MetadataRepository extends atoum
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
                 ->size
-                    ->isIdenticalTo(2);
+                    ->isIdenticalTo(3);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()
@@ -264,5 +264,106 @@ class MetadataRepository extends atoum
             )
             ->array($metadataRepository->batchLoadMetadataFromCache($paths))
                 ->isEmpty();
+    }
+
+    public function testFindMetadataForOtherConnectionShouldCallCallbackNotFound()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('tests\fixtures\model\Bouh');
+        $metadata->setConnectionName('connection2');
+        $metadata->setDatabase('bouh_world');
+        $metadata->setTable('bouh');
+
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+
+        $this
+            ->if($metadataRepository->findMetadataForTable(
+                'connection',
+                'bouh_world',
+                'bouh',
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->variable($outerCallbackFound)
+                ->isNull()
+            ->boolean($outerCallbackNotFound)
+                ->isTrue();
+    }
+
+    public function testFindMetadataForOtherDatabaseShouldFailbackAndCallCallbackFound()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('tests\fixtures\model\Bouh');
+        $metadata->setConnectionName('connection');
+        $metadata->setDatabase('bouh_world_2');
+        $metadata->setTable('bouh');
+
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+
+        $this
+            ->if($metadataRepository->findMetadataForTable(
+                'connection',
+                'bouh_world',
+                'bouh',
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackFound)
+                ->isTrue()
+            ->variable($outerCallbackNotFound)
+                ->isNull();
+    }
+
+    public function testFindMetadataForRightDatabaseShouldCallCallbackFound()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('tests\fixtures\model\Bouh');
+        $metadata->setConnectionName('connection');
+        $metadata->setDatabase('bouh_world');
+        $metadata->setTable('bouh');
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('tests\fixtures\model\Bouh2');
+        $metadata->setConnectionName('connection');
+        $metadata->setDatabase('bouh_world_2');
+        $metadata->setTable('bouh');
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+
+        $this
+            ->if($metadataRepository->findMetadataForTable(
+                'connection',
+                'bouh_world_2',
+                'bouh',
+                function ($metadata) use (&$outerMetadata, &$outerCallbackFound) {
+                    $outerMetadata = $metadata;
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackFound)
+                ->isTrue()
+            ->variable($outerCallbackNotFound)
+                ->isNull()
+            ->variable($outerMetadata->getEntity())
+                ->isIdenticalTo('tests\fixtures\model\Bouh2');
     }
 }

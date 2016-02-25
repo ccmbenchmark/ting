@@ -561,4 +561,64 @@ class Hydrator extends atoum
                 ->isIdenticalTo($time);
     }
 
+    public function testHydrateWithObjectDatabaseIsShouldHydrateToCity2()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')
+            ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
+            ['Sylvain', 'Robez-Masson', 3, 'Palaiseau']
+        ]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'fname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'cityId';
+            $stdClass->orgname  = 'cit_id';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_LONG;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'citname';
+            $stdClass->orgname  = 'cit_name';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->objectDatabaseIs('cit', 'bouh_world_2'))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->object($data['cit'])
+                ->isInstanceOf(\tests\fixtures\model\CitySecond::class);
+    }
 }

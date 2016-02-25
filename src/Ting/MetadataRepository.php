@@ -33,7 +33,7 @@ class MetadataRepository
     /**
      * This array matches a repository (class name) and the corresponding metadata object
      *
-     * @var array RepositoryClassName => MetadataObject
+     * @var Metadata[RepositoryClassName]
      */
     protected $metadataList = [];
 
@@ -44,9 +44,9 @@ class MetadataRepository
     protected $entityToRepository = [];
 
     /**
-     * @var array This array is a pseudo cache to reduce findMetadataForTable work
+     * @var array Fast array access to RepositoryClassName
      */
-    private $tableToMetadata = array();
+    private $tableWithConnectionToMetadata = array();
 
     /**
      * @var SerializerFactoryInterface|null
@@ -75,26 +75,22 @@ class MetadataRepository
         \Closure $callbackFound,
         \Closure $callbackNotFound = null
     ) {
-        $found = false;
-        foreach ($this->metadataList as $metadata) {
-            $found = $metadata->ifTableKnown(
-                $connectionName,
-                $database,
-                $table,
-                function (Metadata $metadata) use ($callbackFound) {
-                    $callbackFound($metadata);
-                }
-            );
 
-            if ($found === true) {
-                $this->tableToMetadata[$table] = $metadata;
-                break;
+        if (isset($this->tableWithConnectionToMetadata[$connectionName . '#' . $table]) === false) {
+            if ($callbackNotFound !== null) {
+                $callbackNotFound();
             }
+            return;
         }
 
-        if ($found === false && $callbackNotFound !== null) {
-            $callbackNotFound();
-            $this->tableToMetadata[$table] = false;
+        if (isset($this->tableWithConnectionToMetadata[$connectionName . '#' . $table][$database]) === true) {
+            $callbackFound(
+                $this->metadataList[$this->tableWithConnectionToMetadata[$connectionName . '#' . $table][$database]]
+            );
+        } else {
+            $callbackFound(
+                $this->metadataList[current($this->tableWithConnectionToMetadata[$connectionName . '#' . $table])]
+            );
         }
     }
 
@@ -146,10 +142,16 @@ class MetadataRepository
      */
     public function addMetadata($repositoryClass, Metadata $metadata)
     {
-        if (isset($this->metadataList[$repositoryClass]) === false) {
-            $this->metadataList[$repositoryClass] = $metadata;
-            $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
+        $this->metadataList[$repositoryClass] = $metadata;
+        $metadataTable = $metadata->getTable();
+        $metadataConnection = $metadata->getConnectionName();
+        if (isset($this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable]) === false) {
+            $this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable] = [];
         }
+
+        $this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable][$metadata->getDatabase()]
+            = $repositoryClass;
+        $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
     }
 
     /**
@@ -172,6 +174,7 @@ class MetadataRepository
 
         foreach (glob($globPattern) as $repositoryFile) {
             $repository = $namespace . '\\' . basename($repositoryFile, '.php');
+
             if (is_subclass_of($repository, MetadataInitializer::class) === true) {
                 $this->addMetadata(
                     $repository,
