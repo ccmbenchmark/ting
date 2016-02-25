@@ -201,9 +201,15 @@ class Hydrator implements HydratorInterface
                     $database = $this->objectDatabase[$column['table']];
                 }
 
+                $schema = '';
+                if (isset($column['schema']) === true) {
+                    $schema = $column['schema'];
+                }
+
                 $this->metadataRepository->findMetadataForTable(
                     $connectionName,
                     $database,
+                    $schema,
                     $column['orgTable'],
                     function (Metadata $metadata) use ($column, &$result, &$metadataList) {
                         $metadataList[$column['table']] = $metadata;

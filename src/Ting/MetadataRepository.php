@@ -64,6 +64,7 @@ class MetadataRepository
     /**
      * @param string   $connectionName
      * @param string   $database
+     * @param string   $schema
      * @param string   $table
      * @param \Closure $callbackFound   called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown table - no parameter
@@ -71,25 +72,28 @@ class MetadataRepository
     public function findMetadataForTable(
         $connectionName,
         $database,
+        $schema,
         $table,
         \Closure $callbackFound,
         \Closure $callbackNotFound = null
     ) {
 
-        if (isset($this->tableWithConnectionToMetadata[$connectionName . '#' . $table]) === false) {
+        $connectionKey = $connectionName . '#' . $table;
+
+        if (isset($this->tableWithConnectionToMetadata[$connectionKey]) === false) {
             if ($callbackNotFound !== null) {
                 $callbackNotFound();
             }
             return;
         }
 
-        if (isset($this->tableWithConnectionToMetadata[$connectionName . '#' . $table][$database]) === true) {
+        if (isset($this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database]) === true) {
             $callbackFound(
-                $this->metadataList[$this->tableWithConnectionToMetadata[$connectionName . '#' . $table][$database]]
+                $this->metadataList[$this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database]]
             );
         } else {
             $callbackFound(
-                $this->metadataList[current($this->tableWithConnectionToMetadata[$connectionName . '#' . $table])]
+                $this->metadataList[current($this->tableWithConnectionToMetadata[$connectionKey])]
             );
         }
     }
@@ -149,8 +153,9 @@ class MetadataRepository
             $this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable] = [];
         }
 
-        $this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable][$metadata->getDatabase()]
-            = $repositoryClass;
+        $this->tableWithConnectionToMetadata
+            [$metadataConnection . '#' . $metadataTable]
+            [$metadata->getSchema() . '#' . $metadata->getDatabase()] = $repositoryClass;
         $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
     }
 

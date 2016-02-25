@@ -36,7 +36,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
     {
 
         $query = $this->getQuery(
-            'select cit_id, cit_name, cou_code, cit_district, cit_population, last_modified
+            'select cit_id, cit_name, cou_code, cit_district, cit_population
                     from t_city_cit as a where cit_name like :name and cit_population > :population limit 3'
         );
 
@@ -58,6 +58,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
         $metadata->setEntity('sample\src\model\City');
         $metadata->setConnectionName('main');
         $metadata->setDatabase('world');
+        $metadata->setSchema('public');
         $metadata->setTable('t_city_cit');
 
         $metadata->addField(array(
@@ -90,12 +91,6 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
             'fieldName'  => 'population',
             'columnName' => 'cit_population',
             'type'       => 'int'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'dt',
-            'columnName' => 'last_modified',
-            'type'       => 'datetime'
         ));
 
         return $metadata;
