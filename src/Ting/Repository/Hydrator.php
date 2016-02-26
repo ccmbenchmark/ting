@@ -36,6 +36,7 @@ class Hydrator implements HydratorInterface
     protected $mapAliases         = [];
     protected $mapObjects         = [];
     protected $objectDatabase     = [];
+    protected $objectSchema       = [];
     protected $unserializeAliases = [];
 
     /**
@@ -158,7 +159,6 @@ class Hydrator implements HydratorInterface
         return $this;
     }
 
-
     /**
      * @param string $object
      * @param string $database
@@ -167,7 +167,20 @@ class Hydrator implements HydratorInterface
      */
     public function objectDatabaseIs($object, $database)
     {
-        $this->objectDatabase[$object] = $database;
+        $this->objectDatabase[$object] = (string) $database;
+
+        return $this;
+    }
+
+    /**
+     * @param string $object
+     * @param string $schema
+     *
+     * @return $this
+     */
+    public function objectSchemaIs($object, $schema)
+    {
+        $this->objectSchema[$object] = (string) $schema;
 
         return $this;
     }
@@ -204,6 +217,10 @@ class Hydrator implements HydratorInterface
                 $schema = '';
                 if (isset($column['schema']) === true) {
                     $schema = $column['schema'];
+                }
+
+                if (isset($this->objectSchema[$column['table']]) === true) {
+                    $schema = $this->objectSchema[$column['table']];
                 }
 
                 $this->metadataRepository->findMetadataForTable(
