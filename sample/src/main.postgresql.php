@@ -60,7 +60,7 @@ try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     var_dump($cityRepository->get(['cit_id' => 3]));
     echo str_repeat("-", 40) . "\n";
-die;
+
     $query = $cityRepository->getQuery(
         'select
             c.cit_id, c.cit_name, c.cou_code, c.cit_district, c.cit_population,
@@ -79,7 +79,6 @@ die;
 } catch (Exception $e) {
     var_dump($e->getMessage());
 }
-die;
 
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
