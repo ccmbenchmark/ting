@@ -33,17 +33,17 @@ class Generator extends atoum
     protected $mockConnectionPool;
     protected $mockConnection;
     protected $mockQueryFactory;
+    protected $mockDriver;
 
     public function beforeTestMethod($method)
     {
         $this->mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->mockConnection = new \mock\CCMBenchmark\Ting\Connection($this->mockConnectionPool, 'main', 'db');
         $this->mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
-        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
-
-        $this->calling($this->mockConnection)->slave  = $mockDriver;
-        $this->calling($this->mockConnection)->master = $mockDriver;
+        $this->calling($this->mockConnection)->slave  = $this->mockDriver;
+        $this->calling($this->mockConnection)->master = $this->mockDriver;
     }
 
     public function testGetByPrimariesShouldReturnAQuery()

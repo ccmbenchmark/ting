@@ -34,5 +34,10 @@
         "psr-4" : {
             "CCMBenchmark\\Ting\\": "src/Ting/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "tests\\fixtures\\": "tests/fixtures/"
+        }
     }
 }
