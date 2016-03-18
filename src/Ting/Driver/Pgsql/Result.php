@@ -292,7 +292,6 @@ class Result implements ResultInterface
         $data = array_values($data);
 
         foreach ($this->fields as $i => $rawField) {
-
             $column = [
                 'name'     => $this->unescapeField($rawField->name),
                 'orgName'  => $this->unescapeField($rawField->orgname),
