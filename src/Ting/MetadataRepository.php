@@ -68,6 +68,8 @@ class MetadataRepository
      * @param string   $table
      * @param \Closure $callbackFound   called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown table - no parameter
+     *
+     * @internal
      */
     public function findMetadataForTable(
         $connectionName,

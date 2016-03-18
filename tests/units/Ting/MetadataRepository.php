@@ -97,6 +97,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connectionName',
                 'database',
+                '',
                 'T_BOUH_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -124,6 +125,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connectionName',
                 'database',
+                '',
                 'T_BOUH2_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -282,6 +284,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connection',
                 'bouh_world',
+                '',
                 'bouh',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -312,6 +315,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connection',
                 'bouh_world',
+                '',
                 'bouh',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -350,6 +354,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connection',
                 'bouh_world_2',
+                '',
                 'bouh',
                 function ($metadata) use (&$outerMetadata, &$outerCallbackFound) {
                     $outerMetadata = $metadata;
