@@ -5,6 +5,7 @@
     * Pgsql driver now use ```pg_query``` instead of ```pg_query_params``` when there is no parameter
     * Fix parameter parsing in SQL query
     * Fix parsing of postgresql queries to allow query without from statement
+    * New feature ```Util::dump``` and ```Util::export``` to debug Ting object
 
 3.0.0 (2016-01-26) :
     * Fix conflict when hydrating model which use the same table name but on different database
