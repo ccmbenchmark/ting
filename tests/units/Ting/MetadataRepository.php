@@ -248,7 +248,7 @@ class MetadataRepository extends atoum
             ->isIdenticalTo(['connection' => 'conBouh', 'database' => 'dbBouh']);
     }
 
-    public function testBatchLoadMetadataShouldLoad4Repository()
+    public function testBatchLoadMetadataShouldLoad4Repositories()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this

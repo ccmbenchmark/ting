@@ -40,10 +40,10 @@ class Generator extends atoum
         $this->mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->mockConnection = new \mock\CCMBenchmark\Ting\Connection($this->mockConnectionPool, 'main', 'db');
         $this->mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
-        $this->mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
 
-        $this->calling($this->mockConnection)->slave  = $this->mockDriver;
-        $this->calling($this->mockConnection)->master = $this->mockDriver;
+        $this->calling($this->mockConnection)->slave  = $mockDriver;
+        $this->calling($this->mockConnection)->master = $mockDriver;
     }
 
     public function testGetByPrimariesShouldReturnAQuery()
