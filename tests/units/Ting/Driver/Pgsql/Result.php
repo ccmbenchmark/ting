@@ -105,6 +105,19 @@ class Result extends atoum
                 ->hasMessage('Query invalid: can\'t parse columns');
     }
 
+    public function testSetQueryShouldNotRaiseExceptionWhenThereIsNoFromInTheQuery()
+    {
+        $this->function->pg_num_fields = 0;
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
+            ->then($result->setConnectionName('connectionName'))
+            ->then($result->setDatabase('database'))
+            ->then($result->setResult('result resource'))
+            ->variable($result->setQuery('select NOW(1)'))
+                ->isNull();
+    }
+
     public function testIterator()
     {
         $this->function->pg_result_seek = true;
