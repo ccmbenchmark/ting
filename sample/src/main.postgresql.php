@@ -47,31 +47,14 @@ $connections = [
         'namespace' => '\CCMBenchmark\Ting\Driver\Pgsql',
         'master'    => [
             'host'      => 'localhost',
-            'user'      => 'world_sample',
-            'password'  => 'world_sample',
+            'user'      => 'postgres',
+            'password'  => '',
             'port'      => 5432
         ]
     ],
 ];
 
-$memcached = [
-    'servers' => [
-        ['host' => '127.0.0.1', 'port' => 11211]
-    ],
-    'options' => [
-        \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
-        //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
-        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
-        \Memcached::OPT_PREFIX_KEY           => 'sample-'
-    ],
-    'persistent_id' => 'ting.test'
-];
-
 $services->get('ConnectionPool')->setConfig($connections);
-$services->get('Cache')->setConfig($memcached);
-
-$services->get('Cache')->store('key', 'storedInCacheValue', 10);
-echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
@@ -80,11 +63,11 @@ try {
 
     $query = $cityRepository->getQuery(
         'select
-            cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
-            co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
-        from t_city_cit as c
-        inner join t_country_cou as co on (c.cou_code = co.cou_code)
-        where co.cou_code = :code limit 1'
+            c.cit_id, c.cit_name, c.cou_code, c.cit_district, c.cit_population,
+            tc.cit_id, tc.cit_name, tc.cou_code, tc.cit_district, tc.cit_population
+        from public.t_city_cit as c
+        inner join toy.t_city_cit as tc on (c.cit_id+10 = tc.cit_id)
+        where c.cou_code = :code limit 1'
     );
 
     $collection = $query->setParams(['code' => 'FRA'])->query();

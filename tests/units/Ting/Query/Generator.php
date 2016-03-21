@@ -33,6 +33,7 @@ class Generator extends atoum
     protected $mockConnectionPool;
     protected $mockConnection;
     protected $mockQueryFactory;
+    protected $mockDriver;
 
     public function beforeTestMethod($method)
     {
@@ -40,7 +41,6 @@ class Generator extends atoum
         $this->mockConnection = new \mock\CCMBenchmark\Ting\Connection($this->mockConnectionPool, 'main', 'db');
         $this->mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-
 
         $this->calling($this->mockConnection)->slave  = $mockDriver;
         $this->calling($this->mockConnection)->master = $mockDriver;
@@ -55,6 +55,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )
@@ -82,6 +83,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )
@@ -94,9 +96,9 @@ class Generator extends atoum
 
         ;
     }
-    
+
     public function testGetByCriteriaWithArrayValueShouldReturnAQuery()
-    {   
+    {
         $services = new \CCMBenchmark\Ting\Services();
 
         $this
@@ -104,6 +106,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )
@@ -116,7 +119,7 @@ class Generator extends atoum
 
         ;
     }
-    
+
     public function testGetByCriteriaShouldReturnAQuery()
     {
         $services = new \CCMBenchmark\Ting\Services();
@@ -126,6 +129,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )
@@ -146,6 +150,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )
@@ -162,6 +167,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )
@@ -178,6 +184,7 @@ class Generator extends atoum
                 $generator = new \CCMBenchmark\Ting\Query\Generator(
                     $this->mockConnection,
                     $this->mockQueryFactory,
+                    '',
                     'table',
                     ['id', 'population']
                 )

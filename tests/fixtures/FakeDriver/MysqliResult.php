@@ -35,12 +35,12 @@ class MysqliResult implements ResultInterface
     public function __construct(array $data = [])
     {
         $this->data = $data;
+
     }
 
     public function setResult($iterator)
     {
         $this->data = iterator_to_array($iterator);
-
         return $this;
     }
 

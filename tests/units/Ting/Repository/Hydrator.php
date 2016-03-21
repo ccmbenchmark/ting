@@ -92,6 +92,58 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Sylvain');
     }
 
+    public function testHydrateWithSchema()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $services->get('MetadataRepository')->addMetadata(
+            'tests\fixtures\model\BouhRepository',
+            \tests\fixtures\model\BouhRepository::initMetadata($services->get('SerializerFactory'))
+        );
+
+        $services->get('MetadataRepository')->addMetadata(
+            'tests\fixtures\model\BouhMySchemaRepository',
+            \tests\fixtures\model\BouhMySchemaRepository::initMetadata($services->get('SerializerFactory'))
+        );
+
+        $result = new \mock\CCMBenchmark\Ting\Driver\Pgsql\Result();
+        $this->calling($result)->rewind = true;
+        $this->calling($result)->valid = true;
+        $this->calling($result)->current = [
+            [
+                'name' => 'fname',
+                'orgName' => 'boo_firstname',
+                'schema' => 'mySchema',
+                'table' => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value' => 'Sylvain'
+            ],
+            [
+                'name' => 'name',
+                'orgName' => 'boo_name',
+                'schema' => 'mySchema',
+                'table' => 'bouh',
+                'orgTable' => 'T_BOUH_BOO',
+                'value' => 'Robez-Masson'
+            ]
+        ];
+
+        $result->setResult(new \CCMBenchmark\Ting\Driver\Pgsql\Result());
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->string($data['bouh']->getName())
+                ->isIdenticalTo('MySchemaRobez-Masson')
+            ->string($data['bouh']->getFirstname())
+                ->isIdenticalTo('MySchemaSylvain');
+    }
+
     public function testHydrateWithAllNullValueShouldReturnNull()
     {
         $services = new \CCMBenchmark\Ting\Services();
