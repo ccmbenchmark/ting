@@ -202,7 +202,13 @@ class Driver implements DriverInterface
         if ($this->logger !== null) {
             $this->logger->startQuery($originalSQL, $params, $this->objectHash, $this->database);
         }
-        $this->result = pg_query_params($this->connection, $sql, $values);
+
+        if ($values === []) {
+            $this->result = pg_query($this->connection, $sql);
+        } else {
+            $this->result = pg_query_params($this->connection, $sql, $values);
+        }
+
         if ($this->logger !== null) {
             $this->logger->stopQuery();
         }

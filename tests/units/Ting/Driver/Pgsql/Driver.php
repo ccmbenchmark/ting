@@ -448,6 +448,21 @@ class Driver extends atoum
         ;
     }
 
+    public function testExecuteWithoutParametersShouldCallPGQuery()
+    {
+        $pgQueryCalled = false;
+        $this->function->pg_query = function () use (&$pgQueryCalled) {
+            $pgQueryCalled = true;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->execute('SELECT 1 FROM "myTable"'))
+            ->boolean($pgQueryCalled)
+                ->isTrue();
+        ;
+    }
+
     public function testExecuteShouldCallSetOnCollection()
     {
         $this->function->pg_connect      = true;
