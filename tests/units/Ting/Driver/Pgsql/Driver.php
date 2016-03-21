@@ -497,6 +497,30 @@ class Driver extends atoum
             ->isIdenticalTo(['Bouh' => 'Hop']);
     }
 
+    public function testExecuteShouldOnlyReplaceParameters()
+    {
+        $outerSql = true;
+        $outerValues = [];
+        $this->function->pg_connect       = true;
+        $this->function->pg_query_params  = function ($connection, $sql, $values) use (&$outerSql, &$outerValues) {
+            $outerSql = $sql;
+            $outerValues = $values;
+        };
+        $this->function->pg_fetch_assoc   = ['Bouh' => 'Hop'];
+        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->execute("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
+                . ' FROM Bouh WHERE id = :id AND login = :login",
+                ['id' => 3, 'login' => 'Sylvain']))
+            ->string($outerSql)
+                ->isIdenticalTo("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
+                . ' FROM Bouh WHERE id = $1 AND login = $2")
+            ->array($outerValues)
+                ->isIdenticalTo([3, 'Sylvain']);
+    }
+
     public function testExecuteShouldRaiseExceptionWhenErrorHappens()
     {
         $this->function->pg_connect      = true;

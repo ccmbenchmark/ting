@@ -298,8 +298,14 @@ class Driver implements DriverInterface
         $i           = 0;
         $paramsOrder = [];
 
+        /**
+         * Match : values (:name)
+         * Don't match : values (\:name)
+         * Don't match : HH:MI:SS
+         * Don't match : ::string
+         */
         $sql = preg_replace_callback(
-            '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
+            '/(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use (&$i, &$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
                 return '$' . ++$i;
