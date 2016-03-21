@@ -39,6 +39,8 @@ class Generator
      */
     protected $queryFactory = null;
 
+    protected $schemaName = '';
+
     protected $tableName = '';
 
     protected $fields = [];
@@ -46,27 +48,56 @@ class Generator
     /**
      * @param Connection            $connection
      * @param QueryFactoryInterface $queryFactory
-     * @param                       $table
+     * @param string                $schema
+     * @param string                $table
      * @param array                 $fields
+     *
+     * @internal
      */
     public function __construct(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
+        $schema,
         $table,
         array $fields
     ) {
         $this->connection = $connection;
         $this->queryFactory = $queryFactory;
+        $this->schemaName = $schema;
         $this->tableName = $table;
         $this->fields = $fields;
     }
 
+    /**
+     * @param DriverInterface $driver
+     * @return string
+     */
+    protected function getTarget(DriverInterface $driver)
+    {
+        $schema = '';
+        if ($this->schemaName !== '') {
+            $schema = $driver->escapeField($this->schemaName) . '.';
+        }
+
+        return $schema . $driver->escapeField($this->tableName);
+    }
+
+    /**
+     * @param array           $fields
+     * @param DriverInterface $driver
+     * @return string
+     */
     protected function getSelect(array $fields, DriverInterface $driver)
     {
         return 'SELECT ' . implode(', ', $fields) . ' FROM ' .
-            $driver->escapeField($this->tableName);
+            $this->getTarget($driver);
     }
 
+
+    /**
+     * @param bool $forceMaster
+     * @return DriverInterface
+     */
     protected function getDriver($forceMaster)
     {
         if ($forceMaster === true) {
@@ -196,7 +227,7 @@ class Generator
         $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($values), $driver);
 
-        $sql = 'INSERT INTO ' . $driver->escapeField($this->tableName) . ' ('
+        $sql = 'INSERT INTO ' . $this->getTarget($driver) . ' ('
             . implode($fields, ', ') . ') VALUES (:' . implode(array_keys($values), ', :') . ')';
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
@@ -220,7 +251,7 @@ class Generator
     {
         $driver = $this->getDriver(true);
 
-        $sql = 'UPDATE ' . $driver->escapeField($this->tableName) . ' SET ';
+        $sql = 'UPDATE ' . $this->getTarget($driver) . ' SET ';
         $set = [];
         foreach ($values as $column => $value) {
             $set[] = $driver->escapeField($column) . ' = :' . $column;
@@ -252,7 +283,7 @@ class Generator
     {
         $driver = $this->getDriver(true);
 
-        $sql = 'DELETE FROM ' . $driver->escapeField($this->tableName);
+        $sql = 'DELETE FROM ' . $this->getTarget($driver);
 
         $primaryFields = $this->escapeFields(array_keys($primariesKeyValue), $driver);
 

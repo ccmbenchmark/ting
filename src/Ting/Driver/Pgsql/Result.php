@@ -96,11 +96,12 @@ class Result implements ResultInterface
      */
     public function setQuery($query)
     {
-        $aliasToTable = [];
+        $tableToAlias = [];
+        $aliasToSchema = [];
         $fields = [];
 
         preg_match_all(
-            '/(?:join|from)\s+"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
+            '/(?:join|from)\s+(?:"?(?<schema>[a-z_][a-z0-9_$]+)"?.)*?"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
             . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z_][a-z0-9_$]*)?"?(\s|$)/is',
             $query,
             $matches,
@@ -111,8 +112,10 @@ class Result implements ResultInterface
             $match['table'] = strtolower($match['table']);
             if ($match['alias'] !== '') {
                 $tableToAlias[$match['table']] = strtolower($match['alias']);
+                $aliasToSchema[strtolower($match['alias'])] = strtolower($match['schema']);
             } else {
                 $tableToAlias[$match['table']] = $match['table'];
+                $aliasToSchema[$match['table']] = strtolower($match['schema']);
             }
         }
 
@@ -251,6 +254,12 @@ class Result implements ResultInterface
                 $stdClass->table = $stdClass->orgtable;
             }
 
+            if (isset($aliasToSchema[$stdClass->table]) === true) {
+                $stdClass->schema = $aliasToSchema[$stdClass->table];
+            } else {
+                $stdClass->schema = '';
+            }
+
             $fields[] = $stdClass;
         }
 
@@ -288,6 +297,7 @@ class Result implements ResultInterface
                 'orgName'  => $this->unescapeField($rawField->orgname),
                 'table'    => $this->unescapeField($rawField->table),
                 'orgTable' => $this->unescapeField($rawField->orgtable),
+                'schema'   => $this->unescapeField($rawField->schema),
                 'value'    => $data[$i]
             ];
 
