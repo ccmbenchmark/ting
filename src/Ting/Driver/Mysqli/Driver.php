@@ -256,7 +256,6 @@ class Driver implements DriverInterface
             $sql
         );
 
-
         if ($this->logger !== null) {
             $this->logger->startQuery($sql, $params, $this->objectHash, $this->currentDatabase);
         }

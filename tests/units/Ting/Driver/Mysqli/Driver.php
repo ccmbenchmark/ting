@@ -347,6 +347,31 @@ class Driver extends atoum
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
     }
 
+    public function testExecuteShouldOnlyReplaceParameters()
+    {
+        $driverFake = new \mock\Fake\Mysqli();
+        $driverFake->error = 'none';
+        $driverFake->errno = 0;
+        $this->calling($driverFake)->query = false;
+        $this->calling($driverFake)->real_escape_string = function ($value) {
+            return $value;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->exception(function () use ($driver) {
+                $driver->execute("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
+                . ' FROM Bouh WHERE id = :id AND login = :login",
+                    ['id' => 3, 'login' => 'Sylvain']);
+            })
+                ->hasCode(0)
+            ->mock($driverFake)
+                ->call('query')
+                    ->withIdenticalArguments("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
+                . ' FROM Bouh WHERE id = 3 AND login = \"Sylvain\"")
+                        ->once();
+    }
+
     public function testExecuteShouldReturnACollection()
     {
         $driverFake          = new \mock\Fake\Mysqli();
