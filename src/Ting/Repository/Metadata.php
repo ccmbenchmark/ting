@@ -44,6 +44,7 @@ class Metadata
     protected $databaseName       = null;
     protected $entity             = null;
     protected $table              = null;
+    protected $schemaName         = '';
     protected $fields             = [];
     protected $fieldsByProperty   = [];
     protected $primaries          = [];
@@ -51,7 +52,7 @@ class Metadata
     protected $defaultSerializers = [
         'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
         'json'     => '\CCMBenchmark\Ting\Serializer\Json',
-        'ip'     => '\CCMBenchmark\Ting\Serializer\Ip'
+        'ip'       => '\CCMBenchmark\Ting\Serializer\Ip'
     ];
 
     /**
@@ -76,7 +77,7 @@ class Metadata
 
     /**
      * Set connection name related to configuration
-     * @param $connectionName
+     * @param string $connectionName
      * @return $this
      */
     public function setConnectionName($connectionName)
@@ -96,7 +97,7 @@ class Metadata
     }
 
     /**
-     * @param $databaseName
+     * @param string $databaseName
      * @return $this
      *
      */
@@ -142,13 +143,15 @@ class Metadata
 
     /**
      * Set table name
-     * @param $tableName
+     * @param string $tableName
+     * @return $this
      */
     public function setTable($tableName)
     {
         $this->table = (string) $tableName;
-    }
 
+        return $this;
+    }
 
     /**
      * Get table name
@@ -158,6 +161,28 @@ class Metadata
     {
         return $this->table;
     }
+
+    /**
+     * @param string $schemaName
+     * @return $this
+     *
+     */
+    public function setSchema($schemaName)
+    {
+        $this->schemaName = (string) $schemaName;
+
+        return $this;
+    }
+
+    /**
+     * Get schema name
+     * @return string
+     */
+    public function getSchema()
+    {
+        return $this->schemaName;
+    }
+
 
     /**
      * Add a field to metadata.
@@ -355,6 +380,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             $fields
         );
@@ -389,6 +415,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             $fields
         );
@@ -438,6 +465,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             $fields
         );
@@ -468,6 +496,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             $fields
         );
@@ -528,6 +557,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             $fields
         );
@@ -555,6 +585,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             array_keys($properties)
         );
@@ -591,6 +622,7 @@ class Metadata
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
+            $this->schemaName,
             $this->table,
             array_keys($properties)
         );
