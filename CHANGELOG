@@ -1,4 +1,4 @@
-3.x.x (XXXX-XX-XX) :
+3.1.0 (2016-03-21) :
     * When you do a query on 2 databases Hydrator will now properly hydrate this case
     * When many Metadata with same table name are used on a query on 2 databases, you can now use on Hydrator ```objectDatabaseIs```
     * Handle postgresql schema, using ```objectSchemaIs``` while hydration if needed
