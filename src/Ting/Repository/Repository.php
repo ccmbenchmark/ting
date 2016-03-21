@@ -24,19 +24,20 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 use Aura\SqlQuery\QueryInterface;
-use Doctrine\Common\Cache\Cache;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
+use CCMBenchmark\Ting\Driver\Mysqli;
+use CCMBenchmark\Ting\Driver\NeverConnectedException;
+use CCMBenchmark\Ting\Driver\Pgsql;
+use CCMBenchmark\Ting\Driver\SphinxQL;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
-use CCMBenchmark\Ting\Driver\Mysqli;
-use CCMBenchmark\Ting\Driver\SphinxQL;
-use CCMBenchmark\Ting\Driver\Pgsql;
-use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
+use Doctrine\Common\Cache\Cache;
 
 abstract class Repository
 {
@@ -348,6 +349,7 @@ abstract class Repository
     }
 
     /**
+     * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      * @return bool
      */
     public function ping()
@@ -360,6 +362,7 @@ abstract class Repository
     }
 
     /**
+     * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      * @return bool
      */
     public function pingMaster()
