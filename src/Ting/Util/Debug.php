@@ -22,9 +22,9 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting;
+namespace CCMBenchmark\Ting\Util;
 
-class Util
+class Debug
 {
 
     /**
