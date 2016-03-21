@@ -124,6 +124,7 @@ class Result implements ResultInterface
         $column = '';
         $scope  = 'column';
         $brackets = 0;
+        $totalTokens = count($tokens);
 
         foreach ($tokens as $index => $token) {
             if ($token === '\'') {
@@ -147,8 +148,12 @@ class Result implements ResultInterface
             }
 
             if ($startCapture === true) {
-                if ($brackets === 0 && ($token === ',' || $token === 'from')) {
+                if ($brackets === 0 && ($token === ',' || $token === 'from' || $index === $totalTokens-1)) {
                     $scope = 'column';
+
+                    if ($index === $totalTokens-1 && $token !== ';') {
+                        $column .= $token;
+                    }
 
                     /**
                      * Match column format table.column (as alias)
@@ -255,7 +260,6 @@ class Result implements ResultInterface
         }
 
         $this->fields = $fields;
-
     }
 
     /**
