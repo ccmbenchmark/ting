@@ -455,7 +455,7 @@ class Driver implements DriverInterface
 
     /**
      * @return bool true on success, false on failure
-     * @throws NeverConnectedException when you have not been connected to your database before trying to pint it.
+     * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      */
     public function ping()
     {
