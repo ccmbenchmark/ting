@@ -97,6 +97,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connectionName',
                 'database',
+                '',
                 'T_BOUH_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -124,6 +125,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connectionName',
                 'database',
+                '',
                 'T_BOUH2_BOO',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -136,6 +138,66 @@ class MetadataRepository extends atoum
                 ->isTrue()
             ->variable($outerCallbackFound)
                 ->isNull();
+    }
+
+    public function testFindMetadataForTableWithRightSchemaShouldCallCallbackFound()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setTable('T_BOUH_BOO');
+        $metadata->setSchema('schemaName');
+
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+
+        $this
+            ->if($metadataRepository->findMetadataForTable(
+                'connectionName',
+                'database',
+                'schemaName',
+                'T_BOUH_BOO',
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackFound)
+            ->isTrue()
+            ->variable($outerCallbackNotFound)
+            ->isNull();
+    }
+
+    public function testFindMetadataForTableWithWrongSchemaShouldCallCallbackNotFound()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setTable('T_BOUH_BOO');
+        $metadata->setSchema('SchemaName');
+
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadataRepository->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
+
+        $this
+            ->if($metadataRepository->findMetadataForTable(
+                'connectionName',
+                'database',
+                'otherSchema',
+                'T_BOUH2_BOO',
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackNotFound)
+            ->isTrue()
+            ->variable($outerCallbackFound)
+            ->isNull();
     }
 
     public function testBatchLoadMetadataShouldCallInitMetadataWithDefaultOptions()
@@ -186,7 +248,7 @@ class MetadataRepository extends atoum
             ->isIdenticalTo(['connection' => 'conBouh', 'database' => 'dbBouh']);
     }
 
-    public function testBatchLoadMetadataShouldLoad1Repository()
+    public function testBatchLoadMetadataShouldLoad4Repositories()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
@@ -200,7 +262,7 @@ class MetadataRepository extends atoum
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
                 ->size
-                    ->isIdenticalTo(3);
+                    ->isIdenticalTo(4);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()
@@ -282,6 +344,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connection',
                 'bouh_world',
+                '',
                 'bouh',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -312,6 +375,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connection',
                 'bouh_world',
+                '',
                 'bouh',
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
@@ -350,6 +414,7 @@ class MetadataRepository extends atoum
             ->if($metadataRepository->findMetadataForTable(
                 'connection',
                 'bouh_world_2',
+                '',
                 'bouh',
                 function ($metadata) use (&$outerMetadata, &$outerCallbackFound) {
                     $outerMetadata = $metadata;

@@ -45,8 +45,6 @@ class Metadata extends atoum
 
     public function testGetConnectionName()
     {
-        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
@@ -54,6 +52,18 @@ class Metadata extends atoum
             ->and($metadata->setConnectionName('myConnection'))
             ->string($metadata->getConnectionName())
                 ->isIdenticalTo('myConnection')
+        ;
+    }
+
+    public function testGetSchema()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setDatabase('myDatabase'))
+            ->and($metadata->setSchema('schemaName'))
+            ->string($metadata->getSchema())
+                ->isIdenticalTo('schemaName');
         ;
     }
 

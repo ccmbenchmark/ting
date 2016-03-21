@@ -85,6 +85,16 @@ class Driver implements DriverInterface
     protected $preparedQueries = [];
 
     /**
+     * @var string Match parameter in SQL
+     *
+     * Match : values (:name)
+     * Don't match : values (\:name)
+     * Don't match : HH:MI:SS
+     * Don't match : ::string
+     */
+    private $parameterMatching = '(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)';
+
+    /**
      * @param  \mysqli|Object|null $connection
      * @param \mysqli_driver|Object|null $driver
      */
@@ -235,7 +245,7 @@ class Driver implements DriverInterface
     public function execute($sql, array $params = [], CollectionInterface $collection = null)
     {
         $sql = preg_replace_callback(
-            '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
+            '/' . $this->parameterMatching . '/',
             function ($match) use ($params) {
                 if (!array_key_exists($match[1], $params)) {
                     throw new QueryException('Value has not been setted for param ' . $match[1]);
@@ -245,7 +255,6 @@ class Driver implements DriverInterface
             },
             $sql
         );
-
 
         if ($this->logger !== null) {
             $this->logger->startQuery($sql, $params, $this->objectHash, $this->currentDatabase);
@@ -320,7 +329,7 @@ class Driver implements DriverInterface
         }
         $paramsOrder = [];
         $sql = preg_replace_callback(
-            '/(?<!\\\):(#?[a-zA-Z0-9_-]+)/',
+            '/' . $this->parameterMatching . '/',
             function ($match) use (&$paramsOrder) {
                 $paramsOrder[$match[1]] = null;
                 return '?';

@@ -22,75 +22,60 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Repository\Repository;
 
-class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
+class BouhMySchemaRepository extends Repository implements MetadataInitializer
 {
+    public static $options;
 
-    public function getZCountryWithLotsPopulation()
-    {
-
-        $query = $this->getQuery(
-            'select cit_id, cit_name, cou_code, cit_district, cit_population
-                    from t_city_cit as a where cit_name like :name and cit_population > :population limit 3'
-        );
-
-        return $query->setParams(['name' => 'Z%', 'population' => 200000])->query();
-    }
-
-    public function getNumberOfCities()
-    {
-
-        $query = $this->getQuery('select COUNT(*) AS nb from t_city_cit as a WHERE cit_population > :population');
-
-        return $query->setParams(['population' => 20000])->query()->first();
-    }
-
+    /**
+     * @param SerializerFactoryInterface $serializerFactory
+     * @param array                      $options
+     *
+     * @return Metadata
+     */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
+        self::$options = $options;
+
         $metadata = new Metadata($serializerFactory);
 
-        $metadata->setEntity('sample\src\model\City');
+        $metadata->setEntity('tests\fixtures\model\BouhMySchema');
         $metadata->setConnectionName('main');
-        $metadata->setDatabase('world');
-        $metadata->setSchema('public');
-        $metadata->setTable('t_city_cit');
+        $metadata->setDatabase('bouh_world');
+        $metadata->setSchema('mySchema');
+        $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField(array(
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
-            'columnName'    => 'cit_id',
+            'columnName'    => 'boo_id',
             'type'          => 'int'
         ));
 
         $metadata->addField(array(
+            'fieldName'  => 'firstname',
+            'columnName' => 'boo_firstname',
+            'type'      => 'string'
+        ));
+
+        $metadata->addField(array(
             'fieldName'  => 'name',
-            'columnName' => 'cit_name',
+            'columnName' => 'boo_name',
             'type'       => 'string'
         ));
 
         $metadata->addField(array(
-            'fieldName'  => 'countryCode',
-            'columnName' => 'cou_code',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'district',
-            'columnName' => 'cit_district',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'population',
-            'columnName' => 'cit_population',
-            'type'       => 'int'
+            'fieldName'  => 'roles',
+            'columnName' => 'boo_roles',
+            'type'       => 'string',
+            'serializer' => '\CCMBenchmark\Ting\Serializer\Json'
         ));
 
         return $metadata;

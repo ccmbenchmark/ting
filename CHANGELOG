@@ -1,6 +1,9 @@
 3.x.x (XXXX-XX-XX) :
     * When you do a query on 2 databases Hydrator will now properly hydrate this case
     * When many Metadata with same table name are used on a query on 2 databases, you can now use on Hydrator ```objectDatabaseIs```
+    * Handle postgresql schema, using ```objectSchemaIs``` while hydration if needed
+    * Pgsql driver now use ```pg_query``` instead of ```pg_query_params``` when there is no parameter
+    * Fix parameter parsing in SQL query
 
 3.0.0 (2016-01-26) :
     * Fix conflict when hydrating model which use the same table name but on different database
