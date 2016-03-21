@@ -105,7 +105,7 @@ class Result extends atoum
                 ->hasMessage('Query invalid: can\'t parse columns');
     }
 
-    public function testSetQueryShouldNotRaiseExceptionParseColumns()
+    public function testSetQueryShouldNotRaiseExceptionWhenThereIsNoFromInTheQuery()
     {
         $this->function->pg_num_fields = 0;
 
