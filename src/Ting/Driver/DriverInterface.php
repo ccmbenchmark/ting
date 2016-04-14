@@ -46,10 +46,15 @@ interface DriverInterface
     public function close();
 
     /**
-     * @param $name
+     * @param string $name
      * @return $this
      */
     public function setName($name);
+
+    /**
+     * @return $string
+     */
+    public function getName();
 
     /**
      * @param string $charset

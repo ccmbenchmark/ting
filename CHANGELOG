@@ -1,3 +1,6 @@
+3.1.X (XXXX-XX-XX) :
+    * Fix hydration problem because of a bad connection name when you have many connections with exactly the same parameters
+
 3.1.0 (2016-03-21) :
     * When you do a query on 2 databases Hydrator will now properly hydrate this case
     * When many Metadata with same table name are used on a query on 2 databases, you can now use on Hydrator ```objectDatabaseIs```

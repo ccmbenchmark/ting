@@ -32,6 +32,7 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
+    private $name;
 
     public static function forConnectionKey($connectionConfig, $database, \Closure $callback)
     {
@@ -55,7 +56,12 @@ class Driver implements DriverInterface
 
     public function setName($name)
     {
+        $this->name = (string) $name;
+    }
 
+    public function getName()
+    {
+        return $this->name;
     }
 
     public function setCharset($charset)

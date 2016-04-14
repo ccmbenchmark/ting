@@ -153,6 +153,14 @@ class Driver implements DriverInterface
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * Connect the driver to the given database
      * @param string $database
      * @return $this
