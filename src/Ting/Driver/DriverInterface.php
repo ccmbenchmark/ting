@@ -52,11 +52,6 @@ interface DriverInterface
     public function setName($name);
 
     /**
-     * @return $string
-     */
-    public function getName();
-
-    /**
      * @param string $charset
      * @return void
      */
