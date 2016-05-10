@@ -1,13 +1,7 @@
-image: php:5.5-cli
+image: ccmbenchmark/php5:latest
 pipelines:
   default:
     - step:
         script:
-          - apt-get update && apt-get install -y --no-install-recommends libbz2-dev libmcrypt-dev libmemcached-dev zlib1g-dev unzip
-          - docker-php-ext-install bcmath bz2 gettext mbstring mcrypt mysqli opcache pdo_mysql zip
-          - pecl install memcached-2.1.0
-          - echo 'extension = memcached.so' > /usr/local/etc/php/conf.d/memcached.ini
-          - curl https://getcomposer.org/installer -o composer-setup.php
-          - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
           - composer install --prefer-source --no-interaction
-          - php -d date.timezone="Europe/Paris" vendor/bin/atoum
+          - php vendor/bin/atoum
