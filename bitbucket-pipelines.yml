@@ -10,4 +10,4 @@ pipelines:
           - curl https://getcomposer.org/installer -o composer-setup.php
           - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
           - composer install --prefer-source --no-interaction
-          - php vendor/bin/atoum
+          - php -d date.timezone="Europe/Paris" vendor/bin/atoum
