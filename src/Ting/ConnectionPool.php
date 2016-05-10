@@ -162,7 +162,6 @@ class ConnectionPool implements ConnectionPoolInterface
                 $driver->setLogger($this->logger);
             }
 
-            $driver->setName($name);
             $driver->connect(
                 $config['host'],
                 $config['user'],
@@ -172,6 +171,7 @@ class ConnectionPool implements ConnectionPoolInterface
             $this->connections[$connectionKey] = $driver;
         }
 
+        $this->connections[$connectionKey]->setName($name);
         $this->connections[$connectionKey]->setDatabase($database);
 
         if ($charset !== null) {

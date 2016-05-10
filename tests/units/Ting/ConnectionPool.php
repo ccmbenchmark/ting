@@ -32,7 +32,7 @@ class ConnectionPool extends atoum
     {
         $this
             ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
-            ->and($connectionPool->setConfig(['connections' => []]))
+            ->and($connectionPool->setConfig(['connectionName' => []]))
             ->exception(function () use ($connectionPool) {
                 $connectionPool->master(
                     'bouh',
@@ -240,5 +240,38 @@ class ConnectionPool extends atoum
             ->string($connectionPool->getDriverClass('connectionName'))
                 ->isIdenticalTo('\tests\fixtures\FakeDriver\Driver')
         ;
+    }
+
+    public function testConnectShouldReturnADriverWithTheRightConnectionNameWhenManyConnectionsHaveSameParameter()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'connection1' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => '127.0.0.1',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ],
+                    'connection2' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => '127.0.0.1',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ]
+                ]))
+            ->then($driver = $connectionPool->master('connection1', 'databaseOnConnection1'))
+            ->string($driver->getName())
+                ->isIdenticalTo('connection1')
+            ->and($driver2 = $connectionPool->master('connection2', 'databaseOnConnection1'))
+                ->string($driver2->getName())
+                ->isIdenticalTo('connection2');
     }
 }
