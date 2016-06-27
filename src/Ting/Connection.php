@@ -46,6 +46,7 @@ class Connection
      * @param ConnectionPoolInterface $connectionPool
      * @param string $name
      * @param string $database
+     * @throws \RuntimeException
      *
      * @internal
      */
@@ -61,7 +62,7 @@ class Connection
 
     /**
      * Return the master connection
-     *
+     * @throws Exception
      * @return Driver\DriverInterface
      */
     public function master()
@@ -71,8 +72,8 @@ class Connection
 
     /**
      * Return a slave connection
-     *
      * @return Driver\DriverInterface
+     * @throws Exception
      */
     public function slave()
     {
@@ -81,8 +82,8 @@ class Connection
 
     /**
      * Start a transaction against the master connection
-     *
      * @return mixed
+     * @throws Exception
      */
     public function startTransaction()
     {
@@ -91,8 +92,8 @@ class Connection
 
     /**
      * Commit the opened transaction on the master connection
-     *
      * @return mixed
+     * @throws Exception
      */
     public function commit()
     {
@@ -101,8 +102,8 @@ class Connection
 
     /**
      * Rollback the opened transaction on the master connection
-     *
      * @return mixed
+     * @throws Exception
      */
     public function rollback()
     {

@@ -42,6 +42,7 @@ interface StatementInterface
      * @param array $params
      * @param CollectionInterface $collection
      * @return mixed
+     * @throws QueryException
      */
     public function execute(array $params, CollectionInterface $collection = null);
 

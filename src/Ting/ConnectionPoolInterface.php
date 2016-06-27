@@ -44,6 +44,7 @@ interface ConnectionPoolInterface
      * @param string $name
      * @param string $database
      * @return DriverInterface
+     * @throws Exception
      */
     public function master($name, $database);
 
@@ -51,6 +52,7 @@ interface ConnectionPoolInterface
      * @param string $name
      * @param string $database
      * @return DriverInterface
+     * @throws Exception
      */
     public function slave($name, $database);
 
