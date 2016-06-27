@@ -1,3 +1,6 @@
+3.1.2 (XXXX-XX-XX) :
+    * Fix missings phpdoc about exceptions
+
 3.1.1 (2016-05-10) :
     * Fix hydration problem because of a bad connection name when you have many connections with exactly the same parameters
 
