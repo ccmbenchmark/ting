@@ -306,7 +306,6 @@ class Metadata
      */
     public function setEntityProperty($entity, $column, $value)
     {
-
         $property = 'set' . $this->fields[$column]['fieldName'];
         if (isset($this->fields[$column]['setter']) === true) {
             $property = $this->fields[$column]['setter'];
