@@ -1,3 +1,6 @@
+x.x.x (xxxx-xx--x) :
+    * New feature : Declare your own accessor on field declaration
+
 3.1.1 (2016-05-10) :
     * Fix hydration problem because of a bad connection name when you have many connections with exactly the same parameters
 

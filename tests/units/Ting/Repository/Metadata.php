@@ -198,7 +198,7 @@ class Metadata extends atoum
                 ->isInstanceOf('\mock\repository\Bouh');
     }
 
-    public function testSetEntityProperty()
+    public function testSetEntityPropertyWithDefaultSetter()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
@@ -217,7 +217,10 @@ class Metadata extends atoum
         $this
             ->if($metadata->setEntityProperty($bouh, 'boo_name', 'Sylvain'))
             ->string($bouh->name)
-                ->isIdenticalTo('Sylvain');
+                ->isIdenticalTo('Sylvain')
+            ->mock($bouh)
+            ->call('setName')
+                ->once();
     }
 
     public function testSetEntityPropertyShouldKeepNull()
@@ -875,4 +878,88 @@ class Metadata extends atoum
                 ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
         ;
     }
+
+    public function testSetEntityPropertyWithDefinedSetter()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField(array(
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string',
+            'setter'     => 'nameIs'
+        ));
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->nameIs = function ($name) {
+            $this->name = $name;
+        };
+
+        $this
+            ->if($metadata->setEntityProperty($bouh, 'boo_name', 'Sylvain'))
+            ->string($bouh->name)
+                ->isIdenticalTo('Sylvain')
+            ->mock($bouh)
+                ->call('nameIs')
+                    ->once();
+    }
+
+
+    public function testGetEntityPropertyWithDefaultGetter()
+    {
+
+        $nameField = [
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string',
+        ];
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField($nameField);
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->getName = function () {
+            return 'Sylvain';
+        };
+
+        $this
+            ->string($metadata->getEntityProperty($bouh, $nameField))
+                ->isIdenticalTo('Sylvain')
+            ->mock($bouh)
+                ->call('getName')
+                    ->once();
+    }
+
+
+    public function testGetEntityPropertyWithDefinedGetter()
+    {
+
+        $nameField = [
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string',
+            'getter'     => 'nameIs'
+        ];
+
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField($nameField);
+
+        $bouh = $metadata->createEntity();
+        $this->calling($bouh)->nameIs = function () {
+            return 'Sylvain';
+        };
+
+        $this
+            ->string($metadata->getEntityProperty($bouh, $nameField))
+                ->isIdenticalTo('Sylvain')
+            ->mock($bouh)
+                ->call('nameIs')
+                    ->once();
+    }
+
 }

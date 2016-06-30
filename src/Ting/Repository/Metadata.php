@@ -306,7 +306,11 @@ class Metadata
      */
     public function setEntityProperty($entity, $column, $value)
     {
+
         $property = 'set' . $this->fields[$column]['fieldName'];
+        if (isset($this->fields[$column]['setter']) === true) {
+            $property = $this->fields[$column]['setter'];
+        }
 
         if (isset($this->fields[$column]['serializer']) === true) {
             $options = [];
@@ -338,10 +342,14 @@ class Metadata
      * @param array $field
      * @return mixed
      *
+     * @internal
      */
-    protected function getEntityProperty($entity, $field)
+    public function getEntityProperty($entity, $field)
     {
         $propertyName    = 'get' . $field['fieldName'];
+        if (isset($field['getter']) === true) {
+            $propertyName = $field['getter'];
+        }
         $value = $entity->$propertyName();
 
         if (isset($field['serializer']) === true) {
