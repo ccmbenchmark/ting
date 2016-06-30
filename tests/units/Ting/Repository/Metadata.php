@@ -921,9 +921,7 @@ class Metadata extends atoum
         $metadata->addField($nameField);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->getName = function () {
-            return 'Sylvain';
-        };
+        $this->calling($bouh)->getName = 'Sylvain';
 
         $this
             ->string($metadata->getEntityProperty($bouh, $nameField))
@@ -941,7 +939,7 @@ class Metadata extends atoum
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string',
-            'getter'     => 'nameIs'
+            'getter'     => 'isName'
         ];
 
         $services = new \CCMBenchmark\Ting\Services();
@@ -950,15 +948,13 @@ class Metadata extends atoum
         $metadata->addField($nameField);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->nameIs = function () {
-            return 'Sylvain';
-        };
+        $this->calling($bouh)->isName = 'Sylvain';
 
         $this
             ->string($metadata->getEntityProperty($bouh, $nameField))
                 ->isIdenticalTo('Sylvain')
             ->mock($bouh)
-                ->call('nameIs')
+                ->call('isName')
                     ->once();
     }
 
