@@ -341,9 +341,8 @@ class Metadata
      * @param array $field
      * @return mixed
      *
-     * @internal
      */
-    public function getEntityProperty($entity, $field)
+    protected function getEntityProperty($entity, $field)
     {
         $propertyName    = 'get' . $field['fieldName'];
         if (isset($field['getter']) === true) {

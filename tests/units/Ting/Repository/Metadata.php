@@ -26,6 +26,7 @@ namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use mageekguy\atoum;
 use tests\fixtures\model\Bouh;
+use tests\fixtures\model\BouhCustomGetter;
 
 class Metadata extends atoum
 {
@@ -905,57 +906,52 @@ class Metadata extends atoum
                     ->once();
     }
 
-
-    public function testGetEntityPropertyWithDefaultGetter()
+    public function testCustomGetterReturnGoodValue()
     {
-
-        $nameField = [
-            'fieldName'  => 'name',
-            'columnName' => 'boo_name',
-            'type'       => 'string',
-        ];
-
         $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField($nameField);
 
-        $bouh = $metadata->createEntity();
-        $this->calling($bouh)->getName = 'Sylvain';
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->escapeField = function ($field) {
+            return $field;
+        };
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
+            '',
+            $mockConnection,
+            $services->get('CollectionFactory')
+        );
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+            $outerParams = $params;
+        };
+
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+
+        $entity = new BouhCustomGetter();
+        $entity->setName('Nicolas');
 
         $this
-            ->string($metadata->getEntityProperty($bouh, $nameField))
-                ->isIdenticalTo('Sylvain')
-            ->mock($bouh)
-                ->call('getName')
-                    ->once();
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+                ->and($metadata->setEntity('mock\repository\BouhCustomGetter'))
+                ->and(
+                    $metadata->addField([
+                        'primary'    => true,
+                        'fieldName'  => 'name',
+                        'columnName' => 'boo_name',
+                        'type'       => 'string',
+                        'getter'     => 'nameIs'
+                    ])
+                )
+                ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
+                    ->string($outerParams['boo_name'])
+                        ->isIdenticalTo('Nicolas');
+
     }
 
-
-    public function testGetEntityPropertyWithDefinedGetter()
-    {
-
-        $nameField = [
-            'fieldName'  => 'name',
-            'columnName' => 'boo_name',
-            'type'       => 'string',
-            'getter'     => 'isName'
-        ];
-
-        $services = new \CCMBenchmark\Ting\Services();
-        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField($nameField);
-
-        $bouh = $metadata->createEntity();
-        $this->calling($bouh)->isName = 'Sylvain';
-
-        $this
-            ->string($metadata->getEntityProperty($bouh, $nameField))
-                ->isIdenticalTo('Sylvain')
-            ->mock($bouh)
-                ->call('isName')
-                    ->once();
-    }
 
 }
