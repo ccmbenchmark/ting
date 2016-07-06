@@ -92,12 +92,6 @@ class Bouh implements NotifyPropertyInterface
         return $this->name;
     }
 
-    public function nameIs()
-    {
-        return $this->name;
-    }
-
-
     public function getRoles()
     {
         return $this->roles;
