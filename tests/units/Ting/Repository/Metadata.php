@@ -220,8 +220,8 @@ class Metadata extends atoum
             ->string($bouh->name)
                 ->isIdenticalTo('Sylvain')
             ->mock($bouh)
-            ->call('setName')
-                ->once();
+                ->call('setName')
+                    ->once();
     }
 
     public function testSetEntityPropertyShouldKeepNull()

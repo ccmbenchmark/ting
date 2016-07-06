@@ -32,7 +32,7 @@ class BouhCustomGetter implements NotifyPropertyInterface
 
     use NotifyProperty;
 
-    protected $name      = null;
+    protected $name = null;
 
     public function setName($name)
     {
