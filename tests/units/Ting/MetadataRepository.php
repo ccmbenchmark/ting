@@ -248,7 +248,7 @@ class MetadataRepository extends atoum
             ->isIdenticalTo(['connection' => 'conBouh', 'database' => 'dbBouh']);
     }
 
-    public function testBatchLoadMetadataShouldLoad5Repositories()
+    public function testBatchLoadMetadataShouldLoad4Repositories()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
@@ -262,7 +262,7 @@ class MetadataRepository extends atoum
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
                 ->size
-                    ->isIdenticalTo(5);
+                    ->isIdenticalTo(4);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()
