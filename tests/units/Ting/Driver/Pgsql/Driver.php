@@ -279,6 +279,26 @@ class Driver extends atoum
                 ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
     }
 
+    public function testPrepareShouldHandleMultipleNamedPatternWithSameName()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_query = true;
+        $this->function->pg_prepare = function ($resource, $statementName, $sql) use (&$outerSql) {
+            $outerSql = $sql;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->prepare(
+                'SELECT * FROM T_BOUH_BOO WHERE name = ":name" OR firstname = ":name"',
+                function () {
+                }
+            ))
+            ->string($outerSql)
+                ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = "$1" OR firstname = "$1"');
+    }
+
     public function testEscapeFieldShouldReturnEscapedField()
     {
         $this->function->pg_connect = true;
