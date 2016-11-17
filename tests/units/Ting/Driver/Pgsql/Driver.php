@@ -291,12 +291,12 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
-                'SELECT * FROM T_BOUH_BOO WHERE name = ":name" OR firstname = ":name"',
+                'SELECT * FROM T_BOUH_BOO WHERE name = ":name" OR firstname = ":name" OR lastname = ":lastname"',
                 function () {
                 }
             ))
             ->string($outerSql)
-                ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = "$1" OR firstname = "$1"');
+                ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = "$1" OR firstname = "$1" OR lastname = "$2"');
     }
 
     public function testEscapeFieldShouldReturnEscapedField()
