@@ -1,0 +1,7 @@
+image: ccmbenchmark/php5:latest
+pipelines:
+  default:
+    - step:
+        script:
+          - composer install --prefer-source --no-interaction
+          - php vendor/bin/atoum
