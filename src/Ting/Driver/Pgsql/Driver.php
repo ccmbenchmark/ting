@@ -296,7 +296,7 @@ class Driver implements DriverInterface
      */
     private function convertParameters($sql)
     {
-        $i           = 0;
+        $i           = 1;
         $paramsOrder = [];
 
         /**
@@ -308,8 +308,11 @@ class Driver implements DriverInterface
         $sql = preg_replace_callback(
             '/(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)/',
             function ($match) use (&$i, &$paramsOrder) {
-                $paramsOrder[$match[1]] = null;
-                return '$' . ++$i;
+                if (isset($paramsOrder[$match[1]]) === false) {
+                    $paramsOrder[$match[1]] = $i++;
+                }
+
+                return '$' . $paramsOrder[$match[1]];
             },
             $sql
         );

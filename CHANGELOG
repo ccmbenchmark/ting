@@ -1,5 +1,6 @@
 3.2.0 (XXXX-XX-XX):
     * Better performance for Pgsql Result format process.
+    * Fix PgSQL multiple named pattern with the same name (issue #32)
     * Fix missings phpdoc about exceptions
 
 3.1.1 (2016-05-10) :
