@@ -44,17 +44,22 @@ class Statement implements StatementInterface
 
     protected $connection    = null;
     protected $statementName = null;
+    protected $paramsOrder   = [];
     protected $queryType     = null;
     protected $query         = null;
 
     /**
      * @var DriverLoggerInterface|null
      */
-    protected $logger        = null;
+    protected $logger = null;
 
     /**
-     * @param       $statementName
-     * @param array $paramsOrder
+     * Statement constructor.
+     *
+     * @param \mysqli_stmt|Object $statementName
+     * @param array               $paramsOrder
+     * @param string              $connectionName
+     * @param string              $database
      */
     public function __construct($statementName, array $paramsOrder, $connectionName, $database)
     {
@@ -137,6 +142,7 @@ class Statement implements StatementInterface
      * @param $resultResource
      * @param CollectionInterface $collection
      * @return bool
+     * @throws QueryException
      *
      * @internal
      */
