@@ -265,6 +265,12 @@ class Result implements ResultInterface
                 $stdClass->schema = '';
             }
 
+            $stdClass->name     = $this->unescapeField($stdClass->name);
+            $stdClass->orgname  = $this->unescapeField($stdClass->orgname);
+            $stdClass->table    = $this->unescapeField($stdClass->table);
+            $stdClass->orgtable = $this->unescapeField($stdClass->orgtable);
+            $stdClass->schema   = $this->unescapeField($stdClass->schema);
+
             $fields[] = $stdClass;
         }
 
@@ -284,7 +290,7 @@ class Result implements ResultInterface
     /**
      * Format data
      * @param $data
-     * @return array
+     * @return array|null
      */
     protected function format($data)
     {
@@ -293,19 +299,15 @@ class Result implements ResultInterface
         }
 
         $columns = [];
-        $data = array_values($data);
-
         foreach ($this->fields as $i => $rawField) {
-            $column = [
-                'name'     => $this->unescapeField($rawField->name),
-                'orgName'  => $this->unescapeField($rawField->orgname),
-                'table'    => $this->unescapeField($rawField->table),
-                'orgTable' => $this->unescapeField($rawField->orgtable),
-                'schema'   => $this->unescapeField($rawField->schema),
+            $columns[] = [
+                'name'     => $rawField->name,
+                'orgName'  => $rawField->orgname,
+                'table'    => $rawField->table,
+                'orgTable' => $rawField->orgtable,
+                'schema'   => $rawField->schema,
                 'value'    => $data[$i]
             ];
-
-            $columns[] = $column;
         }
 
         return $columns;
