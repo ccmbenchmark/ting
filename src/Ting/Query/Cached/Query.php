@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Query\Cached;
 
+use CCMBenchmark\Ting\Exception;
 use Doctrine\Common\Cache\Cache;
 use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Query\QueryException;
@@ -117,6 +118,8 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * Check if query is in cache or execute the query and store the result
      * @param CollectionInterface $collection
      * @return CollectionInterface
+     * @throws Exception
+     * @throws QueryException
      */
     public function query(CollectionInterface $collection = null)
     {

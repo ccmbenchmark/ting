@@ -71,8 +71,8 @@ class ConnectionPool implements ConnectionPoolInterface
      *
      * @param $name
      * @param $database
-     * @throws Exception
      * @return DriverInterface
+     * @throws Exception
      */
     public function master($name, $database)
     {
@@ -96,8 +96,8 @@ class ConnectionPool implements ConnectionPoolInterface
      *
      * @param string $name
      * @param string $database
-     * @throws Exception
      * @return DriverInterface
+     * @throws Exception
      */
     public function slave($name, $database)
     {
@@ -140,6 +140,7 @@ class ConnectionPool implements ConnectionPoolInterface
      * @param string $name connection name
      * @param string $charset
      * @return DriverInterface
+     * @throws Exception
      */
     protected function connect($config, $driverClass, $database, $name, $charset = null)
     {
