@@ -62,12 +62,14 @@ interface DriverInterface
      * @param array $params
      * @param CollectionInterface $collection
      * @return mixed
+     * @throws QueryException
      */
     public function execute($sql, array $params = [], CollectionInterface $collection = null);
 
     /**
      * @param string $sql
      * @return StatementInterface
+     * @throws QueryException
      */
     public function prepare($sql);
 

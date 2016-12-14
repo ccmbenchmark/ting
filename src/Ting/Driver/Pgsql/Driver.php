@@ -131,7 +131,7 @@ class Driver implements DriverInterface
     public function setCharset($charset)
     {
         if ($this->currentCharset === $charset) {
-            return $this;
+            return;
         }
 
         if (pg_set_client_encoding($this->connection, $charset) === -1) {
@@ -252,6 +252,7 @@ class Driver implements DriverInterface
      * Prepare the given query against the current connection
      * @param string $originalSQL
      * @return Statement|\CCMBenchmark\Ting\Driver\StatementInterface
+     * @throws QueryException
      */
     public function prepare($originalSQL)
     {
@@ -360,7 +361,7 @@ class Driver implements DriverInterface
 
     /**
      * Start a transaction against the current connection
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function startTransaction()
     {
@@ -373,7 +374,7 @@ class Driver implements DriverInterface
 
     /**
      * Commit the transaction against the current connection
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function commit()
     {
@@ -386,7 +387,7 @@ class Driver implements DriverInterface
 
     /**
      * Rollback the actual opened transaction
-     * @throws \CCMBenchmark\Ting\Driver\Exception
+     * @throws Exception
      */
     public function rollback()
     {

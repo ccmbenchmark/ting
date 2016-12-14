@@ -43,6 +43,7 @@ class MetadataCacheGenerator
     /**
      * @param string $cacheDir
      * @param string $filename
+     * @throws Exception
      *
      * @internal
      */

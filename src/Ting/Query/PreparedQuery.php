@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Query;
 
+use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class PreparedQuery extends Query
@@ -41,6 +42,8 @@ class PreparedQuery extends Query
     /**
      * Prepare a reading query (SELECT, SHOW, ...)
      * @return $this
+     * @throws Exception
+     * @throws QueryException
      */
     public function prepareQuery()
     {
@@ -61,6 +64,8 @@ class PreparedQuery extends Query
     /**
      * Prepare a writing query (UPDATE, INSERT, DELETE, ...)
      * @return $this
+     * @throws Exception
+     * @throws QueryException
      */
     public function prepareExecute()
     {
