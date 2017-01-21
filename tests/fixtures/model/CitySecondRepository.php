@@ -24,52 +24,9 @@
 
 namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Repository\MetadataInitializer;
-use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\Repository\Repository;
 
-class CitySecondRepository extends Repository implements MetadataInitializer
+class CitySecondRepository extends Repository
 {
-    public static $options;
 
-    /**
-     * @param SerializerFactoryInterface $serializerFactory
-     * @param array                      $options
-     *
-     * @return Metadata
-     */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
-    {
-        self::$options = $options;
-
-        $metadata = new Metadata($serializerFactory);
-
-        $metadata->setEntity('tests\fixtures\model\CitySecond');
-        $metadata->setConnectionName('main');
-        $metadata->setDatabase('bouh_world_2');
-        $metadata->setTable('T_CITY_CIT');
-
-        $metadata->addField(array(
-            'primary'       => true,
-            'autoincrement' => true,
-            'fieldName'     => 'id',
-            'columnName'    => 'cit_id',
-            'type'          => 'int'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'name',
-            'columnName' => 'cit_name',
-            'type'      => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'zipcode',
-            'columnName' => 'cit_zipcode',
-            'type'       => 'string'
-        ));
-
-        return $metadata;
-    }
 }
