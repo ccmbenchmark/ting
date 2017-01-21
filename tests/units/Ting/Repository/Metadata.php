@@ -76,7 +76,7 @@ class Metadata extends atoum
             ->exception(function () use ($metadata) {
                 $metadata->setRepository('\my\namespace\Bouh');
             })
-            ->hasMessage('Class must not start with a \\');
+                ->hasMessage('Class must not start with a \\');
     }
 
     public function testGetRepository()
@@ -86,7 +86,7 @@ class Metadata extends atoum
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->and($metadata->setRepository('myRepository'))
             ->string($metadata->getRepository())
-            ->isIdenticalTo('myRepository')
+                ->isIdenticalTo('myRepository')
         ;
     }
 
