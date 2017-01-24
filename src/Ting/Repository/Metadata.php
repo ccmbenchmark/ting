@@ -229,11 +229,21 @@ class Metadata
     }
 
     /**
+     * Retrieve all defined fields.
+     *
+     * @return array
+     */
+    public function getFields()
+    {
+        return array_values($this->fields);
+    }
+
+    /**
      * Execute callback if the provided table is the actual
      * @param string   $connectionName
      * @param string   $database
      * @param string   $table
-     * @param callable $callback
+     * @param \Closure $callback
      * @return bool
      *
      * @internal
