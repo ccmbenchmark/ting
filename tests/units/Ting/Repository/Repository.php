@@ -661,4 +661,39 @@ class Repository extends atoum
                         ->once()
         ;
     }
+
+    public function testGetMetadata()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $fakeDriver         = new \mock\Fake\Mysqli();
+        $mockDriverSlave    = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockDriverMaster   = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $metadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $this->calling($metadata)->getConnection = null;
+
+        $this->calling($metadataRepository)
+            ->findMetadataForRepository = function($repository, $callback, $error) use ($metadata) {
+            $callback($metadata);
+        };
+
+        $this->calling($mockConnectionPool)->slave = $mockDriverSlave;
+        $this->calling($mockConnectionPool)->master = $mockDriverMaster;
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $metadataRepository,
+                $services->get('QueryFactory'),
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $services->get('UnitOfWork'),
+                $services->get('SerializerFactory')
+            ))
+            ->then
+                    ->object($bouhRepository->getMetadata())
+                        ->isIdenticalTo($metadata)
+        ;
+    }
 }
