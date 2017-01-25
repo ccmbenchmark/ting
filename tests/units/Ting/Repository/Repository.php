@@ -692,8 +692,8 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->then
-                    ->object($bouhRepository->getMetadata())
-                        ->isIdenticalTo($metadata)
+                ->object($bouhRepository->getMetadata())
+                    ->isIdenticalTo($metadata)
         ;
     }
 }
