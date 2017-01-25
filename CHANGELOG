@@ -3,6 +3,8 @@
     * New feature : Declare your own accessor on field declaration
     * Fix PgSQL multiple named pattern with the same name (issue #32)
     * Fix missings phpdoc about exceptions
+    * Adds getter for custom accessors in metadata
+    * Adds metadata getter in repository
 
 3.1.1 (2016-05-10) :
     * Fix hydration problem because of a bad connection name when you have many connections with exactly the same parameters
