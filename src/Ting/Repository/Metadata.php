@@ -306,10 +306,7 @@ class Metadata
      */
     public function setEntityProperty($entity, $column, $value)
     {
-        $property = 'set' . $this->fields[$column]['fieldName'];
-        if (isset($this->fields[$column]['setter']) === true) {
-            $property = $this->fields[$column]['setter'];
-        }
+        $setter = $this->getSetter($this->fields[$column]['fieldName']);
 
         if (isset($this->fields[$column]['serializer']) === true) {
             $options = [];
@@ -332,7 +329,7 @@ class Metadata
             }
         }
 
-        $entity->$property($value);
+        $entity->$setter($value);
     }
 
     /**
@@ -344,11 +341,8 @@ class Metadata
      */
     protected function getEntityProperty($entity, $field)
     {
-        $propertyName    = 'get' . $field['fieldName'];
-        if (isset($field['getter']) === true) {
-            $propertyName = $field['getter'];
-        }
-        $value = $entity->$propertyName();
+        $getter = $this->getGetter($field['fieldName']);
+        $value = $entity->$getter();
 
         if (isset($field['serializer']) === true) {
             $options = [];
@@ -658,5 +652,35 @@ class Metadata
             }
         }
         return $primariesKeyValue;
+    }
+
+    /**
+     * Returns the getter name for a given field name
+     *
+     * @param $fieldName
+     *
+     * @return string
+     */
+    public function getGetter($fieldName)
+    {
+        if (isset($this->fieldsByProperty[$fieldName]['getter']) === true) {
+            return $this->fieldsByProperty[$fieldName]['getter'];
+        }
+        return 'get' . $fieldName;
+    }
+
+    /**
+     * Returns the setter name for a given field name
+     *
+     * @param $fieldName
+     *
+     * @return string
+     */
+    public function getSetter($fieldName)
+    {
+        if (isset($this->fieldsByProperty[$fieldName]['setter']) === true) {
+            return $this->fieldsByProperty[$fieldName]['setter'];
+        }
+        return 'set' . $fieldName;
     }
 }
