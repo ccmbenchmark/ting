@@ -123,6 +123,8 @@ class MetadataRepository
      * @param object   $entity
      * @param \Closure $callbackFound Called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown entity - no parameter
+     *
+     * @internal
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
