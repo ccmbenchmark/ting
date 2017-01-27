@@ -42,6 +42,7 @@ class Metadata
     protected $serializerFactory  = null;
     protected $connectionName     = null;
     protected $databaseName       = null;
+    protected $repository         = null;
     protected $entity             = null;
     protected $table              = null;
     protected $schemaName         = '';
@@ -118,8 +119,36 @@ class Metadata
     }
 
     /**
+     * Set repository name
+     * @param string $className
+     * @return $this
+     * @throws \CCMBenchmark\Ting\Exception
+     */
+    public function setRepository($className)
+    {
+        if (substr($className, 0, 1) === '\\') {
+            throw new Exception('Class must not start with a \\');
+        }
+
+        $this->repository = (string) $className;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     *
+     * @internal
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
      * Set entity name
      * @param string $className
+     * @return $this
      * @throws \CCMBenchmark\Ting\Exception
      */
     public function setEntity($className)
@@ -129,6 +158,8 @@ class Metadata
         }
 
         $this->entity = (string) $className;
+
+        return $this;
     }
 
     /**
@@ -354,10 +385,11 @@ class Metadata
      */
     protected function getEntityProperty($entity, $field)
     {
-        $propertyName    = 'get' . $field['fieldName'];
+        $propertyName = 'get' . $field['fieldName'];
         if (isset($field['getter']) === true) {
             $propertyName = $field['getter'];
         }
+
         $value = $entity->$propertyName();
 
         if (isset($field['serializer']) === true) {

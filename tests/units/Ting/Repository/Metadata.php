@@ -68,6 +68,28 @@ class Metadata extends atoum
         ;
     }
 
+    public function testSetRepositoryShouldRaiseExceptionWhenStartWithSlash()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->exception(function () use ($metadata) {
+                $metadata->setRepository('\my\namespace\Bouh');
+            })
+                ->hasMessage('Class must not start with a \\');
+    }
+
+    public function testGetRepository()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setRepository('myRepository'))
+            ->string($metadata->getRepository())
+                ->isIdenticalTo('myRepository')
+        ;
+    }
+
     public function testSetDatabaseShouldReturnThis()
     {
         $services = new \CCMBenchmark\Ting\Services();
