@@ -1001,5 +1001,44 @@ class Metadata extends atoum
 
     }
 
+    public function testGetGetterAndGetSetterWithDefaultValue()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->addField(array(
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string',
+        ));
+
+        $this
+            ->string($metadata->getGetter('name'))
+                ->isIdenticalTo('getname')
+            ->string($metadata->getSetter('name'))
+                ->isIdenticalTo('setname');
+    }
+
+    public function testGetGetterAndGetSetterWithCustomValues()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity('mock\repository\Bouh');
+        $getter = uniqid('getter');
+        $setter = uniqid('setter');
+        $metadata->addField(array(
+            'fieldName'  => 'name',
+            'columnName' => 'boo_name',
+            'type'       => 'string',
+            'getter'     => $getter,
+            'setter'     => $setter
+        ));
+
+        $this
+            ->string($metadata->getGetter('name'))
+                ->isIdenticalTo($getter)
+            ->string($metadata->getSetter('name'))
+                ->isIdenticalTo($setter);
+    }
 
 }
