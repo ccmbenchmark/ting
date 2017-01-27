@@ -130,6 +130,32 @@ class Metadata extends atoum
                 ->isIdenticalTo($metadata);
     }
 
+    public function testGetFields()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->addField(
+                array('columnName' => 'user_firstname', 'fieldName' => 'firstname', 'type' => 'string'))
+            )
+            ->and($metadata->addField(
+                array('columnName' => 'user_lastname', 'fieldName' => 'lastname', 'type' => 'string'))
+            )
+            ->array($metadata->getFields())
+                ->isIdenticalTo([
+                    [
+                        'columnName' => 'user_firstname',
+                        'fieldName'  => 'firstname',
+                        'type'       => 'string'
+                    ],
+                    [
+                        'columnName' => 'user_lastname',
+                        'fieldName'  => 'lastname',
+                        'type'       => 'string'
+                    ]
+                ]);
+    }
+
     public function testAddFieldWithInvalidParametersShouldThrowException()
     {
         $services = new \CCMBenchmark\Ting\Services();
