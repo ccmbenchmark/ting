@@ -214,7 +214,7 @@ class Driver implements DriverInterface
         }
 
         if ($this->result === false) {
-            throw new QueryException(pg_last_error($this->connection));
+            throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
         }
 
         if ($collection === null) {

@@ -268,7 +268,7 @@ class Driver implements DriverInterface
         }
 
         if ($result === false) {
-            throw new QueryException($this->connection->error, $this->connection->errno);
+            throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
         }
 
         if ($collection === null) {

@@ -412,7 +412,7 @@ class Driver extends atoum
         ;
     }
 
-    public function testExecuteShouldThrowExceptionOnError()
+    public function testExecuteShouldThrowExceptionOnErrorWithQuery()
     {
         $driverFake          = new \mock\Fake\Mysqli();
         $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
@@ -434,8 +434,7 @@ class Driver extends atoum
             ->and($driverFake->errno = 127)
             ->exception(function () use ($driver, $collection) {
                 $driver->execute(
-                    'SELECT population FROM T_CITY_CIT WHERE id = :id
-                    AND name = :name AND age = :age AND last_modified = :date',
+                    'SELECT population FROM T_CITY_CIT WHERE id = :id AND name = :name AND age = :age AND last_modified = :date',
                     [
                         'id' => 12,
                         'name' => 'L\'étang du lac',
@@ -446,6 +445,7 @@ class Driver extends atoum
                 );
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+                ->hasMessage('Undefined Error (Query: SELECT population FROM T_CITY_CIT WHERE id = 12 AND name = "L\'étang du lac" AND age = 12.6 AND last_modified = "2014-03-01 14:02:05")')
         ;
     }
 
