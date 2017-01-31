@@ -63,10 +63,8 @@ try {
 
     $query = $cityRepository->getQuery(
         'select
-            c.cit_id, c.cit_name, c.cou_code, c.cit_district, c.cit_population,
-            tc.cit_id, tc.cit_name, tc.cou_code, tc.cit_district, tc.cit_population
+            c.cit_id, c.cit_name, c.cou_code, c.cit_district, c.cit_population
         from public.t_city_cit as c
-        inner join toy.t_city_cit as tc on (c.cit_id+10 = tc.cit_id)
         where c.cou_code = :code limit 1'
     );
 

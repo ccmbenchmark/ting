@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Connection;
+use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
@@ -94,6 +95,8 @@ class Query implements QueryInterface
      * Execute a reading query
      * @param CollectionInterface $collection
      * @return CollectionInterface
+     * @throws Exception
+     * @throws QueryException
      */
     public function query(CollectionInterface $collection = null)
     {
@@ -111,6 +114,8 @@ class Query implements QueryInterface
     /**
      * Execute a writing query
      * @return mixed
+     * @throws Exception
+     * @throws QueryException
      */
     public function execute()
     {
@@ -119,6 +124,7 @@ class Query implements QueryInterface
 
     /**
      * @return int
+     * @throws Exception
      */
     public function getInsertId()
     {
@@ -127,6 +133,7 @@ class Query implements QueryInterface
 
     /**
      * @return int
+     * @throws Exception
      */
     public function getAffectedRows()
     {

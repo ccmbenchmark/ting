@@ -171,7 +171,7 @@ class Driver implements DriverInterface
     public function setCharset($charset)
     {
         if ($this->currentCharset === $charset) {
-            return $this;
+            return;
         }
 
         if ($this->connection->set_charset($charset) === false) {
@@ -203,6 +203,7 @@ class Driver implements DriverInterface
     /**
      * @param string $database
      * @return $this
+     * @throws Exception
      */
     public function setDatabase($database)
     {
@@ -284,6 +285,7 @@ class Driver implements DriverInterface
     /**
      * Quote value according to the type of variable
      * @param mixed $value
+     * @return mixed
      */
     protected function quoteValue($value)
     {
@@ -303,7 +305,6 @@ class Driver implements DriverInterface
      * @param \mysqli_result|Object $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
-     * @throws QueryException
      */
     protected function setCollectionWithResult($resultData, CollectionInterface $collection)
     {
@@ -319,6 +320,7 @@ class Driver implements DriverInterface
     /**
      * @param string $sql
      * @return \CCMBenchmark\Ting\Driver\StatementInterface
+     * @throws QueryException
      */
     public function prepare($sql)
     {

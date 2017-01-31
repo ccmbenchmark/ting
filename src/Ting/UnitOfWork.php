@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
@@ -298,6 +299,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param $uuid
      * @throws Exception
+     * @throws QueryException
      */
     protected function processManaged($uuid)
     {
@@ -345,6 +347,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param $uuid
      * @throws Exception
+     * @throws QueryException
      */
     protected function processNew($uuid)
     {
@@ -380,6 +383,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param $uuid
      * @throws Exception
+     * @throws QueryException
      */
     protected function processDelete($uuid)
     {

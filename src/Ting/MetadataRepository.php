@@ -179,18 +179,24 @@ class MetadataRepository
             return $loaded;
         }
 
-        foreach (glob($globPattern) as $repositoryFile) {
-            $repository = $namespace . '\\' . basename($repositoryFile, '.php');
+        foreach (glob($globPattern) as $metadataFile) {
+            $metadataClass = $namespace . '\\' . basename($metadataFile, '.php');
 
-            if (is_subclass_of($repository, MetadataInitializer::class) === true) {
-                $this->addMetadata(
-                    $repository,
-                    $repository::initMetadata(
-                        $this->serializerFactory,
-                        $this->getOptionForRepository($repository, $options)
-                    )
+            if (is_subclass_of($metadataClass, MetadataInitializer::class) === true) {
+                /** @var Metadata $metadata */
+                $metadata = $metadataClass::initMetadata(
+                    $this->serializerFactory,
+                    $this->getOptionForRepository($metadataClass, $options)
                 );
-                $loaded[] = $repository;
+
+                if ($metadata->getRepository() !== null) {
+                    $repository = $metadata->getRepository();
+                } else {
+                    $repository = $metadataClass;
+                }
+
+                $this->addMetadata($repository, $metadata);
+                $loaded[$repository] = $metadataClass;
             }
         }
 
@@ -210,13 +216,13 @@ class MetadataRepository
     public function batchLoadMetadataFromCache(array $paths, array $options = [])
     {
         $loaded = [];
-        foreach ($paths as $repository) {
-            if (is_subclass_of($repository, MetadataInitializer::class) === true) {
+        foreach ($paths as $repository => $metadataClass) {
+            if (is_subclass_of($metadataClass, MetadataInitializer::class) === true) {
                 $this->addMetadata(
                     $repository,
-                    $repository::initMetadata(
+                    $metadataClass::initMetadata(
                         $this->serializerFactory,
-                        $this->getOptionForRepository($repository, $options)
+                        $this->getOptionForRepository($metadataClass, $options)
                     )
                 );
                 $loaded[] = $repository;

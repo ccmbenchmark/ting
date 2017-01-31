@@ -22,39 +22,27 @@
  *
  **********************************************************************/
 
+namespace tests\fixtures\model;
 
-namespace CCMBenchmark\Ting;
+use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
-
-interface ConnectionPoolInterface
+class BouhCustomGetter implements NotifyPropertyInterface
 {
-    /**
-     * @param DriverLoggerInterface $logger
-     */
-    public function __construct(DriverLoggerInterface $logger);
 
-    /**
-     * @param array $config
-     */
-    public function setConfig($config);
+    use NotifyProperty;
 
-    /**
-     * @param string $name
-     * @param string $database
-     * @return DriverInterface
-     * @throws Exception
-     */
-    public function master($name, $database);
+    protected $name = null;
 
-    /**
-     * @param string $name
-     * @param string $database
-     * @return DriverInterface
-     * @throws Exception
-     */
-    public function slave($name, $database);
+    public function setName($name)
+    {
+        $this->propertyChanged('name', $this->name, $name);
+        $this->name = (string) $name;
+    }
 
-    public function closeAll();
+    public function nameIs()
+    {
+        return $this->name;
+    }
+
 }

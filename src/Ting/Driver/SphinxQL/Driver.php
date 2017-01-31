@@ -32,6 +32,7 @@ class Driver extends Mysqli\Driver
     /**
      * Quote value according to the type of variable
      * @param mixed $value
+     * @return string
      *
      * @internal
      */

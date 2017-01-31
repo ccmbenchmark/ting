@@ -373,4 +373,14 @@ abstract class Repository
 
         return false;
     }
+
+    /**
+     * Returns the repository's corresponding metadata
+     *
+     * @return Metadata
+     */
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
 }

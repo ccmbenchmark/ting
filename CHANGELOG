@@ -1,5 +1,13 @@
 3.2.0 (XXXX-XX-XX):
+    * Better performance for Pgsql Result format process.
+    * New feature : Declare your own accessor on field declaration
+    * New feature : Metadata can now be separated of repository (but you need to call Metadata::setRepository)
+    * New feature : You can now retrieve fields of Metadata with the getFields method.
     * New feature : an exception when an SQL error occured now give you the query in message
+    * Fix PgSQL multiple named pattern with the same name (issue #32)
+    * Fix missings phpdoc about exceptions
+    * Adds getter for custom accessors in metadata
+    * Adds metadata getter in repository
 
 3.1.1 (2016-05-10) :
     * Fix hydration problem because of a bad connection name when you have many connections with exactly the same parameters
