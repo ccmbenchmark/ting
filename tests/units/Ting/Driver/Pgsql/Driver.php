@@ -521,7 +521,7 @@ class Driver extends atoum
                 ->isIdenticalTo([3, 'Sylvain']);
     }
 
-    public function testExecuteShouldRaiseExceptionWhenErrorHappens()
+    public function testExecuteShouldRaiseExceptionWhenErrorHappensWithQuery()
     {
         $this->function->pg_connect      = true;
         $this->function->pg_query_params = false;
@@ -539,6 +539,8 @@ class Driver extends atoum
                     $driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]);
                 })
                     ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+                    ->hasMessage('Unknown Error (Query: SELECT 1 FROM myTable WHERE id = $1)')
+
         ;
     }
 
