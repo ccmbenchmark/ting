@@ -95,6 +95,13 @@ class Driver implements DriverInterface
     private $parameterMatching = '(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)';
 
     /**
+     * Data used to open a connection.
+     *
+     * @var array
+     */
+    private $connectionConfig = [];
+
+    /**
      * @param  \mysqli|Object|null $connection
      * @param \mysqli_driver|Object|null $driver
      */
@@ -132,21 +139,46 @@ class Driver implements DriverInterface
      * @param string $username
      * @param string $password
      * @param int $port
-     * @return $this
+     *
      * @throws Exception
+     *
+     * @return $this
      */
     public function connect($hostname, $username, $password, $port = 3306)
     {
-
         $this->driver->report_mode = MYSQLI_REPORT_STRICT;
 
+        $this->doConnection($hostname, $username, $password, null, $port);
+
+        return $this;
+    }
+
+    /**
+     * Open connection.
+     *
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param string $dbName
+     * @param $port
+     *
+     * @throws Exception
+     */
+    private function doConnection($hostname, $username, $password, $dbName, $port)
+    {
+        $this->connectionConfig = [
+            'hostname' => $hostname,
+            'username' => $username,
+            'password' => $password,
+            'dbName' => $dbName,
+            'port' => $port
+        ];
+
         try {
-            $this->connected = $this->connection->real_connect($hostname, $username, $password, null, $port);
+            $this->connected = $this->connection->real_connect($hostname, $username, $password, $dbName, $port);
         } catch (\Exception $e) {
             throw new Exception('Connect Error: ' . $e->getMessage(), $e->getCode());
         }
-
-        return $this;
     }
 
     /**
@@ -456,14 +488,34 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @return bool true on success, false on failure
+     * Ping server and reconnect if connection has been lost.
+     *
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
+     *
+     * @return bool true on success, false on failure
      */
     public function ping()
     {
         if ($this->connected === false) {
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
         }
-        return $this->connection->ping();
+
+        if ($this->connection->ping() === true) {
+            return true;
+        }
+
+        try {
+            $this->doConnection(
+                $this->connectionConfig['hostname'],
+                $this->connectionConfig['username'],
+                $this->connectionConfig['password'],
+                $this->connectionConfig['dbName'],
+                $this->connectionConfig['port']
+            );
+
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 }
