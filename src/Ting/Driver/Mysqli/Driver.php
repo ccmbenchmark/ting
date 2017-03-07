@@ -140,9 +140,9 @@ class Driver implements DriverInterface
      * @param string $password
      * @param int $port
      *
-     * @throws Exception
-     *
      * @return $this
+     *
+     * @throws Exception
      */
     public function connect($hostname, $username, $password, $port = 3306)
     {
@@ -490,9 +490,9 @@ class Driver implements DriverInterface
     /**
      * Ping server and reconnect if connection has been lost.
      *
-     * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
-     *
      * @return bool true on success, false on failure
+     *
+     * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      */
     public function ping()
     {
