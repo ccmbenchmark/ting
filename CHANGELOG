@@ -1,3 +1,6 @@
+3.2.1 (2017-03-07):
+    * Mysqli driver really reconnect on ping if connection has been lost.
+
 3.2.0 (2017-01-31):
     * Better performance for Pgsql Result format process.
     * New feature : Declare your own accessor on field declaration
