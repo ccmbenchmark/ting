@@ -148,37 +148,20 @@ class Driver implements DriverInterface
     {
         $this->driver->report_mode = MYSQLI_REPORT_STRICT;
 
-        $this->doConnection($hostname, $username, $password, null, $port);
-
-        return $this;
-    }
-
-    /**
-     * Open connection.
-     *
-     * @param string $hostname
-     * @param string $username
-     * @param string $password
-     * @param string $dbName
-     * @param $port
-     *
-     * @throws Exception
-     */
-    private function doConnection($hostname, $username, $password, $dbName, $port)
-    {
         $this->connectionConfig = [
             'hostname' => $hostname,
             'username' => $username,
             'password' => $password,
-            'dbName' => $dbName,
             'port' => $port
         ];
 
         try {
-            $this->connected = $this->connection->real_connect($hostname, $username, $password, $dbName, $port);
+            $this->connected = $this->connection->real_connect($hostname, $username, $password, null, $port);
         } catch (\Exception $e) {
             throw new Exception('Connect Error: ' . $e->getMessage(), $e->getCode());
         }
+
+        return $this;
     }
 
     /**
@@ -505,11 +488,11 @@ class Driver implements DriverInterface
         }
 
         try {
-            $this->doConnection(
+            $this->connection->real_connect(
                 $this->connectionConfig['hostname'],
                 $this->connectionConfig['username'],
                 $this->connectionConfig['password'],
-                $this->connectionConfig['dbName'],
+                $this->currentDatabase,
                 $this->connectionConfig['port']
             );
 
