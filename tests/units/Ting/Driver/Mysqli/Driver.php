@@ -749,15 +749,22 @@ class Driver extends atoum
         $this->calling($mockDriver)->ping = false;
         $this->calling($mockDriver)->real_connect = true;
 
+        $hostName = 'hostname.test';
+        $userName = 'user.test';
+        $password = 'password.test';
+        $database = null;
+        $port = 1234;
+
         $this
             ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
-            ->and($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->and($driver->connect($hostName, $userName, $password, $port))
             ->boolean($driver->ping())
                 ->isTrue()
             ->mock($mockDriver)
                 ->call('real_connect')
-                    // 1 call for connect() + 1 call for ping()
-                    ->exactly(2);
+                    ->withArguments($hostName, $userName, $password, $database, $port)
+                        // 1 call for connect() + 1 call for ping()
+                        ->exactly(2);
     }
 
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
