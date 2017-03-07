@@ -745,7 +745,7 @@ class Driver extends atoum
 
     public function testPingShouldReconnect()
     {
-       $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver = new \mock\Fake\Mysqli();
         $this->calling($mockDriver)->ping = false;
         $this->calling($mockDriver)->real_connect = true;
         $this->calling($mockDriver)->select_db = function ($database) {
