@@ -774,7 +774,6 @@ class Driver extends atoum
                     ->withArguments($hostName, $userName, $password, $database, $port)
                         // 1 call for ping()
                         ->once();
-
     }
 
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
