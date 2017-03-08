@@ -1,4 +1,4 @@
-3.2.1 (2017-03-07):
+3.2.1 (xxxx-xx-xx):
     * Mysqli driver really reconnect on ping if connection has been lost because php.ini setting mysqli.reconnect is ignored by the mysqlnd driver, so automatic reconnection is never attempted.
 
 3.2.0 (2017-01-31):
