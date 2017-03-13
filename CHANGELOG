@@ -1,4 +1,4 @@
-3.2.1 (xxxx-xx-xx):
+3.2.1 (2017-03-13):
     * Bug fix: Ping now reconnects to the database if connection has been lost. See https://bugs.php.net/bug.php?id=52561
 
 3.2.0 (2017-01-31):
