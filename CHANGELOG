@@ -1,3 +1,6 @@
+3.2.1 (xxxx-xx-xx):
+    * Bug fix: Ping now reconnects to the database if connection has been lost. See https://bugs.php.net/bug.php?id=52561
+
 3.2.0 (2017-01-31):
     * Better performance for Pgsql Result format process.
     * New feature : Declare your own accessor on field declaration

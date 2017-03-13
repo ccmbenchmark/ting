@@ -95,6 +95,13 @@ class Driver implements DriverInterface
     private $parameterMatching = '(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)';
 
     /**
+     * Data used to open a connection.
+     *
+     * @var array
+     */
+    private $connectionConfig = [];
+
+    /**
      * @param  \mysqli|Object|null $connection
      * @param \mysqli_driver|Object|null $driver
      */
@@ -132,13 +139,21 @@ class Driver implements DriverInterface
      * @param string $username
      * @param string $password
      * @param int $port
+     *
      * @return $this
+     *
      * @throws Exception
      */
     public function connect($hostname, $username, $password, $port = 3306)
     {
-
         $this->driver->report_mode = MYSQLI_REPORT_STRICT;
+
+        $this->connectionConfig = [
+            'hostname' => $hostname,
+            'username' => $username,
+            'password' => $password,
+            'port' => $port
+        ];
 
         try {
             $this->connected = $this->connection->real_connect($hostname, $username, $password, null, $port);
@@ -456,7 +471,10 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Ping server and reconnect if connection has been lost.
+     *
      * @return bool true on success, false on failure
+     *
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      */
     public function ping()
@@ -464,6 +482,23 @@ class Driver implements DriverInterface
         if ($this->connected === false) {
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
         }
-        return $this->connection->ping();
+
+        if ($this->connection->ping() === true) {
+            return true;
+        }
+
+        try {
+            $this->connection->real_connect(
+                $this->connectionConfig['hostname'],
+                $this->connectionConfig['username'],
+                $this->connectionConfig['password'],
+                $this->currentDatabase,
+                $this->connectionConfig['port']
+            );
+
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 }
