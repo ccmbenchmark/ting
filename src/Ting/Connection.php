@@ -28,7 +28,7 @@ class Connection
 {
 
     /**
-     * @var ConnectionPool|null
+     * @var ConnectionPoolInterface|null
      */
     protected $connectionPool = null;
 

@@ -33,7 +33,7 @@ class MetadataRepository
     /**
      * This array matches a repository (class name) and the corresponding metadata object
      *
-     * @var Metadata[RepositoryClassName]
+     * @var Metadata[]
      */
     protected $metadataList = [];
 

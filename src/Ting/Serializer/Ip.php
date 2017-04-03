@@ -30,7 +30,7 @@ class Ip implements SerializerInterface
     /**
      * @param string $toSerialize
      * @param array $options
-     * @return int
+     * @return int|null
      * @throws RuntimeException
      */
     public function serialize($toSerialize, array $options = [])
@@ -51,7 +51,7 @@ class Ip implements SerializerInterface
     /**
      * @param int $serialized
      * @param array  $options
-     * @return string
+     * @return string|null
      * @throws RuntimeException
      */
     public function unserialize($serialized, array $options = [])

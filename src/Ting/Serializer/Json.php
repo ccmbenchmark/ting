@@ -33,7 +33,7 @@ class Json implements SerializerInterface
     /**
      * @param mixed $toSerialize
      * @param array $options
-     * @return string
+     * @return string|null
      * @throws RuntimeException
      */
     public function serialize($toSerialize, array $options = [])
