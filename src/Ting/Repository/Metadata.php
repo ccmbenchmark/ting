@@ -31,7 +31,6 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class Metadata
@@ -493,7 +492,7 @@ class Metadata
      * @param QueryFactoryInterface      $queryFactory
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
-     * @return QueryInterface
+     * @return \CCMBenchmark\Ting\Query\Query
      *
      * @internal
      */
