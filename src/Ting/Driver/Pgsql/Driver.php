@@ -50,7 +50,7 @@ class Driver implements DriverInterface
     protected $currentCharset = null;
 
     /**
-     * @var resource pgsql
+     * @var resource|null pgsql
      */
     protected $connection = null;
 

@@ -99,7 +99,7 @@ class Result implements ResultInterface
     /**
      * Format output
      * @param $data
-     * @return array
+     * @return array|null
      */
     protected function format($data)
     {

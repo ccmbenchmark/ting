@@ -30,7 +30,7 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 class PreparedQuery extends Query
 {
     /**
-     * @var int|null
+     * @var bool
      */
     protected $prepared = false;
 

@@ -35,7 +35,7 @@ class Generator
      */
     protected $connection = null;
     /**
-     * @var QueryFactory
+     * @var QueryFactoryInterface
      */
     protected $queryFactory = null;
 
