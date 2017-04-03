@@ -80,6 +80,11 @@ class Driver implements DriverInterface
     protected $preparedQueries = array();
 
     /**
+     * @var string
+     */
+    protected $dsn;
+
+    /**
      * Return a unique connection key identifier
      * @param array  $connectionConfig
      * @param string $database
