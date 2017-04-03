@@ -143,7 +143,7 @@ class Statement implements StatementInterface
     /**
      * @param \mysqli_result $resultData
      * @param CollectionInterface $collection
-     * @return CollectionInterface
+     * @return bool
      *
      * @internal
      */
