@@ -28,8 +28,7 @@
     },
     "require-dev": {
         "atoum/atoum": "^2.8",
-        "atoum/stubs": "^2.2",
-        "phpstan/phpstan": "^0.6.4"
+        "atoum/stubs": "^2.2"
     },
     "autoload": {
         "psr-4" : {
