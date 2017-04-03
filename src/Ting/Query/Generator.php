@@ -111,7 +111,7 @@ class Generator
 
     /**
      * @param CollectionFactoryInterface $collectionFactory
-     * @param bool|false                 $forceMaster
+     * @param bool                       $forceMaster
      * @return QueryInterface
      *
      * @internal
