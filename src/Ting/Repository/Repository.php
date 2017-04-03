@@ -73,6 +73,26 @@ abstract class Repository
     protected $cache;
 
     /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    /**
+     * @var MetadataRepository
+     */
+    protected $metadataRepository;
+
+    /**
+     * @var QueryFactory
+     */
+    protected $queryFactory;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
+
+    /**
      * @param ConnectionPool $connectionPool
      * @param MetadataRepository $metadataRepository
      * @param QueryFactory $queryFactory
