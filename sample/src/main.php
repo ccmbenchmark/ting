@@ -52,23 +52,9 @@ $connections = [
         'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
         'master' => [
             'host'      => 'localhost',
-            'user'      => 'world_sample',
-            'password'  => 'world_sample',
+            'user'      => 'root',
+            'password'  => 'p455w0rd',
             'port'      => 3306,
-        ],
-        'slaves' => [
-            [
-                'host'      => '127.0.0.1',
-                'user'      => 'world_sample',
-                'password'  => 'world_sample',
-                'port'      => 3306,
-            ],
-            [
-                'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
-                'user'      => 'world_sample_readonly',
-                'password'  => 'world_sample_readonly',
-                'port'      => 3306,
-            ]
         ]
     ]
 ];
@@ -87,9 +73,46 @@ $memcached = [
 
 $services->get('ConnectionPool')->setConfig($connections);
 
-$services->get('Cache')->setConfig($memcached);
-$services->get('Cache')->store('key', 'storedInCacheValue', 10);
-echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
+//$services->get('Cache')->setConfig($memcached);
+//$services->get('Cache')->store('key', 'storedInCacheValue', 10);
+//echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
+
+
+
+$cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
+
+$query = $cityRepository->getQuery(
+    "select
+        distinct c.*, col.*
+        from t_city_cit as c
+        left join t_countrylanguage_col as col on (col.cou_code = 'AFG' and c.cou_code = 'AFG')
+        where cit_id < 5
+        limit 30"
+);
+
+$hydrator = $services->get('HydratorAggregator');
+$hydrator->callableIdIs(function ($result) {
+    return $result['c']->getId();
+});
+$hydrator->callableDataIs(function ($result) {
+    return $result['col'];
+});
+
+$hydrator->aggregateToKey('languages');
+
+$collection = $query->setParams(['code' => 'FRA'])->query(new Collection($hydrator));
+
+foreach ($collection as $result) {
+    var_dump($result);
+    echo str_repeat("-", 40) . "\n";
+}
+
+
+die;
+
+
+
+
 
 /**
  * @var $cityRepository CityRepository
