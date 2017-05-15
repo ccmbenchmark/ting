@@ -32,7 +32,7 @@ class PreparedQuery extends Query
 {
 
     /**
-     * @var int|null
+     * @var bool
      */
     protected $prepared = false;
 
@@ -90,7 +90,7 @@ class PreparedQuery extends Query
             $collection = $this->collectionFactory->get();
         }
 
-        $isCached = $this->checkCache($this->cacheKey, $collection, $this->params);
+        $isCached = $this->checkCache($this->cacheKey, $collection);
 
         if ($isCached === true) {
             return $collection;

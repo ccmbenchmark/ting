@@ -35,7 +35,7 @@ class Generator
      */
     protected $connection = null;
     /**
-     * @var QueryFactory
+     * @var QueryFactoryInterface
      */
     protected $queryFactory = null;
 
@@ -111,7 +111,7 @@ class Generator
 
     /**
      * @param CollectionFactoryInterface $collectionFactory
-     * @param bool|false                 $forceMaster
+     * @param bool                       $forceMaster
      * @return QueryInterface
      *
      * @internal
