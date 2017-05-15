@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting\Repository;
 
 use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 use Aura\SqlQuery\QueryInterface;
+use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\Mysqli;
@@ -57,7 +58,7 @@ abstract class Repository
     protected $metadata = null;
 
     /**
-     * @var \CCMBenchmark\Ting\ConnectionPoolInterface
+     * @var Connection
      */
     protected $connection;
 
@@ -71,6 +72,26 @@ abstract class Repository
      * @var Cache
      */
     protected $cache;
+
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    /**
+     * @var MetadataRepository
+     */
+    protected $metadataRepository;
+
+    /**
+     * @var QueryFactory
+     */
+    protected $queryFactory;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
 
     /**
      * @param ConnectionPool $connectionPool

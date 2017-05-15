@@ -41,7 +41,7 @@ class Debug
     /**
      * Export Ting object
      *
-     * @param string $var
+     * @param mixed $var
      * @param int $maxDepth
      *
      * @return mixed

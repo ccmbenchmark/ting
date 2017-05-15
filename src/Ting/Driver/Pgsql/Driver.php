@@ -50,7 +50,7 @@ class Driver implements DriverInterface
     protected $currentCharset = null;
 
     /**
-     * @var resource pgsql
+     * @var resource|null pgsql
      */
     protected $connection = null;
 
@@ -78,6 +78,11 @@ class Driver implements DriverInterface
      * @var array List of already prepared queries
      */
     protected $preparedQueries = array();
+
+    /**
+     * @var string
+     */
+    protected $dsn;
 
     /**
      * Return a unique connection key identifier

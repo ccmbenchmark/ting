@@ -37,7 +37,7 @@ class DateTime implements SerializerInterface
     /**
      * @param \DateTime $toSerialize
      * @param array $options
-     * @return string
+     * @return string|null
      * @throws RuntimeException
      */
     public function serialize($toSerialize, array $options = [])
@@ -59,7 +59,7 @@ class DateTime implements SerializerInterface
     /**
      * @param string $serialized
      * @param array  $options
-     * @return \Datetime
+     * @return \Datetime|null
      * @throws RuntimeException
      */
     public function unserialize($serialized, array $options = [])

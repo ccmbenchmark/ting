@@ -59,6 +59,21 @@ class RepositoryFactory
     protected $cache;
 
     /**
+     * @var QueryFactory
+     */
+    protected $queryFactory;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
+
+    /**
+     * @var SerializerFactoryInterface
+     */
+    protected $serializerFactory;
+
+    /**
      * @param ConnectionPool $connectionPool
      * @param MetadataRepository $metadataRepository
      * @param QueryFactory $queryFactory
