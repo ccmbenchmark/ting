@@ -91,8 +91,6 @@ $services->get('Cache')->setConfig($memcached);
 $services->get('Cache')->store('key', 'storedInCacheValue', 10);
 echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
-
-
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
 $query = $cityRepository->getQuery(
@@ -120,13 +118,6 @@ foreach ($collection as $result) {
     var_dump($result);
     echo str_repeat("-", 40) . "\n";
 }
-
-
-die;
-
-
-
-
 
 /**
  * @var $cityRepository CityRepository
