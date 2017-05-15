@@ -28,26 +28,68 @@ use CCMBenchmark\Ting\Serializer\RuntimeException;
 
 class HydratorAggregator extends Hydrator
 {
-    private $callableForId;
-    private $callableForData;
-    private $key;
+    /**
+     * @var callable
+     */
+    protected $callableForId;
 
-    public function callableIdIs(callable $callableForId)
-    {
-        $this->callableForId = $callableForId;
-    }
+    /**
+     * @var callable
+     */
+    protected $callableForData;
 
-    public function callableDataIs(callable $callableForData)
-    {
-        $this->callableForData = $callableForData;
-    }
+    /**
+     * @var callable
+     */
+    protected $callableFinalizeAggregate;
 
-    public function aggregateToKey($key)
+    /**
+     * @var bool
+     */
+    protected $BCBreak = false;
+
+    /**
+     * Enable BC Break will throw a RuntimeException when your collection is not sorted
+     * by the identifier you want to aggregate.
+     */
+    public function enableBCBreak()
     {
-        $this->key = (string) $key;
+        $this->BCBreak = true;
     }
 
     /**
+     * @param callable $callableForId
+     * @return $this
+     */
+    public function callableIdIs(callable $callableForId)
+    {
+        $this->callableForId = $callableForId;
+        return $this;
+    }
+
+    /**
+     * @param callable $callableForData
+     * @return $this
+     */
+    public function callableDataIs(callable $callableForData)
+    {
+        $this->callableForData = $callableForData;
+        return $this;
+    }
+
+    /**
+     * @param callable $callableFinalizeAggregate
+     * @return $this
+     */
+    public function callableFinalizeAggregate(callable $callableFinalizeAggregate)
+    {
+        $this->callableFinalizeAggregate = $callableFinalizeAggregate;
+        return $this;
+    }
+
+    /**
+     * @throws RuntimeException This exception is only throwed if you enableBCBreak
+     *
      * @return \Generator
      */
     public function getIterator()
@@ -56,6 +98,8 @@ class HydratorAggregator extends Hydrator
         $callableForId = $this->callableForId;
         $callableForData = $this->callableForData;
         $previousId = null;
+        $previousResult = null;
+        $previousKey = null;
         $currentId = null;
         $aggregate = [];
         $key = null;
@@ -71,28 +115,54 @@ class HydratorAggregator extends Hydrator
             $currentId = $callableForId($result);
 
             if (in_array($currentId, $knownIdentifiers, true) === true) {
-                // throw new RuntimeException("Identifier $currentId already generated, please sort your result by identifier");
-                // Pas le droit de lever une exception, c'est pas dans l'interface, je fais comment du coup ? :D
+                if ($this->BCBreak === true) {
+                    throw new RuntimeException("Identifier $currentId already generated, please sort your result by identifier");
+                }
+
+                continue;
             }
 
             if ($previousId === null) {
                 $previousId = $currentId;
+                $previousResult = $result;
+                $previousKey = $key;
             }
 
             if ($previousId === $currentId) {
                 $aggregate[] = $callableForData($result);
             } else {
-                $result[$this->key] = $aggregate;
-                $aggregate = [];
-                $knownIdentifiers[] = $previousId;
-                $previousId = $currentId;
+                $previousResult = $this->finalizeAggregate($previousResult, $aggregate);
 
-                yield $key => $result;
+                $knownIdentifiers[] = $previousId;
+
+                yield $previousKey => $previousResult;
+
+                $aggregate = [$callableForData($result)];
+                $previousId = $currentId;
+                $previousResult = $result;
+                $previousKey = $key;
             }
         }
 
-        if ($previousId !== $currentId) {
-            yield $key => $result;
+        if ($previousId === $currentId) {
+            yield $key => $this->finalizeAggregate($result, $aggregate);
         }
+    }
+
+    /**
+     * @param mixed $result
+     * @param mixed $aggregate
+     *
+     * @return mixed
+     */
+    private function finalizeAggregate($result, $aggregate)
+    {
+        if ($this->callableFinalizeAggregate === null) {
+            $result['aggregate'] = $aggregate;
+            return $result;
+        }
+
+        $callableFinalizeAggregate = $this->callableFinalizeAggregate;
+        return $callableFinalizeAggregate($result, $aggregate);
     }
 }
