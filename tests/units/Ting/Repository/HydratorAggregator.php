@@ -26,7 +26,6 @@ namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
 use mageekguy\atoum;
-use const MYSQLI_TYPE_VAR_STRING;
 
 /**
  * HydratorAggregator
