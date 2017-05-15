@@ -30,7 +30,6 @@ use const MYSQLI_TYPE_VAR_STRING;
 
 /**
  * HydratorAggregator
- * @tags test
  */
 class HydratorAggregator extends atoum
 {
