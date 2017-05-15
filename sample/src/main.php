@@ -52,9 +52,23 @@ $connections = [
         'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
         'master' => [
             'host'      => 'localhost',
-            'user'      => 'root',
-            'password'  => 'p455w0rd',
+            'user'      => 'world_sample',
+            'password'  => 'world_sample',
             'port'      => 3306,
+        ],
+        'slaves' => [
+            [
+                'host'      => '127.0.0.1',
+                'user'      => 'world_sample',
+                'password'  => 'world_sample',
+                'port'      => 3306,
+            ],
+            [
+                'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
+                'user'      => 'world_sample_readonly',
+                'password'  => 'world_sample_readonly',
+                'port'      => 3306,
+            ]
         ]
     ]
 ];
@@ -73,9 +87,9 @@ $memcached = [
 
 $services->get('ConnectionPool')->setConfig($connections);
 
-//$services->get('Cache')->setConfig($memcached);
-//$services->get('Cache')->store('key', 'storedInCacheValue', 10);
-//echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
+$services->get('Cache')->setConfig($memcached);
+$services->get('Cache')->store('key', 'storedInCacheValue', 10);
+echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
 
 
 
