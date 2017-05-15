@@ -110,8 +110,6 @@ $hydrator->callableDataIs(function ($result) {
     return $result['col'];
 });
 
-$hydrator->aggregateToKey('languages');
-
 $collection = $query->setParams(['code' => 'FRA'])->query(new Collection($hydrator));
 
 foreach ($collection as $result) {
