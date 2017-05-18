@@ -217,7 +217,7 @@ class Result implements ResultInterface
                     continue;
                 }
 
-                if ($scope === 'column' || $scope === 'string') {
+                if ($scope === 'column' || $scope === 'string' || $scope === 'condition') {
                     $column .= $tokensWithCase[$index];
                 }
 
