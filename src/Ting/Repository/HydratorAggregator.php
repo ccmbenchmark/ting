@@ -44,20 +44,6 @@ class HydratorAggregator extends Hydrator
     protected $callableFinalizeAggregate;
 
     /**
-     * @var bool
-     */
-    protected $BCBreak = false;
-
-    /**
-     * Enable BC Break will throw a RuntimeException when your collection is not sorted
-     * by the identifier you want to aggregate.
-     */
-    public function enableBCBreak()
-    {
-        $this->BCBreak = true;
-    }
-
-    /**
      * @param callable $callableForId
      * @return $this
      */
@@ -115,10 +101,6 @@ class HydratorAggregator extends Hydrator
             $currentId = $callableForId($result);
 
             if (in_array($currentId, $knownIdentifiers, true) === true) {
-                if ($this->BCBreak === true) {
-                    throw new RuntimeException("Identifier $currentId already generated, please sort your result by identifier");
-                }
-
                 continue;
             }
 
