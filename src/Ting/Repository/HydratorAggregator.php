@@ -74,8 +74,6 @@ class HydratorAggregator extends Hydrator
     }
 
     /**
-     * @throws RuntimeException This exception is only throwed if you enableBCBreak
-     *
      * @return \Generator
      */
     public function getIterator()
