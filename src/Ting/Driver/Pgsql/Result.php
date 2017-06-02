@@ -181,20 +181,32 @@ class Result implements ResultInterface
                             $columnComponent['alias'] = $matches['alias'];
                         }
                     } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
-                        $column = ltrim($column);
+                        $column = trim($column);
                         preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
+                        $noAlias = false;
+                        if (isset($matches['alias']) === true
+                            && strtolower($matches['alias']) === 'end'
+                            && strtolower(substr($column, 0, 4)) === 'case'
+                        ) {
+                            /**
+                             * The last token is not an alias but the end of a condition
+                             */
+                            $noAlias = true;
+                        }
 
                         $cut = 0;
 
-                        if (isset($matches['prefix']) === true) {
-                            $cut += strlen($matches['prefix']);
-                        }
-                        if (isset($matches['alias']) === true) {
-                            $cut += strlen($matches['alias']);
+                        if ($noAlias === false) {
+                            if (isset($matches['prefix']) === true) {
+                                $cut += strlen($matches['prefix']);
+                            }
+                            if (isset($matches['alias']) === true) {
+                                $cut += strlen($matches['alias']);
+                            }
                         }
 
                         if ($cut > 0) {
-                            $matches['column'] = substr($column, 0, - $cut);
+                            $matches['column'] = trim(substr($column, 0, - $cut));
                         } else {
                             $matches['column'] = $column;
                         }
@@ -204,7 +216,7 @@ class Result implements ResultInterface
                             'table' => '',
                             'column' => $matches['column']
                         ];
-                        if (isset($matches['alias']) === true) {
+                        if ($noAlias === false && isset($matches['alias']) === true) {
                             $columnComponent['alias'] = $matches['alias'];
                         }
                     }
