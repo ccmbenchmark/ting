@@ -180,7 +180,7 @@ class Result extends atoum
     {
         $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
 
-        $this->function->pg_fetch_array = [1, 1, 2, 3];
+        $this->function->pg_fetch_array = [1, 1, 2, 3, 6, 7, 8];
         $this->function->pg_field_table = function ($result, $index) {
             return 'table';
         };
@@ -190,9 +190,12 @@ class Result extends atoum
             ->and(
                 $result->setQuery(
                     'SELECT a,
-                            CASE a = 1 THEN 1 ELSE 0 END,
-                            CASE a = 1 THEN 2 ELSE 0 END aliased,
-                            CASE a = 1 THEN 3 ELSE 0 END as aliased2
+                            CASE WHEN a = 1 THEN 1 ELSE 0 END,
+                            CASE WHEN a = 1 THEN 2 ELSE 0 END aliased,
+                            CASE WHEN a = 1 THEN 3 ELSE 0 END as aliased2,
+                            CASE WHEN a = 1 THEN 4 ELSE 0 END + 2 as END,
+                            CASE WHEN a = 1 THEN 5 ELSE 0 END + 2 END,
+                            CASE WHEN a = 1 THEN 6 ELSE 0 END + 2
                             FROM table'
                 )
             )
@@ -211,8 +214,8 @@ class Result extends atoum
                                 'value' => 1
                             ],
                             [
-                                'name' => 'CASE a = 1 THEN 1 ELSE 0 END',
-                                'orgName' => 'CASE a = 1 THEN 1 ELSE 0 END',
+                                'name' => 'CASE WHEN a = 1 THEN 1 ELSE 0 END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 1 ELSE 0 END',
                                 'table' => '',
                                 'orgTable' => '',
                                 'schema' => '',
@@ -220,7 +223,7 @@ class Result extends atoum
                             ],
                             [
                                 'name' => 'aliased',
-                                'orgName' => 'CASE a = 1 THEN 2 ELSE 0 END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 2 ELSE 0 END',
                                 'table' => '',
                                 'orgTable' => '',
                                 'schema' => '',
@@ -228,11 +231,35 @@ class Result extends atoum
                             ],
                             [
                                 'name' => 'aliased2',
-                                'orgName' => 'CASE a = 1 THEN 3 ELSE 0 END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 3 ELSE 0 END',
                                 'table' => '',
                                 'orgTable' => '',
                                 'schema' => '',
                                 'value' => 3
+                            ],
+                            [
+                                'name' => 'END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 4 ELSE 0 END + 2',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 6
+                            ],
+                            [
+                                'name' => 'END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 5 ELSE 0 END + 2',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 7
+                            ],
+                            [
+                                'name' => 'CASE WHEN a = 1 THEN 6 ELSE 0 END + 2',
+                                'orgName' => 'CASE WHEN a = 1 THEN 6 ELSE 0 END + 2',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 8
                             ]
                         ]
                     )

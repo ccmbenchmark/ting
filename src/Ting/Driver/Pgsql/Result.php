@@ -128,6 +128,7 @@ class Result implements ResultInterface
         $scope  = 'column';
         $brackets = 0;
         $totalTokens = count($tokens);
+        $noAlias = false;
 
         foreach ($tokens as $index => $token) {
             if ($token === '\'') {
@@ -138,6 +139,7 @@ class Result implements ResultInterface
                 }
             } elseif ($token === 'case' && $scope === 'column') {
                 $scope = 'condition';
+                $noAlias = true;
             } elseif ($token === 'end' && $scope === 'condition') {
                 $scope = 'column';
             }
@@ -183,16 +185,6 @@ class Result implements ResultInterface
                     } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
                         $column = trim($column);
                         preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
-                        $noAlias = false;
-                        if (isset($matches['alias']) === true
-                            && strtolower($matches['alias']) === 'end'
-                            && strtolower(substr($column, 0, 4)) === 'case'
-                        ) {
-                            /**
-                             * The last token is not an alias but the end of a condition
-                             */
-                            $noAlias = true;
-                        }
 
                         $cut = 0;
 
@@ -235,6 +227,10 @@ class Result implements ResultInterface
 
                 if ($scope === 'column' && $token === '*') {
                     throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
+                }
+
+                if ($scope === 'column' && $token !== 'end') {
+                    $noAlias = false;
                 }
             }
 
