@@ -35,6 +35,7 @@ class City implements NotifyPropertyInterface
     protected $id        = null;
     protected $name      = null;
     protected $zipcode   = null;
+    protected $bouhId    = null;
 
     public function setId($id)
     {
@@ -54,6 +55,12 @@ class City implements NotifyPropertyInterface
         $this->zipcode = (string) $zipcode;
     }
 
+    public function setBouhId($bouhId)
+    {
+        $this->propertyChanged('bouhId', $this->bouhId, $bouhId);
+        $this->bouhId = (string) $bouhId;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -67,5 +74,10 @@ class City implements NotifyPropertyInterface
     public function getZipcode()
     {
         return $this->zipcode;
+    }
+
+    public function getBouhId()
+    {
+        return $this->bouhId;
     }
 }
