@@ -1,6 +1,7 @@
 x.x.x (xxxx-xx-xx):
-    * update phpdoc
     * Adds case condition to column matching in pgsql driver
+    * New feature : HydratorAggregator to aggregate objects into an other
+    * Update phpdoc
 
 3.2.1 (2017-03-13):
     * Bug fix: Ping now reconnects to the database if connection has been lost. See https://bugs.php.net/bug.php?id=52561
