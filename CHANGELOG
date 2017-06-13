@@ -1,4 +1,5 @@
 x.x.x (xxxx-xx-xx):
+    * Adds case condition to column matching in pgsql driver
     * New feature : HydratorAggregator to aggregate objects into an other
     * Update phpdoc
 

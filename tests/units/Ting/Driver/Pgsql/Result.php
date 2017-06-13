@@ -175,4 +175,94 @@ class Result extends atoum
             ->variable($result->getNumRows())
                 ->isEqualTo(10);
     }
+
+    public function testSetQueryTakesFullConditionAsColumn()
+    {
+        $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
+
+        $this->function->pg_fetch_array = [1, 1, 2, 3, 6, 7, 8];
+        $this->function->pg_field_table = function ($result, $index) {
+            return 'table';
+        };
+
+        $this
+            ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))
+            ->and(
+                $result->setQuery(
+                    'SELECT a,
+                            CASE WHEN a = 1 THEN 1 ELSE 0 END,
+                            CASE WHEN a = 1 THEN 2 ELSE 0 END aliased,
+                            CASE WHEN a = 1 THEN 3 ELSE 0 END as aliased2,
+                            CASE WHEN a = 1 THEN 4 ELSE 0 END + 2 as END,
+                            CASE WHEN a = 1 THEN 5 ELSE 0 END + 2 END,
+                            CASE WHEN a = 1 THEN 6 ELSE 0 END + 2
+                            FROM table'
+                )
+            )
+            ->and($result->setResult($mockPgsqlResult))
+            ->and($result->next())
+            ->then
+                ->array($result->current())
+                    ->isEqualTo(
+                        [
+                            [
+                                'name' => 'a',
+                                'orgName' => 'a',
+                                'table' => 'table',
+                                'orgTable' => 'table',
+                                'schema' => '',
+                                'value' => 1
+                            ],
+                            [
+                                'name' => 'CASE WHEN a = 1 THEN 1 ELSE 0 END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 1 ELSE 0 END',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 1
+                            ],
+                            [
+                                'name' => 'aliased',
+                                'orgName' => 'CASE WHEN a = 1 THEN 2 ELSE 0 END',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 2
+                            ],
+                            [
+                                'name' => 'aliased2',
+                                'orgName' => 'CASE WHEN a = 1 THEN 3 ELSE 0 END',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 3
+                            ],
+                            [
+                                'name' => 'END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 4 ELSE 0 END + 2',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 6
+                            ],
+                            [
+                                'name' => 'END',
+                                'orgName' => 'CASE WHEN a = 1 THEN 5 ELSE 0 END + 2',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 7
+                            ],
+                            [
+                                'name' => 'CASE WHEN a = 1 THEN 6 ELSE 0 END + 2',
+                                'orgName' => 'CASE WHEN a = 1 THEN 6 ELSE 0 END + 2',
+                                'table' => '',
+                                'orgTable' => '',
+                                'schema' => '',
+                                'value' => 8
+                            ]
+                        ]
+                    )
+            ;
+    }
 }

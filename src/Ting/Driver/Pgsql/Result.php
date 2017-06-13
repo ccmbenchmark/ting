@@ -128,6 +128,7 @@ class Result implements ResultInterface
         $scope  = 'column';
         $brackets = 0;
         $totalTokens = count($tokens);
+        $noAlias = false;
 
         foreach ($tokens as $index => $token) {
             if ($token === '\'') {
@@ -138,6 +139,7 @@ class Result implements ResultInterface
                 }
             } elseif ($token === 'case' && $scope === 'column') {
                 $scope = 'condition';
+                $noAlias = true;
             } elseif ($token === 'end' && $scope === 'condition') {
                 $scope = 'column';
             }
@@ -181,20 +183,22 @@ class Result implements ResultInterface
                             $columnComponent['alias'] = $matches['alias'];
                         }
                     } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
-                        $column = ltrim($column);
+                        $column = trim($column);
                         preg_match(self::PARSE_DYNAMIC_COLUMN, $column, $matches);
 
                         $cut = 0;
 
-                        if (isset($matches['prefix']) === true) {
-                            $cut += strlen($matches['prefix']);
-                        }
-                        if (isset($matches['alias']) === true) {
-                            $cut += strlen($matches['alias']);
+                        if ($noAlias === false) {
+                            if (isset($matches['prefix']) === true) {
+                                $cut += strlen($matches['prefix']);
+                            }
+                            if (isset($matches['alias']) === true) {
+                                $cut += strlen($matches['alias']);
+                            }
                         }
 
                         if ($cut > 0) {
-                            $matches['column'] = substr($column, 0, - $cut);
+                            $matches['column'] = trim(substr($column, 0, - $cut));
                         } else {
                             $matches['column'] = $column;
                         }
@@ -204,7 +208,7 @@ class Result implements ResultInterface
                             'table' => '',
                             'column' => $matches['column']
                         ];
-                        if (isset($matches['alias']) === true) {
+                        if ($noAlias === false && isset($matches['alias']) === true) {
                             $columnComponent['alias'] = $matches['alias'];
                         }
                     }
@@ -217,12 +221,16 @@ class Result implements ResultInterface
                     continue;
                 }
 
-                if ($scope === 'column' || $scope === 'string') {
+                if ($scope === 'column' || $scope === 'string' || $scope === 'condition') {
                     $column .= $tokensWithCase[$index];
                 }
 
                 if ($scope === 'column' && $token === '*') {
                     throw new QueryException('Query invalid: usage of asterisk in column definition is forbidden');
+                }
+
+                if ($scope === 'column' && $token !== 'end') {
+                    $noAlias = false;
                 }
             }
 
