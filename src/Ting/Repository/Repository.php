@@ -375,7 +375,7 @@ abstract class Repository
      */
     public function ping()
     {
-        if (method_exists($this->connection->slave(), 'ping')) {
+        if (method_exists($this->connection->slave(), 'ping') === true) {
             return $this->connection->slave()->ping();
         }
 
@@ -388,7 +388,7 @@ abstract class Repository
      */
     public function pingMaster()
     {
-        if (method_exists($this->connection->master(), 'ping')) {
+        if (method_exists($this->connection->master(), 'ping') === true) {
             return $this->connection->master()->ping();
         }
 

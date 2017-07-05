@@ -24,6 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
+use CCMBenchmark\Ting\Query\QueryException;
 use mageekguy\atoum;
 
 class Driver extends atoum
@@ -414,14 +415,51 @@ class Driver extends atoum
             $outerQuery = $query;
         };
 
-        $this->function->pg_fetch_row = [4];
+        $this->function->pg_fetch_row = [8];
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->integer($driver->getInsertId())
-                ->isIdenticalTo(4)
+                ->isIdenticalTo(8)
             ->string($outerQuery)
                 ->isIdenticalTo('SELECT lastval()')
+        ;
+    }
+
+    public function testGetInsertIdForSequenceShouldReturnInsertedIdForSequence()
+    {
+        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+            $outerQuery = $query;
+        };
+
+        $this->function->pg_fetch_row = [4];
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->integer($driver->getInsertIdForSequence('sequenceName'))
+                ->isIdenticalTo(4)
+            ->string($outerQuery)
+                ->isIdenticalTo("SELECT currval('sequenceName')")
+        ;
+    }
+
+    public function testGetInsertIdForSequenceWithWrongSequenceShouldThrowAnException()
+    {
+        $this->function->pg_query = function ($connection, $query) {
+            return false;
+        };
+
+        $this->function->pg_last_error = function () {
+            return 'A PGSQL error';
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->exception(function () use ($driver) {
+                $driver->getInsertIdForSequence('sequenceName');
+            })
+                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+                ->hasMessage("A PGSQL error (Query: SELECT currval('sequenceName'))");
         ;
     }
 

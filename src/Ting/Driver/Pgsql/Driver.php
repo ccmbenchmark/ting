@@ -415,6 +415,24 @@ class Driver implements DriverInterface
     }
 
     /**
+     * Return the last inserted id for a sequence
+     * @return int
+     * @throws Exception
+     */
+    public function getInsertIdForSequence($sequenceName)
+    {
+        $sql = "SELECT currval('$sequenceName')";
+        $resultResource = @pg_query($this->connection, $sql);
+
+        if ($resultResource === false) {
+            throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
+        }
+
+        $row = pg_fetch_row($resultResource);
+        return (int) $row[0];
+    }
+
+    /**
      * Give the number of affected rows
      * @return int
      */

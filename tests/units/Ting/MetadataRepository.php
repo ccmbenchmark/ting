@@ -166,9 +166,9 @@ class MetadataRepository extends atoum
                 }
             ))
             ->boolean($outerCallbackFound)
-            ->isTrue()
+                ->isTrue()
             ->variable($outerCallbackNotFound)
-            ->isNull();
+                ->isNull();
     }
 
     public function testFindMetadataForTableWithWrongSchemaShouldCallCallbackNotFound()
@@ -195,9 +195,9 @@ class MetadataRepository extends atoum
                 }
             ))
             ->boolean($outerCallbackNotFound)
-            ->isTrue()
+                ->isTrue()
             ->variable($outerCallbackFound)
-            ->isNull();
+                ->isNull();
     }
 
     public function testBatchLoadMetadataShouldCallInitMetadataWithDefaultOptions()
