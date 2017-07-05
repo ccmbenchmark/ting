@@ -1,5 +1,5 @@
-3.4.0 (XXXX-XX-XX):
-    * Auto increment value can be retrieved from a custom sequence name (Postgresql only)
+3.4.0 (2017-07-05):
+    * New Feature: Auto increment value can be retrieved from a custom sequence name (Postgresql only)
 
 3.3.0 (2017-06-13):
     * Adds case condition to column matching in pgsql driver
