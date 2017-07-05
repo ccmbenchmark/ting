@@ -324,6 +324,8 @@ class Metadata
      * @param DriverInterface $driver
      * @return $this|bool
      *
+     * @throws
+     *
      * @internal
      */
     public function setEntityPropertyForAutoIncrement($entity, DriverInterface $driver)
@@ -332,8 +334,16 @@ class Metadata
             return false;
         }
 
+        if (method_exists($driver, 'getInsertIdForSequence') === true
+            && isset($this->autoincrement['sequenceName']) === true
+        ) {
+            $insertId = $driver->getInsertIdForSequence($this->autoincrement['sequenceName']);
+        } else {
+            $insertId = $driver->getInsertId();
+        }
+
         $property = 'set' . $this->autoincrement['fieldName'];
-        $entity->$property($driver->getInsertId());
+        $entity->$property($insertId);
         return $this;
     }
 
