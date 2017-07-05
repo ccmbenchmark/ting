@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
-use CCMBenchmark\Ting\Query\QueryException;
 use mageekguy\atoum;
 
 class Driver extends atoum
