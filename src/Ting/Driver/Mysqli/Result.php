@@ -54,7 +54,6 @@ class Result implements ResultInterface
     {
         $this->database = (string) $database;
         return $this;
-
     }
 
     /**

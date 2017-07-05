@@ -154,7 +154,6 @@ class Services implements ContainerInterface
                         && $this->serviceOptions['Cache']['servers'] !== []) {
                         $memcached->addServers($this->serviceOptions['Cache']['servers']);
                     }
-
                 } else {
                     $memcached = new \Memcached();
                 }

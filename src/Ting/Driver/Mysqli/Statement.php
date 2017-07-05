@@ -101,7 +101,6 @@ class Statement implements StatementInterface
             }
             $types .= $type;
             $values[] = &$params[$key];
-
         }
 
         array_unshift($values, $types);
