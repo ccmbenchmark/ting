@@ -1,0 +1,10 @@
+before_script:
+# Install and run Composer
+- curl -sS https://getcomposer.org/installer | php
+- php composer.phar install
+
+# Run our tests
+# If Xdebug was installed you can generate a coverage report and see code coverage metrics.
+test:
+  script:
+  - vendor/bin/atoum --bf tests/bootstrap.php -d tests/ --ft
