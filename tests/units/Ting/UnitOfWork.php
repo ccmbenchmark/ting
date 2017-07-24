@@ -290,7 +290,7 @@ class UnitOfWork extends atoum
                 $this->services->get('QueryFactory')
             ))
             ->boolean($unitOfWork->isNew($mockEntity))
-            ->isFalse();
+                ->isFalse();
     }
 
     public function testIsNewAfterProcessShouldReturnFalse()
@@ -423,19 +423,19 @@ class UnitOfWork extends atoum
             ->exception(function () use ($unitOfWork) {
                 $unitOfWork->process();
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf('CCMBenchmark\Ting\Exception')
             ->then($unitOfWork->pushDelete($entity))
             ->exception(function () use ($unitOfWork) {
                 $unitOfWork->process();
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf('CCMBenchmark\Ting\Exception')
             ->and($unitOfWork->manage($entity))
             ->then($entity->setName('newName'))
             ->then($unitOfWork->pushSave($entity))
             ->exception(function () use ($unitOfWork) {
                 $unitOfWork->process();
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf('CCMBenchmark\Ting\Exception')
         ;
     }
 }

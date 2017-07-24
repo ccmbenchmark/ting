@@ -40,6 +40,7 @@ class Bouh implements NotifyPropertyInterface
     protected $roles     = ['USER'];
     protected $city      = null;
     protected $retrievedTime = null;
+    protected $originalCity = null;
 
     public function setId($id)
     {
@@ -119,11 +120,17 @@ class Bouh implements NotifyPropertyInterface
 
     public function setCity(City $city)
     {
+        $this->originalCity = clone $city;
         $this->city = $city;
     }
 
     public function getCity()
     {
         return $this->city;
+    }
+
+    public function getOriginalCity()
+    {
+        return $this->originalCity;
     }
 }
