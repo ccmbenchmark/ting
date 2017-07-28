@@ -63,11 +63,9 @@ class Producer implements NotifyPropertyInterface
     public function moviesAre(array $movies)
     {
         echo "producer->moviesAre()\n";
-//        $this->movies = $movies;
-//        return;
         foreach ($movies as $movie) {
             echo "movie " . utf8_encode($movie->getName()) . " have " . count($movie->getActors()) . " actors\n";
-            $this->movies[] = $movie;
+            $this->movies[] = clone $movie;
         }
     }
 

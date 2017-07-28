@@ -141,7 +141,12 @@ class HydratorAggregator extends Hydrator
                         . '-to-' . $config['target']
                         . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
                     $sourceIdentifier = $result[$config['source']]->{$config['sourceIdentifier']}();
+                    $targetIdentifier = $result[$config['target']]->{$config['targetIdentifier']}();
 
+                    $aggregate[$key]['source'] = $config['source'];
+                    $aggregate[$key]['sourceIdentifier'] = $sourceIdentifier;
+                    $aggregate[$key]['target'] = $config['target'];
+                    $aggregate[$key]['targetIdentifier'] = $targetIdentifier;
                     $aggregate[$key][$sourceIdentifier] = $result[$config['source']];
                 }
 
@@ -157,14 +162,28 @@ class HydratorAggregator extends Hydrator
             $results[$key] = $result;
         }
 
-        var_dump($aggregate);
-        die;
+        $aggregateSpl = new SplDoublyLinkedList();
+        foreach ($aggregate as $ag) {
+            $aggregateSpl->push($ag);
+        }
 
-        foreach ($aggregate as $key => $ag) {
-            $indexToString = strpos($key, '-to-');
-            $targetReferenceName = substr($key, 4 + $indexToString);
-            $target = substr($targetReferenceName, 0, strpos($targetReferenceName, '-'));
-            $source = substr($key, 6, $indexToString - 6);
+        foreach ($aggregateSpl as $index => $ag) {
+            $dependencyIndex = array_search($ag['target'], array_column($aggregate, 'source'));
+
+            if ($dependencyIndex !== false && $dependencyIndex < $index) {
+                $aggregateSpl->offsetUnset($index);
+                $aggregateSpl->add($dependencyIndex, $ag);
+            }
+        }
+
+        foreach ($aggregateSpl as $key => $ag) {
+            $source = $ag['source'];
+            $target = $ag['target'];
+            $targetReferenceName = $ag['target'] . '-' . $ag['targetIdentifier'];
+            unset($ag['source']);
+            unset($ag['sourceIdentifier']);
+            unset($ag['target']);
+            unset($ag['targetIdentifier']);
 
             $config = null;
             foreach ($this->config as $config) {
