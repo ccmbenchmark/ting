@@ -120,8 +120,14 @@ class City implements NotifyPropertyInterface
         $this->broum = $value;
     }
 
-    public function countryIs(Country $country)
+    public function countryIs(array $country)
     {
-        $this->country = clone $country;
+        $country = reset($country);
+        $this->country = $country;
+    }
+
+    public function getCountry()
+    {
+        return $this->country;
     }
 }

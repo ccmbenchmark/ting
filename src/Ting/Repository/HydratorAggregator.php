@@ -111,15 +111,9 @@ class HydratorAggregator extends Hydrator
             }
         }
 
-        $previousId = null;
-        $previousResult = null;
-        $previousKey = null;
-        $currentId = null;
         $aggregate = [];
-        $key = null;
         $result = null;
         $references = [];
-
         $results = [];
 
         foreach ($this->result as $key => $columns) {
@@ -137,7 +131,6 @@ class HydratorAggregator extends Hydrator
                     $founds[] = $config['source'];
                     $key = '#ting#'
                         . $config['source']
-//                        . '-' . $result[$config['source']]->{$config['sourceIdentifier']}()
                         . '-to-' . $config['target']
                         . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
                     $sourceIdentifier = $result[$config['source']]->{$config['sourceIdentifier']}();
@@ -194,6 +187,8 @@ class HydratorAggregator extends Hydrator
 
             $references[$targetReferenceName]->{$config['targetSetter']}($ag);
         }
+
+        var_dump($references);
 
         foreach ($results as $result) {
             yield $this->finalizeAggregate($result);

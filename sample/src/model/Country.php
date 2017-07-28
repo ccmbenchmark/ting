@@ -37,6 +37,7 @@ class Country implements NotifyPropertyInterface
     protected $continent = null;
     protected $region    = null;
     protected $president = null;
+    protected $countryLanguages = [];
 
     public function setCode($code)
     {
@@ -98,4 +99,13 @@ class Country implements NotifyPropertyInterface
         $this->countryLanguage = $countryLanguage;
     }
 
+    public function countryLanguagesAre(array $countryLanguages)
+    {
+        $this->countryLanguages = $countryLanguages;
+    }
+
+    public function getCountryLanguages()
+    {
+        return $this->countryLanguages;
+    }
 }

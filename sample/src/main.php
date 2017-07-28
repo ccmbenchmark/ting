@@ -65,15 +65,6 @@ $services->get('ConnectionPool')->setConfig($connections);
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
 $query = $cityRepository->getQuery(
-    "select producer.*, movie.*, actor.*
-from producer
-inner join produce_movie on producer.id = produce_movie.producer_id
-inner join movie on movie.id = produce_movie.movie_id
-inner join actor_in_movie on actor_in_movie.movie_id = movie.id
-inner join actor on actor.id = actor_in_movie.actor_id"
-);
-
-$query = $cityRepository->getQuery(
   "select producer.*, worker.*, movie.*, actor.*
 from producer
 left join work_for_producer on producer.id = work_for_producer.producer_id
@@ -82,6 +73,15 @@ left join produce_movie on producer.id = produce_movie.producer_id
 left join movie on movie.id = produce_movie.movie_id
 left join actor_in_movie on actor_in_movie.movie_id = movie.id
 left join actor on actor.id = actor_in_movie.actor_id"
+);
+
+$query = $cityRepository->getQuery(
+    "select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
+from t_city_cit
+left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
+left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
+order by t_city_cit.cit_id, t_country_cou.cou_code, t_countrylanguage_col.cou_code
+limit 10"
 );
 
 /**
@@ -94,12 +94,21 @@ left join actor on actor.id = actor_in_movie.actor_id"
 //$hydrator->aggregate('decor', 'getId', 'movie', 'getId', 'decorsAre');
 //$hydrator->aggregate('actorOfDecor', 'getId', 'decor', 'getId', 'actorsOfDecorAre');
 
+/*
 $hydrator = $services->get('HydratorAggregator');
 $hydrator->aggregate('worker', 'getId', 'producer', 'getId', 'workersAre');
 $hydrator->aggregate('movie', 'getId', 'producer', 'getId', 'moviesAre');
 $hydrator->aggregate('actor', 'getId', 'movie', 'getId', 'actorsAre');
 $hydrator->callableFinalizeAggregate(function ($result) {
    return $result['producer'];
+});
+*/
+
+$hydrator = $services->get('HydratorAggregator');
+$hydrator->aggregate('t_countrylanguage_col', 'getCode', 't_country_cou', 'getCode', 'countryLanguagesAre');
+$hydrator->aggregate('t_country_cou', 'getCode', 't_city_cit', 'getId', 'countryIs');
+$hydrator->callableFinalizeAggregate(function ($result) {
+    return $result['t_city_cit'];
 });
 
 /*
@@ -112,6 +121,18 @@ producer :
 */
 
 $collection = $query->query(new Collection($hydrator));
+foreach ($collection as $city) {
+    echo "City: " . $city->getName() . " (" . $city->tingUUID . ")" . "\n";
+    $country = $city->getCountry();
+    echo "\tCountry: " . $country->getName() . " (" . $country->tingUUID . ")" . "\n";
+    $countryLanguages = $country->getCountryLanguages();
+    foreach ($countryLanguages as $countryLanguage) {
+        echo "\t\tLanguage: " . $countryLanguage->getName() . " (" . $countryLanguage->tingUUID . ")" . "\n";
+    }
+    die;
+    echo str_repeat("-", 40) . "\n";
+}
+die;
 
 foreach ($collection as $producer) {
 //    $producer = $result['producer'];

@@ -44,7 +44,7 @@ class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository impleme
            'autoincrement' => true,
            'fieldName'     => 'code',
            'columnName'    => 'cou_code',
-            'type'         => 'int'
+            'type'         => 'string'
         ));
 
         $metadata->addField(array(
