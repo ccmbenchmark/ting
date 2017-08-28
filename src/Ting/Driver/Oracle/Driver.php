@@ -26,9 +26,10 @@ namespace CCMBenchmark\Ting\Driver\Oracle;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
+use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use CCMBenchmark\Ting\Driver\QueryException
+use CCMBenchmark\Ting\Driver\QueryException;
 
 class Driver implements DriverInterface
 {
@@ -73,9 +74,34 @@ class Driver implements DriverInterface
     private $database;
 
     /**
+     * @var DriverLoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var string hash of current object
+     */
+    private $objectHash = '';
+
+    /**
+     * @var array|null
+     */
+    private $preparedQueries;
+
+    /**
      * @var bool
      */
     private $transactionOpened = false;
+
+    /**
+     * @var string Match parameter in SQL
+     *
+     * Match : values (:name)
+     * Don't match : values (\:name)
+     * Don't match : HH:MI:SS
+     * Don't match : ::string
+     */
+    private $parameterMatching = '(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)';
 
     /**
      * @param string $hostname
@@ -147,6 +173,51 @@ class Driver implements DriverInterface
      * @return mixed
      */
     public function execute($sql, array $params = [], CollectionInterface $collection = null)
+    {
+        preg_match_all('/' . $this->parameterMatching . '/', $sql, $matches);
+        foreach ($matches as $match) {
+            if (array_key_exists($match, $params) === false) {
+                throw new QueryException('Value has not been setted for param ' . $match);
+            }
+        }
+
+        if ($this->logger !== null) {
+            $this->logger->startQuery($sql, $params, $this->objectHash, $this->database);
+        }
+
+        $statement = oci_parse($this->connection, $sql);
+
+        foreach ($params as $key => $value) {
+            oci_bind_by_name($statement, ':' . $key, $value);
+        }
+
+        $result = oci_execute(
+            $statement,
+            $this->transactionOpened === true ? OCI_NO_AUTO_COMMIT : OCI_NO_AUTO_COMMIT
+        );
+
+        if ($this->logger !== null) {
+            $this->logger->stopQuery();
+        }
+
+        if ($result === false) {
+            $error = oci_error($this->connection);
+            throw new QueryException($error['message'] . ' (Query: ' . $error['sqltext'] . ')', $error['code']);
+        }
+
+        if ($collection === null) {
+
+        }
+    }
+
+    /**
+     * @param string $sql
+     *
+     * @return StatementInterface
+     *
+     * @throws QueryException
+     */
+    public function prepare($sql)
     {
 
     }
@@ -229,12 +300,109 @@ class Driver implements DriverInterface
         return '"' . $field . '"';
     }
 
+    /**
+     * Start a transaction.
+     * A transaction is started when calling oci_execute with parameter OCI_NO_AUTO_COMMIT.
+     * See https://secure.php.net/manual/en/function.oci-execute.php.
+     *
+     * @throws Exception
+     */
     public function startTransaction()
     {
         if ($this->transactionOpened === true) {
             throw new Exception('Cannot start another transaction');
         }
+        //@todo: handle it in execute method.
+        $this->transactionOpened = true;
+    }
 
+    /**
+     * Commit the current transaction.
+     *
+     * @throws Exception
+     */
+    public function commit()
+    {
+        if ($this->transactionOpened === false) {
+            throw new Exception('Cannot commit no transaction');
+        }
 
+        oci_execute($this->connection);
+
+        $this->transactionOpened = false;
+    }
+
+    /**
+     * Rollback the current transaction.
+     *
+     * @throws Exception
+     */
+    public function rollback()
+    {
+        if ($this->transactionOpened === false) {
+            throw new Exception('Cannot rollback no transaction');
+        }
+
+        oci_rollback($this->connection);
+
+        $this->transactionOpened = false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInsertId()
+    {
+        //@todo
+    }
+
+    /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        //@todo
+    }
+
+    /**
+     * @param DriverLoggerInterface|null $logger
+     *
+     * @return $this
+     */
+    public function setLogger(DriverLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+        $this->objectHash = spl_object_hash($logger);
+
+        return $this;
+    }
+
+    /**
+     * @param array $connectionConfig
+     * @param string $database
+     *
+     * @return string
+     */
+    public static function getConnectionKey(array $connectionConfig, $database)
+    {
+        return
+            $connectionConfig['host'] . '|' .
+            $connectionConfig['port'] . '|' .
+            $connectionConfig['user'] . '|' .
+            $connectionConfig['password'] . '|' .
+            $database;
+    }
+
+    /**
+     * @param $statement
+     *
+     * @throws Exception
+     */
+    public function closeStatement($statement)
+    {
+        if (isset($this->preparedQueries[$statement]) === false) {
+            throw new Exception('Cannot close non prepared statement');
+        }
+        unset($this->preparedQueries[$statement]);
     }
 }
