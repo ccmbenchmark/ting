@@ -30,6 +30,7 @@ use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Repository\Metadata;
 
 class Driver implements DriverInterface
 {
@@ -102,6 +103,11 @@ class Driver implements DriverInterface
      * Don't match : ::string
      */
     private $parameterMatching = '(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)';
+
+    /**
+     * @var resource|null
+     */
+    private $statement;
 
     /**
      * @param string $hostname
@@ -185,15 +191,15 @@ class Driver implements DriverInterface
             $this->logger->startQuery($sql, $params, $this->objectHash, $this->database);
         }
 
-        $statement = oci_parse($this->connection, $sql);
+        $this->statement = oci_parse($this->connection, $sql);
 
         foreach ($params as $key => $value) {
-            oci_bind_by_name($statement, ':' . $key, $value);
+            oci_bind_by_name($this->statement, ':' . $key, $value);
         }
 
         $result = oci_execute(
-            $statement,
-            $this->transactionOpened === true ? OCI_NO_AUTO_COMMIT : OCI_NO_AUTO_COMMIT
+            $this->statement,
+            $this->transactionOpened === true ? OCI_NO_AUTO_COMMIT : OCI_COMMIT_ON_SUCCESS
         );
 
         if ($this->logger !== null) {
@@ -205,9 +211,15 @@ class Driver implements DriverInterface
             throw new QueryException($error['message'] . ' (Query: ' . $error['sqltext'] . ')', $error['code']);
         }
 
-        if ($collection === null) {
-
+        if (oci_statement_type($this->statement) !== 'SELECT') {
+            return true;
         }
+
+        if ($collection === null) {
+            return oci_fetch_object($this->statement);
+        }
+
+
     }
 
     /**
@@ -255,6 +267,7 @@ class Driver implements DriverInterface
         }
 
         $this->connection = $resource;
+
         return $this;
     }
 
@@ -302,7 +315,7 @@ class Driver implements DriverInterface
 
     /**
      * Start a transaction.
-     * A transaction is started when calling oci_execute with parameter OCI_NO_AUTO_COMMIT.
+     * A transaction is manually started when calling oci_execute with parameter OCI_NO_AUTO_COMMIT.
      * See https://secure.php.net/manual/en/function.oci-execute.php.
      *
      * @throws Exception
@@ -349,11 +362,35 @@ class Driver implements DriverInterface
     }
 
     /**
+     * We can't get last inserted id without sequence.
+     * But the DriverInterface doesn't allow us to throw any exception so we return 0.
+     *
      * @return int
      */
     public function getInsertId()
     {
-        //@todo
+        return 0;
+    }
+
+    /**
+     * @param string $sequenceName
+     *
+     * @throws Exception
+     *
+     * @return int
+     */
+    public function getInsertIdForSequence($sequenceName)
+    {
+        $sql = 'SELECT ' . $sequenceName . '.currval FROM DUAL';
+        $statement = oci_parse($this->connection, $sql);
+        oci_execute($statement);
+        $result = oci_fetch_assoc($statement);
+
+        if (isset($result['CURRVAL']) === false) {
+            throw new Exception('Unable to get currval from sequence: ' . $sequenceName);
+        }
+
+        return (int) $result['CURRVAL'];
     }
 
     /**
@@ -361,7 +398,11 @@ class Driver implements DriverInterface
      */
     public function getAffectedRows()
     {
-        //@todo
+        if ($this->statement === null) {
+            return 0;
+        }
+
+        return oci_num_rows($this->statement);
     }
 
     /**
@@ -404,5 +445,48 @@ class Driver implements DriverInterface
             throw new Exception('Cannot close non prepared statement');
         }
         unset($this->preparedQueries[$statement]);
+    }
+
+    /**
+     * @param Metadata $metadata
+     *
+     * @throws Exception if a field has invalid metadata.
+     */
+    public static function validateMetadata(Metadata $metadata)
+    {
+        foreach ($metadata as $field) {
+            self::validateFieldMetadata($field);
+        }
+    }
+
+    /**
+     * @param array $field
+     *
+     * @throws Exception
+     */
+    private static function validateFieldMetadata(array $field)
+    {
+        if (self::validateAutoincrementField($field) === false) {
+            throw new Exception(
+                'The field "' . $field['fieldName'] . '" is autoincrement. You must define a sequenceName.'
+            );
+        }
+    }
+
+    /**
+     * Ensure fields 'autoincrement' are valid.
+     *
+     * @param $field
+     *
+     * @return bool Return false if field is 'autoincrement' but without any 'sequenceName'
+     */
+    private static function validateAutoincrementField(array $field)
+    {
+        // Field is not 'autoincrement', so we don't care.
+        if (isset($field['autoincrement']) === false || $field['autoincrement'] === false) {
+            return true;
+        }
+
+        return isset($field['sequenceName']);
     }
 }
