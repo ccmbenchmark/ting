@@ -39,6 +39,7 @@ use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use Doctrine\Common\Cache\Cache;
+use \CCMBenchmark\Ting\Driver;
 
 abstract class Repository
 {
@@ -102,6 +103,9 @@ abstract class Repository
      * @param UnitOfWork $unitOfWork
      * @param SerializerFactoryInterface $serializerFactory
      *
+     * @throws Driver\Exception
+     * @throws \Exception
+     *
      * @internal
      */
     public function __construct(
@@ -131,7 +135,8 @@ abstract class Repository
                     'Metadata not found for ' . $class
                     . ', you probably forgot to call MetadataRepository::batchLoadMetadata'
                 );
-            }
+            },
+            $connectionPool
         );
         $this->connection = $this->metadata->getConnection($connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);

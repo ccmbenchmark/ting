@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Driver;
 
 class MetadataRepository
 {
@@ -104,19 +105,44 @@ class MetadataRepository
      * @param string $repositoryName
      * @param \Closure $callbackFound Called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown entity - no parameter
+     * @param ConnectionPool|null $connectionPool Used to Validate metadata
+     *
+     * @throws Exception
+     * @throws Driver\Exception
      *
      * @internal
      */
     public function findMetadataForRepository(
         $repositoryName,
         \Closure $callbackFound,
-        \Closure $callbackNotFound = null
+        \Closure $callbackNotFound = null,
+        ConnectionPool $connectionPool = null
     ) {
         if (isset($this->metadataList[$repositoryName]) === true) {
             $callbackFound($this->metadataList[$repositoryName]);
+            if ($connectionPool !== null) {
+                $this->validateMetadataForConnection($this->metadataList[$repositoryName], $connectionPool);
+            }
         } elseif ($callbackNotFound !== null) {
             $callbackNotFound();
         }
+    }
+
+    /**
+     * @param Metadata       $metadata
+     * @param ConnectionPool $connectionPool
+     *
+     * @throws Exception
+     * @throws Driver\Exception
+     */
+    private function validateMetadataForConnection(Metadata $metadata, ConnectionPool $connectionPool)
+    {
+        $driverClassName = $connectionPool->getDriverClass($metadata->getConnectionName());
+        if (method_exists($driverClassName, 'validateMetadata') === false) {
+            return;
+        }
+
+        call_user_func($driverClassName . '::validateMetadata', $metadata);
     }
 
     /**
