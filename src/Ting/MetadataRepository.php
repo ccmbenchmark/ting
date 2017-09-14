@@ -142,7 +142,7 @@ class MetadataRepository
             return;
         }
 
-        call_user_func($driverClassName . '::validateMetadata', $metadata);
+        $driverClassName::validateMetadata($metadata);
     }
 
     /**
