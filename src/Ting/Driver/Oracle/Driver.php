@@ -216,10 +216,17 @@ class Driver implements DriverInterface
         }
 
         if ($collection === null) {
-            return oci_fetch_object($this->statement);
+            return oci_fetch_array($this->statement);
         }
 
+        $result = new Result();
+        $result->setConnectionName($this->name);
+        $result->setDatabase($this->database);
+        $result->setResult(oci_fetch_array($this->statement));
+        $result->setQuery($sql);
+        $collection->set($result);
 
+        return $collection;
     }
 
     /**
