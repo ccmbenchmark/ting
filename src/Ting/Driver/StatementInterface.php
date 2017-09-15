@@ -31,10 +31,10 @@ interface StatementInterface
 {
 
     /**
-     * @param \mysqli_stmt|Object $driverStatement
-     * @param array               $paramsOrder
-     * @param string              $connectionName
-     * @param string              $database
+     * @param mixed  $driverStatement
+     * @param array  $paramsOrder
+     * @param string $connectionName
+     * @param string $database
      */
     public function __construct($driverStatement, array $paramsOrder, $connectionName, $database);
 

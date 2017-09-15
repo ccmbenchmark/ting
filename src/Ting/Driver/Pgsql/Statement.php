@@ -54,12 +54,10 @@ class Statement implements StatementInterface
     protected $logger = null;
 
     /**
-     * Statement constructor.
-     *
-     * @param \mysqli_stmt|Object $statementName
-     * @param array               $paramsOrder
-     * @param string              $connectionName
-     * @param string              $database
+     * @param mixed  $statementName
+     * @param array  $paramsOrder
+     * @param string $connectionName
+     * @param string $database
      */
     public function __construct($statementName, array $paramsOrder, $connectionName, $database)
     {
