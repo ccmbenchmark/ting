@@ -79,9 +79,7 @@ class UnitOfWork implements PropertyListenerInterface
             $entity->tingUUID = $this->generateUUID();
         }
 
-        if ($entity instanceof NotifyPropertyInterface) {
-            $entity->addPropertyListener($this);
-        }
+        $entity->addPropertyListener($this);
     }
 
     /**
@@ -268,6 +266,9 @@ class UnitOfWork implements PropertyListenerInterface
      * Save flagged new entities
      * Update flagged entities
      * Delete flagged entities
+     *
+     * @throws Exception
+     * @throws QueryException
      */
     public function process()
     {

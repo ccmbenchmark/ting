@@ -1,3 +1,7 @@
+3.4.1 (2017-09-19):
+    * Fix: entities management now applies early to composed entities
+    * Fix: Hydrate entities which does not implements NotifyPropertyInterface
+
 3.4.0 (2017-07-05):
     * New Feature: Auto increment value can be retrieved from a custom sequence name (Postgresql only)
 

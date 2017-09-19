@@ -510,7 +510,7 @@ class Repository extends atoum
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
-            __DIR__ . '/../../../fixtures/model/*Repository.php'
+            __DIR__ . '/../../../fixtures/model/BouhRepository.php'
         );
 
         $mockQuery        = new \mock\CCMBenchmark\Ting\Query\Query('', $mockConnection, $services->get('CollectionFactory'));

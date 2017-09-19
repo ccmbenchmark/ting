@@ -122,6 +122,6 @@ class City implements NotifyPropertyInterface
 
     public function countryIs(Country $country)
     {
-        $this->country = $country;
+        $this->country = clone $country;
     }
 }
