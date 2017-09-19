@@ -1,6 +1,6 @@
 3.4.X (2017-XX-XX):
-    * Fix entity late management when you use object composition (such as mapObjectTo) in hydrator
-    * Fix a wrong code that doesn't allow you to hydrate an entity without NotifyPropertyInterface
+    * Fix: entities management now applies early to composed entities
+    * Fix: Hydrate entities which does not implements NotifyPropertyInterface
 
 3.4.0 (2017-07-05):
     * New Feature: Auto increment value can be retrieved from a custom sequence name (Postgresql only)
