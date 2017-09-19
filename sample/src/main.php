@@ -81,7 +81,7 @@ from t_city_cit
 left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
 left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
 order by t_city_cit.cit_id, t_country_cou.cou_code, t_countrylanguage_col.cou_code
-limit 10"
+limit 7"
 );
 
 /**

@@ -169,26 +169,28 @@ class HydratorAggregator extends Hydrator
             }
         }
 
-        foreach ($aggregateSpl as $key => $ag) {
-            $source = $ag['source'];
-            $target = $ag['target'];
-            $targetReferenceName = $ag['target'] . '-' . $ag['targetIdentifier'];
-            unset($ag['source']);
-            unset($ag['sourceIdentifier']);
-            unset($ag['target']);
-            unset($ag['targetIdentifier']);
+        foreach ($this->config as $config) {
+            $targetReferenceName = null;
+            $ag = null;
+            foreach ($aggregateSpl as $key => $ag) {
+                $source = $ag['source'];
+                $target = $ag['target'];
+                $targetReferenceName = $ag['target'] . '-' . $ag['targetIdentifier'];
+                var_dump($source . " et " . $targetReferenceName);
+                unset($ag['source']);
+                unset($ag['sourceIdentifier']);
+                unset($ag['target']);
+                unset($ag['targetIdentifier']);
 
-            $config = null;
-            foreach ($this->config as $config) {
                 if ($config['target'] === $target && $config['source'] === $source) {
                     break;
                 }
             }
 
-            $references[$targetReferenceName]->{$config['targetSetter']}($ag);
+            if ($targetReferenceName !== null && $ag !== null) {
+                $references[$targetReferenceName]->{$config['targetSetter']}($ag);
+            }
         }
-
-        var_dump($references);
 
         foreach ($results as $result) {
             yield $this->finalizeAggregate($result);
