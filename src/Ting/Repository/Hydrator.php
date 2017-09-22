@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -38,6 +39,7 @@ class Hydrator implements HydratorInterface
     protected $objectDatabase     = [];
     protected $objectSchema       = [];
     protected $unserializeAliases = [];
+    protected $alreadyManaged     = [];
 
     /**
      * @var ResultInterface
@@ -293,6 +295,7 @@ class Hydrator implements HydratorInterface
 
             if (isset($this->mapAliases[$table]) === true) {
                 foreach ($this->mapAliases[$table] as $fromAndColumn) {
+                    $this->manageIfYouCan($result[0]->{$fromAndColumn[0]});
                     $entity->{$fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
                     unset($result[0]->{$fromAndColumn[0]});
                 }
@@ -301,15 +304,14 @@ class Hydrator implements HydratorInterface
             if (isset($this->mapObjects[$table]) === true) {
                 foreach ($this->mapObjects[$table] as $fromAndColumn) {
                     if (isset($result[$fromAndColumn[0]]) === true) {
+                        $this->manageIfYouCan($result[$fromAndColumn[0]]);
                         $entity->{$fromAndColumn[1]}($result[$fromAndColumn[0]]);
                         unset($result[$fromAndColumn[0]]);
                     }
                 }
             }
 
-            if (is_object($entity) === true && ($entity instanceof \stdClass) === false) {
-                $this->unitOfWork->manage($entity);
-            }
+            $this->manageIfYouCan($entity);
         }
 
         if (isset($result[0]) === true && get_object_vars($result[0]) === []) {
@@ -317,5 +319,19 @@ class Hydrator implements HydratorInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @param mixed $entity
+     */
+    private function manageIfYouCan($entity)
+    {
+        if (is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true) {
+            if (isset($entity->tingUUID) === true && isset($this->alreadyManaged[$entity->tingUUID]) === true) {
+                return;
+            }
+            $this->unitOfWork->manage($entity);
+            $this->alreadyManaged[$entity->tingUUID] = true;
+        }
     }
 }
