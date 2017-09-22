@@ -24,14 +24,8 @@
 
 namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-
-class Bouh implements NotifyPropertyInterface
+class BouhReadOnly
 {
-
-    use NotifyProperty;
-
     protected $id        = null;
     protected $firstname = null;
     protected $name      = null;
@@ -44,37 +38,31 @@ class Bouh implements NotifyPropertyInterface
 
     public function setId($id)
     {
-        $this->propertyChanged('id', $this->id, $id);
         $this->id = $id;
     }
 
     public function setFirstname($firstname)
     {
-        $this->propertyChanged('firstname', $this->firstname, $firstname);
         $this->firstname = $firstname;
     }
 
     public function setName($name)
     {
-        $this->propertyChanged('name', $this->name, $name);
         $this->name = (string) $name;
     }
 
     public function setRoles(array $roles)
     {
-        $this->propertyChanged('roles', $this->roles, $roles);
         $this->roles = $roles;
     }
 
     public function setEnabled($enabled)
     {
-        $this->propertyChanged('enabled', $this->enabled, $enabled);
         $this->enabled = $enabled;
     }
 
     public function setPrice($price)
     {
-        $this->propertyChanged('price', $this->price, $price);
         $this->price = $price;
     }
 
