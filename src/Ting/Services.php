@@ -25,7 +25,6 @@
 namespace CCMBenchmark\Ting;
 
 use Pimple\Container;
-use Doctrine\Common\Cache\MemcachedCache;
 
 class Services implements ContainerInterface
 {
@@ -135,32 +134,7 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Cache',
             function () {
-                // If no option specified, just return a simple Memcached object.
-                if (isset($this->serviceOptions['Cache']) === true) {
-                    if (isset($this->serviceOptions['Cache']['persistent_id']) === true) {
-                        $persistentId = $this->serviceOptions['Cache']['persistent_id'];
-                    } else {
-                        $persistentId = null;
-                    }
-                    $memcached = new \Memcached($persistentId);
-
-                    if (isset($this->serviceOptions['Cache']['options']) === true
-                        && is_array($this->serviceOptions['Cache']['options']) === true) {
-                        $memcached->setOptions($this->serviceOptions['Cache']['options']);
-                    }
-
-                    if (isset($this->serviceOptions['Cache']['servers']) === true
-                        && is_array($this->serviceOptions['Cache']['servers']) === true
-                        && $this->serviceOptions['Cache']['servers'] !== []) {
-                        $memcached->addServers($this->serviceOptions['Cache']['servers']);
-                    }
-                } else {
-                    $memcached = new \Memcached();
-                }
-
-                $memcachedCache = new MemcachedCache();
-                $memcachedCache->setMemcached($memcached);
-                return $memcachedCache;
+                return new Cache\Cache();
             }
         );
     }
