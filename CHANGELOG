@@ -1,3 +1,6 @@
+3.4.X (2017-09-26):
+    * Fix: service cache definition was wrong
+
 3.4.1 (2017-09-19):
     * Fix: entities management now applies early to composed entities
     * Fix: Hydrate entities which does not implements NotifyPropertyInterface

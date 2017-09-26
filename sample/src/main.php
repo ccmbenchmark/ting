@@ -31,6 +31,7 @@ use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\HydratorSingleObject;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
+use Doctrine\Common\Cache\MemcachedCache;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -72,24 +73,25 @@ $connections = [
         ]
     ]
 ];
-$memcached = [
-    'servers' => [
-        ['host' => '127.0.0.1', 'port' => 11211]
-    ],
-    'options' => [
+
+$services->get('ConnectionPool')->setConfig($connections);
+
+$memcached = new \Memcached('ting.test');
+$memcached->addServer('127.0.0.1', 11211);
+$memcached->setOptions(
+    [
         \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
         //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
         \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
         \Memcached::OPT_PREFIX_KEY           => 'sample-'
-    ],
-    'persistent_id' => 'ting.test'
-];
+    ]
+);
+$memcachedCache = new MemcachedCache();
+$memcachedCache->setMemcached($memcached);
 
-$services->get('ConnectionPool')->setConfig($connections);
-
-$services->get('Cache')->setConfig($memcached);
-$services->get('Cache')->store('key', 'storedInCacheValue', 10);
-echo 'Test cache : ' . $services->get('Cache')->get('key') . "\n";
+$services->get('Cache')->setCache($memcachedCache);
+$services->get('Cache')->save('key', 'storedInCacheValue', 10);
+echo 'Test cache : ' . $services->get('Cache')->fetch('key') . "\n";
 
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
@@ -134,7 +136,7 @@ $queryCached->setTtl(10)->setCacheKey('cityFRA');
 $collection = $queryCached->setParams(['code' => 'FRA'])->query();
 echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";
 foreach ($collection as $result) {
-    var_dump($result);
+    var_dump($result['c']->getName());
     echo str_repeat("-", 40) . "\n";
 }
 
