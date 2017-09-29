@@ -230,15 +230,80 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param string $sql
+     * @param string $originalSQL
      *
      * @return StatementInterface
      *
      * @throws QueryException
      */
-    public function prepare($sql)
+    public function prepare($originalSQL)
     {
+        $statementName = sha1($originalSQL);
 
+        list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
+
+        if (isset($this->preparedQueries[$statementName]) === true) {
+            return $this->preparedQueries[$statementName];
+        }
+
+        $statement = new Statement($statementName, $paramsOrder, $this->name, $this->database);
+
+        if ($this->logger !== null) {
+            $this->logger->startPrepare($originalSQL, $this->objectHash, $this->database);
+            $statement->setLogger($this->logger);
+        }
+
+        $result = pg_prepare($this->connection, $statementName, $sql);
+        if ($this->logger !== null) {
+            $this->logger->stopPrepare($statementName);
+        }
+
+        if ($result === false) {
+            $this->ifIsError(function () use ($sql) {
+                $error = oci_error($this->connection);
+                throw new QueryException($error['message'] . ' (Query: ' . $error['sqltext'] . ')', $error['code']);
+            });
+        }
+
+        $statement
+            ->setConnection($this->connection)
+            ->setQuery($sql);
+
+        $this->preparedQueries[$statementName] = $statement;
+
+        return $statement;
+    }
+
+    /**
+     * @param $sql
+     * @return array
+     */
+    private function convertParameters($sql)
+    {
+        $i           = 1;
+        $paramsOrder = [];
+
+        /**
+         * Match : values (:name)
+         * Don't match : values (\:name)
+         * Don't match : HH:MI:SS
+         * Don't match : ::string
+         */
+        $sql = preg_replace_callback(
+            '/(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)/',
+            function ($match) use (&$i, &$paramsOrder) {
+                if (isset($paramsOrder[$match[1]]) === false) {
+                    $paramsOrder[$match[1]] = $i++;
+                }
+
+                return '$' . $paramsOrder[$match[1]];
+            },
+            $sql
+        );
+
+        $sql = str_replace('\:', ':', $sql);
+
+        return [$sql, $paramsOrder];
     }
 
     /**
