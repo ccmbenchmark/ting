@@ -180,12 +180,15 @@ class Driver implements DriverInterface
      */
     public function execute($sql, array $params = [], CollectionInterface $collection = null)
     {
-        preg_match_all('/' . $this->parameterMatching . '/', $sql, $matches);
-        foreach ($matches as $match) {
-            if (array_key_exists($match, $params) === false) {
-                throw new QueryException('Value has not been setted for param ' . $match);
-            }
-        }
+        preg_replace_callback(
+            '/' . $this->parameterMatching . '/',
+            function ($match) use ($params) {
+                if (array_key_exists($match[1], $params) === false) {
+                    throw new QueryException('Value has not been setted for param ' . $match[1]);
+                }
+            },
+            $sql
+        );
 
         if ($this->logger !== null) {
             $this->logger->startQuery($sql, $params, $this->objectHash, $this->database);
@@ -194,7 +197,13 @@ class Driver implements DriverInterface
         $this->statement = oci_parse($this->connection, $sql);
 
         foreach ($params as $key => $value) {
-            oci_bind_by_name($this->statement, ':' . $key, $value);
+            $valueType = gettype($value);
+            $type = SQLT_CHR;
+            if ($valueType === 'integer') {
+                $type = SQLT_INT;
+            }
+
+            oci_bind_by_name($this->statement, ':' . $key, $value, -1, $type);
         }
 
         $result = oci_execute(
@@ -207,7 +216,7 @@ class Driver implements DriverInterface
         }
 
         if ($result === false) {
-            $error = oci_error($this->connection);
+            $error = oci_error($this->statement);
             throw new QueryException($error['message'] . ' (Query: ' . $error['sqltext'] . ')', $error['code']);
         }
 
@@ -216,7 +225,10 @@ class Driver implements DriverInterface
         }
 
         if ($collection === null) {
-            return oci_fetch_array($this->statement);
+            while ($row = oci_fetch_array($this->statement, OCI_ASSOC+OCI_RETURN_NULLS)) {
+                yield $row;
+            }
+            return true;
         }
 
         $result = new Result();
@@ -260,7 +272,7 @@ class Driver implements DriverInterface
 
         if ($result === false) {
             $this->ifIsError(function () use ($sql) {
-                $error = oci_error($this->connection);
+                $error = oci_error($this->statement);
                 throw new QueryException($error['message'] . ' (Query: ' . $error['sqltext'] . ')', $error['code']);
             });
         }
@@ -318,7 +330,7 @@ class Driver implements DriverInterface
     public function setDatabase($database)
     {
         $database = (string) $database;
-        if ($database === '' || $this->connection === null) {
+        if ($database === '' || $this->connection !== null) {
             return $this;
         }
 
