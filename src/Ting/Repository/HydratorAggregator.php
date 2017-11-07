@@ -137,7 +137,6 @@ class HydratorAggregator extends Hydrator
                     $targetIdentifier = $result[$config['target']]->{$config['targetIdentifier']}();
 
                     $aggregate[$key]['source'] = $config['source'];
-                    $aggregate[$key]['sourceIdentifier'] = $sourceIdentifier;
                     $aggregate[$key]['target'] = $config['target'];
                     $aggregate[$key]['targetIdentifier'] = $targetIdentifier;
                     $aggregate[$key][$sourceIdentifier] = $result[$config['source']];
@@ -169,25 +168,22 @@ class HydratorAggregator extends Hydrator
             }
         }
 
-        foreach ($this->config as $config) {
-            $targetReferenceName = null;
-            $ag = null;
-            foreach ($aggregateSpl as $key => $ag) {
-                $source = $ag['source'];
-                $target = $ag['target'];
-                $targetReferenceName = $ag['target'] . '-' . $ag['targetIdentifier'];
-                var_dump($source . " et " . $targetReferenceName);
-                unset($ag['source']);
-                unset($ag['sourceIdentifier']);
-                unset($ag['target']);
-                unset($ag['targetIdentifier']);
+        foreach ($aggregateSpl as $key => $ag) {
+            $source = $ag['source'];
+            $target = $ag['target'];
+            $targetReferenceName = $ag['target'] . '-' . $ag['targetIdentifier'];
+            $config = null;
 
+            foreach ($this->config as $config) {
                 if ($config['target'] === $target && $config['source'] === $source) {
                     break;
                 }
             }
 
-            if ($targetReferenceName !== null && $ag !== null) {
+            if ($config !== null && $ag !== null) {
+                unset($ag['source']);
+                unset($ag['target']);
+                unset($ag['targetIdentifier']);
                 $references[$targetReferenceName]->{$config['targetSetter']}($ag);
             }
         }
