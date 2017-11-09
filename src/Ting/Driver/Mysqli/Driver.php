@@ -158,6 +158,7 @@ class Driver implements DriverInterface
         try {
             $this->connected = $this->connection->real_connect($hostname, $username, $password, null, $port);
         } catch (\Exception $e) {
+            var_dump($e);
             throw new Exception('Connect Error: ' . $e->getMessage(), $e->getCode());
         }
 

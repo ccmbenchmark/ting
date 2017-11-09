@@ -22,26 +22,49 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace sample\src\doctrineEntity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use sample\src\model\CountryLanguage;
 
-class Country implements NotifyPropertyInterface
+/**
+ * @Entity @Table(name="t_country_cou")
+ **/
+class Country
 {
-
-    use NotifyProperty;
-
+    /** @Id @Column(type="string", name="cou_code") **/
     protected $code      = null;
+
+    /** @Column(type="string", name="cou_name") **/
     protected $name      = null;
+
+    /** @Column(type="string", name="cou_continent") **/
     protected $continent = null;
+
+    /** @Column(type="string", name="cou_region") **/
     protected $region    = null;
+
+    /** @Column(type="string", name="cou_head_of_state") **/
     protected $president = null;
+
+    /**
+     * @OneToMany(targetEntity="CountryLanguage", mappedBy="country", fetch="EAGER")
+     * @var CountryLanguage
+     **/
     protected $countryLanguages = [];
+
+    /**
+     * @OneToMany(targetEntity="City", mappedBy="country", fetch="EAGER")
+     */
+    private $cities;
+
+    public function __construct()
+    {
+        $this->cities = new ArrayCollection();
+        $this->countryLanguages = new ArrayCollection();
+    }
 
     public function setCode($code)
     {
-        $this->propertyChanged('code', $this->code, $code);
         $this->code = (string) $code;
     }
 
@@ -52,24 +75,16 @@ class Country implements NotifyPropertyInterface
 
     public function setName($name)
     {
-        $this->propertyChanged('name', $this->name, $name);
         $this->name = (string) $name;
     }
 
-    public function getName($withUUID = false)
+    public function getName()
     {
-        $append = '';
-
-        if ($withUUID === true) {
-            $append = " (" . $this->tingUUID . ")";
-        }
-
-        return (string) $this->name . $append;
+        return (string) $this->name;
     }
 
     public function setContinent($continent)
     {
-        $this->propertyChanged('continent', $this->continent, $continent);
         $this->continent = (string) $continent;
     }
 
@@ -80,7 +95,6 @@ class Country implements NotifyPropertyInterface
 
     public function setRegion($region)
     {
-        $this->propertyChanged('region', $this->region, $region);
         $this->region = (string) $region;
     }
 
@@ -91,7 +105,6 @@ class Country implements NotifyPropertyInterface
 
     public function setPresident($president)
     {
-        $this->propertyChanged('president', $this->president, $president);
         $this->president = (string) $president;
     }
 

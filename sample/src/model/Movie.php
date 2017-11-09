@@ -54,15 +54,19 @@ class Movie implements NotifyPropertyInterface
         $this->name = (string) $name;
     }
 
-    public function getName()
+    public function getName($withUUID = false)
     {
-        return (string) $this->name;
+        $append = '';
+
+        if ($withUUID === true) {
+            $append = " (" . $this->tingUUID . ")";
+        }
+
+        return (string) $this->name . $append;
     }
 
     public function actorsAre(array $actors)
     {
-        echo "## movie " . utf8_encode($this->getName()) . "\n";
-        echo "movie->actorsAre()\n";
         foreach ($actors as $actor) {
             $this->actors[] = clone $actor;
         }

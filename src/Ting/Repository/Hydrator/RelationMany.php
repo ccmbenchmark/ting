@@ -22,26 +22,9 @@
  *
  **********************************************************************/
 
-namespace sample\src\doctrineEntity;
+namespace CCMBenchmark\Ting\Repository\Hydrator;
 
-/**
- * @Entity @Table(name="actor")
- **/
-class Actor
+class RelationMany extends Relation
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
-    protected $id   = null;
 
-    /** @Column(type="string") **/
-    protected $name = null;
-
-    public function getId()
-    {
-        return (int) $this->id;
-    }
-
-    public function getName()
-    {
-        return (string) $this->name;
-    }
 }

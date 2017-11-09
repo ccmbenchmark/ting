@@ -22,37 +22,42 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace sample\src\doctrineEntity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-
-
-class Producer implements NotifyPropertyInterface
+/**
+ * @Entity @Table(name="producer")
+ **/
+class Producer
 {
-
-    use NotifyProperty;
-
+    /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id          = null;
-    protected $name        = null;
-    protected $movies      = [];
-    protected $workers     = [];
 
-    public function setId($id)
-    {
-        $this->propertyChanged('id', $this->id, $id);
-        $this->id = (int) $id;
-    }
+    /** @Column(type="string") **/
+    protected $name        = null;
+
+    /**
+     * @ManyToMany(targetEntity="Movie", fetch="EAGER")
+     * @JoinTable(name="produce_movie",
+     *     joinColumns={@JoinColumn(name="producer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@JoinColumn(name="movie_id", referencedColumnName="id")}
+     *     )
+     * @var Actor[] An ArrayCollection of Actor objects.
+     **/
+    protected $movies      = [];
+
+    /**
+     * @ManyToMany(targetEntity="Worker", fetch="EAGER")
+     * @JoinTable(name="work_for_producer",
+     *     joinColumns={@JoinColumn(name="producer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@JoinColumn(name="worker_id", referencedColumnName="id")}
+     *     )
+     * @var Actor[] An ArrayCollection of Actor objects.
+     **/
+    protected $workers     = [];
 
     public function getId()
     {
         return (int) $this->id;
-    }
-
-    public function setName($name)
-    {
-        $this->propertyChanged('name', $this->name, $name);
-        $this->name = (string) $name;
     }
 
     public function getName()
@@ -60,24 +65,9 @@ class Producer implements NotifyPropertyInterface
         return (string) $this->name;
     }
 
-    public function moviesAre(array $movies)
-    {
-        echo "producer->moviesAre()\n";
-        foreach ($movies as $movie) {
-            echo "movie " . utf8_encode($movie->getName()) . " have " . count($movie->getActors()) . " actors\n";
-            $this->movies[] = clone $movie;
-        }
-    }
-
     public function getMovies()
     {
         return $this->movies;
-    }
-    public function workersAre(array $workers)
-    {
-        foreach ($workers as $worker) {
-            $this->workers[] = clone $worker;
-        }
     }
 
     public function getWorkers()

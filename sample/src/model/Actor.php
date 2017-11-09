@@ -54,8 +54,14 @@ class Actor implements NotifyPropertyInterface
         $this->name = (string) $name;
     }
 
-    public function getName()
+    public function getName($withUUID = false)
     {
-        return (string) $this->name;
+        $append = '';
+
+        if ($withUUID === true) {
+            $append = " (" . $this->tingUUID . ")";
+        }
+
+        return (string) $this->name . $append;
     }
 }

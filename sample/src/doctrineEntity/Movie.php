@@ -22,50 +22,37 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace sample\src\doctrineEntity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-
-
-class Movie implements NotifyPropertyInterface
+/**
+ * @Entity @Table(name="movie")
+ **/
+class Movie
 {
-
-    use NotifyProperty;
-
+    /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id          = null;
-    protected $name        = null;
-    protected $actors      = null;
 
-    public function setId($id)
-    {
-        $this->propertyChanged('id', $this->id, $id);
-        $this->id = (int) $id;
-    }
+    /** @Column(type="string") **/
+    protected $name        = null;
+
+    /**
+     * @ManyToMany(targetEntity="Actor", fetch="EAGER")
+     * @JoinTable(name="actor_in_movie",
+     *     joinColumns={@JoinColumn(name="movie_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@JoinColumn(name="actor_id", referencedColumnName="id")}
+     *     )
+     * @var Actor[] An ArrayCollection of Actor objects.
+     **/
+    protected $actors      = null;
 
     public function getId()
     {
         return (int) $this->id;
     }
 
-    public function setName($name)
-    {
-        $this->propertyChanged('name', $this->name, $name);
-        $this->name = (string) $name;
-    }
-
     public function getName()
     {
         return (string) $this->name;
-    }
-
-    public function actorsAre(array $actors)
-    {
-        echo "## movie " . utf8_encode($this->getName()) . "\n";
-        echo "movie->actorsAre()\n";
-        foreach ($actors as $actor) {
-            $this->actors[] = clone $actor;
-        }
     }
 
     public function getActors()

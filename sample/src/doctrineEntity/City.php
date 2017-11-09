@@ -22,28 +22,42 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace sample\src\doctrineEntity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use sample\src\model\Country;
 
-
-class City implements NotifyPropertyInterface
+/**
+ * @Entity @Table(name="t_city_cit")
+ **/
+class City
 {
-
-    use NotifyProperty;
-
+    /** @Id @Column(type="integer", name="cit_id") @GeneratedValue **/
     protected $id          = null;
+
+    /** @Column(type="string", name="cit_name") **/
     protected $name        = null;
+
+    /** @Column(type="string", name="cou_code") **/
     protected $countryCode = null;
+
+    /** @Column(type="string", name="cit_district") **/
     protected $district    = null;
+
+    /** @Column(type="string", name="cit_population") **/
     protected $population  = null;
+
+    /** @Column(type="datetime", name="last_modified") **/
     protected $dt          = null;
+
+    /**
+     * @ManyToOne(targetEntity="Country", inversedBy="cities", fetch="EAGER")
+     * @JoinColumn(name="cou_code", referencedColumnName="cou_code")
+     * @var Country
+     **/
     protected $country     = null;
 
     public function setId($id)
     {
-        $this->propertyChanged('id', $this->id, $id);
         $this->id = (int) $id;
     }
 
@@ -54,24 +68,16 @@ class City implements NotifyPropertyInterface
 
     public function setName($name)
     {
-        $this->propertyChanged('name', $this->name, $name);
         $this->name = (string) $name;
     }
 
-    public function getName($withUUID = false)
+    public function getName()
     {
-        $append = '';
-
-        if ($withUUID === true) {
-            $append = " (" . $this->tingUUID . ")";
-        }
-
-        return (string) $this->name . $append;
+        return (string) $this->name;
     }
 
     public function setCountryCode($countryCode)
     {
-        $this->propertyChanged('countryCode', $this->countryCode, $countryCode);
         $this->countryCode = (string) $countryCode;
     }
 
@@ -82,7 +88,6 @@ class City implements NotifyPropertyInterface
 
     public function setDistrict($district)
     {
-        $this->propertyChanged('district', $this->district, $district);
         $this->district = (string) $district;
     }
 
@@ -93,7 +98,6 @@ class City implements NotifyPropertyInterface
 
     public function setPopulation($population)
     {
-        $this->propertyChanged('population', $this->population, $population);
         $this->population = (int) $population;
     }
 
@@ -104,7 +108,6 @@ class City implements NotifyPropertyInterface
 
     public function setDt(\DateTime $dt = null)
     {
-        $this->propertyChanged('dt', $this->dt, $dt);
         $this->dt = $dt;
     }
 
@@ -127,9 +130,8 @@ class City implements NotifyPropertyInterface
         $this->broum = $value;
     }
 
-    public function countryIs(Country $country)
+    public function countryIs(array $country)
     {
-        //$country = reset($country);
         $this->country = $country;
     }
 

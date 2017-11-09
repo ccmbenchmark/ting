@@ -22,24 +22,33 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace sample\src\doctrineEntity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-
-class CountryLanguage implements NotifyPropertyInterface
+/**
+ * @Entity @Table(name="t_countrylanguage_col")
+ **/
+class CountryLanguage
 {
-
-    use NotifyProperty;
-
+    /** @Id @Column(type="string", name="cou_code") **/
     protected $code       = null;
+
+    /** @Id @Column(type="string", name="col_language") **/
     protected $language   = null;
+
+    /** @Column(type="string", name="col_is_official") **/
     protected $isOfficial = null;
+
+    /** @Column(type="string", name="col_percentage") **/
     protected $percentage = null;
+
+    /**
+     * @ManyToOne(targetEntity="Country", inversedBy="countryLanguages", fetch="EAGER")
+     * @JoinColumn(name="cou_code", referencedColumnName="cou_code")
+     */
+    private $country;
 
     public function setCode($code)
     {
-        $this->propertyChanged('code', $this->code, $code);
         $this->code = (string) $code;
     }
 
@@ -50,24 +59,16 @@ class CountryLanguage implements NotifyPropertyInterface
 
     public function setLanguage($language)
     {
-        $this->propertyChanged('language', $this->language, $language);
         $this->language = (string) $language;
     }
 
-    public function getLanguage($withUUID = false)
+    public function getLanguage()
     {
-        $append = '';
-
-        if ($withUUID === true) {
-            $append = " (" . $this->tingUUID . ")";
-        }
-
-        return (string) $this->language . $append;
+        return (string) $this->language;
     }
 
     public function setIsOfficial($isOfficial)
     {
-        $this->propertyChanged('isOfficial', $this->isOfficial, $isOfficial);
         $this->isOfficial = (string) $isOfficial;
     }
 
@@ -78,7 +79,6 @@ class CountryLanguage implements NotifyPropertyInterface
 
     public function setPercentage($percentage)
     {
-        $this->propertyChanged('percentage', $this->percentage, $percentage);
         $this->percentage = (string) $percentage;
     }
 

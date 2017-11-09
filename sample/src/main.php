@@ -52,7 +52,7 @@ $connections = [
     'main' => [
         'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
         'master' => [
-            'host'      => 'localhost',
+            'host'      => '127.0.0.1',
             'user'      => 'root',
             'password'  => 'p455w0rd',
             'port'      => 3306,
@@ -77,7 +77,6 @@ producer :
 */
 
 
-/*
 
 
 $query = $cityRepository->getQuery(
@@ -85,31 +84,31 @@ $query = $cityRepository->getQuery(
 from t_city_cit
 left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
 left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
-order by t_city_cit.cit_id, t_country_cou.cou_code, t_countrylanguage_col.cou_code
-limit 7"
+"
 );
 
-$hydrator = $services->get('HydratorAggregator');
-$hydrator->aggregate('t_countrylanguage_col', 'getCode', 't_country_cou', 'getCode', 'countryLanguagesAre');
-$hydrator->aggregate('t_country_cou', 'getCode', 't_city_cit', 'getId', 'countryIs');
+$hydrator = $services->get('HydratorRelational');
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('t_countrylanguage_col', 'getLanguage')->to('t_country_cou', 'getCode')->setter('countryLanguagesAre'));
+$hydrator->addRelation((new Hydrator\RelationOne())->aggregate('t_country_cou', 'getCode')->to('t_city_cit', 'getId')->setter('countryIs'));
 $hydrator->callableFinalizeAggregate(function ($result) {
     return $result['t_city_cit'];
 });
 
+$withUUID = false;
+
 $collection = $query->query(new Collection($hydrator));
 foreach ($collection as $city) {
-    echo "City: " . $city->getName() . " (" . $city->tingUUID . ")" . "\n";
+    echo "City: " . $city->getName($withUUID) . "\n";
     $country = $city->getCountry();
-    echo "\tCountry: " . $country->getName() . " (" . $country->tingUUID . ")" . "\n";
+    echo "\tCountry: " . $country->getName($withUUID) . "\n";
     $countryLanguages = $country->getCountryLanguages();
     foreach ($countryLanguages as $countryLanguage) {
-        echo "\t\tLanguage: " . $countryLanguage->getName() . " (" . $countryLanguage->tingUUID . ")" . "\n";
+        echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
     }
-    die;
     echo str_repeat("-", 40) . "\n";
 }
 die;
-*/
+
 
 
 $query = $cityRepository->getQuery(
@@ -130,7 +129,7 @@ left join actor on actor.id = actor_in_movie.actor_id"
  */
 
 
-$hydrator = $services->get('HydratorAggregator');
+$hydrator = $services->get('HydratorRelational');
 $hydrator->aggregate('worker', 'getId', 'producer', 'getId', 'workersAre');
 $hydrator->aggregate('movie', 'getId', 'producer', 'getId', 'moviesAre');
 $hydrator->aggregate('actor', 'getId', 'movie', 'getId', 'actorsAre');
@@ -141,21 +140,17 @@ $hydrator->callableFinalizeAggregate(function ($result) {
 $collection = $query->query(new Collection($hydrator));
 
 foreach ($collection as $producer) {
-//    $producer = $result['producer'];
-    echo "Producer: " . $producer->getName() . " (" . $producer->tingUUID . ")" . "\n";
+    echo "Producer: " . $producer->getName() . "\n";
     $workers = $producer->getWorkers();
     foreach ($workers as $worker) {
-        echo "\tWorker: " . $worker->getName() . " (" . $worker->tingUUID . ")" . "\n";
+        echo "\tWorker: " . $worker->getName() . "\n";
     }
     $movies = $producer->getMovies();
     foreach ($movies as $movie) {
-        echo "\tMovie: " . utf8_encode($movie->getName()) . " (" . $movie->tingUUID . ")" . "\n";
+        echo "\tMovie: " . utf8_encode($movie->getName()) . "\n";
         $actors = $movie->getActors();
-        if (is_array($actors) === false) {
-            var_dump($actors);
-        }
         foreach ($actors as $actor) {
-            echo "\t\tActor: " . $actor->getName() . " (" . $actor->tingUUID . ")"  . "\n";
+            echo "\t\tActor: " . $actor->getName() . "\n";
         }
     }
     echo str_repeat("-", 40) . "\n";

@@ -22,36 +22,22 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace sample\src\doctrineEntity;
 
-use CCMBenchmark\Ting\Entity\NotifyProperty;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-
-
-class Worker implements NotifyPropertyInterface
+/**
+ * @Entity @Table(name="worker")
+ **/
+class Worker
 {
-
-    use NotifyProperty;
-
+    /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id          = null;
+
+    /** @Column(type="string") **/
     protected $name        = null;
-
-
-    public function setId($id)
-    {
-        $this->propertyChanged('id', $this->id, $id);
-        $this->id = (int) $id;
-    }
 
     public function getId()
     {
         return (int) $this->id;
-    }
-
-    public function setName($name)
-    {
-        $this->propertyChanged('name', $this->name, $name);
-        $this->name = (string) $name;
     }
 
     public function getName()

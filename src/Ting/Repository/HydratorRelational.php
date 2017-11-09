@@ -24,10 +24,12 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Repository\Hydrator\Relation;
+use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 use CCMBenchmark\Ting\Serializer\RuntimeException;
 use SplDoublyLinkedList;
 
-class HydratorAggregator extends Hydrator
+class HydratorRelational extends Hydrator
 {
     /**
      * @var callable
@@ -84,14 +86,15 @@ class HydratorAggregator extends Hydrator
         return $this;
     }
 
-    public function aggregate($source, $sourceIdentifier, $target, $targetIdentifier, $targetSetter)
+    public function addRelation(Relation $relation)
     {
         $this->config->push([
-            'source' => $source,
-            'sourceIdentifier' => $sourceIdentifier,
-            'target' => $target,
-            'targetIdentifier' => $targetIdentifier,
-            'targetSetter' => $targetSetter
+            'source' => $relation->getSource(),
+            'sourceIdentifier' => $relation->getSourceIdentifier(),
+            'target' => $relation->getTarget(),
+            'targetIdentifier' => $relation->getTargetIdentifier(),
+            'targetSetter' => $relation->getSetter(),
+            'many' => $relation instanceof RelationMany
         ]);
     }
 
@@ -111,14 +114,11 @@ class HydratorAggregator extends Hydrator
             }
         }
 
-        $aggregate = [];
-        $result = null;
         $references = [];
         $results = [];
-
         $ressources = [];
 
-        foreach ($this->result as $key => $columns) {
+        foreach ($this->result as $columns) {
             $result = $this->hydrateColumns(
                 $this->result->getConnectionName(),
                 $this->result->getDatabase(),
@@ -126,60 +126,49 @@ class HydratorAggregator extends Hydrator
             );
 
             foreach ($this->config as $config) {
+                $keyTarget = $config['target'] . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
+
+                if (isset($references[$keyTarget]) === false) {
+                    $references[$keyTarget] = $result[$config['target']];
+                }
+
                 if (isset($result[$config['source']]) === true) {
-                    $key = $config['target'] . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
-                    if (isset($ressources[$key][$config['targetSetter']]) === false) {
-                        $ressources[$key][$config['targetSetter']] = [];
+                    $keySource = $config['source'] . '-' . $result[$config['source']]->{$config['sourceIdentifier']}();
+
+                    if (isset($references[$keySource]) === false) {
+                        $references[$keySource] = $result[$config['source']];
                     }
 
-                    $ressources[$key][$config['targetSetter']][$result[$config['source']]->{$config['sourceIdentifier']}()] = $result[$config['source']];
+                    if (isset($ressources[$keyTarget][$config['targetSetter']]) === false) {
+                        $ressources[$keyTarget][$config['targetSetter']] = [];
+                    }
 
-                    if (isset($references[$key]) === false) {
-                        $references[$key] = $result[$config['target']];
+                    if ($config['many'] === true) {
+                        if (isset($ressources[$keyTarget][$config['targetSetter']][$result[$config['source']]->{$config['sourceIdentifier']}()]) === false) {
+                            $ressources[$keyTarget][$config['targetSetter']][$result[$config['source']]->{$config['sourceIdentifier']}()] = $references[$keySource];
+                        }
+                    } else {
+                        $ressources[$keyTarget][$config['targetSetter']] = $references[$keySource];
                     }
 
                     unset($result[$config['source']]);
                 }
             }
 
-            $results[$key] = $result;
-        }
-
-        foreach ($references as $reference) {
-            foreach ($this->config as $config) {
-                if ($config['target'] !== $subKey) {
-                    continue;
-                }
-
-                $ressourceKey = $subKey . '-' . $object->{$config['targetIdentifier']}();
-                if (isset($ressources[$ressourceKey]) === true) {
-                    foreach ($ressources[$ressourceKey] as $setter => $valuesToSet) {
-                        $object->$setter($valuesToSet);
-                    }
-                }
+            if (isset($results[$keyTarget]) === false) {
+                $results[$keyTarget] = $result;
             }
         }
 
-        foreach ($results as $key => &$result) {
-            foreach ($result as $subKey => $object) {
-                foreach ($this->config as $config) {
-                    if ($config['target'] !== $subKey) {
-                        continue;
-                    }
+        foreach ($references as $referenceKey => $reference) {
+            if (isset($ressources[$referenceKey]) === false) {
+                continue;
+            }
 
-                    $ressourceKey = $subKey . '-' .$object->{$config['targetIdentifier']}();
-                    if (isset($ressources[$ressourceKey]) === true) {
-                        foreach ($ressources[$ressourceKey] as $setter => $valuesToSet) {
-                            $object->$setter($valuesToSet);
-                        }
-                    }
-                }
+            foreach ($ressources[$referenceKey] as $setter => $valuesToSet) {
+                $reference->$setter($valuesToSet);
             }
         }
-
-
-
-        //var_dump($references);
 
         foreach ($results as $result) {
             yield $this->finalizeAggregate($result);

@@ -55,24 +55,31 @@ class Producer implements NotifyPropertyInterface
         $this->name = (string) $name;
     }
 
-    public function getName()
+    public function getName($withUUID = false)
     {
-        return (string) $this->name;
+        $append = '';
+
+        if ($withUUID === true) {
+            $append = " (" . $this->tingUUID . ")";
+        }
+
+        return (string) $this->name . $append;
     }
 
     public function moviesAre(array $movies)
     {
-        echo "producer->moviesAre()\n";
-        foreach ($movies as $movie) {
-            echo "movie " . utf8_encode($movie->getName()) . " have " . count($movie->getActors()) . " actors\n";
-            $this->movies[] = clone $movie;
-        }
+        $this->movies = $movies;
     }
 
     public function getMovies()
     {
         return $this->movies;
     }
+
+    /**
+     * @param Worker[] $workers
+     *
+     */
     public function workersAre(array $workers)
     {
         foreach ($workers as $worker) {
