@@ -23,8 +23,22 @@ $entityManager = EntityManager::create($conn, $config);
 $logger = new \Doctrine\DBAL\Logging\DebugStack();
 $entityManager->getConfiguration()->setSQLLogger($logger);
 
-$cityRepository = $entityManager->getRepository('\sample\src\doctrineEntity\City');
-$cities = $cityRepository->findAll();
+//$cityRepository = $entityManager->getRepository('\sample\src\doctrineEntity\City');
+//$cities = $cityRepository->findAll();
+
+$query = $entityManager->createQuery('
+SELECT c FROM \sample\src\doctrineEntity\City as c
+JOIN c.country as country
+JOIN country.countryLanguages
+');
+
+/*
+$query = $entityManager->createQuery('
+SELECT c FROM \sample\src\doctrineEntity\City as c
+');
+*/
+
+$cities = $query->getResult();
 
 foreach ($cities as $city) {
     echo "City: " . $city->getName() . "\n";
@@ -35,6 +49,11 @@ foreach ($cities as $city) {
         echo "\t\tLanguage: " . $countryLanguage->getLanguage() . "\n";
     }
     echo str_repeat("-", 40) . "\n";
+}
+
+echo count($logger->queries) . " requêtes\n";
+foreach ($logger->queries as $query) {
+    echo $query['sql'] . "\n";
 }
 die;
 

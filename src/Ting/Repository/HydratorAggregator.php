@@ -25,7 +25,6 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Serializer\RuntimeException;
-use SplDoublyLinkedList;
 
 class HydratorAggregator extends Hydrator
 {
@@ -43,16 +42,6 @@ class HydratorAggregator extends Hydrator
      * @var callable
      */
     protected $callableFinalizeAggregate;
-
-    /**
-     * @var SplDoublyLinkedList
-     */
-    protected $config;
-
-    public function __construct()
-    {
-        $this->config = new SplDoublyLinkedList();
-    }
 
     /**
      * @param callable $callableForId
@@ -84,37 +73,21 @@ class HydratorAggregator extends Hydrator
         return $this;
     }
 
-    public function aggregate($source, $sourceIdentifier, $target, $targetIdentifier, $targetSetter)
-    {
-        $this->config->push([
-            'source' => $source,
-            'sourceIdentifier' => $sourceIdentifier,
-            'target' => $target,
-            'targetIdentifier' => $targetIdentifier,
-            'targetSetter' => $targetSetter
-        ]);
-    }
-
     /**
      * @return \Generator
      */
     public function getIterator()
     {
-        $configAsArray = iterator_to_array($this->config);
-
-        foreach ($this->config as $index => $config) {
-            $dependencyIndex = array_search($config['target'], array_column($configAsArray, 'source'));
-
-            if ($dependencyIndex !== false && $dependencyIndex < $index) {
-                $this->config->offsetUnset($index);
-                $this->config->add($dependencyIndex, $config);
-            }
-        }
-
+        $knownIdentifiers = [];
+        $callableForId = $this->callableForId;
+        $callableForData = $this->callableForData;
+        $previousId = null;
+        $previousResult = null;
+        $previousKey = null;
+        $currentId = null;
         $aggregate = [];
+        $key = null;
         $result = null;
-        $references = [];
-        $results = [];
 
         foreach ($this->result as $key => $columns) {
             $result = $this->hydrateColumns(
@@ -123,88 +96,53 @@ class HydratorAggregator extends Hydrator
                 $columns
             );
 
-            $founds = [];
+            $currentId = $callableForId($result);
 
-            foreach ($this->config as $config) {
-                if (isset($result[$config['source']]) === true) {
-                    $references[$config['source'] . '-' . $result[$config['source']]->{$config['sourceIdentifier']}()] = $result[$config['source']];
-                    $founds[] = $config['source'];
-                    $key = '#ting#'
-                        . $config['source']
-                        . '-to-' . $config['target']
-                        . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
-                    $sourceIdentifier = $result[$config['source']]->{$config['sourceIdentifier']}();
-                    $targetIdentifier = $result[$config['target']]->{$config['targetIdentifier']}();
-
-                    $aggregate[$key]['source'] = $config['source'];
-                    $aggregate[$key]['target'] = $config['target'];
-                    $aggregate[$key]['targetIdentifier'] = $targetIdentifier;
-                    $aggregate[$key][$sourceIdentifier] = $result[$config['source']];
-                }
-
-                if (isset($result[$config['target']]) === true) {
-                    $references[$config['target'] . '-' . $result[$config['target']]->{$config['targetIdentifier']}()] = $result[$config['target']];
-                }
+            if (in_array($currentId, $knownIdentifiers, true) === true) {
+                continue;
             }
 
-            foreach ($founds as $found) {
-                unset($result[$found]);
+            if ($previousId === null) {
+                $previousId = $currentId;
+                $previousResult = $result;
+                $previousKey = $key;
             }
 
-            $results[$key] = $result;
-        }
+            if ($previousId === $currentId) {
+                $aggregate[] = $callableForData($result);
+            } else {
+                $previousResult = $this->finalizeAggregate($previousResult, $aggregate);
 
-        $aggregateSpl = new SplDoublyLinkedList();
-        foreach ($aggregate as $ag) {
-            $aggregateSpl->push($ag);
-        }
+                $knownIdentifiers[] = $previousId;
 
-        foreach ($aggregateSpl as $index => $ag) {
-            $dependencyIndex = array_search($ag['target'], array_column($aggregate, 'source'));
+                yield $previousKey => $previousResult;
 
-            if ($dependencyIndex !== false && $dependencyIndex < $index) {
-                $aggregateSpl->offsetUnset($index);
-                $aggregateSpl->add($dependencyIndex, $ag);
+                $aggregate = [$callableForData($result)];
+                $previousId = $currentId;
+                $previousResult = $result;
+                $previousKey = $key;
             }
         }
 
-        foreach ($aggregateSpl as $key => $ag) {
-            $source = $ag['source'];
-            $target = $ag['target'];
-            $targetReferenceName = $ag['target'] . '-' . $ag['targetIdentifier'];
-            $config = null;
-
-            foreach ($this->config as $config) {
-                if ($config['target'] === $target && $config['source'] === $source) {
-                    break;
-                }
-            }
-
-            if ($config !== null && $ag !== null) {
-                unset($ag['source']);
-                unset($ag['target']);
-                unset($ag['targetIdentifier']);
-                $references[$targetReferenceName]->{$config['targetSetter']}($ag);
-            }
-        }
-
-        foreach ($results as $result) {
-            yield $this->finalizeAggregate($result);
+        if ($previousId === $currentId) {
+            yield $key => $this->finalizeAggregate($result, $aggregate);
         }
     }
 
     /**
      * @param mixed $result
+     * @param mixed $aggregate
      *
      * @return mixed
      */
-    private function finalizeAggregate($result)
+    private function finalizeAggregate($result, $aggregate)
     {
         if ($this->callableFinalizeAggregate === null) {
+            $result['aggregate'] = $aggregate;
             return $result;
         }
 
         $callableFinalizeAggregate = $this->callableFinalizeAggregate;
-        return $callableFinalizeAggregate($result);
+        return $callableFinalizeAggregate($result, $aggregate);
     }
 }
