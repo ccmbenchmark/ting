@@ -64,28 +64,41 @@ $services->get('ConnectionPool')->setConfig($connections);
 
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
-//$hydrator->aggregate('decor', 'getId', 'movie', 'getId', 'decorsAre');
-//$hydrator->aggregate('actorOfDecor', 'getId', 'decor', 'getId', 'actorsOfDecorAre');
 
-/*
-movie :
- - actor
-
-producer :
- - worker
- - movie
-*/
-
-
-
-
-$query = $cityRepository->getQuery(
-    "select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
+$query = $cityRepository->getQuery("
+select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
 from t_city_cit
 left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
 left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
-"
-);
+");
+
+$hydrator = $services->get('HydratorAggregator');
+$hydrator->callableIdIs(function ($result) {
+    return $result['t_city_cit']->getId();
+});
+$hydrator->callableDataIs(function ($result) {
+    return $result['t_countrylanguage_col'];
+});
+
+$collection = $query->query(new Collection($hydrator));
+$withUUID = false;
+
+foreach ($collection as $result) {
+    echo "City: " . $result['t_city_cit']->getName($withUUID) . "\n";
+    echo "\tCountry: " . $result['t_country_cou']->getName($withUUID) . "\n";
+    foreach ($result['aggregate'] as $countryLanguage) {
+        echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
+    }
+    echo str_repeat("-", 40) . "\n";
+}
+die;
+
+$query = $cityRepository->getQuery("
+select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
+from t_city_cit
+left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
+left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
+");
 
 $hydrator = $services->get('HydratorRelational');
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('t_countrylanguage_col', 'getLanguage')->to('t_country_cou', 'getCode')->setter('countryLanguagesAre'));
