@@ -67,9 +67,9 @@ class HydratorRelational extends Hydrator
      * @throws Exception
      * @return void
      */
-    public function identityMap($enable = true)
+    public function identityMap($enable)
     {
-        if ($enable === false) {
+        if ((bool) $enable === false) {
             throw new Exception('identityMap can\'t be disabled for this Hydrator');
         }
     }
