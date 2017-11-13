@@ -122,7 +122,7 @@ class HydratorRelational extends Hydrator
                 $this->result->getDatabase(),
                 $columns
             );
-//var_dump($result);
+
             foreach ($this->config as $config) {
                 if (isset($result[$config['target']]) === false) {
                     continue;
