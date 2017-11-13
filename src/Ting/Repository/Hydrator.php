@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -58,6 +59,21 @@ class Hydrator implements HydratorInterface
      * @var UnitOfWork
      */
     protected $unitOfWork = null;
+
+    /**
+     * @var bool
+     */
+    protected $identityMap = false;
+
+    /**
+     * @param bool $enable
+     * @throws Exception
+     * @return void
+     */
+    public function identityMap($enable)
+    {
+        $this->identityMap = (bool) $enable;
+    }
 
     /**
      * @param MetadataRepository $metadataRepository
@@ -195,7 +211,7 @@ class Hydrator implements HydratorInterface
      *
      * @internal hydrate all column into the right Entity according to the table name and metadata information
      *           all virtual columns (COUNT(*), etc) will be set in the array key 0
-     *           all Entities without any information (a "LEFT JOIN user" can return no informatoin at all about user)
+     *           all Entities without any information (a "LEFT JOIN user" can return no information at all about user)
      *              are set to null
      *
      * @param string $connectionName
@@ -257,7 +273,12 @@ class Hydrator implements HydratorInterface
                 if ($id !== '') {
                     $ref = $column['table'] . '-' . $id;
                     if (isset($this->references[$ref]) === true) {
-                        $result[$column['table']]         = $this->references[$ref];
+                        if ($this->identityMap === false) {
+                            $result[$column['table']] = clone $this->references[$ref];
+                            unset($result[$column['table']]->tingUUID);
+                        } else {
+                            $result[$column['table']] = $this->references[$ref];
+                        }
                         $validEntities[$column['table']]  = true;
                         $fromReferences[$column['table']] = true;
                         continue;

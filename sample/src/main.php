@@ -32,6 +32,8 @@ use CCMBenchmark\Ting\Repository\HydratorSingleObject;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
 use ffmpeg_movie;
+use function memory_get_peak_usage;
+use function memory_get_usage;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -64,15 +66,17 @@ $services->get('ConnectionPool')->setConfig($connections);
 
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
-
+/*
 $query = $cityRepository->getQuery("
 select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
 from t_city_cit
 left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
 left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
+limit 100
 ");
 
 $hydrator = $services->get('HydratorAggregator');
+$hydrator->identityMap(true);
 $hydrator->callableIdIs(function ($result) {
     return $result['t_city_cit']->getId();
 });
@@ -81,18 +85,25 @@ $hydrator->callableDataIs(function ($result) {
 });
 
 $collection = $query->query(new Collection($hydrator));
-$withUUID = false;
+$withUUID = true;
 
 foreach ($collection as $result) {
     echo "City: " . $result['t_city_cit']->getName($withUUID) . "\n";
     echo "\tCountry: " . $result['t_country_cou']->getName($withUUID) . "\n";
     foreach ($result['aggregate'] as $countryLanguage) {
+        if ($countryLanguage->getLanguage() === 'Fries' && $result['t_city_cit']->getName() === 'Maastricht') {
+            $countryLanguage->setLanguage('Mouhahah');
+        }
         echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
     }
     echo str_repeat("-", 40) . "\n";
 }
+echo "Peak: " . memory_get_peak_usage(true)/1024 . "\n";
+echo "Usage: " . memory_get_usage(true)/1024 . "\n";
 die;
+*/
 
+/*
 $query = $cityRepository->getQuery("
 select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
 from t_city_cit
@@ -121,7 +132,7 @@ foreach ($collection as $city) {
     echo str_repeat("-", 40) . "\n";
 }
 die;
-
+*/
 
 
 $query = $cityRepository->getQuery(
@@ -143,31 +154,41 @@ left join actor on actor.id = actor_in_movie.actor_id"
 
 
 $hydrator = $services->get('HydratorRelational');
-$hydrator->aggregate('worker', 'getId', 'producer', 'getId', 'workersAre');
-$hydrator->aggregate('movie', 'getId', 'producer', 'getId', 'moviesAre');
-$hydrator->aggregate('actor', 'getId', 'movie', 'getId', 'actorsAre');
+$hydrator->identityMap(false);
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('worker', 'getId')->to('producer', 'getId')->setter('workersAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('movie', 'getId')->to('producer', 'getId')->setter('moviesAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('actor', 'getId')->to('movie', 'getId')->setter('actorsAre'));
 $hydrator->callableFinalizeAggregate(function ($result) {
     return $result['producer'];
 });
 
 $collection = $query->query(new Collection($hydrator));
+$withUUID = true;
 
 foreach ($collection as $producer) {
-    echo "Producer: " . $producer->getName() . "\n";
+    echo "Producer: " . $producer->getName($withUUID) . "\n";
     $workers = $producer->getWorkers();
     foreach ($workers as $worker) {
-        echo "\tWorker: " . $worker->getName() . "\n";
+        if ($worker->getName() === 'Worker 2 of SS' && $producer->getName() === 'CCM Benchmark') {
+            $worker->setName($worker->getName() . " EDITED !");
+        }
+        echo "\tWorker: " . $worker->getName($withUUID) . "\n";
+        echo "\t\tWorker: " . md5(spl_object_hash($worker)) . "\n";
     }
     $movies = $producer->getMovies();
     foreach ($movies as $movie) {
-        echo "\tMovie: " . utf8_encode($movie->getName()) . "\n";
+        echo "\tMovie: " . utf8_encode($movie->getName($withUUID)) . "\n";
         $actors = $movie->getActors();
         foreach ($actors as $actor) {
-            echo "\t\tActor: " . $actor->getName() . "\n";
+            echo "\t\tActor: " . $actor->getName($withUUID) . "\n";
+            echo "\t\t\tActor: " . md5(spl_object_hash($actor)) . "\n";
+
         }
     }
     echo str_repeat("-", 40) . "\n";
 }
+
+echo (memory_get_usage(true) / 1024) . "\n";
 die;
 
 /**

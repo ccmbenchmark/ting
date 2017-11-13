@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 use CCMBenchmark\Ting\Serializer\RuntimeException;
@@ -51,29 +52,26 @@ class HydratorRelational extends Hydrator
      */
     protected $config;
 
+    /**
+     * @var bool
+     */
+    protected $identityMap = true;
+
     public function __construct()
     {
         $this->config = new SplDoublyLinkedList();
     }
 
     /**
-     * @param callable $callableForId
-     * @return $this
+     * @param bool $enable
+     * @throws Exception
+     * @return void
      */
-    public function callableIdIs(callable $callableForId)
+    public function identityMap($enable = true)
     {
-        $this->callableForId = $callableForId;
-        return $this;
-    }
-
-    /**
-     * @param callable $callableForData
-     * @return $this
-     */
-    public function callableDataIs(callable $callableForData)
-    {
-        $this->callableForData = $callableForData;
-        return $this;
+        if ($enable === false) {
+            throw new Exception('identityMap can\'t be disabled for this Hydrator');
+        }
     }
 
     /**
@@ -124,8 +122,12 @@ class HydratorRelational extends Hydrator
                 $this->result->getDatabase(),
                 $columns
             );
-
+//var_dump($result);
             foreach ($this->config as $config) {
+                if (isset($result[$config['target']]) === false) {
+                    continue;
+                }
+
                 $keyTarget = $config['target'] . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
 
                 if (isset($references[$keyTarget]) === false) {

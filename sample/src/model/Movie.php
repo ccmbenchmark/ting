@@ -35,7 +35,7 @@ class Movie implements NotifyPropertyInterface
 
     protected $id          = null;
     protected $name        = null;
-    protected $actors      = null;
+    protected $actors      = [];
 
     public function setId($id)
     {
@@ -68,7 +68,7 @@ class Movie implements NotifyPropertyInterface
     public function actorsAre(array $actors)
     {
         foreach ($actors as $actor) {
-            $this->actors[] = clone $actor;
+            $this->actors[] = $actor; // clone $actor;
         }
     }
 

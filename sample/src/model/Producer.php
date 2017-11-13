@@ -83,7 +83,7 @@ class Producer implements NotifyPropertyInterface
     public function workersAre(array $workers)
     {
         foreach ($workers as $worker) {
-            $this->workers[] = clone $worker;
+            $this->workers[] = $worker; // clone $worker;
         }
     }
 
