@@ -32,18 +32,24 @@ abstract class Relation
     protected $targetIdentifier;
     protected $setter;
 
-    public function aggregate($source, $identifier)
+    public function aggregate($source, $identifier = null)
     {
         $this->source           = (string) $source;
-        $this->sourceIdentifier = (string) $identifier;
+
+        if ($identifier !== null) {
+            $this->sourceIdentifier = (string)$identifier;
+        }
 
         return $this;
     }
 
-    public function to($target, $identifier)
+    public function to($target, $identifier = null)
     {
         $this->target           = (string) $target;
-        $this->targetIdentifier = (string) $identifier;
+
+        if ($identifier !== null) {
+            $this->targetIdentifier = (string)$identifier;
+        }
 
         return $this;
     }

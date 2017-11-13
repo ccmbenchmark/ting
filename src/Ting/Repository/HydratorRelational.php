@@ -128,14 +128,14 @@ class HydratorRelational extends Hydrator
                     continue;
                 }
 
-                $keyTarget = $config['target'] . '-' . $result[$config['target']]->{$config['targetIdentifier']}();
+                $keyTarget = $config['target'] . '-' . $this->getIdentifiers($config['target'], $result[$config['target']], $config['targetIdentifier']);
 
                 if (isset($references[$keyTarget]) === false) {
                     $references[$keyTarget] = $result[$config['target']];
                 }
 
                 if (isset($result[$config['source']]) === true) {
-                    $keySource = $config['source'] . '-' . $result[$config['source']]->{$config['sourceIdentifier']}();
+                    $keySource = $config['source'] . '-' . $this->getIdentifiers($config['source'], $result[$config['source']], $config['sourceIdentifier']);
 
                     if (isset($references[$keySource]) === false) {
                         $references[$keySource] = $result[$config['source']];
@@ -146,8 +146,8 @@ class HydratorRelational extends Hydrator
                     }
 
                     if ($config['many'] === true) {
-                        if (isset($ressources[$keyTarget][$config['targetSetter']][$result[$config['source']]->{$config['sourceIdentifier']}()]) === false) {
-                            $ressources[$keyTarget][$config['targetSetter']][$result[$config['source']]->{$config['sourceIdentifier']}()] = $references[$keySource];
+                        if (isset($ressources[$keyTarget][$config['targetSetter']][$keySource]) === false) {
+                            $ressources[$keyTarget][$config['targetSetter']][$keySource] = $references[$keySource];
                         }
                     } else {
                         $ressources[$keyTarget][$config['targetSetter']] = $references[$keySource];
@@ -190,5 +190,19 @@ class HydratorRelational extends Hydrator
 
         $callableFinalizeAggregate = $this->callableFinalizeAggregate;
         return $callableFinalizeAggregate($result);
+    }
+
+    private function getIdentifiers($table, $entity, $identifier)
+    {
+        if ($identifier !== null) {
+            return $entity->{$identifier}();
+        }
+
+        $id = '';
+        foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+            $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+        }
+
+        return $id;
     }
 }

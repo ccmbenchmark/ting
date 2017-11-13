@@ -66,13 +66,12 @@ $services->get('ConnectionPool')->setConfig($connections);
 
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
-/*
+
 $query = $cityRepository->getQuery("
 select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
 from t_city_cit
 left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
 left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
-limit 100
 ");
 
 $hydrator = $services->get('HydratorAggregator');
@@ -85,9 +84,10 @@ $hydrator->callableDataIs(function ($result) {
 });
 
 $collection = $query->query(new Collection($hydrator));
-$withUUID = true;
+$withUUID = false;
 
 foreach ($collection as $result) {
+    /*
     echo "City: " . $result['t_city_cit']->getName($withUUID) . "\n";
     echo "\tCountry: " . $result['t_country_cou']->getName($withUUID) . "\n";
     foreach ($result['aggregate'] as $countryLanguage) {
@@ -96,14 +96,14 @@ foreach ($collection as $result) {
         }
         echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
     }
-    echo str_repeat("-", 40) . "\n";
+    echo str_repeat("-", 40) . "\n";*/
 }
 echo "Peak: " . memory_get_peak_usage(true)/1024 . "\n";
 echo "Usage: " . memory_get_usage(true)/1024 . "\n";
 die;
-*/
 
-/*
+
+
 $query = $cityRepository->getQuery("
 select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
 from t_city_cit
@@ -132,7 +132,7 @@ foreach ($collection as $city) {
     echo str_repeat("-", 40) . "\n";
 }
 die;
-*/
+
 
 
 $query = $cityRepository->getQuery(
@@ -154,10 +154,9 @@ left join actor on actor.id = actor_in_movie.actor_id"
 
 
 $hydrator = $services->get('HydratorRelational');
-$hydrator->identityMap(false);
-$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('worker', 'getId')->to('producer', 'getId')->setter('workersAre'));
-$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('movie', 'getId')->to('producer', 'getId')->setter('moviesAre'));
-$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('actor', 'getId')->to('movie', 'getId')->setter('actorsAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('worker')->to('producer')->setter('workersAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('movie')->to('producer')->setter('moviesAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('actor')->to('movie')->setter('actorsAre'));
 $hydrator->callableFinalizeAggregate(function ($result) {
     return $result['producer'];
 });

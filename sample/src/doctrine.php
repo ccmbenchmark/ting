@@ -41,6 +41,7 @@ SELECT c FROM \sample\src\doctrineEntity\City as c
 $cities = $query->getResult();
 
 foreach ($cities as $city) {
+    /*
     echo "City: " . $city->getName() . "\n";
     $country = $city->getCountry();
     echo "\tCountry: " . $country->getName() . "\n";
@@ -48,13 +49,17 @@ foreach ($cities as $city) {
     foreach ($countryLanguages as $countryLanguage) {
         echo "\t\tLanguage: " . $countryLanguage->getLanguage() . "\n";
     }
-    echo str_repeat("-", 40) . "\n";
+    echo str_repeat("-", 40) . "\n";*/
 }
+echo "Peak: " . memory_get_peak_usage(true)/1024 . "\n";
+echo "Usage: " . memory_get_usage(true)/1024 . "\n";
 
+/*
 echo count($logger->queries) . " requêtes\n";
 foreach ($logger->queries as $query) {
     echo $query['sql'] . "\n";
 }
+*/
 die;
 
 
