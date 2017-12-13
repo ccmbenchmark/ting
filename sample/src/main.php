@@ -60,7 +60,6 @@ $connections = [
 ];
 
 $services->get('ConnectionPool')->setConfig($connections);
-==== BASE ====
 
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
@@ -85,7 +84,6 @@ $collection = $query->query(new Collection($hydrator));
 $withUUID = false;
 
 foreach ($collection as $result) {
-    /*
     echo "City: " . $result['t_city_cit']->getName($withUUID) . "\n";
     echo "\tCountry: " . $result['t_country_cou']->getName($withUUID) . "\n";
     foreach ($result['aggregate'] as $countryLanguage) {
@@ -94,7 +92,7 @@ foreach ($collection as $result) {
         }
         echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
     }
-    echo str_repeat("-", 40) . "\n";*/
+    echo str_repeat("-", 40) . "\n";
 }
 echo "Peak: " . memory_get_peak_usage(true)/1024 . "\n";
 echo "Usage: " . memory_get_usage(true)/1024 . "\n";

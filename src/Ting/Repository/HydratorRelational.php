@@ -27,7 +27,6 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
-use CCMBenchmark\Ting\Serializer\RuntimeException;
 use SplDoublyLinkedList;
 
 class HydratorRelational extends Hydrator

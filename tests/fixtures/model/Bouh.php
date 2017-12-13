@@ -41,6 +41,7 @@ class Bouh implements NotifyPropertyInterface
     protected $city      = null;
     protected $retrievedTime = null;
     protected $originalCity = null;
+    protected $cities = [];
 
     public function setId($id)
     {
@@ -132,5 +133,15 @@ class Bouh implements NotifyPropertyInterface
     public function getOriginalCity()
     {
         return $this->originalCity;
+    }
+
+    public function citiesAre(array $cities)
+    {
+        $this->cities = $cities;
+    }
+
+    public function getCities()
+    {
+        return $this->cities;
     }
 }

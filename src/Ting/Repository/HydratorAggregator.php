@@ -24,8 +24,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Serializer\RuntimeException;
-
 class HydratorAggregator extends Hydrator
 {
     /**

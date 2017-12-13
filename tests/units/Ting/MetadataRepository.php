@@ -248,7 +248,7 @@ class MetadataRepository extends atoum
             ->isIdenticalTo(['connection' => 'conBouh', 'database' => 'dbBouh']);
     }
 
-    public function testBatchLoadMetadataShouldLoad4Repositories()
+    public function testBatchLoadMetadataShouldLoad5Repositories()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $this
@@ -265,7 +265,8 @@ class MetadataRepository extends atoum
                     'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
                     'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
                     'tests\fixtures\model\CityRepository'         => 'tests\fixtures\model\CityRepository',
-                    'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository'
+                    'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository',
+                    'tests\fixtures\model\ParkRepository'         => 'tests\fixtures\model\ParkRepository'
                 ]);
     }
 

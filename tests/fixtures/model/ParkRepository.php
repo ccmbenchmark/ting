@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\Repository\Repository;
 
-class BouhRepository extends Repository implements MetadataInitializer
+class ParkRepository extends Repository implements MetadataInitializer
 {
     public static $options;
 
@@ -45,36 +45,23 @@ class BouhRepository extends Repository implements MetadataInitializer
 
         $metadata = new Metadata($serializerFactory);
 
-        $metadata->setEntity('tests\fixtures\model\Bouh');
-        $metadata->setConnectionName('main');
-        $metadata->setDatabase('bouh_world');
-        $metadata->setTable('T_BOUH_BOO');
+        $metadata->setEntity('tests\fixtures\model\Park');
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setTable('T_PARK_PA');
 
         $metadata->addField(array(
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
-            'columnName'    => 'boo_id',
+            'columnName'    => 'pa_id',
             'type'          => 'int'
         ));
 
         $metadata->addField(array(
-            'fieldName'  => 'firstname',
-            'columnName' => 'boo_firstname',
-            'type'      => 'string'
-        ));
-
-        $metadata->addField(array(
             'fieldName'  => 'name',
-            'columnName' => 'boo_name',
+            'columnName' => 'pa_name',
             'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'roles',
-            'columnName' => 'boo_roles',
-            'type'       => 'string',
-            'serializer' => '\CCMBenchmark\Ting\Serializer\Json'
         ));
 
         return $metadata;

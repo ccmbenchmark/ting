@@ -27,15 +27,13 @@ namespace tests\fixtures\model;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class Country implements NotifyPropertyInterface
+class Park implements NotifyPropertyInterface
 {
 
     use NotifyProperty;
 
     protected $id        = null;
     protected $name      = null;
-    protected $zipcode   = null;
-    protected $bouhId    = null;
 
     public function setId($id)
     {
@@ -57,15 +55,5 @@ class Country implements NotifyPropertyInterface
     public function getName()
     {
         return $this->name;
-    }
-
-    public function getZipcode()
-    {
-        return $this->zipcode;
-    }
-
-    public function getBouhId()
-    {
-        return $this->bouhId;
     }
 }
