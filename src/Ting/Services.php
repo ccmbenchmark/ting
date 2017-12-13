@@ -25,7 +25,6 @@
 namespace CCMBenchmark\Ting;
 
 use Pimple\Container;
-use Doctrine\Common\Cache\MemcachedCache;
 
 class Services implements ContainerInterface
 {

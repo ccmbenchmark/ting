@@ -31,9 +31,6 @@ use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\HydratorSingleObject;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
-use ffmpeg_movie;
-use function memory_get_peak_usage;
-use function memory_get_usage;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -63,6 +60,7 @@ $connections = [
 ];
 
 $services->get('ConnectionPool')->setConfig($connections);
+==== BASE ====
 
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
@@ -207,7 +205,7 @@ $queryCached->setTtl(10)->setCacheKey('cityFRA');
 $collection = $queryCached->setParams(['code' => 'FRA'])->query();
 echo 'From Cache : ' . (int) $collection->isFromCache() . "\n";
 foreach ($collection as $result) {
-    var_dump($result);
+    var_dump($result['c']->getName());
     echo str_repeat("-", 40) . "\n";
 }
 

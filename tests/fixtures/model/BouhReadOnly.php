@@ -24,7 +24,101 @@
 
 namespace tests\fixtures\model;
 
-class BouhReadOnly extends Bouh
+class BouhReadOnly
 {
+    protected $id        = null;
+    protected $firstname = null;
+    protected $name      = null;
+    protected $enabled   = null;
+    protected $price     = null;
+    protected $roles     = ['USER'];
+    protected $city      = null;
+    protected $retrievedTime = null;
+    protected $originalCity = null;
 
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function setFirstname($firstname)
+    {
+        $this->firstname = $firstname;
+    }
+
+    public function setName($name)
+    {
+        $this->name = (string) $name;
+    }
+
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
+    }
+
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+    }
+
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    public function setRetrievedTime($time)
+    {
+        $this->retrievedTime = $time;
+    }
+
+    public function getRetrievedTime()
+    {
+        return $this->retrievedTime;
+    }
+
+    public function setCity(City $city)
+    {
+        $this->originalCity = clone $city;
+        $this->city = $city;
+    }
+
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    public function getOriginalCity()
+    {
+        return $this->originalCity;
+    }
 }
