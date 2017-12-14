@@ -27,7 +27,6 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
-use SplDoublyLinkedList;
 
 class HydratorRelational extends Hydrator
 {
@@ -47,7 +46,7 @@ class HydratorRelational extends Hydrator
     protected $callableFinalizeAggregate;
 
     /**
-     * @var SplDoublyLinkedList
+     * @var \SplDoublyLinkedList
      */
     protected $config;
 
@@ -58,7 +57,7 @@ class HydratorRelational extends Hydrator
 
     public function __construct()
     {
-        $this->config = new SplDoublyLinkedList();
+        $this->config = new \SplDoublyLinkedList();
     }
 
     /**

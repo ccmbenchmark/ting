@@ -24,6 +24,8 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Repository\Hydrator\AggregateFrom;
+use CCMBenchmark\Ting\Repository\Hydrator\AggregateTo;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationOne;
 use CCMBenchmark\Ting\Services;
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
@@ -156,7 +158,11 @@ class HydratorRelational extends atoum
             ->and($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
-            ->and($hydrator->addRelation((new RelationMany())->aggregate('c', 'getId')->to('bouh', 'getId')->setter('citiesAre')))
+            ->and($hydrator->addRelation(new RelationMany(
+                new AggregateFrom('c', 'getId'),
+                new AggregateTo('bouh', 'getId'),
+                'citiesAre'
+            )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
@@ -202,7 +208,11 @@ class HydratorRelational extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
-            ->and($hydrator->addRelation((new RelationMany())->aggregate('c')->to('bouh')->setter('citiesAre')))
+            ->and($hydrator->addRelation(new RelationMany(
+                new AggregateFrom('c', 'getId'),
+                new AggregateTo('bouh', 'getId'),
+                'citiesAre'
+            )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
@@ -237,7 +247,11 @@ class HydratorRelational extends atoum
             ->and($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
-            ->and($hydrator->addRelation((new RelationOne())->aggregate('c', 'getId')->to('bouh', 'getId')->setter('setCity')))
+            ->and($hydrator->addRelation(new RelationOne(
+                new AggregateFrom('c', 'getId'),
+                new AggregateTo('bouh', 'getId'),
+                'setCity'
+            )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
@@ -264,7 +278,11 @@ class HydratorRelational extends atoum
             ->and($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
-            ->and($hydrator->addRelation((new RelationMany())->aggregate('c', 'getId')->to('bouh', 'getId')->setter('citiesAre')))
+            ->and($hydrator->addRelation(new RelationMany(
+                new AggregateFrom('c', 'getId'),
+                new AggregateTo('bouh', 'getId'),
+                'citiesAre'
+            )))
             ->and($hydrator->callableFinalizeAggregate(function ($result) {
                 return $result['bouh'];
             }))
@@ -405,7 +423,11 @@ class HydratorRelational extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->addRelation((new RelationMany())->aggregate('c', 'getId')->to('bouh', 'getId')->setter('citiesAre')))
+            ->and($hydrator->addRelation(new RelationMany(
+                new AggregateFrom('c', 'getId'),
+                new AggregateTo('bouh', 'getId'),
+                'citiesAre'
+            )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
@@ -567,8 +589,16 @@ class HydratorRelational extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->addRelation((new RelationMany())->aggregate('c', 'getId')->to('bouh', 'getId')->setter('citiesAre')))
-            ->and($hydrator->addRelation((new RelationMany())->aggregate('park', 'getId')->to('c', 'getId')->setter('parksAre')))
+            ->and($hydrator->addRelation(new RelationMany(
+                new AggregateFrom('c', 'getId'),
+                new AggregateTo('bouh', 'getId'),
+                'citiesAre'
+            )))
+            ->and($hydrator->addRelation(new RelationMany(
+                new AggregateFrom('park', 'getId'),
+                new AggregateTo('c', 'getId'),
+                'parksAre'
+            )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())

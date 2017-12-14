@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -24,57 +25,7 @@
 
 namespace CCMBenchmark\Ting\Repository\Hydrator;
 
-abstract class Relation
+class AggregateTo extends Aggregate
 {
-    /**
-     * @var AggregateFrom
-     */
-    private $from;
 
-    /**
-     * @var AggregateTo
-     */
-    private $to;
-
-    /**
-     * @var string
-     */
-    private $setter;
-
-    /**
-     * @param AggregateFrom $from
-     * @param AggregateTo   $to
-     * @param string        $setter
-     */
-    public function __construct(AggregateFrom $from, AggregateTo $to, $setter)
-    {
-        $this->from   = $from;
-        $this->to     = $to;
-        $this->setter = (string) $setter;
-    }
-
-    public function getSource()
-    {
-        return $this->from->getTarget();
-    }
-
-    public function getSourceIdentifier()
-    {
-        return $this->from->getMethod();
-    }
-
-    public function getTarget()
-    {
-        return $this->to->getTarget();
-    }
-
-    public function getTargetIdentifier()
-    {
-        return $this->to->getMethod();
-    }
-
-    public function getSetter()
-    {
-        return $this->setter;
-    }
 }

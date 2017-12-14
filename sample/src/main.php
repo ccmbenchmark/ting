@@ -83,6 +83,7 @@ $hydrator->callableDataIs(function ($result) {
 $collection = $query->query(new Collection($hydrator));
 $withUUID = false;
 
+/*
 foreach ($collection as $result) {
     echo "City: " . $result['t_city_cit']->getName($withUUID) . "\n";
     echo "\tCountry: " . $result['t_country_cou']->getName($withUUID) . "\n";
@@ -97,7 +98,7 @@ foreach ($collection as $result) {
 echo "Peak: " . memory_get_peak_usage(true)/1024 . "\n";
 echo "Usage: " . memory_get_usage(true)/1024 . "\n";
 die;
-
+*/
 
 
 $query = $cityRepository->getQuery("
@@ -108,8 +109,17 @@ left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_co
 ");
 
 $hydrator = $services->get('HydratorRelational');
-$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('t_countrylanguage_col', 'getLanguage')->to('t_country_cou', 'getCode')->setter('countryLanguagesAre'));
-$hydrator->addRelation((new Hydrator\RelationOne())->aggregate('t_country_cou', 'getCode')->to('t_city_cit', 'getId')->setter('countryIs'));
+$hydrator->addRelation(new Hydrator\RelationMany(
+    new Hydrator\AggregateFrom('t_countrylanguage_col', 'getLanguage'),
+    new Hydrator\AggregateTo('t_country_cou', 'getCode'),
+    'countryLanguagesAre'
+));
+$hydrator->addRelation(
+    new Hydrator\RelationOne(
+    new Hydrator\AggregateFrom('t_country_cou', 'getCode'),
+    new Hydrator\AggregateTo('t_city_cit', 'getId'),
+    'countryIs'
+));
 $hydrator->callableFinalizeAggregate(function ($result) {
     return $result['t_city_cit'];
 });
