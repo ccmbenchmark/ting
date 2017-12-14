@@ -28,27 +28,17 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 
-class HydratorRelational extends Hydrator
+final class HydratorRelational extends Hydrator
 {
     /**
      * @var callable
      */
-    protected $callableForId;
-
-    /**
-     * @var callable
-     */
-    protected $callableForData;
-
-    /**
-     * @var callable
-     */
-    protected $callableFinalizeAggregate;
+    private $callableFinalizeAggregate;
 
     /**
      * @var \SplDoublyLinkedList
      */
-    protected $config;
+    private $config;
 
     /**
      * @var bool
