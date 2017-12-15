@@ -48,7 +48,7 @@ final class HydratorRelational extends Hydrator
     /**
      * @var array
      */
-    private $ressources = [];
+    private $resources = [];
 
     /**
      * @var bool
@@ -102,7 +102,7 @@ final class HydratorRelational extends Hydrator
         $this->resolveDependencies();
 
         $this->referencesRelation = [];
-        $this->ressources         = [];
+        $this->resources          = [];
         $results                  = [];
 
         foreach ($this->result as $columns) {
@@ -191,27 +191,27 @@ final class HydratorRelational extends Hydrator
      */
     private function saveRessourceFor($config, $keyTarget, $keySource)
     {
-        if (isset($this->ressources[$keyTarget][$config['targetSetter']]) === false) {
-            $this->ressources[$keyTarget][$config['targetSetter']] = [];
+        if (isset($this->resources[$keyTarget][$config['targetSetter']]) === false) {
+            $this->resources[$keyTarget][$config['targetSetter']] = [];
         }
 
         if ($config['many'] === true) {
-            if (isset($this->ressources[$keyTarget][$config['targetSetter']][$keySource]) === false) {
-                $this->ressources[$keyTarget][$config['targetSetter']][$keySource] = $this->referencesRelation[$keySource];
+            if (isset($this->resources[$keyTarget][$config['targetSetter']][$keySource]) === false) {
+                $this->resources[$keyTarget][$config['targetSetter']][$keySource] = $this->referencesRelation[$keySource];
             }
         } else {
-            $this->ressources[$keyTarget][$config['targetSetter']] = $this->referencesRelation[$keySource];
+            $this->resources[$keyTarget][$config['targetSetter']] = $this->referencesRelation[$keySource];
         }
     }
 
     private function assignRessourcesToReferences()
     {
         foreach ($this->referencesRelation as $referenceKey => $reference) {
-            if (isset($this->ressources[$referenceKey]) === false) {
+            if (isset($this->resources[$referenceKey]) === false) {
                 continue;
             }
 
-            foreach ($this->ressources[$referenceKey] as $setter => $valuesToSet) {
+            foreach ($this->resources[$referenceKey] as $setter => $valuesToSet) {
                 $reference->$setter($valuesToSet);
             }
         }
