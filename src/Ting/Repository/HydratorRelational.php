@@ -41,6 +41,16 @@ final class HydratorRelational extends Hydrator
     private $config;
 
     /**
+     * @var array
+     */
+    protected $myreferences = [];
+
+    /**
+     * @var array
+     */
+    private $ressources = [];
+
+    /**
      * @var bool
      */
     protected $identityMap = true;
@@ -89,6 +99,43 @@ final class HydratorRelational extends Hydrator
      */
     public function getIterator()
     {
+        $this->resolveDependencies();
+
+        $this->myreferences = [];
+        $this->ressources   = [];
+        $results            = [];
+
+        foreach ($this->result as $columns) {
+            $result = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $columns);
+
+            foreach ($this->config as $config) {
+                if (isset($result[$config['target']]) === false) {
+                    continue;
+                }
+
+                $keyTarget = $this->saveTargetReference($config, $result);
+
+                if (isset($result[$config['source']]) === true) {
+                    $keySource = $this->saveSourceReference($config, $result);
+                    $this->saveRessourceFor($config, $keyTarget, $keySource);
+                    unset($result[$config['source']]);
+                }
+            }
+
+            if (isset($results[$keyTarget]) === false) {
+                $results[$keyTarget] = $result;
+            }
+        }
+
+        $this->assignRessourcesToReferences();
+
+        foreach ($results as $result) {
+            yield $this->finalizeAggregate($result);
+        }
+    }
+
+    private function resolveDependencies()
+    {
         $configAsArray = iterator_to_array($this->config);
 
         foreach ($this->config as $index => $config) {
@@ -99,69 +146,74 @@ final class HydratorRelational extends Hydrator
                 $this->config->add($dependencyIndex, $config);
             }
         }
+    }
 
-        $references = [];
-        $results = [];
-        $ressources = [];
+    /**
+     * @param array $config
+     * @param array $result
+     *
+     * @return string
+     */
+    private function saveTargetReference($config, $result)
+    {
+        $keyTarget = $config['target'] . '-'
+            . $this->getIdentifiers($config['target'], $result[$config['target']], $config['targetIdentifier']);
 
-        foreach ($this->result as $columns) {
-            $result = $this->hydrateColumns(
-                $this->result->getConnectionName(),
-                $this->result->getDatabase(),
-                $columns
-            );
-
-            foreach ($this->config as $config) {
-                if (isset($result[$config['target']]) === false) {
-                    continue;
-                }
-
-                $keyTarget = $config['target'] . '-' . $this->getIdentifiers($config['target'], $result[$config['target']], $config['targetIdentifier']);
-
-                if (isset($references[$keyTarget]) === false) {
-                    $references[$keyTarget] = $result[$config['target']];
-                }
-
-                if (isset($result[$config['source']]) === true) {
-                    $keySource = $config['source'] . '-' . $this->getIdentifiers($config['source'], $result[$config['source']], $config['sourceIdentifier']);
-
-                    if (isset($references[$keySource]) === false) {
-                        $references[$keySource] = $result[$config['source']];
-                    }
-
-                    if (isset($ressources[$keyTarget][$config['targetSetter']]) === false) {
-                        $ressources[$keyTarget][$config['targetSetter']] = [];
-                    }
-
-                    if ($config['many'] === true) {
-                        if (isset($ressources[$keyTarget][$config['targetSetter']][$keySource]) === false) {
-                            $ressources[$keyTarget][$config['targetSetter']][$keySource] = $references[$keySource];
-                        }
-                    } else {
-                        $ressources[$keyTarget][$config['targetSetter']] = $references[$keySource];
-                    }
-
-                    unset($result[$config['source']]);
-                }
-            }
-
-            if (isset($results[$keyTarget]) === false) {
-                $results[$keyTarget] = $result;
-            }
+        if (isset($this->myreferences[$keyTarget]) === false) {
+            $this->myreferences[$keyTarget] = $result[$config['target']];
         }
 
-        foreach ($references as $referenceKey => $reference) {
+        return $keyTarget;
+    }
+
+    /**
+     * @param array $config
+     * @param array $result
+     *
+     * @return string
+     */
+    private function saveSourceReference($config, $result)
+    {
+        $keySource = $config['source'] . '-'
+            . $this->getIdentifiers($config['source'], $result[$config['source']], $config['sourceIdentifier']);
+
+        if (isset($this->myreferences[$keySource]) === false) {
+            $this->myreferences[$keySource] = $result[$config['source']];
+        }
+
+        return $keySource;
+    }
+
+    /**
+     * @param array  $config
+     * @param string $keyTarget
+     * @param string $keySource
+     */
+    private function saveRessourceFor($config, $keyTarget, $keySource)
+    {
+        if (isset($this->ressources[$keyTarget][$config['targetSetter']]) === false) {
+            $this->ressources[$keyTarget][$config['targetSetter']] = [];
+        }
+
+        if ($config['many'] === true) {
+            if (isset($this->ressources[$keyTarget][$config['targetSetter']][$keySource]) === false) {
+                $this->ressources[$keyTarget][$config['targetSetter']][$keySource] = $this->myreferences[$keySource];
+            }
+        } else {
+            $this->ressources[$keyTarget][$config['targetSetter']] = $this->myreferences[$keySource];
+        }
+    }
+
+    private function assignRessourcesToReferences()
+    {
+        foreach ($this->myreferences as $referenceKey => $reference) {
             if (isset($ressources[$referenceKey]) === false) {
                 continue;
             }
 
-            foreach ($ressources[$referenceKey] as $setter => $valuesToSet) {
+            foreach ($this->ressources[$referenceKey] as $setter => $valuesToSet) {
                 $reference->$setter($valuesToSet);
             }
-        }
-
-        foreach ($results as $result) {
-            yield $this->finalizeAggregate($result);
         }
     }
 
