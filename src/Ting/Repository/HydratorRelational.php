@@ -43,7 +43,7 @@ final class HydratorRelational extends Hydrator
     /**
      * @var array
      */
-    protected $myreferences = [];
+    protected $referencesRelation = [];
 
     /**
      * @var array
@@ -101,9 +101,9 @@ final class HydratorRelational extends Hydrator
     {
         $this->resolveDependencies();
 
-        $this->myreferences = [];
-        $this->ressources   = [];
-        $results            = [];
+        $this->referencesRelation = [];
+        $this->ressources         = [];
+        $results                  = [];
 
         foreach ($this->result as $columns) {
             $result = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $columns);
@@ -159,8 +159,8 @@ final class HydratorRelational extends Hydrator
         $keyTarget = $config['target'] . '-'
             . $this->getIdentifiers($config['target'], $result[$config['target']], $config['targetIdentifier']);
 
-        if (isset($this->myreferences[$keyTarget]) === false) {
-            $this->myreferences[$keyTarget] = $result[$config['target']];
+        if (isset($this->referencesRelation[$keyTarget]) === false) {
+            $this->referencesRelation[$keyTarget] = $result[$config['target']];
         }
 
         return $keyTarget;
@@ -177,8 +177,8 @@ final class HydratorRelational extends Hydrator
         $keySource = $config['source'] . '-'
             . $this->getIdentifiers($config['source'], $result[$config['source']], $config['sourceIdentifier']);
 
-        if (isset($this->myreferences[$keySource]) === false) {
-            $this->myreferences[$keySource] = $result[$config['source']];
+        if (isset($this->referencesRelation[$keySource]) === false) {
+            $this->referencesRelation[$keySource] = $result[$config['source']];
         }
 
         return $keySource;
@@ -197,16 +197,16 @@ final class HydratorRelational extends Hydrator
 
         if ($config['many'] === true) {
             if (isset($this->ressources[$keyTarget][$config['targetSetter']][$keySource]) === false) {
-                $this->ressources[$keyTarget][$config['targetSetter']][$keySource] = $this->myreferences[$keySource];
+                $this->ressources[$keyTarget][$config['targetSetter']][$keySource] = $this->referencesRelation[$keySource];
             }
         } else {
-            $this->ressources[$keyTarget][$config['targetSetter']] = $this->myreferences[$keySource];
+            $this->ressources[$keyTarget][$config['targetSetter']] = $this->referencesRelation[$keySource];
         }
     }
 
     private function assignRessourcesToReferences()
     {
-        foreach ($this->myreferences as $referenceKey => $reference) {
+        foreach ($this->referencesRelation as $referenceKey => $reference) {
             if (isset($ressources[$referenceKey]) === false) {
                 continue;
             }
