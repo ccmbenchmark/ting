@@ -207,7 +207,7 @@ final class HydratorRelational extends Hydrator
     private function assignRessourcesToReferences()
     {
         foreach ($this->referencesRelation as $referenceKey => $reference) {
-            if (isset($ressources[$referenceKey]) === false) {
+            if (isset($this->ressources[$referenceKey]) === false) {
                 continue;
             }
 
