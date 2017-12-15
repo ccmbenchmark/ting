@@ -346,6 +346,7 @@ class Hydrator implements HydratorInterface
                 $result[$table] = null;
             }
 
+            // It's a valid entity (unknown data are put in a value table 0)
             if (is_int($table) === false) {
                 $id = '';
                 foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
