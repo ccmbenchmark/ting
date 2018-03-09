@@ -31,7 +31,6 @@ use CCMBenchmark\Ting\Repository\Hydrator;
 use CCMBenchmark\Ting\Repository\HydratorSingleObject;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
-use Doctrine\Common\Cache\MemcachedCache;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -52,72 +51,150 @@ $connections = [
     'main' => [
         'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli',
         'master' => [
-            'host'      => 'localhost',
-            'user'      => 'world_sample',
-            'password'  => 'world_sample',
+            'host'      => '127.0.0.1',
+            'user'      => 'root',
+            'password'  => 'p455w0rd',
             'port'      => 3306,
-        ],
-        'slaves' => [
-            [
-                'host'      => '127.0.0.1',
-                'user'      => 'world_sample',
-                'password'  => 'world_sample',
-                'port'      => 3306,
-            ],
-            [
-                'host'      => '127.0.1.1', // Loopback : used to have a different connection opened
-                'user'      => 'world_sample_readonly',
-                'password'  => 'world_sample_readonly',
-                'port'      => 3306,
-            ]
         ]
     ]
 ];
 
 $services->get('ConnectionPool')->setConfig($connections);
 
-$memcached = new \Memcached('ting.test');
-$memcached->addServer('127.0.0.1', 11211);
-$memcached->setOptions(
-    [
-        \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
-        //\Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_IGBINARY
-        \Memcached::OPT_SERIALIZER           => \Memcached::SERIALIZER_PHP,
-        \Memcached::OPT_PREFIX_KEY           => 'sample-'
-    ]
-);
-$memcachedCache = new MemcachedCache();
-$memcachedCache->setMemcached($memcached);
+$cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
-$services->get('Cache')->setCache($memcachedCache);
-$services->get('Cache')->save('key', 'storedInCacheValue', 10);
-echo 'Test cache : ' . $services->get('Cache')->fetch('key') . "\n";
 
-$cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
-
-$query = $cityRepository->getQuery(
-    "select
-        distinct c.*, col.*
-        from t_city_cit as c
-        left join t_countrylanguage_col as col on (col.cou_code = 'AFG' and c.cou_code = 'AFG')
-        where cit_id < 5
-        limit 30"
-);
+$query = $cityRepository->getQuery("
+select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
+from t_city_cit
+left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
+left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
+");
 
 $hydrator = $services->get('HydratorAggregator');
+$hydrator->identityMap(true);
 $hydrator->callableIdIs(function ($result) {
-    return $result['c']->getId();
+    return $result['t_city_cit']->getId();
 });
 $hydrator->callableDataIs(function ($result) {
-    return $result['col'];
+    return $result['t_countrylanguage_col'];
 });
 
-$collection = $query->setParams(['code' => 'FRA'])->query(new Collection($hydrator));
+$collection = $query->query(new Collection($hydrator));
+$withUUID = false;
 
+/*
 foreach ($collection as $result) {
-    var_dump($result);
+    echo "City: " . $result['t_city_cit']->getName($withUUID) . "\n";
+    echo "\tCountry: " . $result['t_country_cou']->getName($withUUID) . "\n";
+    foreach ($result['aggregate'] as $countryLanguage) {
+        if ($countryLanguage->getLanguage() === 'Fries' && $result['t_city_cit']->getName() === 'Maastricht') {
+            $countryLanguage->setLanguage('Mouhahah');
+        }
+        echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
+    }
     echo str_repeat("-", 40) . "\n";
 }
+echo "Peak: " . memory_get_peak_usage(true)/1024 . "\n";
+echo "Usage: " . memory_get_usage(true)/1024 . "\n";
+die;
+*/
+
+
+$query = $cityRepository->getQuery("
+select t_city_cit.*, t_country_cou.*, t_countrylanguage_col.*
+from t_city_cit
+left join t_country_cou on t_country_cou.cou_code = t_city_cit.cou_code
+left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_cou.cou_code
+");
+
+$hydrator = $services->get('HydratorRelational');
+$hydrator->addRelation(new Hydrator\RelationMany(
+    new Hydrator\AggregateFrom('t_countrylanguage_col', 'getLanguage'),
+    new Hydrator\AggregateTo('t_country_cou', 'getCode'),
+    'countryLanguagesAre'
+));
+$hydrator->addRelation(
+    new Hydrator\RelationOne(
+    new Hydrator\AggregateFrom('t_country_cou', 'getCode'),
+    new Hydrator\AggregateTo('t_city_cit', 'getId'),
+    'countryIs'
+));
+$hydrator->callableFinalizeAggregate(function ($result) {
+    return $result['t_city_cit'];
+});
+
+$withUUID = false;
+
+$collection = $query->query(new Collection($hydrator));
+foreach ($collection as $city) {
+    echo "City: " . $city->getName($withUUID) . "\n";
+    $country = $city->getCountry();
+    echo "\tCountry: " . $country->getName($withUUID) . "\n";
+    $countryLanguages = $country->getCountryLanguages();
+    foreach ($countryLanguages as $countryLanguage) {
+        echo "\t\tLanguage: " . $countryLanguage->getLanguage($withUUID) . "\n";
+    }
+    echo str_repeat("-", 40) . "\n";
+}
+die;
+
+
+
+$query = $cityRepository->getQuery(
+    "select producer.*, worker.*, movie.*, actor.*
+from producer
+left join work_for_producer on producer.id = work_for_producer.producer_id
+left join worker on worker.id = work_for_producer.worker_id
+left join produce_movie on producer.id = produce_movie.producer_id
+left join movie on movie.id = produce_movie.movie_id
+left join actor_in_movie on actor_in_movie.movie_id = movie.id
+left join actor on actor.id = actor_in_movie.actor_id"
+);
+
+/**
+ * producer(id)->hasMany->worker(id)
+ * producer(id)->hasMany->movie(id)
+ * movie(id)->hasMany->actor(id)
+ */
+
+
+$hydrator = $services->get('HydratorRelational');
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('worker')->to('producer')->setter('workersAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('movie')->to('producer')->setter('moviesAre'));
+$hydrator->addRelation((new Hydrator\RelationMany())->aggregate('actor')->to('movie')->setter('actorsAre'));
+$hydrator->callableFinalizeAggregate(function ($result) {
+    return $result['producer'];
+});
+
+$collection = $query->query(new Collection($hydrator));
+$withUUID = true;
+
+foreach ($collection as $producer) {
+    echo "Producer: " . $producer->getName($withUUID) . "\n";
+    $workers = $producer->getWorkers();
+    foreach ($workers as $worker) {
+        if ($worker->getName() === 'Worker 2 of SS' && $producer->getName() === 'CCM Benchmark') {
+            $worker->setName($worker->getName() . " EDITED !");
+        }
+        echo "\tWorker: " . $worker->getName($withUUID) . "\n";
+        echo "\t\tWorker: " . md5(spl_object_hash($worker)) . "\n";
+    }
+    $movies = $producer->getMovies();
+    foreach ($movies as $movie) {
+        echo "\tMovie: " . utf8_encode($movie->getName($withUUID)) . "\n";
+        $actors = $movie->getActors();
+        foreach ($actors as $actor) {
+            echo "\t\tActor: " . $actor->getName($withUUID) . "\n";
+            echo "\t\t\tActor: " . md5(spl_object_hash($actor)) . "\n";
+
+        }
+    }
+    echo str_repeat("-", 40) . "\n";
+}
+
+echo (memory_get_usage(true) / 1024) . "\n";
+die;
 
 /**
  * @var $cityRepository CityRepository

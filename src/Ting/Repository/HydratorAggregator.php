@@ -24,8 +24,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Serializer\RuntimeException;
-
 class HydratorAggregator extends Hydrator
 {
     /**
@@ -98,7 +96,7 @@ class HydratorAggregator extends Hydrator
 
             $currentId = $callableForId($result);
 
-            if (in_array($currentId, $knownIdentifiers, true) === true) {
+            if (isset($knownIdentifiers[$currentId]) === true) {
                 continue;
             }
 
@@ -113,7 +111,7 @@ class HydratorAggregator extends Hydrator
             } else {
                 $previousResult = $this->finalizeAggregate($previousResult, $aggregate);
 
-                $knownIdentifiers[] = $previousId;
+                $knownIdentifiers[$previousId] = true;
 
                 yield $previousKey => $previousResult;
 

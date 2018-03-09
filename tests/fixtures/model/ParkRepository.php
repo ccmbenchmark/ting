@@ -22,52 +22,45 @@
  *
  **********************************************************************/
 
-namespace sample\src\model;
+namespace tests\fixtures\model;
 
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Repository\Repository;
 
-class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
+class ParkRepository extends Repository implements MetadataInitializer
 {
+    public static $options;
+
+    /**
+     * @param SerializerFactoryInterface $serializerFactory
+     * @param array                      $options
+     *
+     * @return Metadata
+     */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
+        self::$options = $options;
+
         $metadata = new Metadata($serializerFactory);
 
-        $metadata->setEntity('sample\src\model\Country');
-        $metadata->setConnectionName('main');
-        $metadata->setDatabase('world');
-        $metadata->setTable('t_country_cou');
+        $metadata->setEntity('tests\fixtures\model\Park');
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setTable('T_PARK_PA');
 
         $metadata->addField(array(
-           'primary'       => true,
-           'autoincrement' => true,
-           'fieldName'     => 'code',
-           'columnName'    => 'cou_code',
-            'type'         => 'string'
+            'primary'       => true,
+            'autoincrement' => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'pa_id',
+            'type'          => 'int'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'name',
-            'columnName' => 'cou_name',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'continent',
-            'columnName' => 'cou_continent',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'region',
-            'columnName' => 'cou_region',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'president',
-            'columnName' => 'cou_head_of_state',
+            'columnName' => 'pa_name',
             'type'       => 'string'
         ));
 

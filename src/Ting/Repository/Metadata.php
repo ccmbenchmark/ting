@@ -260,6 +260,16 @@ class Metadata
     }
 
     /**
+     * Retrieve all defined primaries.
+     *
+     * @return array
+     */
+    public function getPrimaries()
+    {
+        return $this->primaries;
+    }
+
+    /**
      * Retrieve all defined fields.
      *
      * @return array

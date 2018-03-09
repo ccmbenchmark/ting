@@ -39,6 +39,7 @@ class City implements NotifyPropertyInterface
     protected $district    = null;
     protected $population  = null;
     protected $dt          = null;
+    protected $country     = null;
 
     public function setId($id)
     {
@@ -57,9 +58,15 @@ class City implements NotifyPropertyInterface
         $this->name = (string) $name;
     }
 
-    public function getName()
+    public function getName($withUUID = false)
     {
-        return (string) $this->name;
+        $append = '';
+
+        if ($withUUID === true) {
+            $append = " (" . $this->tingUUID . ")";
+        }
+
+        return (string) $this->name . $append;
     }
 
     public function setCountryCode($countryCode)
@@ -122,6 +129,12 @@ class City implements NotifyPropertyInterface
 
     public function countryIs(Country $country)
     {
-        $this->country = clone $country;
+        //$country = reset($country);
+        $this->country = $country;
+    }
+
+    public function getCountry()
+    {
+        return $this->country;
     }
 }

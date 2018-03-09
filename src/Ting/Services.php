@@ -117,6 +117,16 @@ class Services implements ContainerInterface
         );
 
         $this->container->offsetSet(
+            'HydratorRelational',
+            $this->container->factory(function () {
+                $hydrator = new Repository\HydratorRelational();
+                $hydrator->setMetadataRepository($this->get('MetadataRepository'));
+                $hydrator->setUnitOfWork($this->get('UnitOfWork'));
+                return $hydrator;
+            })
+        );
+
+        $this->container->offsetSet(
             'RepositoryFactory',
             function () {
                 return new Repository\RepositoryFactory(

@@ -28,46 +28,29 @@ use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
-class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
+class ProducerRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
 {
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
     {
         $metadata = new Metadata($serializerFactory);
 
-        $metadata->setEntity('sample\src\model\Country');
+        $metadata->setEntity('sample\src\model\Producer');
         $metadata->setConnectionName('main');
         $metadata->setDatabase('world');
-        $metadata->setTable('t_country_cou');
+        $metadata->setSchema('public');
+        $metadata->setTable('producer');
 
         $metadata->addField(array(
-           'primary'       => true,
-           'autoincrement' => true,
-           'fieldName'     => 'code',
-           'columnName'    => 'cou_code',
-            'type'         => 'string'
+            'primary'       => true,
+            'autoincrement' => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'id',
+            'type'          => 'int'
         ));
 
         $metadata->addField(array(
             'fieldName'  => 'name',
-            'columnName' => 'cou_name',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'continent',
-            'columnName' => 'cou_continent',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'region',
-            'columnName' => 'cou_region',
-            'type'       => 'string'
-        ));
-
-        $metadata->addField(array(
-            'fieldName'  => 'president',
-            'columnName' => 'cou_head_of_state',
+            'columnName' => 'name',
             'type'       => 'string'
         ));
 

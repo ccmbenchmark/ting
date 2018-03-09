@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -40,6 +41,9 @@ class Hydrator implements HydratorInterface
     protected $objectSchema       = [];
     protected $unserializeAliases = [];
     protected $alreadyManaged     = [];
+    protected $references         = [];
+    protected $fromReferences     = [];
+    protected $metadataList       = [];
 
     /**
      * @var ResultInterface
@@ -55,6 +59,21 @@ class Hydrator implements HydratorInterface
      * @var UnitOfWork
      */
     protected $unitOfWork = null;
+
+    /**
+     * @var bool
+     */
+    protected $identityMap = false;
+
+    /**
+     * @param bool $enable
+     * @throws Exception
+     * @return void
+     */
+    public function identityMap($enable)
+    {
+        $this->identityMap = (bool) $enable;
+    }
 
     /**
      * @param MetadataRepository $metadataRepository
@@ -192,7 +211,7 @@ class Hydrator implements HydratorInterface
      *
      * @internal hydrate all column into the right Entity according to the table name and metadata information
      *           all virtual columns (COUNT(*), etc) will be set in the array key 0
-     *           all Entities without any information (a "LEFT JOIN user" can return no informatoin at all about user)
+     *           all Entities without any information (a "LEFT JOIN user" can return no information at all about user)
      *              are set to null
      *
      * @param string $connectionName
@@ -204,43 +223,77 @@ class Hydrator implements HydratorInterface
     protected function hydrateColumns($connectionName, $database, array $columns)
     {
         $result        = [];
-        $metadataList  = [];
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
         $validEntities = []; // Entity marked as valid will fill an object
                              // (a valid Entity is a entity with at less one property not null)
-
+        $fromReferences = [];
         foreach ($columns as $column) {
+            if (isset($fromReferences[$column['table']]) === true) {
+                continue;
+            }
+
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
-                if (isset($this->objectDatabase[$column['table']]) === true) {
-                    $database = $this->objectDatabase[$column['table']];
-                }
-
-                $schema = '';
-                if (isset($column['schema']) === true) {
-                    $schema = $column['schema'];
-                }
-
-                if (isset($this->objectSchema[$column['table']]) === true) {
-                    $schema = $this->objectSchema[$column['table']];
-                }
-
-                $this->metadataRepository->findMetadataForTable(
-                    $connectionName,
-                    $database,
-                    $schema,
-                    $column['orgTable'],
-                    function (Metadata $metadata) use ($column, &$result, &$metadataList) {
-                        $metadataList[$column['table']] = $metadata;
-                        $result[$column['table']]       = $metadata->createEntity();
-                        $tmpEntities[$column['table']]  = [];
+                if (isset($this->metadataList[$column['table']]) === false) {
+                    if (isset($this->objectDatabase[$column['table']]) === true) {
+                        $database = $this->objectDatabase[$column['table']];
                     }
-                );
+
+                    $schema = '';
+                    if (isset($column['schema']) === true) {
+                        $schema = $column['schema'];
+                    }
+
+                    if (isset($this->objectSchema[$column['table']]) === true) {
+                        $schema = $this->objectSchema[$column['table']];
+                    }
+
+                    $this->metadataRepository->findMetadataForTable(
+                        $connectionName,
+                        $database,
+                        $schema,
+                        $column['orgTable'],
+                        function (Metadata $metadata) use ($column, &$result) {
+                            $this->metadataList[$column['table']] = $metadata;
+                            $result[$column['table']]             = $metadata->createEntity();
+                            $tmpEntities[$column['table']]        = [];
+                        }
+                    );
+                }
+            }
+
+            if (isset($this->metadataList[$column['table']]) === true) {
+                $id = '';
+                foreach ($this->metadataList[$column['table']]->getPrimaries() as $columnName => $primary) {
+                    if ($column['orgName'] === $columnName) {
+                        $id = $column['value'] . '-';
+                    }
+                }
+
+                if ($id !== '') {
+                    $ref = $column['table'] . '-' . $id;
+                    if (isset($this->references[$ref]) === true) {
+                        if ($this->identityMap === false) {
+                            $result[$column['table']] = clone $this->references[$ref];
+                            unset($result[$column['table']]->tingUUID);
+                        } else {
+                            $result[$column['table']] = $this->references[$ref];
+                        }
+                        $validEntities[$column['table']]  = true;
+                        $fromReferences[$column['table']] = true;
+                        continue;
+                    }
+                }
+
+                if (isset($result[$column['table']]) === false) {
+                    $result[$column['table']]      = $this->metadataList[$column['table']]->createEntity();
+                    $tmpEntities[$column['table']] = [];
+                }
             }
 
             // We have a metadata defined for the column
-            if (isset($metadataList[$column['table']]) === true &&
-                $metadataList[$column['table']]->hasColumn($column['orgName']) === true
+            if (isset($this->metadataList[$column['table']]) === true &&
+                $this->metadataList[$column['table']]->hasColumn($column['orgName']) === true
             ) {
                 // Column value is null or entity is still not marked as valid
                 if ($column['value'] === null && isset($validEntities[$column['table']]) === false) {
@@ -249,7 +302,7 @@ class Hydrator implements HydratorInterface
                     // Entity was previously marked as a temporary entity, we set all previous columns retrieved
                     if (isset($tmpEntities[$column['table']]) === true && $tmpEntities[$column['table']] !== []) {
                         foreach ($tmpEntities[$column['table']] as $entityColumn => $entity) {
-                            $metadataList[$column['table']]->setEntityProperty(
+                            $this->metadataList[$column['table']]->setEntityProperty(
                                 $entity,
                                 $entityColumn,
                                 null
@@ -260,7 +313,7 @@ class Hydrator implements HydratorInterface
 
                     $validEntities[$column['table']] = true;
 
-                    $metadataList[$column['table']]->setEntityProperty(
+                    $this->metadataList[$column['table']]->setEntityProperty(
                         $result[$column['table']],
                         $column['orgName'],
                         $column['value']
@@ -291,6 +344,20 @@ class Hydrator implements HydratorInterface
             // All no valid entity is replaced by a null value
             if (isset($validEntities[$table]) === false) {
                 $result[$table] = null;
+            }
+
+            // It's a valid entity (unknown data are put in a value table 0)
+            if (is_int($table) === false) {
+                $id = '';
+                foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+
+                    $id = $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+                }
+                $ref = $table . '-' . $id;
+
+                if (isset($this->references[$ref]) === false) {
+                    $this->references[$ref] = $entity;
+                }
             }
 
             if (isset($this->mapAliases[$table]) === true) {
@@ -326,10 +393,11 @@ class Hydrator implements HydratorInterface
      */
     private function manageIfYouCan($entity)
     {
+        if (isset($entity->tingUUID) === true && isset($this->alreadyManaged[$entity->tingUUID]) === true) {
+            return;
+        }
+
         if (is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true) {
-            if (isset($entity->tingUUID) === true && isset($this->alreadyManaged[$entity->tingUUID]) === true) {
-                return;
-            }
             $this->unitOfWork->manage($entity);
             $this->alreadyManaged[$entity->tingUUID] = true;
         }

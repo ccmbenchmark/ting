@@ -27,27 +27,26 @@ namespace sample\src\model;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class Country implements NotifyPropertyInterface
+
+class Producer implements NotifyPropertyInterface
 {
 
     use NotifyProperty;
 
-    protected $code      = null;
-    protected $name      = null;
-    protected $continent = null;
-    protected $region    = null;
-    protected $president = null;
-    protected $countryLanguages = [];
+    protected $id          = null;
+    protected $name        = null;
+    protected $movies      = [];
+    protected $workers     = [];
 
-    public function setCode($code)
+    public function setId($id)
     {
-        $this->propertyChanged('code', $this->code, $code);
-        $this->code = (string) $code;
+        $this->propertyChanged('id', $this->id, $id);
+        $this->id = (int) $id;
     }
 
-    public function getCode()
+    public function getId()
     {
-        return (string) $this->code;
+        return (int) $this->id;
     }
 
     public function setName($name)
@@ -67,51 +66,29 @@ class Country implements NotifyPropertyInterface
         return (string) $this->name . $append;
     }
 
-    public function setContinent($continent)
+    public function moviesAre(array $movies)
     {
-        $this->propertyChanged('continent', $this->continent, $continent);
-        $this->continent = (string) $continent;
+        $this->movies = $movies;
     }
 
-    public function getContinent()
+    public function getMovies()
     {
-        return (string) $this->continent;
+        return $this->movies;
     }
 
-    public function setRegion($region)
+    /**
+     * @param Worker[] $workers
+     *
+     */
+    public function workersAre(array $workers)
     {
-        $this->propertyChanged('region', $this->region, $region);
-        $this->region = (string) $region;
+        foreach ($workers as $worker) {
+            $this->workers[] = $worker; // clone $worker;
+        }
     }
 
-    public function getRegion()
+    public function getWorkers()
     {
-        return (string) $this->region;
-    }
-
-    public function setPresident($president)
-    {
-        $this->propertyChanged('president', $this->president, $president);
-        $this->president = (string) $president;
-    }
-
-    public function getPresident()
-    {
-        return (string) $this->president;
-    }
-
-    public function countryLanguageIs(CountryLanguage $countryLanguage)
-    {
-        $this->countryLanguage = $countryLanguage;
-    }
-
-    public function countryLanguagesAre(array $countryLanguages)
-    {
-        $this->countryLanguages = $countryLanguages;
-    }
-
-    public function getCountryLanguages()
-    {
-        return $this->countryLanguages;
+        return $this->workers;
     }
 }

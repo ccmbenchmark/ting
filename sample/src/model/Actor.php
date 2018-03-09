@@ -27,34 +27,34 @@ namespace sample\src\model;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class CountryLanguage implements NotifyPropertyInterface
+
+class Actor implements NotifyPropertyInterface
 {
 
     use NotifyProperty;
 
-    protected $code       = null;
-    protected $language   = null;
-    protected $isOfficial = null;
-    protected $percentage = null;
+    protected $id          = null;
+    protected $name        = null;
 
-    public function setCode($code)
+
+    public function setId($id)
     {
-        $this->propertyChanged('code', $this->code, $code);
-        $this->code = (string) $code;
+        $this->propertyChanged('id', $this->id, $id);
+        $this->id = (int) $id;
     }
 
-    public function getCode()
+    public function getId()
     {
-        return (string) $this->code;
+        return (int) $this->id;
     }
 
-    public function setLanguage($language)
+    public function setName($name)
     {
-        $this->propertyChanged('language', $this->language, $language);
-        $this->language = (string) $language;
+        $this->propertyChanged('name', $this->name, $name);
+        $this->name = (string) $name;
     }
 
-    public function getLanguage($withUUID = false)
+    public function getName($withUUID = false)
     {
         $append = '';
 
@@ -62,28 +62,6 @@ class CountryLanguage implements NotifyPropertyInterface
             $append = " (" . $this->tingUUID . ")";
         }
 
-        return (string) $this->language . $append;
-    }
-
-    public function setIsOfficial($isOfficial)
-    {
-        $this->propertyChanged('isOfficial', $this->isOfficial, $isOfficial);
-        $this->isOfficial = (string) $isOfficial;
-    }
-
-    public function getIsOfficial()
-    {
-        return (string) $this->isOfficial;
-    }
-
-    public function setPercentage($percentage)
-    {
-        $this->propertyChanged('percentage', $this->percentage, $percentage);
-        $this->percentage = (string) $percentage;
-    }
-
-    public function getPercentage()
-    {
-        return (string) $this->percentage;
+        return (string) $this->name . $append;
     }
 }
