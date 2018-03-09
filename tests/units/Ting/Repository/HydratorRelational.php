@@ -52,6 +52,7 @@ class HydratorRelational extends atoum
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField([
+            'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'boo_id',
             'type'       => 'int'
@@ -78,6 +79,7 @@ class HydratorRelational extends atoum
         $metadata->setTable('T_CITY_CIT');
 
         $metadata->addField([
+            'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'cit_id',
             'type'       => 'int'
@@ -159,8 +161,8 @@ class HydratorRelational extends atoum
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
             ->and($hydrator->addRelation(new RelationMany(
-                new AggregateFrom('c', 'getId'),
-                new AggregateTo('bouh', 'getId'),
+                new AggregateFrom('c'),
+                new AggregateTo('bouh'),
                 'citiesAre'
             )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
@@ -209,8 +211,8 @@ class HydratorRelational extends atoum
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
             ->and($hydrator->addRelation(new RelationMany(
-                new AggregateFrom('c', 'getId'),
-                new AggregateTo('bouh', 'getId'),
+                new AggregateFrom('c'),
+                new AggregateTo('bouh'),
                 'citiesAre'
             )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
@@ -248,8 +250,8 @@ class HydratorRelational extends atoum
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
             ->and($hydrator->addRelation(new RelationOne(
-                new AggregateFrom('c', 'getId'),
-                new AggregateTo('bouh', 'getId'),
+                new AggregateFrom('c'),
+                new AggregateTo('bouh'),
                 'setCity'
             )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
@@ -279,8 +281,8 @@ class HydratorRelational extends atoum
             ->and($hydrator->setMetadataRepository($this->services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($this->services->get('UnitOfWork')))
             ->and($hydrator->addRelation(new RelationMany(
-                new AggregateFrom('c', 'getId'),
-                new AggregateTo('bouh', 'getId'),
+                new AggregateFrom('c'),
+                new AggregateTo('bouh'),
                 'citiesAre'
             )))
             ->and($hydrator->callableFinalizeAggregate(function ($result) {
@@ -323,6 +325,7 @@ class HydratorRelational extends atoum
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField([
+            'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'boo_id',
             'type'       => 'int'
@@ -349,6 +352,7 @@ class HydratorRelational extends atoum
         $metadata->setTable('T_CITY_CIT');
 
         $metadata->addField([
+            'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'cit_id',
             'type'       => 'int'
@@ -424,8 +428,8 @@ class HydratorRelational extends atoum
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
             ->and($hydrator->addRelation(new RelationMany(
-                new AggregateFrom('c', 'getId'),
-                new AggregateTo('bouh', 'getId'),
+                new AggregateFrom('c'),
+                new AggregateTo('bouh'),
                 'citiesAre'
             )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
@@ -465,6 +469,7 @@ class HydratorRelational extends atoum
         $metadata->setTable('T_BOUH_BOO');
 
         $metadata->addField([
+            'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'boo_id',
             'type'       => 'int'
@@ -491,6 +496,7 @@ class HydratorRelational extends atoum
         $metadata->setTable('T_CITY_CIT');
 
         $metadata->addField([
+            'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'cit_id',
             'type'       => 'int'
@@ -590,13 +596,13 @@ class HydratorRelational extends atoum
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
             ->and($hydrator->addRelation(new RelationMany(
-                new AggregateFrom('c', 'getId'),
-                new AggregateTo('bouh', 'getId'),
+                new AggregateFrom('c'),
+                new AggregateTo('bouh'),
                 'citiesAre'
             )))
             ->and($hydrator->addRelation(new RelationMany(
-                new AggregateFrom('park', 'getId'),
-                new AggregateTo('c', 'getId'),
+                new AggregateFrom('park'),
+                new AggregateTo('c'),
                 'parksAre'
             )))
             ->then($iterator = $hydrator->setResult($result)->getIterator())

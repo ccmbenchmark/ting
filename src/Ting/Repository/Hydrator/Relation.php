@@ -58,19 +58,9 @@ abstract class Relation
         return $this->from->getTarget();
     }
 
-    public function getSourceIdentifier()
-    {
-        return $this->from->getMethod();
-    }
-
     public function getTarget()
     {
         return $this->to->getTarget();
-    }
-
-    public function getTargetIdentifier()
-    {
-        return $this->to->getMethod();
     }
 
     public function getSetter()
