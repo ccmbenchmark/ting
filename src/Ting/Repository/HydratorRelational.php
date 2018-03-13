@@ -86,15 +86,15 @@ final class HydratorRelational extends Hydrator
     {
         $this->config->push([
             'source' => $relation->getSource(),
-            'sourceIdentifier' => $relation->getSourceIdentifier(),
             'target' => $relation->getTarget(),
-            'targetIdentifier' => $relation->getTargetIdentifier(),
             'targetSetter' => $relation->getSetter(),
             'many' => $relation instanceof RelationMany
         ]);
     }
 
     /**
+     * @throws Exception
+     *
      * @return \Generator
      */
     public function getIterator()
@@ -114,10 +114,9 @@ final class HydratorRelational extends Hydrator
                 }
 
                 $keyTarget = $this->saveTargetReference($config, $result);
-
                 if (isset($result[$config['source']]) === true) {
                     $keySource = $this->saveSourceReference($config, $result);
-                    $this->saveRessourceFor($config, $keyTarget, $keySource);
+                    $this->saveResourceFor($config, $keyTarget, $keySource);
                     unset($result[$config['source']]);
                 }
             }
@@ -127,7 +126,7 @@ final class HydratorRelational extends Hydrator
             }
         }
 
-        $this->assignRessourcesToReferences();
+        $this->assignResourcesToReferences();
 
         foreach ($results as $result) {
             yield $this->finalizeAggregate($result);
@@ -152,12 +151,13 @@ final class HydratorRelational extends Hydrator
      * @param array $config
      * @param array $result
      *
+     * @throws Exception
+     *
      * @return string
      */
     private function saveTargetReference($config, $result)
     {
-        $keyTarget = $config['target'] . '-'
-            . $this->getIdentifiers($config['target'], $result[$config['target']], $config['targetIdentifier']);
+        $keyTarget = $config['target'] . '-' . $this->getIdentifiers($config['target'], $result[$config['target']]);
 
         if (isset($this->referencesRelation[$keyTarget]) === false) {
             $this->referencesRelation[$keyTarget] = $result[$config['target']];
@@ -170,12 +170,13 @@ final class HydratorRelational extends Hydrator
      * @param array $config
      * @param array $result
      *
+     * @throws Exception
+     *
      * @return string
      */
     private function saveSourceReference($config, $result)
     {
-        $keySource = $config['source'] . '-'
-            . $this->getIdentifiers($config['source'], $result[$config['source']], $config['sourceIdentifier']);
+        $keySource = $config['source'] . '-' . $this->getIdentifiers($config['source'], $result[$config['source']]);
 
         if (isset($this->referencesRelation[$keySource]) === false) {
             $this->referencesRelation[$keySource] = $result[$config['source']];
@@ -189,7 +190,7 @@ final class HydratorRelational extends Hydrator
      * @param string $keyTarget
      * @param string $keySource
      */
-    private function saveRessourceFor($config, $keyTarget, $keySource)
+    private function saveResourceFor($config, $keyTarget, $keySource)
     {
         if (isset($this->resources[$keyTarget][$config['targetSetter']]) === false) {
             $this->resources[$keyTarget][$config['targetSetter']] = [];
@@ -204,7 +205,7 @@ final class HydratorRelational extends Hydrator
         }
     }
 
-    private function assignRessourcesToReferences()
+    private function assignResourcesToReferences()
     {
         foreach ($this->referencesRelation as $referenceKey => $reference) {
             if (isset($this->resources[$referenceKey]) === false) {
@@ -232,15 +233,23 @@ final class HydratorRelational extends Hydrator
         return $callableFinalizeAggregate($result);
     }
 
-    private function getIdentifiers($table, $entity, $identifier)
+    /**
+     * @param string $table
+     * @param object $entity
+     *
+     * @throws Exception
+     *
+     * @return string
+     */
+    private function getIdentifiers($table, $entity)
     {
-        if ($identifier !== null) {
-            return $entity->{$identifier}();
-        }
-
         $id = '';
         foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
             $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+        }
+
+        if ($id === '') {
+            throw new Exception(sprintf('No primary found for "%s"', $this->metadataList[$table]->getEntity()));
         }
 
         return $id;
