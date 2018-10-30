@@ -310,6 +310,13 @@ class Driver implements DriverInterface
             case "double":
                 return $value;
                 break;
+            case 'array':
+                $quotedValues = [];
+                foreach ($value as $item) {
+                    $quotedValues[] = $this->quoteValue($item);
+                }
+                return join(',', $quotedValues);
+                break;
             default:
                 return '"' . $this->connection->real_escape_string($value) . '"';
                 break;
