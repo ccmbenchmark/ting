@@ -173,7 +173,7 @@ class Generator
      * @param DriverInterface $driver
      * @return array
      */
-    protected function getSqlAndParamsByCriteria(array $criteria, array $order = null, $limit = null, DriverInterface $driver)
+    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver, array $order = null, $limit = null)
     {
         $fields = $this->escapeFields($this->fields, $driver);
 
@@ -210,14 +210,14 @@ class Generator
      */
     public function getByCriteria(
         array $criteria,
-        array $order = null,
-        $limit = null,
         CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false
+        $forceMaster = false,
+        array $order = null,
+        $limit = null
     ) {
         $driver = $this->getDriver($forceMaster);
 
-        list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $order, $limit, $driver);
+        list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $driver, $order, $limit);
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
         $query->setParams($params);

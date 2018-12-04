@@ -111,7 +111,7 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], ['name' => 'ASC'], null,$services->get('CollectionFactory'), true))
+            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], true, $services->get('CollectionFactory'), ['name' => 'ASC']))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('master')
@@ -135,7 +135,7 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], ['name' => 'ASC'], 1,$services->get('CollectionFactory'), true))
+            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], true,$services->get('CollectionFactory'), ['name' => 'ASC'], 1))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('master')

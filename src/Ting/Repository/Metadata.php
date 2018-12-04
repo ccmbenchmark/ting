@@ -551,11 +551,11 @@ class Metadata
      */
     public function getByCriteria(
         array $criteria,
-        array $order = null,
-        $limit = null,
         Connection $connection,
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
+        array $order = null,
+        $limit = null,
         $forceMaster = false
     ) {
         $fields = array_keys($this->fields);
@@ -569,7 +569,7 @@ class Metadata
 
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
 
-        return $queryGenerator->getByCriteria($criteriaColumn, $order, $limit, $collectionFactory, $forceMaster);
+        return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $order, $limit, $forceMaster);
     }
 
     /**

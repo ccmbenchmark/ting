@@ -291,11 +291,11 @@ abstract class Repository
     {
         $query = $this->metadata->getByCriteria(
             $criteria,
-            $order,
-            $limit,
             $this->connection,
             $this->queryFactory,
             $this->collectionFactory,
+            $order,
+            $limit,
             (bool)$forceMaster
         );
 
