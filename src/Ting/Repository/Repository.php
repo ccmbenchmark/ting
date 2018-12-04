@@ -279,14 +279,20 @@ abstract class Repository
     }
 
     /**
-     * @param array $criteria
-     * @param bool  $forceMaster
-     * @return CollectionInterface
+     * @param array      $criteria
+     * @param array|null $order
+     * @param null       $limit
+     * @param bool       $forceMaster
+     * @return \CCMBenchmark\Ting\Repository\CollectionInterface
+     * @throws \CCMBenchmark\Ting\Exception
+     * @throws \CCMBenchmark\Ting\Query\QueryException
      */
-    public function getBy(array $criteria, $forceMaster = false)
+    public function getBy(array $criteria, array $order = null, $limit = null, $forceMaster = false)
     {
         $query = $this->metadata->getByCriteria(
             $criteria,
+            $order,
+            $limit,
             $this->connection,
             $this->queryFactory,
             $this->collectionFactory,

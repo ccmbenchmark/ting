@@ -168,10 +168,12 @@ class Generator
 
     /**
      * @param array           $criteria
+     * @param array|null      $order
+     * @param null            $limit
      * @param DriverInterface $driver
      * @return array
      */
-    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver)
+    protected function getSqlAndParamsByCriteria(array $criteria, array $order = null, $limit = null, DriverInterface $driver)
     {
         $fields = $this->escapeFields($this->fields, $driver);
 
@@ -180,6 +182,16 @@ class Generator
         list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
+        if (!is_null($order)) {
+            $orderClause = $this->generateOrder($order);
+            $sql .= $orderClause;
+        }
+
+        if (!is_null($limit) && is_int($limit)) {
+            $limitClause = $this->generateLimit($limit);
+            $sql .= $limitClause;
+        }
+
         return [$sql, $params];
     }
 
@@ -187,6 +199,8 @@ class Generator
      * Returns a Query, allowing to fetch an object by criteria (associative array).
      *
      * @param array                      $criteria
+     * @param array|null                 $order
+     * @param null                       $limit
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
      *
@@ -196,12 +210,14 @@ class Generator
      */
     public function getByCriteria(
         array $criteria,
+        array $order = null,
+        $limit = null,
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false
     ) {
         $driver = $this->getDriver($forceMaster);
 
-        list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $driver);
+        list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $order, $limit, $driver);
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
         $query->setParams($params);
@@ -350,5 +366,30 @@ class Generator
         }
 
         return [$conditions, $values];
+    }
+
+    /**
+     * Generate Order params to add to query
+     *
+     * @param $fields
+     * @param $values
+     *
+     * @return string
+     */
+    protected function generateOrder($orderList)
+    {
+        $orderClause = ' ORDER BY ';
+
+        foreach ($orderList as $field => $value) {
+            $orderClause .= $field . ' ' . $value . ',';
+        }
+
+        $orderClause = rtrim($orderClause, ',');
+
+        return $orderClause;
+    }
+
+    protected function generateLimit($limit) {
+        return ' LIMIT ' . $limit;
     }
 }
