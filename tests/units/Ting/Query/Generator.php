@@ -97,6 +97,53 @@ class Generator extends atoum
         ;
     }
 
+    public function testGetByCriteriaWithArrayValueAndOrderShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    '',
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], ['name' => 'ASC'], null,$services->get('CollectionFactory'), true))
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockConnection)
+                ->call('master')
+                    ->once()
+
+        ;
+    }
+
+
+    public function testGetByCriteriaWithArrayValueAndOrderLimitShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    '',
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], ['name' => 'ASC'], 1,$services->get('CollectionFactory'), true))
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockConnection)
+                ->call('master')
+                    ->once()
+
+        ;
+    }
+
     public function testGetByCriteriaWithArrayValueShouldReturnAQuery()
     {
         $services = new \CCMBenchmark\Ting\Services();
@@ -111,7 +158,7 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true))
+            ->object($generator->getByCriteria(['name' => ['Xavier','Olivier']], null, null,$services->get('CollectionFactory'), true))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('master')
@@ -134,7 +181,7 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByCriteria(['name' => 'Xavier'], $services->get('CollectionFactory'), true))
+            ->object($generator->getByCriteria(['name' => 'Xavier'], null, null,$services->get('CollectionFactory'), true))
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
             ->mock($this->mockConnection)
                 ->call('master')
