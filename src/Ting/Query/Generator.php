@@ -199,10 +199,10 @@ class Generator
      * Returns a Query, allowing to fetch an object by criteria (associative array).
      *
      * @param array                      $criteria
-     * @param array|null                 $order
-     * @param null                       $limit
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
+     * @param array|null                 $order
+     * @param null                       $limit
      *
      * @return Query
      *

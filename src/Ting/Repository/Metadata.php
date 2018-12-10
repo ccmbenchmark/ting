@@ -538,12 +538,12 @@ class Metadata
      * Retrieve matching lines from the table, according to the criteria
      *
      * @param array                                                    $criteria
-     * @param array                                                    $order
-     * @param                                                          $limit
      * @param \CCMBenchmark\Ting\Connection                            $connection
      * @param \CCMBenchmark\Ting\Query\QueryFactoryInterface           $queryFactory
      * @param \CCMBenchmark\Ting\Repository\CollectionFactoryInterface $collectionFactory
      * @param bool                                                     $forceMaster
+     * @param array                                                    $order
+     * @param int                                                      $limit
      * @return \CCMBenchmark\Ting\Query\Query
      * @throws \CCMBenchmark\Ting\Exception
      *
@@ -554,9 +554,9 @@ class Metadata
         Connection $connection,
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
+        $forceMaster = false,
         array $order = null,
-        $limit = null,
-        $forceMaster = false
+        $limit = null
     ) {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
@@ -569,7 +569,7 @@ class Metadata
 
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
 
-        return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $order, $limit, $forceMaster);
+        return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $forceMaster, $order, $limit);
     }
 
     /**

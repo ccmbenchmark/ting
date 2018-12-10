@@ -280,23 +280,23 @@ abstract class Repository
 
     /**
      * @param array      $criteria
+     * @param bool       $forceMaster
      * @param array|null $order
      * @param null       $limit
-     * @param bool       $forceMaster
      * @return \CCMBenchmark\Ting\Repository\CollectionInterface
      * @throws \CCMBenchmark\Ting\Exception
      * @throws \CCMBenchmark\Ting\Query\QueryException
      */
-    public function getBy(array $criteria, array $order = null, $limit = null, $forceMaster = false)
+    public function getBy(array $criteria, $forceMaster = false, array $order = null, $limit = null)
     {
         $query = $this->metadata->getByCriteria(
             $criteria,
             $this->connection,
             $this->queryFactory,
             $this->collectionFactory,
+            (bool)$forceMaster,
             $order,
-            $limit,
-            (bool)$forceMaster
+            $limit
         );
 
         return $query->query($this->getCollection(new HydratorSingleObject()));
