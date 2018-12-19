@@ -377,7 +377,7 @@ class Generator
      * @param array     $orderList
      * @return string
      */
-    protected function generateOrder($orderList)
+    protected function generateOrder(array $orderList)
     {
         $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($orderList), $driver);
