@@ -537,15 +537,15 @@ class Metadata
     /**
      * Retrieve matching lines from the table, according to the criteria
      *
-     * @param array                                                    $criteria
-     * @param \CCMBenchmark\Ting\Connection                            $connection
-     * @param \CCMBenchmark\Ting\Query\QueryFactoryInterface           $queryFactory
-     * @param \CCMBenchmark\Ting\Repository\CollectionFactoryInterface $collectionFactory
-     * @param bool                                                     $forceMaster
-     * @param array                                                    $order
-     * @param int                                                      $limit
+     * @param array                      $criteria
+     * @param Connection                 $connection
+     * @param QueryFactoryInterface      $queryFactory
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param bool                       $forceMaster
+     * @param array                      $order
+     * @param int                        $limit
      * @return \CCMBenchmark\Ting\Query\Query
-     * @throws \CCMBenchmark\Ting\Exception
+     * @throws Exception
      *
      * @internal
      */

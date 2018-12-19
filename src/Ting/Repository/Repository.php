@@ -281,11 +281,9 @@ abstract class Repository
     /**
      * @param array      $criteria
      * @param bool       $forceMaster
-     * @param array|null $order
-     * @param null       $limit
-     * @return \CCMBenchmark\Ting\Repository\CollectionInterface
-     * @throws \CCMBenchmark\Ting\Exception
-     * @throws \CCMBenchmark\Ting\Query\QueryException
+     * @param array      $order
+     * @param int        $limit
+     * @return CollectionInterface
      */
     public function getBy(array $criteria, $forceMaster = false, array $order = null, $limit = null)
     {

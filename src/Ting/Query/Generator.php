@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 class Generator
@@ -168,8 +169,8 @@ class Generator
 
     /**
      * @param array           $criteria
-     * @param array|null      $order
-     * @param null            $limit
+     * @param array           $order
+     * @param int             $limit
      * @param DriverInterface $driver
      * @return array
      */
@@ -179,15 +180,17 @@ class Generator
 
         $sql = $this->getSelect($fields, $driver);
 
+        $limit = (int)$limit;
+
         list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
-        if (!is_null($order)) {
+        if ($order !== null) {
             $orderClause = $this->generateOrder($order);
             $sql .= $orderClause;
         }
 
-        if (!is_null($limit) && is_int($limit)) {
+        if (($limit !== null) && ($limit > 0)) {
             $limitClause = $this->generateLimit($limit);
             $sql .= $limitClause;
         }
@@ -201,8 +204,8 @@ class Generator
      * @param array                      $criteria
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
-     * @param array|null                 $order
-     * @param null                       $limit
+     * @param array                      $order
+     * @param int                        $limit
      *
      * @return Query
      *
@@ -371,20 +374,28 @@ class Generator
     /**
      * Generate Order params to add to query
      *
-     * @param $fields
-     * @param $values
-     *
+     * @param array     $orderList
      * @return string
      */
     protected function generateOrder($orderList)
     {
-        $orderClause = ' ORDER BY ';
+        $driver = $this->getDriver(true);
+        $fields = $this->escapeFields(array_keys($orderList), $driver);
 
+        $orderClause = null;
+
+        $i = 0;
         foreach ($orderList as $field => $value) {
-            $orderClause .= $field . ' ' . $value . ',';
+            $value = strtoupper($value);
+            if (in_array($value, ['ASC', 'DESC'])) {
+                $orderClause[] = $fields[$i] . ' ' . $value;
+            }
+            $i++;
         }
 
-        $orderClause = rtrim($orderClause, ',');
+        if ($orderClause !== null) {
+            $orderClause = ' ORDER BY ' . implode(',', $orderClause);
+        }
 
         return $orderClause;
     }
