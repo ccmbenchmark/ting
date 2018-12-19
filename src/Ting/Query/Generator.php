@@ -169,8 +169,8 @@ class Generator
 
     /**
      * @param array           $criteria
-     * @param array           $order
-     * @param int             $limit
+     * @param array|null      $order
+     * @param int|null        $limit
      * @param DriverInterface $driver
      * @return array
      */
@@ -204,8 +204,8 @@ class Generator
      * @param array                      $criteria
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
-     * @param array                      $order
-     * @param int                        $limit
+     * @param array|null                 $order
+     * @param int|null                   $limit
      *
      * @return Query
      *
