@@ -202,8 +202,8 @@ class Generator
      * @param array                      $criteria
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
-     * @param array|null                 $order
-     * @param int|null                   $limit
+     * @param array                      $order
+     * @param int                        $limit
      *
      * @return Query
      *
@@ -213,8 +213,8 @@ class Generator
         array $criteria,
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false,
-        array $order = null,
-        $limit = null
+        array $order = [],
+        $limit = 0
     ) {
         $driver = $this->getDriver($forceMaster);
 
@@ -391,7 +391,7 @@ class Generator
             $i++;
         }
 
-        if (strlen($orderClause) > 0) {
+        if (count($orderList) > 0) {
             $orderClause = ' ORDER BY ' . implode(',', $orderClause);
         }
 
