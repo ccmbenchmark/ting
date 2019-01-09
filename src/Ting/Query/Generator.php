@@ -169,12 +169,12 @@ class Generator
 
     /**
      * @param array           $criteria
-     * @param array|null      $order
-     * @param int|null        $limit
      * @param DriverInterface $driver
+     * @param array      $order
+     * @param int        $limit
      * @return array
      */
-    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver, array $order = null, $limit = null)
+    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver, array $order = [], $limit = 0)
     {
         $fields = $this->escapeFields($this->fields, $driver);
 
@@ -185,14 +185,12 @@ class Generator
         list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
-        if ($order !== null) {
-            $orderClause = $this->generateOrder($order);
-            $sql .= $orderClause;
+        if (count($order) > 0) {
+            $sql .= $this->generateOrder($order);
         }
 
-        if (($limit !== null) && ($limit > 0)) {
-            $limitClause = $this->generateLimit($limit);
-            $sql .= $limitClause;
+        if ($limit > 0) {
+            $sql .= $this->generateLimit($limit);
         }
 
         return [$sql, $params];
@@ -382,7 +380,7 @@ class Generator
         $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($orderList), $driver);
 
-        $orderClause = null;
+        $orderClause = '';
 
         $i = 0;
         foreach ($orderList as $field => $value) {
@@ -393,13 +391,19 @@ class Generator
             $i++;
         }
 
-        if ($orderClause !== null) {
+        if (strlen($orderClause) > 0) {
             $orderClause = ' ORDER BY ' . implode(',', $orderClause);
         }
 
         return $orderClause;
     }
 
+    /**
+     * Generate Limit params to add to query
+     *
+     * @param $limit
+     * @return string
+     */
     protected function generateLimit($limit) {
         return ' LIMIT ' . $limit;
     }
