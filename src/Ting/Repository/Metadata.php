@@ -555,8 +555,8 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false,
-        array $order = null,
-        $limit = null
+        array $order = [],
+        $limit = 0
     ) {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(

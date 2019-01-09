@@ -285,7 +285,7 @@ abstract class Repository
      * @param int        $limit
      * @return CollectionInterface
      */
-    public function getBy(array $criteria, $forceMaster = false, array $order = null, $limit = null)
+    public function getBy(array $criteria, $forceMaster = false, array $order = [], $limit = 0)
     {
         $query = $this->metadata->getByCriteria(
             $criteria,
