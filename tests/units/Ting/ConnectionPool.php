@@ -274,4 +274,95 @@ class ConnectionPool extends atoum
                 ->string($driver2->getName())
                 ->isIdenticalTo('connection2');
     }
+
+    public function testDefaultTimezoneIsCorrectlyInitializedIfProvided()
+    {
+        $timezone = 'coin coin coin';
+
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(['default_timezone' => $timezone]))
+            ->then()
+                ->string($defaultTimezone = $connectionPool->getDefaultTimezone())
+                ->isIdenticalTo($timezone);
+    }
+
+    public function testDefaultTimezoneIsSetToGMTByDefault()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig([]))
+            ->then()
+                ->string($defaultTimezone = $connectionPool->getDefaultTimezone())
+                ->isIdenticalTo('GMT');
+    }
+
+    public function testConnectionPoolShouldSetTheTimezoneOfTheDriver()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'connectionName' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ]
+                ]))
+            ->and($driver = $connectionPool->master('connectionName', 'databaseOnConnection'))
+            ->then()
+                ->string($timezone = $driver->getTimezone())
+                ->isIdenticalTo('GMT')
+        ;
+
+        $timezone = 'coin coin';
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'default_timezone' => $timezone,
+                    'connectionName' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ]
+                    ]
+                ]))
+            ->and($driver = $connectionPool->master('connectionName', 'databaseOnConnection'))
+            ->then()
+                ->string($driverTimezone = $driver->getTimezone())
+                ->isIdenticalTo($timezone)
+        ;
+
+        $defaultTimezone = 'coin coin';
+        $connectionTimezone = 'pan pan';
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'default_timezone' => $defaultTimezone,
+                    'connectionName' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306,
+                            'timezone'  => $connectionTimezone
+                        ]
+                    ]
+                ]))
+            ->and($driver = $connectionPool->master('connectionName', 'databaseOnConnection'))
+            ->then()
+                ->string($driverTimezone = $driver->getTimezone())
+                ->isIdenticalTo($connectionTimezone)
+        ;
+    }
 }

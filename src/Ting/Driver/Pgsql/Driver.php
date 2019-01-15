@@ -180,6 +180,14 @@ class Driver implements DriverInterface
         return $this;
     }
 
+    /**
+     * @param $timezone
+     */
+    public function setTimezone($timezone)
+    {
+        pg_query($this->connection, sprintf('SET timezone TO "%s";', $timezone));
+    }
+
     public function setLogger(DriverLoggerInterface $logger = null)
     {
         $this->logger = $logger;

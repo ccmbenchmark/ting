@@ -239,6 +239,14 @@ class Driver implements DriverInterface
     }
 
     /**
+     * @param string $timezone
+     */
+    public function setTimezone($timezone)
+    {
+        $this->connection->query(sprintf('SET time_zone = "%s";', $timezone));
+    }
+
+    /**
      * @param callable $callback
      * @return $this
      */

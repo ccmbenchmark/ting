@@ -33,6 +33,8 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 class Driver implements DriverInterface
 {
     private $name;
+    /** @var string */
+    private $timezone;
 
     public static function forConnectionKey($connectionConfig, $database, \Closure $callback)
     {
@@ -175,5 +177,21 @@ class Driver implements DriverInterface
     public function closeStatement($statement)
     {
 
+    }
+
+    /**
+     * @param string $timezone
+     */
+    public function setTimezone($timezone)
+    {
+        $this->timezone = $timezone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimezone()
+    {
+        return $this->timezone;
     }
 }
