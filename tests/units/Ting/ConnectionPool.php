@@ -275,26 +275,25 @@ class ConnectionPool extends atoum
                 ->isIdenticalTo('connection2');
     }
 
-    public function testDefaultTimezoneIsCorrectlyInitializedIfProvided()
-    {
-        $timezone = 'coin coin coin';
-
-        $this
-            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
-            ->and($connectionPool->setConfig(['default_timezone' => $timezone]))
-            ->then()
-                ->string($defaultTimezone = $connectionPool->getDefaultTimezone())
-                ->isIdenticalTo($timezone);
-    }
-
-    public function testDefaultTimezoneIsSetToGMTByDefault()
+    public function testPoolShouldThrowExceptionIfTimezoneIsSetButDriverDoesNotSupportIt()
     {
         $this
-            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
-            ->and($connectionPool->setConfig([]))
-            ->then()
-                ->string($defaultTimezone = $connectionPool->getDefaultTimezone())
-                ->isIdenticalTo('GMT');
+            ->given($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig([
+                'connectionName' => [
+                    'namespace' => '\tests\fixtures\FakeDriver',
+                    'master'    => [
+                        'host'     => 'master',
+                        'user'     => 'test',
+                        'password' => 'test',
+                        'port'     => 3306,
+                        'timezone' => 'Europe/Paris',
+                    ]
+                ]
+            ]))
+            ->if($driver = $connectionPool->master('connectionName', 'databaseOnConnection'))
+
+        ;
     }
 
     public function testConnectionPoolShouldSetTheTimezoneOfTheDriver()
@@ -315,39 +314,15 @@ class ConnectionPool extends atoum
                 ]))
             ->and($driver = $connectionPool->master('connectionName', 'databaseOnConnection'))
             ->then()
-                ->string($timezone = $driver->getTimezone())
-                ->isIdenticalTo('GMT')
+                ->variable($timezone = $driver->getTimezone())
+                ->isIdenticalTo(null)
         ;
 
-        $timezone = 'coin coin';
-        $this
-            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
-            ->and($connectionPool->setConfig(
-                [
-                    'default_timezone' => $timezone,
-                    'connectionName' => [
-                        'namespace' => '\tests\fixtures\FakeDriver',
-                        'master'    => [
-                            'host'      => 'master',
-                            'user'      => 'test',
-                            'password'  => 'test',
-                            'port'      => 3306
-                        ]
-                    ]
-                ]))
-            ->and($driver = $connectionPool->master('connectionName', 'databaseOnConnection'))
-            ->then()
-                ->string($driverTimezone = $driver->getTimezone())
-                ->isIdenticalTo($timezone)
-        ;
-
-        $defaultTimezone = 'coin coin';
         $connectionTimezone = 'pan pan';
         $this
             ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
             ->and($connectionPool->setConfig(
                 [
-                    'default_timezone' => $defaultTimezone,
                     'connectionName' => [
                         'namespace' => '\tests\fixtures\FakeDriver',
                         'master'    => [
@@ -363,6 +338,31 @@ class ConnectionPool extends atoum
             ->then()
                 ->string($driverTimezone = $driver->getTimezone())
                 ->isIdenticalTo($connectionTimezone)
+        ;
+    }
+
+    public function testThrowExceptionIfDriverDoesNotSupportGivenTimezone()
+    {
+        $this
+            ->given($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->if($connectionPool->setConfig(
+                [
+                    'connectionName' => [
+                        'namespace' => '\tests\fixtures\FaultyDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306,
+                            'timezone'  => 'pan pan'
+                        ]
+                    ]
+                ]))
+            ->then()
+                ->exception(function () use ($connectionPool) {
+                    $connectionPool->master('connectionName', 'databaseOnConnection');
+                })
+                ->hasMessage('tests\fixtures\FaultyDriver\Driver does not implement "setTimezone". This method is needed to support the timezone on connections')
         ;
     }
 }

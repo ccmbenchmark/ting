@@ -51,11 +51,6 @@ class ConnectionPool implements ConnectionPoolInterface
     protected $logger = null;
 
     /**
-     * @var string
-     */
-    protected $defaultTimezone = 'GMT';
-
-    /**
      * @param DriverLoggerInterface $logger
      */
     public function __construct(DriverLoggerInterface $logger = null)
@@ -69,9 +64,6 @@ class ConnectionPool implements ConnectionPoolInterface
     public function setConfig($config)
     {
         $this->connectionConfig = $config;
-        if (isset($config['default_timezone'])) {
-            $this->defaultTimezone = $config['default_timezone'];
-        }
     }
 
     /**
@@ -183,8 +175,18 @@ class ConnectionPool implements ConnectionPoolInterface
         $this->connections[$connectionKey]->setName($name);
         $this->connections[$connectionKey]->setDatabase($database);
 
-        $timezone = (isset($config['timezone'])) ? $config['timezone'] : $this->defaultTimezone;
-        $this->connections[$connectionKey]->setTimezone($timezone);
+        if (isset($config['timezone'])) {
+            if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
+                $this->connections[$connectionKey]->setTimezone($config['timezone']);
+            } else {
+                $classname = get_class($this->connections[$connectionKey]);
+                $message = sprintf(
+                    '%s does not implement "setTimezone". This method is needed to support the timezone on connections',
+                    $classname
+                );
+                throw new Exception($message);
+            }
+        }
 
         if ($charset !== null) {
             $this->connections[$connectionKey]->setCharset($charset);
@@ -216,10 +218,5 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         return $this->connectionConfig[$name]['namespace'] . '\\Driver';
-    }
-
-    public function getDefaultTimezone()
-    {
-        return $this->defaultTimezone;
     }
 }

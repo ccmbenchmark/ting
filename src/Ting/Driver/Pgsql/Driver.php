@@ -92,12 +92,19 @@ class Driver implements DriverInterface
      */
     public static function getConnectionKey(array $connectionConfig, $database)
     {
-        return
-            $connectionConfig['host'] . '|' .
-            $connectionConfig['port'] . '|' .
-            $connectionConfig['user'] . '|' .
-            $connectionConfig['password'] . '|' .
-            $database;
+        $variants = [
+            $connectionConfig['host'],
+            $connectionConfig['port'],
+            $connectionConfig['user'],
+            $connectionConfig['password'],
+            $database,
+        ];
+
+        if (isset($connectionConfig['timezone'])) {
+            $variants[] = $connectionConfig['timezone'];
+        }
+
+        return join('|', $variants);
     }
 
     /**

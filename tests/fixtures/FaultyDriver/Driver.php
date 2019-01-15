@@ -22,7 +22,7 @@
  *
  **********************************************************************/
 
-namespace tests\fixtures\FakeDriver;
+namespace tests\fixtures\FaultyDriver;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
@@ -177,21 +177,5 @@ class Driver implements DriverInterface
     public function closeStatement($statement)
     {
 
-    }
-
-    /**
-     * @param string $timezone
-     */
-    public function setTimezone($timezone)
-    {
-        $this->timezone = $timezone;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getTimezone()
-    {
-        return $this->timezone;
     }
 }

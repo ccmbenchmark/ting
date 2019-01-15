@@ -39,6 +39,20 @@ class Driver extends atoum
         ;
     }
 
+    public function testDifferentTimezoneShouldCreateTwoConnectionKeys()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+
+        $connectionConfig = ['host' => '127.0.0.1', 'user' => 'app_read', 'password' => 'pzefgdfg', 'port' => 3306];
+        $connectionConfigWithTimezone = array_merge($connectionConfig, ['timezone' => 'GMT+3']);
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->string($driver->getConnectionKey($connectionConfigWithTimezone, 'myDatabase'))
+            ->isNotEqualTo($driver->getConnectionKey($connectionConfig, 'myDatabase'))
+            ->contains('GMT+3')
+        ;
+    }
+
     public function testShouldImplementDriverInterface()
     {
         $this
