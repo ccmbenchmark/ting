@@ -186,7 +186,7 @@ class Generator
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
         if (count($order) > 0) {
-            $sql .= $this->generateOrder($order);
+            $sql .= $this->generateOrder($order, $driver);
         }
 
         if ($limit > 0) {
@@ -372,12 +372,12 @@ class Generator
     /**
      * Generate Order params to add to query
      *
-     * @param array     $orderList
+     * @param array             $orderList
+     * @param DriverInterface   $driver
      * @return string
      */
-    protected function generateOrder(array $orderList)
+    protected function generateOrder(array $orderList, DriverInterface $driver)
     {
-        $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($orderList), $driver);
 
         $orderClause = '';
