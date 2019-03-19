@@ -1,4 +1,4 @@
-image: ccmbenchmark/php5:latest
+image: ccmbenchmark/php:7.1
 pipelines:
   default:
     - step:

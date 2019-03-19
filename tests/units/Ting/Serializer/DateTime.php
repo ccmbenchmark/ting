@@ -34,8 +34,8 @@ class DateTime extends atoum
         $datetime = new \DateTime('now');
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
-            ->object($serializer->unserialize($serializer->serialize($datetime)))
-                ->isEqualTo($datetime)
+            ->string($serializer->unserialize($serializer->serialize($datetime))->format('Y-m-d H:i:s'))
+                ->isEqualTo($datetime->format('Y-m-d H:i:s'))
         ;
     }
 

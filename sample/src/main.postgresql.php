@@ -56,6 +56,14 @@ $connections = [
 
 $services->get('ConnectionPool')->setConfig($connections);
 
+$options = [
+    'world' => [
+        'timezone' => 'EETDST'
+    ]
+];
+$services->get('ConnectionPool')->setDatabaseOptions($options);
+
+
 try {
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
     var_dump($cityRepository->get(['cit_id' => 3]));

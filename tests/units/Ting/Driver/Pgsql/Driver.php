@@ -694,4 +694,32 @@ class Driver extends atoum
             ->isInstanceOf('CCMBenchmark\Ting\Driver\NeverConnectedException')
         ;
     }
+
+    public function testTimezone()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_query = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
+            ->variable($driver->setTimezone('timezone'))
+            ->isNull()
+        ;
+    }
+
+    public function testDefaultTimezone()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_query = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
+            ->variable($driver->setTimezone(null))
+            ->isNull()
+        ;
+    }
 }

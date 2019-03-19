@@ -50,6 +50,16 @@ class Driver extends atoum
             ->isInstanceOf('\CCMBenchmark\Ting\Driver\DriverInterface');
     }
 
+    public function testShouldUseGivenDriver()
+    {
+        $mockPool = new \mock\Fake\Mysqli();
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+
+        $this
+            ->object($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockPool, $mockDriver))
+            ->isInstanceOf('\CCMBenchmark\Ting\Driver\DriverInterface');
+    }
+
     public function testConnectShouldReturnSelf()
     {
 
@@ -786,6 +796,62 @@ class Driver extends atoum
                 $driver->ping();
             })
                 ->isInstanceOf('CCMBenchmark\Ting\Driver\NeverConnectedException')
+        ;
+    }
+
+    public function testPingException()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->real_connect[1] = true;
+        $this->calling($mockDriver)->real_connect[2]->throw = new \Exception();
+
+        $hostName = 'hostname.test';
+        $userName = 'user.test';
+        $password = 'password.test';
+        $database = uniqid('database');
+        $port = 1234;
+
+        $this
+            ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->connect($hostName, $userName, $password, $port))
+            ->boolean($driver->ping())
+            ->isFalse()
+            ->mock($mockDriver)
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, null, $port)
+            // 1 call for connect()
+            ->twice()
+        ;
+    }
+
+    public function testTimezone()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setTimezone('timezone'))
+            ->mock($mockDriver)
+                ->call('query')
+                    ->once()
+        ;
+    }
+
+    public function testDefaultTimezone()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setTimezone(null))
+            ->mock($mockDriver)
+            ->call('query')
+            ->once()
         ;
     }
 }

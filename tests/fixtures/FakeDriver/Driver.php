@@ -176,4 +176,8 @@ class Driver implements DriverInterface
     {
 
     }
+
+    public function setTimezone($timezone)
+    {
+    }
 }

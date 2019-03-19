@@ -274,4 +274,29 @@ class ConnectionPool extends atoum
                 ->string($driver2->getName())
                 ->isIdenticalTo('connection2');
     }
+
+    public function testConnectionShouldRetrunDriverWhenTimezoneSetted()
+    {
+        $this
+            ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
+            ->and($connectionPool->setConfig(
+                [
+                    'bouh' => [
+                        'namespace' => '\tests\fixtures\FakeDriver',
+                        'master'    => [
+                            'host'      => 'master',
+                            'user'      => 'test',
+                            'password'  => 'test',
+                            'port'      => 3306
+                        ],
+                    ]
+                ]))
+            ->and($connectionPool->setDatabaseOptions([
+                "bouhDb" => [
+                    'timezone' => 'UTF-8'
+                ]
+            ]))
+            ->object($connectionPool->master('bouh', 'bouhDb'))
+            ->isInstanceOf('\tests\fixtures\FakeDriver\Driver');
+    }
 }

@@ -501,4 +501,17 @@ class Driver implements DriverInterface
             return false;
         }
     }
+
+    /**
+     * @param $timezone
+     */
+    public function setTimezone($timezone)
+    {
+        $query = 'SET time_zone = "%s";';
+        if ($timezone === null) {
+            $timezone = 'DEFAULT';
+            $query = str_replace('"', '', $query);
+        }
+        $this->connection->query(sprintf($query, $timezone));
+    }
 }
