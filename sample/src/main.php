@@ -61,6 +61,13 @@ $connections = [
 
 $services->get('ConnectionPool')->setConfig($connections);
 
+$options = [
+    'world' => [
+        'timezone' => 'UTC+1'
+    ]
+];
+$services->get('ConnectionPool')->setDatabaseOptions($options);
+
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\ProducerRepository');
 
 

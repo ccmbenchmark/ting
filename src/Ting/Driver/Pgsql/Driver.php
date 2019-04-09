@@ -468,4 +468,17 @@ class Driver implements DriverInterface
         }
         return pg_ping($this->connection);
     }
+
+    /**
+     * @param $timezone
+     */
+    public function setTimezone($timezone)
+    {
+        $query = 'SET timezone = "%s";';
+        if ($timezone === null) {
+            $timezone = 'DEFAULT';
+            $query = str_replace('"', '', $query);
+        }
+        pg_query($this->connection, sprintf($query, $timezone));
+    }
 }

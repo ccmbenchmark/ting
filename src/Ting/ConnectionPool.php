@@ -38,6 +38,11 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * @var array
      */
+    protected $databaseOptions = array();
+
+    /**
+     * @var array
+     */
     protected $connectionSlaves = array();
 
     /**
@@ -64,6 +69,11 @@ class ConnectionPool implements ConnectionPoolInterface
     public function setConfig($config)
     {
         $this->connectionConfig = $config;
+    }
+
+    public function setDatabaseOptions($options)
+    {
+        $this->databaseOptions = $options;
     }
 
     /**
@@ -177,6 +187,11 @@ class ConnectionPool implements ConnectionPoolInterface
 
         if ($charset !== null) {
             $this->connections[$connectionKey]->setCharset($charset);
+        }
+
+        if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
+            $timezone = isset($this->databaseOptions[$database]['timezone']) !== false ?: null;
+            $this->connections[$connectionKey]->setTimezone($timezone);
         }
 
         return $this->connections[$connectionKey];
