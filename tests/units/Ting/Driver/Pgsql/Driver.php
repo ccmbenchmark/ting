@@ -684,6 +684,27 @@ class Driver extends atoum
         ;
     }
 
+    public function testPingShouldCallPingWithCharset()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_ping = true;
+
+        $mockDriver = new \mock\Fake\Pgsql();
+        $this->function->pg_set_client_encoding = function ($connection, $charset) use (&$outerCharset) {
+            $outerCharset = $charset;
+        };
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
+            ->then($driver->setCharset('UTF8'))
+            ->boolean($driver->ping())
+            ->isTrue()
+            ->function('pg_set_client_encoding')->wasCalled()->twice()
+        ;
+    }
+
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
     {
         $this
