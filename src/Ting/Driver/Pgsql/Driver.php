@@ -466,7 +466,14 @@ class Driver implements DriverInterface
         if ($this->connection === null) {
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
         }
-        return pg_ping($this->connection);
+
+        $result = pg_ping($this->connection);
+
+        if ($result === true && $this->currentCharset !== null) {
+            pg_set_client_encoding($this->connection, $this->currentCharset);
+        }
+
+        return $result;
     }
 
     /**

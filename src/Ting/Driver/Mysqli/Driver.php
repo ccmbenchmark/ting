@@ -496,6 +496,10 @@ class Driver implements DriverInterface
                 $this->connectionConfig['port']
             );
 
+            if ($this->currentCharset !== null) {
+                $this->connection->set_charset($this->currentCharset);
+            }
+
             return true;
         } catch (\Exception $exception) {
             return false;

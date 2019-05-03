@@ -786,6 +786,44 @@ class Driver extends atoum
                         ->once();
     }
 
+    public function testPingShouldReconnectWithCharset()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->real_connect = true;
+        $this->calling($mockDriver)->select_db = function ($database) {
+            $this->database = $database;
+        };
+        $mockDriver->error = '';
+
+        $hostName = 'hostname.test';
+        $userName = 'user.test';
+        $password = 'password.test';
+        $database = uniqid('database');
+        $charset = 'utf8';
+        $port = 1234;
+
+        $this
+            ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->connect($hostName, $userName, $password, $port))
+            ->and($driver->setDatabase($database))
+            ->and($driver->setCharset($charset))
+            ->boolean($driver->ping())
+            ->isTrue()
+            ->mock($mockDriver)
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, null, $port)
+            // 1 call for connect()
+            ->once()
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, $database, $port)
+            // 1 call for ping()
+            ->once()
+            ->call('set_charset')
+            ->withArguments($charset)
+            ->twice(); // 1 call for setChartset & 1 call for ping
+    }
+
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
     {
         $mockDriver = new \mock\Fake\Mysqli();

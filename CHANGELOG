@@ -1,3 +1,6 @@
+3.5.1 (2019-XX-XX)
+    * Fix: set charset on ping when new connection created
+
 3.5.0 (2019-04-09):
     * New feature: timezone support on the database connection
 
