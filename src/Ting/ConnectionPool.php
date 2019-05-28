@@ -190,7 +190,7 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
-            $timezone = isset($this->databaseOptions[$database]['timezone']) !== false ?: null;
+            $timezone = isset($this->databaseOptions[$database]['timezone']) !== false ? $this->databaseOptions[$database]['timezone'] : null;
             $this->connections[$connectionKey]->setTimezone($timezone);
         }
 
