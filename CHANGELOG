@@ -1,4 +1,7 @@
-3.5.1 (2019-XX-XX)
+3.5.2 (2019-05-28)
+    * Fix: correct value used as timezone
+
+3.5.1 (2019-04-09)
     * Fix: set charset on ping when new connection created
 
 3.5.0 (2019-04-09):
