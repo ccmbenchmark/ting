@@ -318,20 +318,6 @@ class MetadataRepository extends atoum
                 ->isEmpty();
     }
 
-    public function testBatchLoadMetadataFroMCacheForRepositoryWhichNotImplementMetadataInitializerShouldDoNothing()
-    {
-        $paths = ['tests\fixtures\model\NoMetadataRepository'];
-        $services = new \CCMBenchmark\Ting\Services();
-        $this
-            ->if(
-                $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
-                    $services->get('SerializerFactory')
-                )
-            )
-            ->array($metadataRepository->batchLoadMetadataFromCache($paths))
-                ->isEmpty();
-    }
-
     public function testFindMetadataForOtherConnectionShouldCallCallbackNotFound()
     {
         $services = new \CCMBenchmark\Ting\Services();
