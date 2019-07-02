@@ -217,16 +217,14 @@ class MetadataRepository
     {
         $loaded = [];
         foreach ($paths as $repository => $metadataClass) {
-            if (is_subclass_of($metadataClass, MetadataInitializer::class) === true) {
-                $this->addMetadata(
-                    $repository,
-                    $metadataClass::initMetadata(
-                        $this->serializerFactory,
-                        $this->getOptionForRepository($metadataClass, $options)
-                    )
-                );
-                $loaded[] = $repository;
-            }
+            $this->addMetadata(
+                $repository,
+                $metadataClass::initMetadata(
+                    $this->serializerFactory,
+                    $this->getOptionForRepository($metadataClass, $options)
+                )
+            );
+            $loaded[] = $repository;
         }
 
         return $loaded;
