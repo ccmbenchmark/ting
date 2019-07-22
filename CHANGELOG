@@ -1,3 +1,6 @@
+3.5.3 (unreleased)
+    * Fix: Mysql getInsertId()
+
 3.5.2 (2019-05-28)
     * Fix: correct value used as timezone
 

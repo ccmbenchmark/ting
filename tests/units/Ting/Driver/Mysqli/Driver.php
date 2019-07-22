@@ -889,7 +889,7 @@ class Driver extends atoum
             ->then($driver->setTimezone(null))
             ->mock($mockDriver)
             ->call('query')
-            ->once()
+            ->never()
         ;
     }
 }
