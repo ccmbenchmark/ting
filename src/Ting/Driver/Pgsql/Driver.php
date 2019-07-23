@@ -492,13 +492,13 @@ class Driver implements DriverInterface
         if ($this->currentTimezone === $timezone) {
             return;
         }
-
+        $value = $timezone;
         $query = 'SET timezone = "%s";';
         if ($timezone === null) {
-            $timezone = 'DEFAULT';
+            $value = 'DEFAULT';
             $query = str_replace('"', '', $query);
         }
-        pg_query($this->connection, sprintf($query, $timezone));
+        pg_query($this->connection, sprintf($query, $value));
         $this->currentTimezone = $timezone;
     }
 }

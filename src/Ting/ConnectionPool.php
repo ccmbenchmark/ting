@@ -182,6 +182,10 @@ class ConnectionPool implements ConnectionPoolInterface
             $this->connections[$connectionKey] = $driver;
         }
 
+        /*
+         * Methods setDatabase, setCharset and setTimezone have no impact unless the parameter's value is different
+         * than the staled value.
+         */
         $this->connections[$connectionKey]->setName($name);
         $this->connections[$connectionKey]->setDatabase($database);
 

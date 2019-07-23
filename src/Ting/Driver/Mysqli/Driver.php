@@ -524,12 +524,13 @@ class Driver implements DriverInterface
             return;
         }
 
+        $value = $timezone;
         $query = 'SET time_zone = "%s";';
         if ($timezone === null) {
-            $timezone = 'DEFAULT';
+            $value = 'DEFAULT';
             $query = str_replace('"', '', $query);
         }
-        $this->connection->query(sprintf($query, $timezone));
+        $this->connection->query(sprintf($query, $value));
         $this->currentTimezone = $timezone;
     }
 }

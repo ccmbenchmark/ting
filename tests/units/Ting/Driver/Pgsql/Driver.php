@@ -705,6 +705,25 @@ class Driver extends atoum
         ;
     }
 
+    public function testPingShouldCallPingWithTimezone()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_ping = true;
+        $this->function->pg_query = true;
+
+        $mockDriver = new \mock\Fake\Pgsql();
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
+            ->then($driver->setTimezone('timezone'))
+            ->boolean($driver->ping())
+            ->isTrue()
+            ->function('pg_query')->wasCalledWithArguments('SET timezone = "timezone";')->twice()
+        ;
+    }
+
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
     {
         $this
@@ -741,6 +760,24 @@ class Driver extends atoum
             ->then($driver->setDatabase('myDatabase'))
             ->variable($driver->setTimezone(null))
             ->isNull()
+        ;
+    }
+
+    public function testSetTimezoneThenDefaultTimezone()
+    {
+        $this->function->pg_connect = true;
+        $this->function->pg_query = true;
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
+            ->then($driver->setTimezone('timezone'))
+            ->function('pg_query')->wasCalledWithArguments('SET timezone = "timezone";')->once()
+            ->then($driver->setTimezone(null))
+            ->then->function('pg_query')->wasCalledWithArguments('SET timezone = DEFAULT;')->atLeastOnce()
+            ->then($driver->setTimezone(null))
+            ->function('pg_query')->wasCalled()->twice()
         ;
     }
 }
