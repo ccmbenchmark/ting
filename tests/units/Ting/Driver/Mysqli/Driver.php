@@ -786,6 +786,77 @@ class Driver extends atoum
                         ->once();
     }
 
+    public function testPingShouldSetTimezone()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->real_connect = true;
+        $this->calling($mockDriver)->select_db = function ($database) {
+            $this->database = $database;
+        };
+        $mockDriver->error = '';
+
+        $hostName = 'hostname.test';
+        $userName = 'user.test';
+        $password = 'password.test';
+        $database = uniqid('database');
+        $port = 1234;
+        $timezone = 'timezone';
+
+        $this
+            ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->connect($hostName, $userName, $password, $port))
+            ->and($driver->setDatabase($database))
+            ->and($driver->setTimezone($timezone))
+            ->boolean($driver->ping())
+            ->isTrue()
+            ->mock($mockDriver)
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, null, $port)
+            // 1 call for connect()
+            ->once()
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, $database, $port)
+            // 1 call for ping()
+            ->once()
+            ->call('query')->withArguments('SET time_zone = "'.$timezone.'";')->twice();
+    }
+
+    public function testPingShouldNotSetTimezone()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->real_connect = true;
+        $this->calling($mockDriver)->select_db = function ($database) {
+            $this->database = $database;
+        };
+        $mockDriver->error = '';
+
+        $hostName = 'hostname.test';
+        $userName = 'user.test';
+        $password = 'password.test';
+        $database = uniqid('database');
+        $port = 1234;
+
+        $this
+            ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->connect($hostName, $userName, $password, $port))
+            ->and($driver->setDatabase($database))
+            ->and($driver->setTimezone(null))
+            ->boolean($driver->ping())
+            ->isTrue()
+            ->mock($mockDriver)
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, null, $port)
+            // 1 call for connect()
+            ->once()
+            ->call('real_connect')
+            ->withArguments($hostName, $userName, $password, $database, $port)
+            // 1 call for ping()
+            ->once()
+            ->call('query')->never();
+    }
+
     public function testPingShouldReconnectWithCharset()
     {
         $mockDriver = new \mock\Fake\Mysqli();
@@ -889,7 +960,25 @@ class Driver extends atoum
             ->then($driver->setTimezone(null))
             ->mock($mockDriver)
             ->call('query')
-            ->once()
+            ->never()
+        ;
+    }
+
+    public function testSetTimezoneThenDefaultTimezone()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = $mockDriver;
+
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setTimezone('timezone'))
+            ->mock($mockDriver)->call('query')->withArguments('SET time_zone = "timezone";')->once()
+            ->then($driver->setTimezone(null))
+            ->mock($mockDriver)->call('query')->withArguments('SET time_zone = DEFAULT;')->once()
+            ->then($driver->setTimezone(null))
+            ->mock($mockDriver)->call('query')->exactly(2)
         ;
     }
 }
