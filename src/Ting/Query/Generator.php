@@ -381,18 +381,19 @@ class Generator
         $fields = $this->escapeFields(array_keys($orderList), $driver);
 
         $orderClause = '';
+        $orderCriteria = [];
 
         $i = 0;
         foreach ($orderList as $field => $value) {
             $value = strtoupper($value);
             if (in_array($value, ['ASC', 'DESC'])) {
-                $orderClause[] = $fields[$i] . ' ' . $value;
+                $orderCriteria[] = $fields[$i] . ' ' . $value;
             }
             $i++;
         }
 
         if (count($orderList) > 0) {
-            $orderClause = ' ORDER BY ' . implode(',', $orderClause);
+            $orderClause = ' ORDER BY ' . implode(',', $orderCriteria);
         }
 
         return $orderClause;
