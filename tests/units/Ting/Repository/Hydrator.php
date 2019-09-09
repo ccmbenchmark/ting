@@ -25,9 +25,14 @@
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
+use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
+use CCMBenchmark\Ting\UnitOfWork;
 use mageekguy\atoum;
+use tests\fixtures\model\City;
+use tests\fixtures\model\CityRepository;
+use tests\fixtures\model\PrimaryOnMultiField;
 
 class Hydrator extends atoum
 {
@@ -796,4 +801,216 @@ class Hydrator extends atoum
             ->object($data['cit'])
                 ->isInstanceOf(\tests\fixtures\model\CitySecond::class);
     }
+
+    public function testHydrateReturnSameResultWhenChangingPrimaryKeyOrder()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $metaDataRepo = $services->get('MetadataRepository');
+
+        $cityMetadata =  new \CCMBenchmark\Ting\Repository\Metadata(
+            new\mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface()
+        );
+        
+        $cityMetadata->setEntity(City::class);
+        $cityMetadata->setConnectionName('main');
+        $cityMetadata->setDatabase('bouh_world');
+        $cityMetadata->setTable('T_CITY_CIT');
+
+        $cityMetadata->addField(array(
+            'primary'       => true,
+            'autoincrement' => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'cit_id',
+            'type'          => 'int'
+        ));
+
+        $cityMetadata->addField(array(
+            'fieldName'  => 'name',
+            'columnName' => 'cit_name',
+            'type'      => 'string'
+        ));
+
+        $cityMetadata->addField(array(
+            'fieldName'  => 'zipcode',
+            'columnName' => 'cit_zipcode',
+            'type'       => 'string'
+        ));
+
+
+        $primaryMultiFieldMetadata = new \CCMBenchmark\Ting\Repository\Metadata(new \mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface());
+
+        $primaryMultiFieldMetadata->setEntity(PrimaryOnMultiField::class);
+        $primaryMultiFieldMetadata->setConnectionName('main');
+        $primaryMultiFieldMetadata->setDatabase('bouh_world');
+        $primaryMultiFieldMetadata->setTable('T_PRIMARY_MULTI_FIELD');
+
+        $primaryMultiFieldMetadata->addField(array(
+            'primary'       => true,
+            'fieldName'     => 'cityId',
+            'columnName'    => 'city_id',
+            'type'          => 'int'
+        ));
+
+        $primaryMultiFieldMetadata->addField(array(
+            'fieldName'  => 'otherItemId',
+            'columnName' => 'other_item_id',
+            'type'      => 'string',
+            'primary'   => true
+        ));
+
+        $primaryMultiFieldMetadata->addField(array(
+            'fieldName'  => 'value',
+            'columnName' => 'value',
+            'type'       => 'string'
+        ));
+
+        //*
+        $primaryMultiFieldMetadataInverted = new \CCMBenchmark\Ting\Repository\Metadata(new \mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface());
+        $primaryMultiFieldMetadataInverted->setEntity(PrimaryOnMultiField::class);
+        $primaryMultiFieldMetadataInverted->setConnectionName('main');
+        $primaryMultiFieldMetadataInverted->setDatabase('bouh_world');
+        $primaryMultiFieldMetadataInverted->setTable('T_PRIMARY_MULTI_FIELD');
+
+        $primaryMultiFieldMetadataInverted->addField(array(
+             'fieldName'  => 'otherItemId',
+             'columnName' => 'other_item_id',
+             'type'      => 'string',
+             'primary'   => true
+         ));
+        $primaryMultiFieldMetadataInverted->addField(array(
+             'primary'       => true,
+             'fieldName'     => 'cityId',
+             'columnName'    => 'city_id',
+             'type'          => 'int'
+         ));
+        $primaryMultiFieldMetadataInverted->addField(array(
+             'fieldName'  => 'value',
+             'columnName' => 'value',
+             'type'       => 'string'
+         ));
+        //*/
+
+        /** @var MetadataRepository $metadataRepo1 */
+        $metadataRepo1 = clone $metaDataRepo;
+        $metadataRepo2 = clone $metaDataRepo;
+        
+        $metadataRepo1->addMetadata(CityRepository::class, $cityMetadata);
+        $metadataRepo1->addMetadata(PrimaryOnMultiField::class, $primaryMultiFieldMetadata);
+
+        /** @var MetadataRepository $metadataRepo2 */
+        $metadataRepo2->addMetadata(CityRepository::class, $cityMetadata);
+        $metadataRepo2->addMetadata(PrimaryOnMultiField::class, $primaryMultiFieldMetadataInverted);
+
+        $mysqliResult =  [
+            [1, 'other_item1', 10, 'City1', 1],
+            [1, 'other_item2', 20, 'City1', 1],
+            [2, 'other_item1', 5, 'City2', 2],
+            [2, 'other_item2', 8, 'City2', 2]
+        ];
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult($mysqliResult);
+        $mockMysqliResult2 = new \mock\tests\fixtures\FakeDriver\MysqliResult($mysqliResult);
+
+        $fetchFields = function() {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'cityId';
+            $stdClass->orgname  = 'city_id';
+            $stdClass->table    = 'primaryMultiField';
+            $stdClass->orgtable = 'T_PRIMARY_MULTI_FIELD';
+            $stdClass->type     = MYSQLI_TYPE_LONG;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'otherItemId';
+            $stdClass->orgname  = 'other_item_id';
+            $stdClass->table    = 'primaryMultiField';
+            $stdClass->orgtable = 'T_PRIMARY_MULTI_FIELD';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'value';
+            $stdClass->orgname  = 'value';
+            $stdClass->table    = 'primaryMultiField';
+            $stdClass->orgtable = 'T_PRIMARY_MULTI_FIELD';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'citname';
+            $stdClass->orgname  = 'cit_name';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'cityId';
+            $stdClass->orgname  = 'cit_id';
+            $stdClass->table    = 'cit';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_LONG;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $this->calling($mockMysqliResult)->fetch_fields = $fetchFields();
+        $this->calling($mockMysqliResult2)->fetch_fields = $fetchFields();
+
+        //*
+        $sqlResult = new Result();
+        $sqlResult->setResult($mockMysqliResult);
+        $sqlResult->setConnectionName('main');
+        $sqlResult->setDatabase('bouh_world');
+
+        $sqlResult2 = new Result();
+        $sqlResult2->setResult($mockMysqliResult2);
+        $sqlResult2->setConnectionName('main');
+        $sqlResult2->setDatabase('bouh_world');
+
+        /** @var UnitOfWork $uow */
+        $uow = $services->get('UnitOfWork');
+        
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+                ->and($hydrator->setMetadataRepository($metadataRepo1))
+                ->and($hydrator->setUnitOfWork($uow))
+                ->and($hydrator->setResult($sqlResult))
+                ->and($iterator = $hydrator->getIterator())
+                ->and($uow->detachAll())
+                ->and($result1 = iterator_to_array($iterator))
+
+                ->and($hydrator2 = new \CCMBenchmark\Ting\Repository\Hydrator())
+                ->and($hydrator2->setMetadataRepository($metadataRepo2))
+                ->and($hydrator2->setUnitOfWork($uow))
+                ->and($iterator2 = $hydrator2->setResult($sqlResult2)->getIterator())
+
+            ->then($result2 = iterator_to_array($iterator2))
+            ;
+
+        $this->then()
+                ->integer(count($result1))
+                    ->isEqualTo(count($result2));
+
+        foreach($result1 as $i => $row) {
+            $this
+                ->integer($row['cit']->getId())
+                   ->isEqualTo($result2[$i]['cit']->getId())
+                ->string($row['cit']->getName())
+                    ->isEqualTo($result2[$i]['cit']->getName())
+            ;
+            $this
+                ->integer($row['primaryMultiField']->getCityId())
+                    ->isEqualTo($result2[$i]['primaryMultiField']->getCityId())
+                ->integer($row['primaryMultiField']->getValue())
+                    ->isEqualTo($result2[$i]['primaryMultiField']->getValue())
+                ->string($row['primaryMultiField']->getOtherItemId())
+                    ->isEqualTo($result2[$i]['primaryMultiField']->getOtherItemId())
+            ;
+        }
+    }
+
 }
