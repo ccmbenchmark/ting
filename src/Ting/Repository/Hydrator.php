@@ -205,6 +205,19 @@ class Hydrator implements HydratorInterface
         return $this;
     }
 
+    private function extractSchemaFromColumn($column)
+    {
+        $schema = '';
+        if (isset($column['schema']) === true) {
+            $schema = $column['schema'];
+        }
+
+        if (isset($this->objectSchema[$column['table']]) === true) {
+            $schema = $this->objectSchema[$column['table']];
+        }
+        return $schema;
+    }
+
     /**
      * Hydrate one object from values
      *
@@ -238,14 +251,7 @@ class Hydrator implements HydratorInterface
                         $database = $this->objectDatabase[$column['table']];
                     }
 
-                    $schema = '';
-                    if (isset($column['schema']) === true) {
-                        $schema = $column['schema'];
-                    }
-
-                    if (isset($this->objectSchema[$column['table']]) === true) {
-                        $schema = $this->objectSchema[$column['table']];
-                    }
+                    $schema = $this->extractSchemaFromColumn($column);
 
                     $this->metadataRepository->findMetadataForTable(
                         $connectionName,
