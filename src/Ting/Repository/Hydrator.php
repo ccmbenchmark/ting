@@ -379,7 +379,7 @@ class Hydrator implements HydratorInterface
             if (is_int($table) === false) {
                 $id = '';
                 foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
-                    $id = $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+                    $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
                 }
                 $ref = $table . '-' . $id;
 
