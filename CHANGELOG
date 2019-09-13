@@ -1,5 +1,5 @@
 3.5.4 (2019-09-13)
-    * Fix: Result return from hydrator should be wrong when using primary key on many fields
+    * Fix: Result return from hydrator are identical when changing order of primary key field 
 
 3.5.3 (2019-07-24)
     * Fix: The timezone is now setted only on chang
