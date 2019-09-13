@@ -206,6 +206,49 @@ class Hydrator implements HydratorInterface
     }
 
     /**
+     * @param array $column
+     *
+     * @return string
+     */
+    private function extractSchemaFromColumn(array $column)
+    {
+        $schema = '';
+        if (isset($column['schema']) === true) {
+            $schema = $column['schema'];
+        }
+
+        if (isset($this->objectSchema[$column['table']]) === true) {
+            $schema = $this->objectSchema[$column['table']];
+        }
+        return $schema;
+    }
+
+    /**
+     * @param array $result
+     *
+     * @return bool
+     */
+    private function hasVirtualObject(array $result)
+    {
+        return isset($result[0]);
+    }
+
+    /**
+     * @param \stdClass $virtualObject
+     *
+     * @return \stdClass
+     */
+    private function unserializeVirtualObjectProperty(\stdClass $virtualObject)
+    {
+        foreach ($this->unserializeAliases as $aliasName => list($unserialize, $options)) {
+            if (isset($virtualObject->$aliasName) === true) {
+                $virtualObject->$aliasName = $unserialize->unserialize($virtualObject->$aliasName, $options);
+            }
+        }
+        return $virtualObject;
+    }
+
+    /**
      * Hydrate one object from values
      *
      * @internal hydrate all column into the right Entity according to the table name and metadata information
@@ -237,16 +280,7 @@ class Hydrator implements HydratorInterface
                     if (isset($this->objectDatabase[$column['table']]) === true) {
                         $database = $this->objectDatabase[$column['table']];
                     }
-
-                    $schema = '';
-                    if (isset($column['schema']) === true) {
-                        $schema = $column['schema'];
-                    }
-
-                    if (isset($this->objectSchema[$column['table']]) === true) {
-                        $schema = $this->objectSchema[$column['table']];
-                    }
-
+                    $schema = $this->extractSchemaFromColumn($column);
                     $this->metadataRepository->findMetadataForTable(
                         $connectionName,
                         $database,
@@ -331,12 +365,8 @@ class Hydrator implements HydratorInterface
         }
 
         // Virtual object
-        if (isset($result[0]) === true) {
-            foreach ($this->unserializeAliases as $aliasName => list($unserialize, $options)) {
-                if (isset($result[0]->$aliasName) === true) {
-                    $result[0]->$aliasName = $unserialize->unserialize($result[0]->$aliasName, $options);
-                }
-            }
+        if ($this->hasVirtualObject($result) === true) {
+            $result[0] = $this->unserializeVirtualObjectProperty($result[0]);
         }
 
         foreach ($result as $table => $entity) {
@@ -349,8 +379,7 @@ class Hydrator implements HydratorInterface
             if (is_int($table) === false) {
                 $id = '';
                 foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
-
-                    $id = $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+                    $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
                 }
                 $ref = $table . '-' . $id;
 
