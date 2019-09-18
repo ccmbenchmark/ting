@@ -298,8 +298,8 @@ class Hydrator implements HydratorInterface
             if (isset($this->metadataList[$column['table']]) === true) {
                 $id = '';
                 foreach ($this->metadataList[$column['table']]->getPrimaries() as $columnName => $primary) {
-                    if ($column['orgName'] === $columnName) {
-                        $id = $column['value'] . '-';
+                    if ($column['orgName'] === $columnName && $column['value'] !== null) {
+                        $id .= $column['value'] . '-';
                     }
                 }
 
@@ -368,11 +368,11 @@ class Hydrator implements HydratorInterface
         if ($this->hasVirtualObject($result) === true) {
             $result[0] = $this->unserializeVirtualObjectProperty($result[0]);
         }
-
         foreach ($result as $table => $entity) {
             // All no valid entity is replaced by a null value
             if (isset($validEntities[$table]) === false) {
                 $result[$table] = null;
+                continue;
             }
 
             // It's a valid entity (unknown data are put in a value table 0)
