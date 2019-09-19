@@ -1055,6 +1055,7 @@ class Hydrator extends atoum
             $stdClass->orgtable = 'T_CITY_CIT';
             $stdClass->type = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
+
             return $fields;
         };
 
@@ -1065,12 +1066,11 @@ class Hydrator extends atoum
 
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
-            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
-            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->objectDatabaseIs('cit', 'bouh_world_2'))
-            ->then($iterator = $hydrator->setResult($result)->getIterator())
-            ->then($data = $iterator->current())
-            ->variable($data['cit'])
-            ->isNull();
+                ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+                ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+                ->and($hydrator->objectDatabaseIs('cit', 'bouh_world_2'))
+            ->then($data = $hydrator->setResult($result)->getIterator()->current())
+                ->variable($data['cit'])
+                    ->isNull();
     }
 }
