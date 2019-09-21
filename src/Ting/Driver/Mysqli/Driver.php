@@ -291,11 +291,11 @@ class Driver implements DriverInterface
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
         }
 
-        if ($collection === null) {
-            if ($result === true) {
-                return true;
-            }
+        if ($result === true) {
+            return true;
+        }
 
+        if ($collection === null) {
             return $result->fetch_assoc();
         }
 

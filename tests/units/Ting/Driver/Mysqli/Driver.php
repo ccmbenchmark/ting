@@ -515,6 +515,10 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->boolean($driver->execute('UPDATE Bouh SET id = 3'))
                 ->isTrue();
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->boolean($driver->execute('UPDATE Bouh SET id = 3', [], new Collection()))
+            ->isTrue();
     }
 
     public function testPrepareShouldNotTransformEscapedColon()

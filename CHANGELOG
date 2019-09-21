@@ -1,3 +1,6 @@
+3.5.5 (2019-09-23)
+    * Fix: MySQL Driver will not fail if a collection is given when executing an update statement
+
 3.5.4 (2019-09-13)
     * Fix: Result return from hydrator are identical when changing order of primary key field 
 
