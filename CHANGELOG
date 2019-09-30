@@ -1,13 +1,16 @@
-3.5.4 (2019-09-13)
+3.5.5 (2019-09-30):
+    * Merge back 3.4.3 and 3.4.4
+
+3.5.4 (2019-09-13):
     * Fix: Result return from hydrator are identical when changing order of primary key field 
 
-3.5.3 (2019-07-24)
+3.5.3 (2019-07-24):
     * Fix: The timezone is now setted only on chang
 
-3.5.2 (2019-05-28)
+3.5.2 (2019-05-28):
     * Fix: correct value used as timezone
 
-3.5.1 (2019-04-09)
+3.5.1 (2019-04-09):
     * Fix: set charset on ping when new connection created
 
 3.5.0 (2019-04-09):
