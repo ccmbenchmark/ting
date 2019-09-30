@@ -296,12 +296,7 @@ class Hydrator implements HydratorInterface
             }
 
             if (isset($this->metadataList[$column['table']]) === true) {
-                $id = '';
-                foreach ($this->metadataList[$column['table']]->getPrimaries() as $columnName => $primary) {
-                    if ($column['orgName'] === $columnName && $column['value'] !== null) {
-                        $id .= $column['value'] . '-';
-                    }
-                }
+                $id = $this->getId($column['table'], $column);
 
                 if ($id !== '') {
                     $ref = $column['table'] . '-' . $id;
@@ -372,16 +367,11 @@ class Hydrator implements HydratorInterface
             // All no valid entity is replaced by a null value
             if (isset($validEntities[$table]) === false) {
                 $result[$table] = null;
-                continue;
             }
 
             // It's a valid entity (unknown data are put in a value table 0)
             if (is_int($table) === false) {
-                $id = '';
-                foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
-                    $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
-                }
-                $ref = $table . '-' . $id;
+                $ref = $table . '-' . $this->getId($table, $column);
 
                 if (isset($this->references[$ref]) === false) {
                     $this->references[$ref] = $entity;
@@ -429,5 +419,17 @@ class Hydrator implements HydratorInterface
             $this->unitOfWork->manage($entity);
             $this->alreadyManaged[$entity->tingUUID] = true;
         }
+    }
+
+    private function getId(string $table, array $column): string
+    {
+        $id = '';
+        foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+            if ($column['orgName'] === $columnName && $column['value'] !== null) {
+                $id .= $column['value'] . '-';
+            }
+        }
+
+        return $id;
     }
 }
