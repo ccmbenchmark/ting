@@ -1,4 +1,4 @@
-3.4.4 (2019-07-02):
+3.4.4 (2019-09-30):
     * Fix: Better perf of MetadataRepository::batchLoadMetadataFromCache
 
 3.4.3 (2018-03-22):
