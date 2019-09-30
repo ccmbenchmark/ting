@@ -1,3 +1,6 @@
+3.4.4 (2019-09-30):
+    * Fix: Better perf of MetadataRepository::batchLoadMetadataFromCache
+
 3.4.3 (2018-03-22):
     * Added: Serialized expression in the unserialize message exception to have a clue about where the problem is coming
 
