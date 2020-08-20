@@ -267,7 +267,7 @@ class Hydrator implements HydratorInterface
         $result        = [];
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
         $validEntities = []; // Entity marked as valid will fill an object
-                             // (a valid Entity is a entity with at less one property not null)
+        // (a valid Entity is a entity with at less one property not null)
         $fromReferences = [];
         foreach ($columns as $column) {
             if (isset($fromReferences[$column['table']]) === true) {
@@ -280,6 +280,7 @@ class Hydrator implements HydratorInterface
                     if (isset($this->objectDatabase[$column['table']]) === true) {
                         $database = $this->objectDatabase[$column['table']];
                     }
+
                     $schema = $this->extractSchemaFromColumn($column);
                     $this->metadataRepository->findMetadataForTable(
                         $connectionName,
@@ -296,20 +297,18 @@ class Hydrator implements HydratorInterface
             }
 
             if (isset($this->metadataList[$column['table']]) === true) {
-                $id = $this->getId($column['table'], $column);
 
-                if ($id !== '') {
-                    $ref = $column['table'] . '-' . $id;
-                    if (isset($this->references[$ref]) === true) {
-                        if ($this->identityMap === false) {
-                            $result[$column['table']] = clone $this->references[$ref];
-                            unset($result[$column['table']]->tingUUID);
-                        } else {
+                // If IdentityMap is enabled and entity is referenced then break hydratator
+                if ($this->identityMap === true) {
+                    $id = $this->getId($column['table'], $column);
+                    if ($id !== '') {
+                        $ref = $column['table'] . '-' . $id;
+                        if (isset($this->references[$ref]) === true) {
                             $result[$column['table']] = $this->references[$ref];
+                            $validEntities[$column['table']] = true;
+                            $fromReferences[$column['table']] = true;
+                            continue;
                         }
-                        $validEntities[$column['table']]  = true;
-                        $fromReferences[$column['table']] = true;
-                        continue;
                     }
                 }
 
@@ -348,7 +347,7 @@ class Hydrator implements HydratorInterface
                     );
                 }
 
-            // Table is not mapped or column is a virtual column
+                // Table is not mapped or column is a virtual column
             } else {
                 $validEntities[0] = true;
                 if (isset($result[0]) === false) {
@@ -370,8 +369,11 @@ class Hydrator implements HydratorInterface
             }
 
             // It's a valid entity (unknown data are put in a value table 0)
-            if (is_int($table) === false) {
-                $ref = $table . '-' . $this->getId($table, $column);
+            if ($this->identityMap === true && is_int($table) === false) {
+                $ref = $table . '-';
+                foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+                    $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+                }
 
                 if (isset($this->references[$ref]) === false) {
                     $this->references[$ref] = $entity;
