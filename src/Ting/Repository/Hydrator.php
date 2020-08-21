@@ -41,7 +41,6 @@ class Hydrator implements HydratorInterface
     protected $unserializeAliases = [];
     protected $alreadyManaged     = [];
     protected $references         = [];
-    protected $fromReferences     = [];
     protected $metadataList       = [];
 
     /**
@@ -268,15 +267,13 @@ class Hydrator implements HydratorInterface
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
         $validEntities = []; // Entity marked as valid will fill an object
         // (a valid Entity is a entity with at less one property not null)
-        $fromReferences = [];
+
         foreach ($columns as $column) {
-            if (isset($fromReferences[$column['table']]) === true) {
-                continue;
-            }
 
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
                 if (isset($this->metadataList[$column['table']]) === false) {
+
                     if (isset($this->objectDatabase[$column['table']]) === true) {
                         $database = $this->objectDatabase[$column['table']];
                     }
@@ -287,6 +284,8 @@ class Hydrator implements HydratorInterface
                         $database,
                         $schema,
                         $column['orgTable'],
+
+                        // Callback if table metadata found
                         function (Metadata $metadata) use ($column, &$result) {
                             $this->metadataList[$column['table']] = $metadata;
                             $result[$column['table']]             = $metadata->createEntity();
@@ -298,7 +297,7 @@ class Hydrator implements HydratorInterface
 
             if (isset($this->metadataList[$column['table']]) === true) {
 
-                // If IdentityMap is enabled and entity is referenced then break hydratator
+                // If IdentityMap is enabled and entity is referenced then break hydrator
                 if ($this->identityMap === true) {
                     $id = $this->getId($column['table'], $column);
                     if ($id !== '') {
@@ -306,8 +305,6 @@ class Hydrator implements HydratorInterface
                         if (isset($this->references[$ref]) === true) {
                             $result[$column['table']] = $this->references[$ref];
                             $validEntities[$column['table']] = true;
-                            $fromReferences[$column['table']] = true;
-                            continue;
                         }
                     }
                 }
