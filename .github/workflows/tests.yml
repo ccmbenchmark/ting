@@ -5,14 +5,25 @@ on:
   pull_request:
 
 jobs:
-  unit_tests:
-    runs-on: ubuntu-latest
-    container:
-      image: ccmbenchmark/php:7.1
+  run:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4']
+    name: Run Unit Tests on PHP ${{ matrix.php }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: bcmath, bz2, gettext, mbstring, memcached, mcrypt, mysqli, opcache, pdo_mysql, zip, pdo, intl, json, pdo_pgsql, pgsql, session, simplexml, xml
+          tools: composer:v1, pecl
+
       - name: Install vendors
         run: composer install --prefer-source --no-interaction
+
       - name: Run Atoum tests
         run: php vendor/bin/atoum
- 
