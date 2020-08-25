@@ -705,7 +705,7 @@ class Metadata
             $fieldName = $this->fields[$key]['fieldName'];
             // Key value has been updated : we need the old one
             if (isset($properties[$fieldName]) === true) {
-                $primariesKeyValue[$key] = $properties[$fieldName][0];
+                $primariesKeyValue[$key] = $properties[$fieldName];
             } else {
                 // No update, get the actual
                 $propertyName = 'get' . $primary['fieldName'];
