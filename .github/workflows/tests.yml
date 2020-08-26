@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  run:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4']
+    name: Run Unit Tests on PHP ${{ matrix.php }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: bcmath, bz2, gettext, mbstring, memcached, mcrypt, mysqli, opcache, pdo_mysql, zip, pdo, intl, json, pdo_pgsql, pgsql, session, simplexml, xml
+          tools: composer:v1, pecl
+
+      - name: Install vendors
+        run: composer install --prefer-source --no-interaction
+
+      - name: Run Atoum tests
+        run: php vendor/bin/atoum
