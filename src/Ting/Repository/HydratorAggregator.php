@@ -88,6 +88,7 @@ class HydratorAggregator extends Hydrator
         $result = null;
 
         foreach ($this->result as $key => $columns) {
+
             $result = $this->hydrateColumns(
                 $this->result->getConnectionName(),
                 $this->result->getDatabase(),
@@ -122,7 +123,8 @@ class HydratorAggregator extends Hydrator
             }
         }
 
-        if ($previousId === $currentId) {
+        // Yield last result only if there was at least one result
+        if ($currentId !== null && $previousId === $currentId) {
             yield $key => $this->finalizeAggregate($result, $aggregate);
         }
     }

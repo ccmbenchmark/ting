@@ -1,3 +1,7 @@
+3.5.7 (2020-08-XX):
+    * Fix: Revert Hydrator entity's reference calculation factorization [162f539]
+    * Fix: HydratorAggregator yield one time even when there is 0 result 
+
 3.5.6 (2019-10-02):
     * Fix: return null instead of entity when no data fetch from join query
 
