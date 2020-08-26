@@ -1,4 +1,4 @@
-3.6.0 (2020-08-XX):
+3.5.7 (2020-08-XX):
     * Fix: Hydrator IdentityMap can't work since it can't retrieve ref entity
     * Fix: HydratorAggregator yield one time even when there is 0 result 
 
