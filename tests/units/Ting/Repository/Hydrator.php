@@ -1129,8 +1129,8 @@ class Hydrator extends atoum
             ->then($currentObject = $iterator->current()['bouh'])
             ->then($iterator->next())
             ->then($nextObject = $iterator->current()['bouh'])
-            ->integer(spl_object_id($currentObject))
-            ->isNotEqualTo(spl_object_id($nextObject))
+            ->string(spl_object_hash($currentObject))
+            ->isNotEqualTo(spl_object_hash($nextObject))
         ;
     }
 
@@ -1141,10 +1141,11 @@ class Hydrator extends atoum
             ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
 
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
-            [23, 'Michael', 'Jordan'],
-            [23, 'Michael', 'Jordan']
+            [23, 'LeBron', 'James', 'Cleveland'],
+            [30, 'Stephen', 'Curry', 'San Francisco'],
+            [23, 'LeBron', 'James', 'Los Angeles']
         ]);
-        
+
         $this->calling($mockMysqliResult)->fetch_fields = function () {
             $fields = [];
 
@@ -1172,6 +1173,14 @@ class Hydrator extends atoum
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'cityName';
+            $stdClass->orgname  = '';
+            $stdClass->table    = '';
+            $stdClass->orgtable = '';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
             return $fields;
         };
 
@@ -1188,9 +1197,10 @@ class Hydrator extends atoum
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($currentObject = $iterator->current()['bouh'])
             ->then($iterator->next())
+            ->then($iterator->next())
             ->then($nextObject = $iterator->current()['bouh'])
-            ->integer(spl_object_id($currentObject))
-            ->isEqualTo(spl_object_id($nextObject))
+            ->string(spl_object_hash($currentObject))
+            ->isEqualTo(spl_object_hash($nextObject))
         ;
     }
 }
