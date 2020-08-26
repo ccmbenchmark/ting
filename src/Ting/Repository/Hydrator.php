@@ -310,10 +310,14 @@ class Hydrator implements HydratorInterface
                 if ($id !== '') {
                     $ref = $column['table'] . '-' . $id;
                     if (isset($this->references[$ref]) === true) {
+
+                        // This entity was already created and stored into references
                         if ($this->identityMap === false) {
+                            // If identityMap is disabled, it clones the object and reset UUID
                             $result[$column['table']] = clone $this->references[$ref];
                             unset($result[$column['table']]->tingUUID);
                         } else {
+                            // If identityMap is enabled, it uses the same object
                             $result[$column['table']] = $this->references[$ref];
                         }
                         $validEntities[$column['table']]  = true;
