@@ -1175,15 +1175,15 @@ class Hydrator extends atoum
 
             $stdClass = new \stdClass();
             $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->orgname  = 'boo_name';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
-            $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_name';
+            $stdClass->name     = 'firstname';
+            $stdClass->orgname  = 'boo_firstname';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
@@ -1234,16 +1234,16 @@ class Hydrator extends atoum
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
-            $stdClass->name     = 'firstname';
-            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
-            $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_name';
+            $stdClass->name     = 'firstname';
+            $stdClass->orgname  = 'boo_firstname';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
