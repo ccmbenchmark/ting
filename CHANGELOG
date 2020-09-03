@@ -1,3 +1,6 @@
+3.6.0 (2020-09-XX):
+    * Fix: Hydrator hydrate unknown columns from a referenced table
+
 3.5.7 (2020-08-28):
     * Fix: Revert Hydrator entity's reference calculation factorization [162f539]
     * Fix: HydratorAggregator yield one time even when there is 0 result 

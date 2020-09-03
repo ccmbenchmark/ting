@@ -269,7 +269,14 @@ class Hydrator implements HydratorInterface
                              // (a valid Entity is a entity with at less one property not null)
         $fromReferences = []; // Prevents from hydrating if an entity is already ref for a table
         foreach ($columns as $column) {
-            if (isset($fromReferences[$column['table']]) === true) {
+
+            // Bypass if an entity has already been hydrated with this column
+            if (
+                array_key_exists($column['table'], $fromReferences) === true
+                && $fromReferences[$column['table']] === true
+                && array_key_exists($column['table'], $this->metadataList) === true
+                && $this->metadataList[$column['table']]->hasColumn($column['orgName'])
+            ) {
                 continue;
             }
 
