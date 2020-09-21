@@ -399,6 +399,82 @@ class Hydrator extends atoum
                 ->isIdenticalTo('Happy Face');
     }
 
+
+    public function testHydrateShouldHydrateUnknownColumnOfFromReferenceTable()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $services->get('MetadataRepository')
+            ->batchLoadMetadata('tests\fixtures\model', __DIR__ . '/../../../fixtures/model/*Repository.php');
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
+            [23, 'LeBron', 'James', 'Cleveland'],
+            [23, 'LeBron', 'James', 'Los Angeles']
+        ]);
+
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'boo_id';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_LONG;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'firstname';
+            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'bouh';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'boo_name';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            // This column is associated with a mapped table
+            // while parsing but not mapped into metadatas
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'notMappedBouhColumn';
+            $stdClass->orgname  = 'bouh_notMappedBouhColumn';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('bouh_world');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($currentObject = $iterator->current())
+            ->then($iterator->next())
+            ->then($nextObject = $iterator->current())
+            ->boolean(is_array($currentObject) && array_key_exists(0, $currentObject))
+            ->isIdenticalTo(true, 'Unmapped column of known table was not hydrated')
+            ->string($currentObject[0]->notMappedBouhColumn)
+            ->isIdenticalTo('Cleveland')
+            ->boolean(is_array($nextObject) && array_key_exists(0, $nextObject))
+            ->isIdenticalTo(true, 'Unmapped column of known table was not hydrated')
+            ->string($nextObject[0]->notMappedBouhColumn)
+            ->isIdenticalTo('Los Angeles')
+        ;
+    }
+
     public function testHydrateShouldHydrateIntoKey0()
     {
         $services = new \CCMBenchmark\Ting\Services();
@@ -1099,15 +1175,15 @@ class Hydrator extends atoum
 
             $stdClass = new \stdClass();
             $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->orgname  = 'boo_name';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
-            $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_name';
+            $stdClass->name     = 'firstname';
+            $stdClass->orgname  = 'boo_firstname';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
@@ -1159,15 +1235,15 @@ class Hydrator extends atoum
 
             $stdClass = new \stdClass();
             $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_firstname';
+            $stdClass->orgname  = 'boo_name';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
             $fields[] = $stdClass;
 
             $stdClass = new \stdClass();
-            $stdClass->name     = 'name';
-            $stdClass->orgname  = 'boo_name';
+            $stdClass->name     = 'firstname';
+            $stdClass->orgname  = 'boo_firstname';
             $stdClass->table    = 'bouh';
             $stdClass->orgtable = 'T_BOUH_BOO';
             $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
