@@ -1,4 +1,4 @@
-3.5.8 (2020-09-XX):
+3.5.8 (2020-09-21):
     * Fix: Hydrator hydrate unknown columns from a referenced table
 
 3.5.7 (2020-08-28):
