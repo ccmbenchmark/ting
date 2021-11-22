@@ -31,7 +31,7 @@ use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Exceptions\StatementException;
-use CCMBenchmark\Ting\Exceptions\TransationException;
+use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
@@ -411,36 +411,36 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws TransationException
+     * @throws TransactionException
      */
     public function startTransaction()
     {
         if ($this->transactionOpened === true) {
-            throw new TransationException('Cannot start another transaction');
+            throw new TransactionException('Cannot start another transaction');
         }
         $this->connection->begin_transaction();
         $this->transactionOpened = true;
     }
 
     /**
-     * @throws TransationException
+     * @throws TransactionException
      */
     public function commit()
     {
         if ($this->transactionOpened === false) {
-            throw new TransationException('Cannot commit no transaction');
+            throw new TransactionException('Cannot commit no transaction');
         }
         $this->connection->commit();
         $this->transactionOpened = false;
     }
 
     /**
-     * @throws TransationException
+     * @throws TransactionException
      */
     public function rollback()
     {
         if ($this->transactionOpened === false) {
-            throw new TransationException('Cannot rollback no transaction');
+            throw new TransactionException('Cannot rollback no transaction');
         }
         $this->connection->rollback();
         $this->transactionOpened = false;

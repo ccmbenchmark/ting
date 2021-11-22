@@ -2,6 +2,6 @@
 
 namespace CCMBenchmark\Ting\Exceptions;
 
-class TransationException extends DriverException
+class TransactionException extends DriverException
 {
 }
