@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Exceptions\ConnectionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
 class ConnectionPool implements ConnectionPoolInterface
@@ -82,12 +83,12 @@ class ConnectionPool implements ConnectionPoolInterface
      * @param $name
      * @param $database
      * @return DriverInterface
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function master($name, $database)
     {
         if (isset($this->connectionConfig[$name]['master']) === false) {
-            throw new Exception('Connection not found: ' . $name);
+            throw new ConnectionException('Connection not found: ' . $name);
         }
         $config = $this->connectionConfig[$name]['master'];
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
@@ -107,12 +108,12 @@ class ConnectionPool implements ConnectionPoolInterface
      * @param string $name
      * @param string $database
      * @return DriverInterface
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function slave($name, $database)
     {
         if (isset($this->connectionConfig[$name]) === false) {
-            throw new Exception('Connection not found: ' . $name);
+            throw new ConnectionException('Connection not found: ' . $name);
         }
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
@@ -215,12 +216,12 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * @param string $name connection name
      * @return string
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function getDriverClass($name)
     {
         if (isset($this->connectionConfig[$name]) === false) {
-            throw new Exception('Connection not found: ' . $name);
+            throw new ConnectionException('Connection not found: ' . $name);
         }
 
         return $this->connectionConfig[$name]['namespace'] . '\\Driver';

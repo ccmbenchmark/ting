@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Exceptions\HydratorException;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 
@@ -62,13 +63,13 @@ final class HydratorRelational extends Hydrator
 
     /**
      * @param bool $enable
-     * @throws Exception
+     * @throws HydratorException
      * @return void
      */
     public function identityMap($enable)
     {
         if ((bool) $enable === false) {
-            throw new Exception('identityMap can\'t be disabled for this Hydrator');
+            throw new HydratorException('identityMap can\'t be disabled for this Hydrator');
         }
     }
 
@@ -237,7 +238,7 @@ final class HydratorRelational extends Hydrator
      * @param string $table
      * @param object $entity
      *
-     * @throws Exception
+     * @throws HydratorException
      *
      * @return string
      */
@@ -249,7 +250,7 @@ final class HydratorRelational extends Hydrator
         }
 
         if ($id === '') {
-            throw new Exception(sprintf('No primary found for "%s"', $this->metadataList[$table]->getEntity()));
+            throw new HydratorException(sprintf('No primary found for "%s"', $this->metadataList[$table]->getEntity()));
         }
 
         return $id;

@@ -26,5 +26,4 @@ namespace CCMBenchmark\Ting\Driver;
 
 class NeverConnectedException extends Exception
 {
-
 }

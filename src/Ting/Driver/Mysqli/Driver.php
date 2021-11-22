@@ -24,10 +24,14 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
+use CCMBenchmark\Ting\Exceptions\ConnectionException;
+use CCMBenchmark\Ting\Exceptions\DatabaseException;
+use CCMBenchmark\Ting\Exceptions\DriverException;
 use CCMBenchmark\Ting\Driver\DriverInterface;
-use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Exceptions\StatementException;
+use CCMBenchmark\Ting\Exceptions\TransationException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
@@ -147,7 +151,7 @@ class Driver implements DriverInterface
      *
      * @return $this
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function connect($hostname, $username, $password, $port = 3306)
     {
@@ -163,7 +167,7 @@ class Driver implements DriverInterface
         try {
             $this->connected = $this->connection->real_connect($hostname, $username, $password, null, $port);
         } catch (\Exception $e) {
-            throw new Exception('Connect Error: ' . $e->getMessage(), $e->getCode());
+            throw new ConnectionException('Connect Error: ' . $e->getMessage(), $e->getCode());
         }
 
         return $this;
@@ -186,7 +190,7 @@ class Driver implements DriverInterface
     /**
      * @param string $charset
      * @return void
-     * @throws Exception
+     * @throws DriverException
      */
     public function setCharset($charset)
     {
@@ -195,7 +199,7 @@ class Driver implements DriverInterface
         }
 
         if ($this->connection->set_charset($charset) === false) {
-            throw new Exception('Can\'t set charset ' . $charset . ' (' . $this->connection->error . ')');
+            throw new DriverException('Can\'t set charset ' . $charset . ' (' . $this->connection->error . ')');
         }
         $this->currentCharset = $charset;
     }
@@ -223,11 +227,10 @@ class Driver implements DriverInterface
     /**
      * @param string $database
      * @return $this
-     * @throws Exception
+     * @throws DatabaseException
      */
     public function setDatabase($database)
     {
-
         if ($this->currentDatabase === $database) {
             return $this;
         }
@@ -235,7 +238,7 @@ class Driver implements DriverInterface
         $this->connection->select_db($database);
 
         $this->ifIsError(function () {
-            throw new Exception('Select database error: ' . $this->connection->error, $this->connection->errno);
+            throw new DatabaseException('Select database error: ' . $this->connection->error, $this->connection->errno);
         });
 
         $this->currentDatabase = $database;
@@ -408,36 +411,36 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @throws Exception
+     * @throws TransationException
      */
     public function startTransaction()
     {
         if ($this->transactionOpened === true) {
-            throw new Exception('Cannot start another transaction');
+            throw new TransationException('Cannot start another transaction');
         }
         $this->connection->begin_transaction();
         $this->transactionOpened = true;
     }
 
     /**
-     * @throws Exception
+     * @throws TransationException
      */
     public function commit()
     {
         if ($this->transactionOpened === false) {
-            throw new Exception('Cannot commit no transaction');
+            throw new TransationException('Cannot commit no transaction');
         }
         $this->connection->commit();
         $this->transactionOpened = false;
     }
 
     /**
-     * @throws Exception
+     * @throws TransationException
      */
     public function rollback()
     {
         if ($this->transactionOpened === false) {
-            throw new Exception('Cannot rollback no transaction');
+            throw new TransationException('Cannot rollback no transaction');
         }
         $this->connection->rollback();
         $this->transactionOpened = false;
@@ -465,12 +468,12 @@ class Driver implements DriverInterface
 
     /**
      * @param $statement
-     * @throws Exception
+     * @throws StatementException
      */
     public function closeStatement($statement)
     {
         if (isset($this->preparedQueries[$statement]) === false) {
-            throw new Exception('Cannot close non prepared statement');
+            throw new StatementException('Cannot close non prepared statement');
         }
         unset($this->preparedQueries[$statement]);
     }

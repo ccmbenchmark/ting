@@ -28,6 +28,9 @@ use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Exceptions\DriverException;
+use CCMBenchmark\Ting\Exceptions\StatementException;
+use CCMBenchmark\Ting\Exceptions\TransationException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
@@ -136,7 +139,7 @@ class Driver implements DriverInterface
     /**
      * @param string $charset
      * @return void
-     * @throws Exception
+     * @throws DriverException
      */
     public function setCharset($charset)
     {
@@ -145,7 +148,7 @@ class Driver implements DriverInterface
         }
 
         if (pg_set_client_encoding($this->connection, $charset) === -1) {
-            throw new Exception('Can\'t set charset ' . $charset . ' (' . pg_last_error($this->connection) . ')');
+            throw new DriverException('Can\'t set charset ' . $charset . ' (' . pg_last_error($this->connection) . ')');
         }
 
         $this->currentCharset = $charset;
@@ -166,7 +169,7 @@ class Driver implements DriverInterface
      * Connect the driver to the given database
      * @param string $database
      * @return $this
-     * @throws Exception
+     * @throws DriverException
      */
     public function setDatabase($database)
     {
@@ -178,7 +181,7 @@ class Driver implements DriverInterface
         $this->database = $database;
 
         if ($resource === false) {
-            throw new Exception('Connect Error: ' . $this->dsn . ' dbname=' . $database);
+            throw new DriverException('Connect Error: ' . $this->dsn . ' dbname=' . $database);
         }
         $this->connection = $resource;
 
@@ -371,12 +374,12 @@ class Driver implements DriverInterface
 
     /**
      * Start a transaction against the current connection
-     * @throws Exception
+     * @throws TransationException
      */
     public function startTransaction()
     {
         if ($this->transactionOpened === true) {
-            throw new Exception('Cannot start another transaction');
+            throw new TransationException('Cannot start another transaction');
         }
         pg_query($this->connection, 'BEGIN');
         $this->transactionOpened = true;
@@ -384,12 +387,12 @@ class Driver implements DriverInterface
 
     /**
      * Commit the transaction against the current connection
-     * @throws Exception
+     * @throws TransationException()
      */
     public function commit()
     {
         if ($this->transactionOpened === false) {
-            throw new Exception('Cannot commit no transaction');
+            throw new TransationException('Cannot commit no transaction');
         }
         pg_query($this->connection, 'COMMIT');
         $this->transactionOpened = false;
@@ -397,12 +400,12 @@ class Driver implements DriverInterface
 
     /**
      * Rollback the actual opened transaction
-     * @throws Exception
+     * @throws TransationException()
      */
     public function rollback()
     {
         if ($this->transactionOpened === false) {
-            throw new Exception('Cannot rollback no transaction');
+            throw new TransationException('Cannot rollback no transaction');
         }
         pg_query($this->connection, 'ROLLBACK');
         $this->transactionOpened = false;
@@ -452,12 +455,12 @@ class Driver implements DriverInterface
 
     /**
      * @param $statement
-     * @throws Exception
+     * @throws StatementException
      */
     public function closeStatement($statement)
     {
         if (isset($this->preparedQueries[$statement]) === false) {
-            throw new Exception('Cannot close non prepared statement');
+            throw new StatementException('Cannot close non prepared statement');
         }
         unset($this->preparedQueries[$statement]);
     }

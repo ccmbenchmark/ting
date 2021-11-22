@@ -25,6 +25,7 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Exceptions\IOException;
 
 class MetadataCacheGenerator
 {
@@ -43,7 +44,7 @@ class MetadataCacheGenerator
     /**
      * @param string $cacheDir
      * @param string $filename
-     * @throws Exception
+     * @throws IOException
      *
      * @internal
      */
@@ -56,10 +57,10 @@ class MetadataCacheGenerator
         }
 
         if (is_writable($this->cacheDir . '/') === false) {
-            throw new Exception('Cache directory for Metadata is not writable: ' . $cacheDir);
+            throw new IOException('Cache directory for Metadata is not writable: ' . $cacheDir);
         }
         if (touch($this->getFileName()) === false) {
-            throw new Exception('Cache file for Metadata is not writable: ' . $this->getFileName());
+            throw new IOException('Cache file for Metadata is not writable: ' . $this->getFileName());
         }
     }
 
