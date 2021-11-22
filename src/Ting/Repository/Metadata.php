@@ -28,6 +28,7 @@ use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Exceptions\ConfigException;
 use CCMBenchmark\Ting\Exceptions\SyntaxException;
 use CCMBenchmark\Ting\Exceptions\ValueException;
 use CCMBenchmark\Ting\Query\Generator;
@@ -224,21 +225,21 @@ class Metadata
      *      columnName : string : name of the mysql column
      *      primary : boolean : is this field a primary - optional
      *      autoincrement : boolean : is this field an autoincrement - optional
-     * @throws ValueException
+     * @throws ConfigException
      * @return $this
      */
     public function addField(array $params)
     {
         if (isset($params['fieldName']) === false) {
-            throw new ValueException('Field configuration must have "fieldName" property');
+            throw new ConfigException('Field configuration must have "fieldName" property');
         }
 
         if (isset($params['columnName']) === false) {
-            throw new ValueException('Field configuration must have "columnName" property');
+            throw new ConfigException('Field configuration must have "columnName" property');
         }
 
         if (isset($params['type']) === false) {
-            throw new ValueException('Field configuration must have "type" property');
+            throw new ConfigException('Field configuration must have "type" property');
         }
 
         if (isset($params['primary']) === true && $params['primary'] === true) {
