@@ -129,7 +129,7 @@ class Metadata
      */
     public function setRepository($className)
     {
-        if ('\\' === ($className[0] ?? '')) {
+        if (($className[0] ?? '') === '\\') {
             throw new SyntaxException('Class must not start with a \\');
         }
 
@@ -156,7 +156,7 @@ class Metadata
      */
     public function setEntity($className)
     {
-        if ('\\' === ($className[0] ?? '')) {
+        if (($className[0] ?? '') === '\\') {
             throw new SyntaxException('Class must not start with a \\');
         }
 

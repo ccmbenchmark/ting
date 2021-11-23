@@ -400,7 +400,7 @@ class Driver implements DriverInterface
 
     /**
      * Rollback the actual opened transaction
-     * @throws TransactionException()
+     * @throws TransactionException
      */
     public function rollback()
     {
