@@ -60,4 +60,4 @@ or see more [samples](https://bitbucket.org/ccmbenchmark/ting/src/).
 
 ## More :
 * [Documentation](http://tech.ccmbg.com/ting/doc/)
-* [Issues](https://bitbucket.org/ccmbenchmark/ting/issues)
+* [Issues](https://github.com/ccmbenchmark/ting/issues)

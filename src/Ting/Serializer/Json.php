@@ -100,7 +100,7 @@ class Json implements SerializerInterface
          */
         if ((json_last_error() === JSON_ERROR_SYNTAX && $serialized !== '')
             || (json_last_error() !== JSON_ERROR_SYNTAX && json_last_error() !== JSON_ERROR_NONE)) {
-            throw new RuntimeException('Could not decode value from json. Error was : ' . json_last_error_msg());
+            throw new RuntimeException('Could not decode value from json. Error was : ' . json_last_error_msg() . ' on ' . $serialized);
         }
 
         return $value;

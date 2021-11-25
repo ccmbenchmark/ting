@@ -41,7 +41,6 @@ class Hydrator implements HydratorInterface
     protected $unserializeAliases = [];
     protected $alreadyManaged     = [];
     protected $references         = [];
-    protected $fromReferences     = [];
     protected $metadataList       = [];
 
     /**
@@ -206,6 +205,49 @@ class Hydrator implements HydratorInterface
     }
 
     /**
+     * @param array $column
+     *
+     * @return string
+     */
+    private function extractSchemaFromColumn(array $column)
+    {
+        $schema = '';
+        if (isset($column['schema']) === true) {
+            $schema = $column['schema'];
+        }
+
+        if (isset($this->objectSchema[$column['table']]) === true) {
+            $schema = $this->objectSchema[$column['table']];
+        }
+        return $schema;
+    }
+
+    /**
+     * @param array $result
+     *
+     * @return bool
+     */
+    private function hasVirtualObject(array $result)
+    {
+        return isset($result[0]);
+    }
+
+    /**
+     * @param \stdClass $virtualObject
+     *
+     * @return \stdClass
+     */
+    private function unserializeVirtualObjectProperty(\stdClass $virtualObject)
+    {
+        foreach ($this->unserializeAliases as $aliasName => list($unserialize, $options)) {
+            if (isset($virtualObject->$aliasName) === true) {
+                $virtualObject->$aliasName = $unserialize->unserialize($virtualObject->$aliasName, $options);
+            }
+        }
+        return $virtualObject;
+    }
+
+    /**
      * Hydrate one object from values
      *
      * @internal hydrate all column into the right Entity according to the table name and metadata information
@@ -225,33 +267,35 @@ class Hydrator implements HydratorInterface
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
         $validEntities = []; // Entity marked as valid will fill an object
                              // (a valid Entity is a entity with at less one property not null)
-        $fromReferences = [];
+        $fromReferences = []; // Prevents from hydrating if an entity is already ref for a table
         foreach ($columns as $column) {
-            if (isset($fromReferences[$column['table']]) === true) {
+
+            // Bypass if an entity has already been hydrated with this column
+            if (
+                array_key_exists($column['table'], $fromReferences) === true
+                && $fromReferences[$column['table']] === true
+                && array_key_exists($column['table'], $this->metadataList) === true
+                && $this->metadataList[$column['table']]->hasColumn($column['orgName'])
+            ) {
                 continue;
             }
 
             // We have the information table, it's not a virtual column like COUNT(*)
             if (isset($result[$column['table']]) === false) {
                 if (isset($this->metadataList[$column['table']]) === false) {
+
                     if (isset($this->objectDatabase[$column['table']]) === true) {
                         $database = $this->objectDatabase[$column['table']];
                     }
 
-                    $schema = '';
-                    if (isset($column['schema']) === true) {
-                        $schema = $column['schema'];
-                    }
-
-                    if (isset($this->objectSchema[$column['table']]) === true) {
-                        $schema = $this->objectSchema[$column['table']];
-                    }
-
+                    $schema = $this->extractSchemaFromColumn($column);
                     $this->metadataRepository->findMetadataForTable(
                         $connectionName,
                         $database,
                         $schema,
                         $column['orgTable'],
+
+                        // Callback if table metadata found
                         function (Metadata $metadata) use ($column, &$result) {
                             $this->metadataList[$column['table']] = $metadata;
                             $result[$column['table']]             = $metadata->createEntity();
@@ -262,9 +306,10 @@ class Hydrator implements HydratorInterface
             }
 
             if (isset($this->metadataList[$column['table']]) === true) {
+
                 $id = '';
                 foreach ($this->metadataList[$column['table']]->getPrimaries() as $columnName => $primary) {
-                    if ($column['orgName'] === $columnName) {
+                    if ($column['orgName'] === $columnName && $column['value'] !== null) {
                         $id = $column['value'] . '-';
                     }
                 }
@@ -272,10 +317,14 @@ class Hydrator implements HydratorInterface
                 if ($id !== '') {
                     $ref = $column['table'] . '-' . $id;
                     if (isset($this->references[$ref]) === true) {
+
+                        // This entity was already created and stored into references
                         if ($this->identityMap === false) {
+                            // If identityMap is disabled, it clones the object and reset UUID
                             $result[$column['table']] = clone $this->references[$ref];
                             unset($result[$column['table']]->tingUUID);
                         } else {
+                            // If identityMap is enabled, it uses the same object
                             $result[$column['table']] = $this->references[$ref];
                         }
                         $validEntities[$column['table']]  = true;
@@ -319,7 +368,7 @@ class Hydrator implements HydratorInterface
                     );
                 }
 
-            // Table is not mapped or column is a virtual column
+                // Table is not mapped or column is a virtual column
             } else {
                 $validEntities[0] = true;
                 if (isset($result[0]) === false) {
@@ -331,15 +380,12 @@ class Hydrator implements HydratorInterface
         }
 
         // Virtual object
-        if (isset($result[0]) === true) {
-            foreach ($this->unserializeAliases as $aliasName => list($unserialize, $options)) {
-                if (isset($result[0]->$aliasName) === true) {
-                    $result[0]->$aliasName = $unserialize->unserialize($result[0]->$aliasName, $options);
-                }
-            }
+        if ($this->hasVirtualObject($result) === true) {
+            $result[0] = $this->unserializeVirtualObjectProperty($result[0]);
         }
 
         foreach ($result as $table => $entity) {
+
             // All no valid entity is replaced by a null value
             if (isset($validEntities[$table]) === false) {
                 $result[$table] = null;
@@ -347,12 +393,10 @@ class Hydrator implements HydratorInterface
 
             // It's a valid entity (unknown data are put in a value table 0)
             if (is_int($table) === false) {
-                $id = '';
+                $ref = $table . '-';
                 foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
-
-                    $id = $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+                    $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
                 }
-                $ref = $table . '-' . $id;
 
                 if (isset($this->references[$ref]) === false) {
                     $this->references[$ref] = $entity;

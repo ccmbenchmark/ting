@@ -101,7 +101,7 @@ class Driver implements DriverInterface
      */
     public function escapeField($field)
     {
-
+        return $field;
     }
 
     /**

@@ -686,6 +686,11 @@ class Metadata extends atoum
         $this->calling($mockConnectionPool)->master = new \tests\fixtures\FakeDriver\Driver();
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
+        $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
+        $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
         $entity = new Bouh();
         $entity->setName('Xavier');
 
@@ -693,6 +698,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setTable('bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -701,8 +707,26 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
-            ->object($metadata->generateQueryForInsert($mockConnection, $services->get('QueryFactory'), $entity))
+            ->and(
+                $metadata->addField([
+                    'fieldName'  => 'name',
+                    'columnName' => 'boo_name',
+                    'type'       => 'int'
+                ])
+            )
+            ->then($query = $metadata->generateQueryForInsert($mockConnection, $services->get('QueryFactory'), $entity))
+            ->object($query)
                 ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
+                ->if($query->execute())
+                    ->mock($mockDriver)
+                        ->call('prepare')
+                            ->withArguments('INSERT INTO bouh (boo_id, boo_name) VALUES (:boo_id, :boo_name)')
+                            ->once()
+                    ->mock($mockStatement)
+                        ->call('execute')
+                            ->withIdenticalArguments(['boo_id' => null, 'boo_name' => 'Xavier'])
+                            ->once()
+
         ;
     }
 
@@ -862,16 +886,21 @@ class Metadata extends atoum
     public function testGenerateQueryForUpdateShouldReturnAPreparedQuery()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->master = new \tests\fixtures\FakeDriver\Driver();
+        $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
+        $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
         $entity = new Bouh();
+        $entity->setId(20);
         $entity->setName('Xavier');
 
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setTable('bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -888,22 +917,35 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
-            ->object(
-                $metadata->generateQueryForUpdate(
+            ->then(
+                $query = $metadata->generateQueryForUpdate(
                     $mockConnection,
                     $services->get('QueryFactory'),
                     $entity,
                     ['name' => 'Sylvain']
                 )
             )
+            ->object($query)
                 ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
+                    ->if($query->execute())
+                        ->mock($mockDriver)
+                            ->call('prepare')
+                                ->withArguments('UPDATE bouh SET firstname = :firstname WHERE boo_id = :#boo_id AND firstname = :#firstname')
+                                    ->once()
+                        ->mock($mockStatement)
+                            ->call('execute')
+                                ->withArguments(['#boo_id' => 20, '#firstname' => 'Sylvain', 'firstname' => 'Xavier'])
+                                    ->once()
         ;
     }
 
     public function testGenerateQueryForDeleteShouldReturnAPreparedQuery()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
-        $this->calling($mockConnectionPool)->master = new \tests\fixtures\FakeDriver\Driver();
+        $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
+        $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockConnectionPool)->master = $mockDriver;
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
         $entity = new Bouh();
@@ -921,10 +963,23 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and(
+                $metadata->setTable('bouh')
+            )
+            ->then($query = $metadata->generateQueryForDelete($mockConnection, $services->get('QueryFactory'), ['id' => 1], $entity))
             ->object(
-                $metadata->generateQueryForDelete($mockConnection, $services->get('QueryFactory'), ['id' => 1], $entity)
+                $query
             )
                 ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
+                    ->if($query->execute())
+                        ->mock($mockDriver)
+                            ->call('prepare')
+                                ->withArguments('DELETE FROM bouh WHERE boo_id = :#boo_id')
+                                    ->once()
+                        ->mock($mockStatement)
+                            ->call('execute')
+                                ->withIdenticalArguments(['#boo_id' => 1])
+                                    ->once()
         ;
     }
 

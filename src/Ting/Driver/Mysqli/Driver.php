@@ -60,6 +60,11 @@ class Driver implements DriverInterface
     protected $currentCharset = null;
 
     /**
+     * @var string|null
+     */
+    protected $currentTimezone = null;
+
+    /**
      * @var bool
      */
     protected $connected = false;
@@ -500,6 +505,10 @@ class Driver implements DriverInterface
                 $this->connection->set_charset($this->currentCharset);
             }
 
+            if ($this->currentTimezone !== null) {
+                $this->connection->query(sprintf('SET time_zone = "%s";', $this->currentTimezone));
+            }
+
             return true;
         } catch (\Exception $exception) {
             return false;
@@ -511,11 +520,17 @@ class Driver implements DriverInterface
      */
     public function setTimezone($timezone)
     {
+        if ($this->currentTimezone === $timezone) {
+            return;
+        }
+
+        $value = $timezone;
         $query = 'SET time_zone = "%s";';
         if ($timezone === null) {
-            $timezone = 'DEFAULT';
+            $value = 'DEFAULT';
             $query = str_replace('"', '', $query);
         }
-        $this->connection->query(sprintf($query, $timezone));
+        $this->connection->query(sprintf($query, $value));
+        $this->currentTimezone = $timezone;
     }
 }

@@ -50,6 +50,11 @@ class Driver implements DriverInterface
     protected $currentCharset = null;
 
     /**
+     * @var string|null
+     */
+    protected $currentTimezone = null;
+
+    /**
      * @var resource|null pgsql
      */
     protected $connection = null;
@@ -472,6 +477,9 @@ class Driver implements DriverInterface
         if ($result === true && $this->currentCharset !== null) {
             pg_set_client_encoding($this->connection, $this->currentCharset);
         }
+        if ($result === true && $this->currentTimezone !== null) {
+            pg_query($this->connection, sprintf('SET timezone = "%s";', $this->currentTimezone));
+        }
 
         return $result;
     }
@@ -481,11 +489,16 @@ class Driver implements DriverInterface
      */
     public function setTimezone($timezone)
     {
+        if ($this->currentTimezone === $timezone) {
+            return;
+        }
+        $value = $timezone;
         $query = 'SET timezone = "%s";';
         if ($timezone === null) {
-            $timezone = 'DEFAULT';
+            $value = 'DEFAULT';
             $query = str_replace('"', '', $query);
         }
-        pg_query($this->connection, sprintf($query, $timezone));
+        pg_query($this->connection, sprintf($query, $value));
+        $this->currentTimezone = $timezone;
     }
 }
