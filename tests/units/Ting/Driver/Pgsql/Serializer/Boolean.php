@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql\Serializer;
 
-use mageekguy\atoum;
+use atoum;
 
 class Boolean extends atoum
 {

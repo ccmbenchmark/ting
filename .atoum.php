@@ -1,6 +1,6 @@
 <?php
 
-use \mageekguy\atoum;
+use \atoum\atoum;
 
 $report = $script->addDefaultReport();
 $coverageField = new atoum\report\fields\runner\coverage\html('Ting', __DIR__ . '/tests/coverage/');

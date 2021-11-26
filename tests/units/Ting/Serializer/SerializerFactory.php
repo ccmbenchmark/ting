@@ -25,7 +25,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Serializer;
 
-use mageekguy\atoum;
+use atoum;
 
 class SerializerFactory extends atoum
 {

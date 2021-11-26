@@ -25,7 +25,7 @@
 
 namespace tests\units\CCMBenchmark\Ting;
 
-use mageekguy\atoum;
+use atoum;
 
 class Connection extends atoum
 {

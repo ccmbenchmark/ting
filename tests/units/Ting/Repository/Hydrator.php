@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
 use CCMBenchmark\Ting\UnitOfWork;
-use mageekguy\atoum;
+use atoum;
 use tests\fixtures\model\City;
 use tests\fixtures\model\CityRepository;
 use tests\fixtures\model\PrimaryOnMultiField;

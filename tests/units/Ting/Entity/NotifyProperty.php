@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Entity;
 
-use mageekguy\atoum;
+use atoum;
 
 class NotifyProperty extends atoum
 {

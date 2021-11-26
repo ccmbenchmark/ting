@@ -25,7 +25,7 @@
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
-use mageekguy\atoum;
+use atoum;
 
 class HydratorArray extends atoum
 {

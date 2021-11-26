@@ -25,7 +25,7 @@
 namespace tests\units\CCMBenchmark\Ting\Query\Cached;
 
 use CCMBenchmark\Ting\Repository\Collection;
-use mageekguy\atoum;
+use atoum;
 
 class Query extends atoum
 {
