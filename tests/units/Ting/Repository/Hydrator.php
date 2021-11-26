@@ -885,7 +885,7 @@ class Hydrator extends atoum
         $metaDataRepo = $services->get('MetadataRepository');
 
         $cityMetadata =  new \CCMBenchmark\Ting\Repository\Metadata(
-            new\mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface()
+            new \mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface()
         );
 
         $cityMetadata->setEntity(City::class);
