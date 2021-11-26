@@ -338,7 +338,7 @@ class UnitOfWork implements PropertyListenerInterface
                 unset($this->entitiesShouldBePersisted[$uuid]);
             },
             function () use ($entity) {
-                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
+                throw new QueryException('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
@@ -374,7 +374,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $this->manage($entity);
             },
             function () use ($entity) {
-                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
+                throw new QueryException('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }
@@ -413,7 +413,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $this->detach($entity);
             },
             function () use ($entity) {
-                throw new Exception('Could not find repository matching entity "' . get_class($entity) . '"');
+                throw new QueryException('Could not find repository matching entity "' . get_class($entity) . '"');
             }
         );
     }

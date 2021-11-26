@@ -33,7 +33,8 @@ use CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
 use CCMBenchmark\Ting\Driver\Pgsql;
 use CCMBenchmark\Ting\Driver\SphinxQL;
-use CCMBenchmark\Ting\Exception;
+use CCMBenchmark\Ting\Exceptions\DriverException;
+use CCMBenchmark\Ting\Exceptions\RepositoryException;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
@@ -127,7 +128,7 @@ abstract class Repository
                 $this->metadata = $metadata;
             },
             function () use ($class) {
-                throw new Exception(
+                throw new RepositoryException(
                     'Metadata not found for ' . $class
                     . ', you probably forgot to call MetadataRepository::batchLoadMetadata'
                 );
@@ -197,7 +198,7 @@ abstract class Repository
     /**
      * @param string $type One of the QUERY_ constant
      * @return QueryInterface
-     * @throws Exception
+     * @throws DriverException
      */
     public function getQueryBuilder($type)
     {
@@ -214,7 +215,7 @@ abstract class Repository
                 $queryFactory = new AuraQueryFactory('mysql');
                 break;
             default:
-                throw new Exception('Driver ' . $driver . ' is unknown to build QueryBuilder');
+                throw new DriverException('Driver ' . $driver . ' is unknown to build QueryBuilder');
         }
 
         switch ($type) {
