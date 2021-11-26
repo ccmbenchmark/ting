@@ -511,6 +511,8 @@ class Driver extends atoum
         $this->function->pg_query = function () use (&$pgQueryCalled) {
             $pgQueryCalled = true;
         };
+        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
+        $this->function->pg_fetch_assoc = null;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
