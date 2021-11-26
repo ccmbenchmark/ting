@@ -1,3 +1,6 @@
+Next Release (unreleased):
+    * Feature: Enhancece exceptions granularity
+
 3.5.8 (2020-09-21):
     * Fix: Hydrator hydrate unknown columns from a referenced table
 
