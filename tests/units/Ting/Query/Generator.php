@@ -26,7 +26,7 @@
 namespace tests\units\CCMBenchmark\Ting\Query;
 
 use CCMBenchmark\Ting\Repository\CollectionFactory;
-use mageekguy\atoum;
+use atoum;
 
 class Generator extends atoum
 {

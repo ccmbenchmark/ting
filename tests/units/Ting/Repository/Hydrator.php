@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\DateTime;
 use CCMBenchmark\Ting\Serializer\Json;
 use CCMBenchmark\Ting\UnitOfWork;
-use mageekguy\atoum;
+use atoum;
 use tests\fixtures\model\City;
 use tests\fixtures\model\CityRepository;
 use tests\fixtures\model\PrimaryOnMultiField;
@@ -885,7 +885,7 @@ class Hydrator extends atoum
         $metaDataRepo = $services->get('MetadataRepository');
 
         $cityMetadata =  new \CCMBenchmark\Ting\Repository\Metadata(
-            new\mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface()
+            new \mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface()
         );
 
         $cityMetadata->setEntity(City::class);

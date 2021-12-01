@@ -228,7 +228,7 @@ class Generator
         $fields = $this->escapeFields(array_keys($values), $driver);
 
         $sql = 'INSERT INTO ' . $this->getTarget($driver) . ' ('
-            . implode($fields, ', ') . ') VALUES (:' . implode(array_keys($values), ', :') . ')';
+            . implode(', ', $fields) . ') VALUES (:' . implode(', :', array_keys($values)) . ')';
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
 

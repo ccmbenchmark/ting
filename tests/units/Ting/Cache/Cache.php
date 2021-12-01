@@ -26,7 +26,7 @@ namespace tests\units\CCMBenchmark\Ting\Cache;
 
 use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
 use Doctrine\Common\Cache\VoidCache;
-use mageekguy\atoum;
+use atoum;
 
 class Cache extends atoum
 {

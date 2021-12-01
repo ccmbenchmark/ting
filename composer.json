@@ -27,7 +27,7 @@
         "doctrine/cache": "^1.6"
     },
     "require-dev": {
-        "atoum/atoum": "^3.0",
+        "atoum/atoum": "^4.0",
         "atoum/stubs": "^2.0"
     },
     "autoload": {

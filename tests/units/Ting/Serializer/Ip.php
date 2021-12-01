@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Serializer;
 
-use mageekguy\atoum;
+use atoum;
 
 class Ip extends atoum
 {

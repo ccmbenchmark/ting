@@ -30,7 +30,7 @@ use CCMBenchmark\Ting\Repository\Hydrator\RelationOne;
 use CCMBenchmark\Ting\Services;
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
-use mageekguy\atoum;
+use atoum;
 
 /**
  * HydratorRelational

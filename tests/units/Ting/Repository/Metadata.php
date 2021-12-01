@@ -24,7 +24,7 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
-use mageekguy\atoum;
+use atoum;
 use tests\fixtures\model\Bouh;
 use tests\fixtures\model\BouhCustomGetter;
 
