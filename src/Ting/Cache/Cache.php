@@ -86,6 +86,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function delete($id)
     {
@@ -98,6 +100,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     public function fetch($id)
     {
@@ -110,6 +114,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function contains($id)
     {
@@ -122,6 +128,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function save($id, $data, $lifeTime = 0)
     {
@@ -134,6 +142,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return array|null
      */
     public function getStats()
     {
