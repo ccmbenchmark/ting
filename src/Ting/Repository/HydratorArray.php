@@ -70,6 +70,7 @@ class HydratorArray implements HydratorInterface
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         foreach ($this->result as $key => $row) {
@@ -85,6 +86,7 @@ class HydratorArray implements HydratorInterface
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->result === null) {

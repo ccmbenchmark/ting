@@ -144,6 +144,7 @@ class Collection implements CollectionInterface
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->hydrator->getIterator();
@@ -152,6 +153,7 @@ class Collection implements CollectionInterface
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->hydrator->count();

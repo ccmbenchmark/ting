@@ -30,6 +30,7 @@ class HydratorSingleObject extends Hydrator
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         foreach ($this->result as $key => $row) {

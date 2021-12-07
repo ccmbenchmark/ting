@@ -74,6 +74,7 @@ class HydratorAggregator extends Hydrator
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $knownIdentifiers = [];

@@ -68,11 +68,13 @@ class MysqliResult implements ResultInterface
     }
     // @codingStandardsIgnoreEnd
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->offset = 0;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (isset($this->data[$this->offset]) === false) {
@@ -82,16 +84,19 @@ class MysqliResult implements ResultInterface
         return $this->data[$this->offset];
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->offset;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->offset;
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->data[$this->offset]);
