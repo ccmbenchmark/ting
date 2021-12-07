@@ -313,11 +313,7 @@ class Metadata
      */
     public function hasColumn($column)
     {
-        if (isset($this->fields[$column]) === true) {
-            return true;
-        }
-
-        return false;
+        return isset($this->fields[$column]);
     }
 
     /**

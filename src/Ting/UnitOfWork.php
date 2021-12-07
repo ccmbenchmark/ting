@@ -88,11 +88,7 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function isManaged(NotifyPropertyInterface $entity)
     {
-        if (isset($entity->tingUUID) === false) {
-            return false;
-        }
-
-        return true;
+        return isset($entity->tingUUID);
     }
 
     /**
