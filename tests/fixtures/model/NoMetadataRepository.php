@@ -24,9 +24,6 @@
 
 namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Repository\Metadata;
-use CCMBenchmark\Ting\Repository\MetadataInitializer;
-use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\Repository\Repository;
 
 class NoMetadataRepository extends Repository

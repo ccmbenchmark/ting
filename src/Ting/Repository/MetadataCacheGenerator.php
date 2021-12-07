@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Exceptions\IOException;
 
 class MetadataCacheGenerator

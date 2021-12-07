@@ -24,7 +24,6 @@
 
 namespace tests\units\CCMBenchmark\Ting\Driver\SphinxQL;
 
-use CCMBenchmark\Ting\Repository\Collection;
 use atoum;
 
 class Driver extends atoum

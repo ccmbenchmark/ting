@@ -25,7 +25,6 @@
 namespace tests\units\CCMBenchmark\Ting\Query\Cached;
 
 use CCMBenchmark\Ting\Repository\Collection;
-use CCMBenchmark\Ting\Repository\CollectionInterface;
 use atoum;
 
 class PreparedQuery extends atoum

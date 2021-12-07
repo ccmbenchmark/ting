@@ -25,7 +25,6 @@
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
-use CCMBenchmark\Ting\Repository\Hydrator;
 use atoum;
 
 class Collection extends atoum

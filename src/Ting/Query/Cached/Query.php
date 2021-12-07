@@ -26,7 +26,6 @@ namespace CCMBenchmark\Ting\Query\Cached;
 
 use CCMBenchmark\Ting\Exception;
 use Doctrine\Common\Cache\Cache;
-use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Query\QueryException;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
