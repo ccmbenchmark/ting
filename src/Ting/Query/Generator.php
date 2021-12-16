@@ -193,6 +193,7 @@ class Generator
      * @return Query
      *
      * @internal
+     * @todo merge with getSqlAndParamsByCriteria in v4.0
      */
     public function getByCriteria(
         array $criteria,
@@ -213,6 +214,16 @@ class Generator
         return $query;
     }
 
+    /**
+     * @todo merge with getByCriteria in v4.0
+     *
+     * @param array                      $criteria
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param                            $forceMaster
+     * @param array                      $order
+     * @param                            $limit
+     * @return Query
+     */
     public function getByCriteriaWithOrderAndLimit(
         array $criteria,
         CollectionFactoryInterface $collectionFactory,
@@ -375,6 +386,13 @@ class Generator
         return [$conditions, $values];
     }
 
+    /**
+     * @param string          $sql
+     * @param DriverInterface $driver
+     * @param array           $order
+     * @param int             $limit
+     * @return void
+     */
     protected function updateSQLWithOrderAndLimit(string &$sql, DriverInterface $driver, array $order = [], int $limit = 0)
     {
         if (count($order) > 0) {
