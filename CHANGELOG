@@ -1,3 +1,8 @@
+3.6.0 (2021-12-16):
+    * New Feature: add support of limit and order on query Generator
+    * Fix: Ignore abstract classes and interfaces in CCMBenchmark\Ting\MetadataRepository::batchLoadMetadata()
+    * Fix: PHP 8.1 deprecations
+
 3.5.8 (2020-09-21):
     * Fix: Hydrator hydrate unknown columns from a referenced table
 
