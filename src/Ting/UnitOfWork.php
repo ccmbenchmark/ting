@@ -76,7 +76,7 @@ class UnitOfWork implements PropertyListenerInterface
     {
         error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.', self::class, self::class), E_USER_DEPRECATED);
 
-        return $this->generateUID();
+        return $this->generateUid();
     }
 
     /**
