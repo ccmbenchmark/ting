@@ -98,6 +98,7 @@ final class HydratorRelational extends Hydrator
      *
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->resolveDependencies();

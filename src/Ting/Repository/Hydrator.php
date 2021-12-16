@@ -104,6 +104,7 @@ class Hydrator implements HydratorInterface
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         foreach ($this->result as $key => $columns) {
@@ -118,6 +119,7 @@ class Hydrator implements HydratorInterface
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->result === null) {
