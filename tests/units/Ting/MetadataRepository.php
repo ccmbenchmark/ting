@@ -251,18 +251,17 @@ class MetadataRepository extends atoum
     public function testBatchLoadMetadataShouldLoad5Repositories()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $test = $this
+        $this
             ->if(
                 $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
                     $services->get('SerializerFactory')
                 )
             )
-            ->array($data = $metadataRepository->batchLoadMetadata(
+            ->array($metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../fixtures/model/*Repository.php'
-            ));
-
-            $test->isIdenticalTo([
+            ))
+            ->isIdenticalTo([
                 'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
                 'tests\fixtures\model\BouhReadOnlyRepository' => 'tests\fixtures\model\BouhReadOnlyRepository',
                 'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
