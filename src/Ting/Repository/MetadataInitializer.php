@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 interface MetadataInitializer

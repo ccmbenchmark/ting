@@ -25,8 +25,6 @@
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
-use CCMBenchmark\Ting\Driver\ResultInterface;
-use CCMBenchmark\Ting\Repository\Hydrator;
 use atoum;
 
 class CollectionFactory extends atoum

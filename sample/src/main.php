@@ -28,9 +28,7 @@ namespace sample\src;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\Collection;
 use CCMBenchmark\Ting\Repository\Hydrator;
-use CCMBenchmark\Ting\Repository\HydratorSingleObject;
 use CCMBenchmark\Ting\Serializer\DateTime;
-use CCMBenchmark\Ting\Serializer\Json;
 use sample\src\model\CityRepository;
 
 require __DIR__ . '/../../vendor/autoload.php';
