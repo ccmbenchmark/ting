@@ -222,10 +222,6 @@ class Result implements ResultInterface
      */
     public function valid()
     {
-        if ($this->iteratorCurrent !== null) {
-            return true;
-        }
-
-        return false;
+        return $this->iteratorCurrent !== null;
     }
 }
