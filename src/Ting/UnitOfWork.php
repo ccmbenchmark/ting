@@ -63,9 +63,20 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * @return string
      */
+    protected function generateUid()
+    {
+        return uniqid(mt_rand(), true);
+    }
+
+    /**
+     * @return string
+     * @deprecated generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use generateUid() instead.
+     */
     protected function generateUUID()
     {
-        return uniqid(rand(), true);
+        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.', self::class, self::class), E_USER_DEPRECATED);
+
+        return $this->generateUid();
     }
 
     /**
@@ -76,7 +87,7 @@ class UnitOfWork implements PropertyListenerInterface
     public function manage(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
-            $entity->tingUUID = $this->generateUUID();
+            $entity->tingUUID = $this->generateUid();
         }
 
         $entity->addPropertyListener($this);
@@ -120,7 +131,7 @@ class UnitOfWork implements PropertyListenerInterface
         $state = self::STATE_MANAGED;
 
         if (isset($entity->tingUUID) === false) {
-            $entity->tingUUID = $this->generateUUID();
+            $entity->tingUUID = $this->generateUid();
             $state = self::STATE_NEW;
         }
 
@@ -160,7 +171,7 @@ class UnitOfWork implements PropertyListenerInterface
         }
 
         if (isset($entity->tingUUID) === false) {
-            $entity->tingUUID = $this->generateUUID();
+            $entity->tingUUID = $this->generateUid();
         }
 
         if (isset($this->entitiesChanged[$entity->tingUUID]) === false) {
@@ -227,7 +238,7 @@ class UnitOfWork implements PropertyListenerInterface
     public function pushDelete(NotifyPropertyInterface $entity)
     {
         if (isset($entity->tingUUID) === false) {
-            $entity->tingUUID = $this->generateUUID();
+            $entity->tingUUID = $this->generateUid();
         }
 
         $this->entitiesShouldBePersisted[$entity->tingUUID] = self::STATE_DELETE;
