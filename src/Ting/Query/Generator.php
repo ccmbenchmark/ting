@@ -153,7 +153,7 @@ class Generator
     ) {
         $driver = $this->getDriver($forceMaster);
 
-        list($sql, $params) = $this->getSqlAndParamsByCriteria($primariesValue, $driver);
+        [$sql, $params] = $this->getSqlAndParamsByCriteria($primariesValue, $driver);
         $sql .=  ' LIMIT 1';
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
@@ -177,7 +177,7 @@ class Generator
 
         $sql = $this->getSelect($fields, $driver);
 
-        list($conditions, $params) = $this->generateConditionAndParams(array_keys($criteria), $criteria);
+        [$conditions, $params] = $this->generateConditionAndParams(array_keys($criteria), $criteria);
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
         return [$sql, $params];
@@ -193,6 +193,7 @@ class Generator
      * @return Query
      *
      * @internal
+     * @todo merge with getSqlAndParamsByCriteria in v4.0
      */
     public function getByCriteria(
         array $criteria,
@@ -201,7 +202,40 @@ class Generator
     ) {
         $driver = $this->getDriver($forceMaster);
 
-        list($sql, $params) = $this->getSqlAndParamsByCriteria($criteria, $driver);
+        [$sql, $params] = $this->getSqlAndParamsByCriteria($criteria, $driver);
+
+        $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
+        $query->setParams($params);
+
+        if ($forceMaster === true) {
+            $query->selectMaster(true);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @todo merge with getByCriteria in v4.0
+     *
+     * @param array                      $criteria
+     * @param CollectionFactoryInterface $collectionFactory
+     * @param                            $forceMaster
+     * @param array                      $order
+     * @param                            $limit
+     * @return Query
+     */
+    public function getByCriteriaWithOrderAndLimit(
+        array $criteria,
+        CollectionFactoryInterface $collectionFactory,
+        $forceMaster = false,
+        array $order = [],
+        $limit = 0
+    )
+    {
+        $driver = $this->getDriver($forceMaster);
+
+        [$sql, $params] = $this->getSqlAndParamsByCriteria($criteria, $driver);
+        $this->updateSQLWithOrderAndLimit($sql, $driver, $order, $limit);
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
         $query->setParams($params);
@@ -260,7 +294,7 @@ class Generator
 
         $primaryFields = $this->escapeFields(array_keys($primariesValue), $driver);
 
-        list($conditions, $params) = $this->generateConditionAndParams($primaryFields, $primariesValue);
+        [$conditions, $params] = $this->generateConditionAndParams($primaryFields, $primariesValue);
 
         $params = array_merge($values, $params);
 
@@ -287,7 +321,7 @@ class Generator
 
         $primaryFields = $this->escapeFields(array_keys($primariesKeyValue), $driver);
 
-        list($conditions, $params) = $this->generateConditionAndParams($primaryFields, $primariesKeyValue);
+        [$conditions, $params] = $this->generateConditionAndParams($primaryFields, $primariesKeyValue);
 
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
 
@@ -350,5 +384,63 @@ class Generator
         }
 
         return [$conditions, $values];
+    }
+
+    /**
+     * @param string          $sql
+     * @param DriverInterface $driver
+     * @param array           $order
+     * @param int             $limit
+     * @return void
+     */
+    protected function updateSQLWithOrderAndLimit(string &$sql, DriverInterface $driver, array $order = [], int $limit = 0)
+    {
+        if (count($order) > 0) {
+            $sql .= $this->generateOrder($order, $driver);
+        }
+
+        if ($limit > 0) {
+            $sql .= $this->generateLimit($limit);
+        }
+    }
+
+    /**
+     * Generate Order params to add to query
+     *
+     * @param array             $orderList
+     * @param DriverInterface   $driver
+     * @return string
+     */
+    protected function generateOrder(array $orderList, DriverInterface $driver)
+    {
+        $fields = $this->escapeFields(array_keys($orderList), $driver);
+
+        $orderClause = '';
+        $orderCriteria = [];
+
+        $i = 0;
+        foreach ($orderList as $value) {
+            $value = strtoupper($value);
+            if (in_array($value, ['ASC', 'DESC'])) {
+                $orderCriteria[] = $fields[$i] . ' ' . $value;
+            }
+            $i++;
+        }
+
+        if (count($orderList) > 0) {
+            $orderClause = ' ORDER BY ' . implode(',', $orderCriteria);
+        }
+
+        return $orderClause;
+    }
+
+    /**
+     * Generate Limit params to add to query
+     *
+     * @param $limit
+     * @return string
+     */
+    protected function generateLimit($limit) {
+        return ' LIMIT ' . $limit;
     }
 }

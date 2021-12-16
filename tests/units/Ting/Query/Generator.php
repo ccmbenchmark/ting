@@ -192,4 +192,51 @@ class Generator extends atoum
                 ->isInstanceOf('\CCMBenchmark\Ting\Query\PreparedQuery')
         ;
     }
+
+    public function testGetByCriteriaWithArrayValueAndOrderShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    '',
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getByCriteriaWithOrderAndLimit(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true, ['name' => 'ASC']))
+            ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockConnection)
+            ->call('master')
+            ->once()
+
+        ;
+    }
+
+
+    public function testGetByCriteriaWithArrayValueAndOrderLimitShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    '',
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getByCriteriaWithOrderAndLimit(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true, ['name' => 'ASC'], 1))
+            ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockConnection)
+            ->call('master')
+            ->once()
+
+        ;
+    }
 }
