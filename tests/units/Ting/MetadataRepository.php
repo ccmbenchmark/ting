@@ -251,23 +251,25 @@ class MetadataRepository extends atoum
     public function testBatchLoadMetadataShouldLoad5Repositories()
     {
         $services = new \CCMBenchmark\Ting\Services();
-        $this
+        $test = $this
             ->if(
                 $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository(
                     $services->get('SerializerFactory')
                 )
             )
-            ->array($metadataRepository->batchLoadMetadata(
+            ->array($data = $metadataRepository->batchLoadMetadata(
                 'tests\fixtures\model',
                 __DIR__ . '/../../fixtures/model/*Repository.php'
-            ))
-                ->isIdenticalTo([
-                    'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
-                    'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
-                    'tests\fixtures\model\CityRepository'         => 'tests\fixtures\model\CityRepository',
-                    'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository',
-                    'tests\fixtures\model\ParkRepository'         => 'tests\fixtures\model\ParkRepository'
-                ]);
+            ));
+
+            $test->isIdenticalTo([
+                'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
+                'tests\fixtures\model\BouhReadOnlyRepository' => 'tests\fixtures\model\BouhReadOnlyRepository',
+                'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
+                'tests\fixtures\model\CityRepository'         => 'tests\fixtures\model\CityRepository',
+                'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository',
+                'tests\fixtures\model\ParkRepository'         => 'tests\fixtures\model\ParkRepository',
+            ]);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()
