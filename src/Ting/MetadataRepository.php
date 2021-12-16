@@ -180,24 +180,28 @@ class MetadataRepository
         }
 
         foreach (glob($globPattern) as $metadataFile) {
+            /** @var class-string<MetadataInitializer> $metadataClass */
             $metadataClass = $namespace . '\\' . basename($metadataFile, '.php');
+            $class = new \ReflectionClass($metadataClass);
 
-            if (is_subclass_of($metadataClass, MetadataInitializer::class) === true) {
-                /** @var Metadata $metadata */
-                $metadata = $metadataClass::initMetadata(
-                    $this->serializerFactory,
-                    $this->getOptionForRepository($metadataClass, $options)
-                );
-
-                if ($metadata->getRepository() !== null) {
-                    $repository = $metadata->getRepository();
-                } else {
-                    $repository = $metadataClass;
-                }
-
-                $this->addMetadata($repository, $metadata);
-                $loaded[$repository] = $metadataClass;
+            if ($class->isInterface() || $class->isAbstract() || !$class->isSubclassOf(MetadataInitializer::class)) {
+                continue;
             }
+
+            /** @var Metadata $metadata */
+            $metadata = $metadataClass::initMetadata(
+                $this->serializerFactory,
+                $this->getOptionForRepository($metadataClass, $options)
+            );
+
+            if ($metadata->getRepository() !== null) {
+                $repository = $metadata->getRepository();
+            } else {
+                $repository = $metadataClass;
+            }
+
+            $this->addMetadata($repository, $metadata);
+            $loaded[$repository] = $metadataClass;
         }
 
         return $loaded;

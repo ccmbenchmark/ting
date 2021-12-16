@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\Repository\Repository;
 
-class BouhRepository extends Repository implements MetadataInitializer
+class BouhReadOnlyRepository extends Repository implements MetadataInitializer
 {
     public static $options;
 

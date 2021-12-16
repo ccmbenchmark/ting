@@ -261,13 +261,14 @@ class MetadataRepository extends atoum
                 'tests\fixtures\model',
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
-                ->isIdenticalTo([
-                    'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
-                    'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
-                    'tests\fixtures\model\CityRepository'         => 'tests\fixtures\model\CityRepository',
-                    'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository',
-                    'tests\fixtures\model\ParkRepository'         => 'tests\fixtures\model\ParkRepository'
-                ]);
+            ->isIdenticalTo([
+                'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
+                'tests\fixtures\model\BouhReadOnlyRepository' => 'tests\fixtures\model\BouhReadOnlyRepository',
+                'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
+                'tests\fixtures\model\CityRepository'         => 'tests\fixtures\model\CityRepository',
+                'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository',
+                'tests\fixtures\model\ParkRepository'         => 'tests\fixtures\model\ParkRepository',
+            ]);
     }
 
     public function testBatchLoadMetadataWithInvalidPathShouldReturnEmptyArray()
