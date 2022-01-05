@@ -272,7 +272,7 @@ class Driver implements DriverInterface
             '/' . $this->parameterMatching . '/',
             function ($match) use ($params) {
                 if (!array_key_exists($match[1], $params)) {
-                    throw new QueryException('Value has not been setted for param ' . $match[1]);
+                    throw new QueryException('Value has not been set for param ' . $match[1]);
                 }
 
                 return $this->quoteValue($params[$match[1]]);
@@ -313,14 +313,14 @@ class Driver implements DriverInterface
     protected function quoteValue($value)
     {
         switch (gettype($value)) {
+            case "boolean":
+                return (int) $value;
             case "integer":
-                // integer and double doesn't need quotes
+                // integer and double don't need quotes
             case "double":
                 return $value;
-                break;
             default:
                 return '"' . $this->connection->real_escape_string($value) . '"';
-                break;
         }
     }
 

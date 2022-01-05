@@ -371,14 +371,14 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->exception(function () use ($driver) {
                 $driver->execute("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
-                . ' FROM Bouh WHERE id = :id AND login = :login",
-                    ['id' => 3, 'login' => 'Sylvain']);
+                . ' FROM Bouh WHERE id = :id AND login = :login AND is_banned = :is_banned",
+                    ['id' => 3, 'login' => 'Sylvain', 'is_banned' => false]);
             })
                 ->hasCode(0)
             ->mock($driverFake)
                 ->call('query')
                     ->withIdenticalArguments("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
-                . ' FROM Bouh WHERE id = 3 AND login = \"Sylvain\"")
+                . ' FROM Bouh WHERE id = 3 AND login = \"Sylvain\" AND is_banned = 0")
                         ->once();
     }
 
