@@ -268,6 +268,8 @@ class Hydrator implements HydratorInterface
         $validEntities = []; // Entity marked as valid will fill an object
                              // (a valid Entity is a entity with at less one property not null)
         $fromReferences = []; // Prevents from hydrating if an entity is already ref for a table
+
+        $valuesForPrimaries = [];
         foreach ($columns as $column) {
 
             // Bypass if an entity has already been hydrated with this column
@@ -308,9 +310,12 @@ class Hydrator implements HydratorInterface
             if (isset($this->metadataList[$column['table']]) === true) {
 
                 $id = '';
+                $valuesForPrimaries[$column['table']] = true;
                 foreach ($this->metadataList[$column['table']]->getPrimaries() as $columnName => $primary) {
                     if ($column['orgName'] === $columnName && $column['value'] !== null) {
                         $id = $column['value'] . '-';
+                    } else {
+                        $valuesForPrimaries[$column['table']] = false;
                     }
                 }
 
@@ -392,7 +397,7 @@ class Hydrator implements HydratorInterface
             }
 
             // It's a valid entity (unknown data are put in a value table 0)
-            if (is_int($table) === false) {
+            if (is_int($table) === false && $valuesForPrimaries[$table]) {
                 $ref = $table . '-';
                 foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
                     $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';

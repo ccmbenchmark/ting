@@ -104,6 +104,7 @@ class Statement implements StatementInterface
         }
 
         array_unshift($values, $types);
+        $this->driverStatement->bind_param(...$values);
         call_user_func_array(array($this->driverStatement, 'bind_param'), $values);
 
         if ($this->logger !== null) {
