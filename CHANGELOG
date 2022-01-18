@@ -1,3 +1,6 @@
+3.6.1 (2022-01-18):
+    * Fix: boolean values support in prepared query #58 (thanks @Deuchnord)
+
 3.6.0 (2021-12-16):
     * New Feature: add support of limit and order on query Generator
     * Fix: Ignore abstract classes and interfaces in CCMBenchmark\Ting\MetadataRepository::batchLoadMetadata()
