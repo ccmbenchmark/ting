@@ -32,6 +32,11 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
 {
+    protected const PARAM_TYPE_BINDING = [
+        'boolean' => 'i',
+        'integer' => 'i',
+        'double' => 'd',
+    ];
 
     /**
      * @var string
@@ -89,22 +94,17 @@ class Statement implements StatementInterface
         $values = array();
 
         foreach (array_keys($this->paramsOrder) as $key) {
-            switch (gettype($params[$key])) {
-                case "integer":
-                    $type = "i";
-                    break;
-                case "double":
-                    $type = "d";
-                    break;
-                default:
-                    $type = "s";
+            $value = $params[$key];
+            $types .= self::PARAM_TYPE_BINDING[gettype($value)] ?? 's';
+
+            if (is_bool($value)) {
+                $value = (int) $value;
             }
-            $types .= $type;
-            $values[] = &$params[$key];
+
+            $values[] = $value;
         }
 
-        array_unshift($values, $types);
-        call_user_func_array(array($this->driverStatement, 'bind_param'), $values);
+        $this->driverStatement->bind_param($types, ...$values);
 
         if ($this->logger !== null) {
             $this->logger->startStatementExecute($this->objectHash, $params);

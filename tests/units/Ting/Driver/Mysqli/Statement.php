@@ -38,9 +38,10 @@ class Statement extends atoum
             'id'          => 3,
             'old'         => 32.1,
             'description' => 'A very long description',
-            'date' => '2014-03-01 14:02:05'
+            'date'        => '2014-03-01 14:02:05',
+            'is_banned'   => false,
         );
-        $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null);
+        $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null, 'is_banned' => null);
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
         $driverStatement->errno = 0;
@@ -56,12 +57,13 @@ class Statement extends atoum
             ->mock($driverStatement)
                 ->call('bind_param')
                     ->withIdenticalArguments(
-                        'sisds',
+                        'sisdsi',
                         'Sylvain',
                         3,
                         'A very long description',
                         32.1,
-                        '2014-03-01 14:02:05'
+                        '2014-03-01 14:02:05',
+                        0
                     )->once();
     }
 
