@@ -1,3 +1,6 @@
+3.6.2 (2022-04-12):
+    * Fix: null values support in non-prepared query
+
 3.6.1 (2022-01-18):
     * Fix: boolean values support in prepared query #58 (thanks @Deuchnord)
 

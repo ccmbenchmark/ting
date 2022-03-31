@@ -504,6 +504,43 @@ class Driver extends atoum
                     ->once();
     }
 
+
+    public function testNullValueShouldNotBeQuoted()
+    {
+        $driverFake       = new \mock\Fake\Mysqli();
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult(['hop' => 'la']);
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
+            ->and(
+                $this->calling($driverFake)->real_escape_string = function ($value) {
+                    return addcslashes($value, '"');
+                }
+            )
+            ->and(
+                $this->calling($driverFake)->query = function ($sql) use (&$outerSql, $mockMysqliResult) {
+                    $outerSql = $sql;
+                    return $mockMysqliResult;
+                }
+            )
+            ->array(
+                $driver->execute(
+                    'SELECT name FROM T_COUNTRY_COU WHERE indepYear = :indepYear',
+                    [
+                        'indepYear' => null
+                    ]
+                )
+            )
+            ->isIdenticalTo(['hop' => 'la'])
+            ->string($outerSql)
+            ->isEqualTo(
+                'SELECT name FROM T_COUNTRY_COU WHERE indepYear = null'
+            )
+            ->mock($driverFake)
+            ->call('query')
+            ->once();
+    }
+
     public function testExecuteShouldReturnTrue()
     {
         $driverFake = new \mock\Fake\Mysqli();
