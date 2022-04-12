@@ -35,6 +35,8 @@ use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
+use function is_null;
+
 class Driver implements DriverInterface
 {
 
@@ -319,6 +321,8 @@ class Driver implements DriverInterface
                 // integer and double don't need quotes
             case "double":
                 return $value;
+            case "NULL":
+                return 'null';
             default:
                 return '"' . $this->connection->real_escape_string($value) . '"';
         }
