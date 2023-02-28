@@ -27,6 +27,7 @@ namespace CCMBenchmark\Ting\Query;
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
+use function array_map;
 
 class Generator
 {
@@ -44,13 +45,18 @@ class Generator
     protected $tableName = '';
 
     protected $fields = [];
+    /**
+     * @var array<string, array{read: callable(string):string, write: callable(string):string}
+     */
+    private $fieldModifiers;
 
     /**
      * @param Connection            $connection
      * @param QueryFactoryInterface $queryFactory
      * @param string                $schema
      * @param string                $table
-     * @param array                 $fields
+     * @param list<string>          $fields
+     * @param array<string, array{read: callable(string):string, write: callable(string):string} $fieldModifiers
      *
      * @internal
      */
@@ -59,13 +65,15 @@ class Generator
         QueryFactoryInterface $queryFactory,
         $schema,
         $table,
-        array $fields
+        array $fields,
+        array $fieldModifiers = []
     ) {
         $this->connection = $connection;
         $this->queryFactory = $queryFactory;
         $this->schemaName = $schema;
         $this->tableName = $table;
         $this->fields = $fields;
+        $this->fieldModifiers = $fieldModifiers;
     }
 
     /**
@@ -89,8 +97,23 @@ class Generator
      */
     protected function getSelect(array $fields, DriverInterface $driver)
     {
-        return 'SELECT ' . implode(', ', $fields) . ' FROM ' .
-            $this->getTarget($driver);
+        return 'SELECT '
+            . implode(
+                ', ',
+                array_map(
+                    function(string $field) use ($driver): string {
+                        $escapedField = $driver->escapeField($field);
+
+                        if (isset($this->fieldModifiers[$field])) {
+                            return $this->fieldModifiers[$field]['read']($escapedField) . ' AS ' . $escapedField;
+                        }
+
+                        return $escapedField;
+                    },
+                    $fields
+                )
+            )
+            . ' FROM ' . $this->getTarget($driver);
     }
 
 
@@ -122,9 +145,7 @@ class Generator
     ) {
         $driver = $this->getDriver($forceMaster);
 
-        $fields = $this->escapeFields($this->fields, $driver);
-
-        $sql = $this->getSelect($fields, $driver);
+        $sql = $this->getSelect($this->fields, $driver);
 
         $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
 
@@ -173,9 +194,7 @@ class Generator
      */
     protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver)
     {
-        $fields = $this->escapeFields($this->fields, $driver);
-
-        $sql = $this->getSelect($fields, $driver);
+        $sql = $this->getSelect($this->fields, $driver);
 
         [$conditions, $params] = $this->generateConditionAndParams(array_keys($criteria), $criteria);
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
@@ -262,7 +281,21 @@ class Generator
         $fields = $this->escapeFields(array_keys($values), $driver);
 
         $sql = 'INSERT INTO ' . $this->getTarget($driver) . ' ('
-            . implode(', ', $fields) . ') VALUES (:' . implode(', :', array_keys($values)) . ')';
+            . implode(', ', $fields) . ') VALUES ('
+            . implode(
+                ', ',
+                array_map(
+                    function (string $field): string {
+                        if (isset($this->fieldModifiers[$field])) {
+                            return $this->fieldModifiers[$field]['write'](':' . $field);
+                        }
+
+                        return ':' . $field;
+                    },
+                    array_keys($values)
+                )
+            )
+            . ')';
 
         $query = $this->queryFactory->getPrepared($sql, $this->connection);
 
@@ -288,7 +321,12 @@ class Generator
         $sql = 'UPDATE ' . $this->getTarget($driver) . ' SET ';
         $set = [];
         foreach ($values as $column => $value) {
-            $set[] = $driver->escapeField($column) . ' = :' . $column;
+            $paramName = ':' .$column;
+            if (isset($this->fieldModifiers[$column])) {
+                $paramName = $this->fieldModifiers[$column]['write']($paramName);
+            }
+
+            $set[] = $driver->escapeField($column) . ' = ' . $paramName;
         }
         $sql .= implode(', ', $set);
 

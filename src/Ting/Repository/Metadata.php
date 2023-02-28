@@ -35,6 +35,7 @@ use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Serializer\SerializerInterface;
 
 class Metadata
 {
@@ -58,6 +59,10 @@ class Metadata
         'json'     => '\CCMBenchmark\Ting\Serializer\Json',
         'ip'       => '\CCMBenchmark\Ting\Serializer\Ip'
     ];
+    /**
+     * @var array<string, array{read: callable(string): string, write: callable(string): string}
+     */
+    protected $queryModifiers = [];
 
     /**
      * @param SerializerFactoryInterface $serializerFactory
@@ -220,11 +225,20 @@ class Metadata
 
     /**
      * Add a field to metadata.
-     * @param array $params. Associative array with :
+     * @param array{
+     *      fieldName: string,
+     *      columnName: string,
+     *      primary?: bool,
+     *      autoincrement?: bool,
+     *      serializer?: class-string<SerializerInterface>,
+     *      serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>},
+     *      queryModifier?: array{read: callable(string): string, write: callable(string): string}
+     *     } $params. Associative array with :
      *      fieldName : string : name of the property on the object
      *      columnName : string : name of the mysql column
      *      primary : boolean : is this field a primary - optional
      *      autoincrement : boolean : is this field an autoincrement - optional
+     *
      * @throws ConfigException
      * @return $this
      */
@@ -256,6 +270,10 @@ class Metadata
             }
         }
 
+        if (isset($params['queryModifier'])) {
+            $this->queryModifiers[$params['columnName']] = $params['queryModifier'];
+        }
+
         $this->fieldsByProperty[$params['fieldName']] = $params;
         $this->fields[$params['columnName']] = $params;
 
@@ -275,7 +293,15 @@ class Metadata
     /**
      * Retrieve all defined fields.
      *
-     * @return array
+     * @return list<array{
+     *      fieldName: string,
+     *      columnName: string,
+     *      primary?: bool,
+     *      autoincrement?: bool,
+     *      serializer?: class-string<SerializerInterface>,
+     *      serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>},
+     *      queryModifier?: array{read: callable(string): string, write: callable(string): string}
+     * }>
      */
     public function getFields()
     {
@@ -442,7 +468,8 @@ class Metadata
             $queryFactory,
             $this->schemaName,
             $this->table,
-            $fields
+            $fields,
+            $this->queryModifiers
         );
 
         $primariesKeyValue = $this->getPrimariesKeyValuesAsArray($primariesKeyValue);
@@ -477,7 +504,8 @@ class Metadata
             $queryFactory,
             $this->schemaName,
             $this->table,
-            $fields
+            $fields,
+            $this->queryModifiers
         );
 
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
@@ -527,7 +555,8 @@ class Metadata
             $queryFactory,
             $this->schemaName,
             $this->table,
-            $fields
+            $fields,
+            $this->queryModifiers
         );
 
         return $queryGenerator->getAll($collectionFactory, $forceMaster);
@@ -558,7 +587,8 @@ class Metadata
             $queryFactory,
             $this->schemaName,
             $this->table,
-            $fields
+            $fields,
+            $this->queryModifiers
         );
 
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
@@ -619,7 +649,8 @@ class Metadata
             $queryFactory,
             $this->schemaName,
             $this->table,
-            $fields
+            $fields,
+            $this->queryModifiers
         );
 
         return $queryGenerator->insert($values);
@@ -647,7 +678,8 @@ class Metadata
             $queryFactory,
             $this->schemaName,
             $this->table,
-            array_keys($properties)
+            array_keys($properties),
+            $this->queryModifiers
         );
 
         // Get new values affected to entity
