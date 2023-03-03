@@ -27,22 +27,13 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
+/**
+ * @template T
+ */
 interface CollectionFactoryInterface
 {
-
     /**
-     * @param MetadataRepository $metadataRepository
-     * @param UnitOfWork $unitOfWork
-     * @param HydratorInterface $hydrator
-     */
-    public function __construct(
-        MetadataRepository $metadataRepository,
-        UnitOfWork $unitOfWork,
-        HydratorInterface $hydrator
-    );
-
-    /**
-     * @return Collection
+     * @return Collection<T>
      */
     public function get();
 }

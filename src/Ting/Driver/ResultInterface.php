@@ -24,6 +24,11 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+/**
+ * @template T
+ *
+ * @template-extends \Iterator<int, T>
+ */
 interface ResultInterface extends \Iterator
 {
 
@@ -40,7 +45,7 @@ interface ResultInterface extends \Iterator
     public function setDatabase($database);
 
     /**
-     * @param object $result
+     * @param T $result
      * @return $this
      */
     public function setResult($result);
