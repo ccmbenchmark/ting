@@ -24,6 +24,11 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+/**
+ * @template T
+ *
+ * @template-extends Hydrator<T>
+ */
 class HydratorAggregator extends Hydrator
 {
     /**
@@ -72,7 +77,7 @@ class HydratorAggregator extends Hydrator
     }
 
     /**
-     * @return \Generator
+     * @return \Generator<int, T|\stdClass>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()

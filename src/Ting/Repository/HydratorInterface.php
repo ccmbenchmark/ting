@@ -28,6 +28,11 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
+/**
+ * @template T
+ *
+ * @template-extends \IteratorAggregate<int, T>
+ */
 interface HydratorInterface extends \IteratorAggregate, \Countable
 {
 
@@ -44,7 +49,7 @@ interface HydratorInterface extends \IteratorAggregate, \Countable
     public function setUnitOfWork(UnitOfWork $unitOfWork);
 
     /**
-     * @param ResultInterface $result
+     * @param ResultInterface<T> $result
      * @return $this
      */
     public function setResult(ResultInterface $result);

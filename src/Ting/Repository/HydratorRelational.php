@@ -29,6 +29,11 @@ use CCMBenchmark\Ting\Exceptions\HydratorException;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 
+/**
+ * @template T
+ *
+ * @template-extends Hydrator<T>
+ */
 final class HydratorRelational extends Hydrator
 {
     /**
@@ -96,7 +101,7 @@ final class HydratorRelational extends Hydrator
     /**
      * @throws Exception
      *
-     * @return \Generator
+     * @return \Generator<int, T|\stdClass>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()

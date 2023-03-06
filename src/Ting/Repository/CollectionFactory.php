@@ -27,6 +27,11 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
+/**
+ * @template T
+ *
+ * @template-implements CollectionFactoryInterface<T>
+ */
 class CollectionFactory implements CollectionFactoryInterface
 {
 
@@ -41,14 +46,12 @@ class CollectionFactory implements CollectionFactoryInterface
     protected $unitOfWork = null;
 
     /**
-     * @var HydratorInterface|null
+     * @var HydratorInterface<T>|null
      */
     protected $hydrator = null;
 
     /**
-     * @param MetadataRepository $metadataRepository
-     * @param UnitOfWork $unitOfWork
-     * @param HydratorInterface $hydrator
+     * @param HydratorInterface<T> $hydrator
      */
     public function __construct(
         MetadataRepository $metadataRepository,
@@ -63,10 +66,10 @@ class CollectionFactory implements CollectionFactoryInterface
     }
 
     /**
-     * @param HydratorInterface $hydrator
-     * @return Collection
+     * @param HydratorInterface<T>|null $hydrator
+     * @return Collection<T>
      */
-    public function get(HydratorInterface $hydrator = null)
+    public function get(?HydratorInterface $hydrator = null)
     {
         if ($hydrator === null) {
             $hydrator = clone $this->hydrator;

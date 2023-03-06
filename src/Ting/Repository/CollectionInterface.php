@@ -26,12 +26,22 @@ namespace CCMBenchmark\Ting\Repository;
 
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
+/**
+ * @template T
+ *
+ * @template-extends \IteratorAggregate<int, T>
+ */
 interface CollectionInterface extends \IteratorAggregate, \Countable
 {
+    /**
+     * Fill collection from iterator
+     * @param ResultInterface<T> $result
+     * @return void
+     */
     public function set(ResultInterface $result);
 
     /**
-     * @return mixed
+     * @return T
      */
     public function first();
 

@@ -28,6 +28,11 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
 
+/**
+ * @template T
+ *
+ * @template-implements HydratorInterface<T>
+ */
 class HydratorArray implements HydratorInterface
 {
 
@@ -57,10 +62,6 @@ class HydratorArray implements HydratorInterface
         // Useless for this hydrator
     }
 
-    /**
-     * @param ResultInterface $result
-     * @return $this
-     */
     public function setResult(ResultInterface $result)
     {
         $this->result = $result;
@@ -68,7 +69,7 @@ class HydratorArray implements HydratorInterface
     }
 
     /**
-     * @return \Generator
+     * @return \Generator<int, T>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()

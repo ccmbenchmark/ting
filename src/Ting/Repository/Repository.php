@@ -41,6 +41,9 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use Doctrine\Common\Cache\Cache;
 
+/**
+ * @template T
+ */
 abstract class Repository
 {
 
@@ -141,7 +144,7 @@ abstract class Repository
 
     /**
      * @param HydratorInterface $hydrator|null
-     * @return Collection
+     * @return Collection<T>
      */
     public function getCollection(HydratorInterface $hydrator = null)
     {
@@ -242,7 +245,7 @@ abstract class Repository
      *
      * @param $primariesKeyValue array|int|string column => value or if one primary : just the value
      * @param bool $forceMaster
-     * @return mixed|null
+     * @return T|null
      */
     public function get($primariesKeyValue, $forceMaster = false)
     {
@@ -265,7 +268,7 @@ abstract class Repository
 
     /**
      * @param bool $forceMaster
-     * @return CollectionInterface
+     * @return CollectionInterface<T>
      */
     public function getAll($forceMaster = false)
     {
@@ -282,7 +285,7 @@ abstract class Repository
     /**
      * @param array $criteria
      * @param bool  $forceMaster
-     * @return CollectionInterface
+     * @return CollectionInterface<T>
      */
     public function getBy(array $criteria, $forceMaster = false)
     {
@@ -300,7 +303,7 @@ abstract class Repository
     /**
      * @param array $criteria
      * @param bool  $forceMaster
-     * @return mixed|null
+     * @return T|null
      */
     public function getOneBy(array $criteria, $forceMaster = false)
     {
@@ -323,7 +326,7 @@ abstract class Repository
     /**
      * Save an entity in database (update or insert)
      *
-     * @param $entity
+     * @param T $entity
      */
     public function save($entity)
     {
@@ -333,7 +336,7 @@ abstract class Repository
     /**
      * Delete an entity from database
      *
-     * @param $entity
+     * @param T $entity
      */
     public function delete($entity)
     {

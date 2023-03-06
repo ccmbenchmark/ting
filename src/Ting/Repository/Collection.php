@@ -27,16 +27,21 @@ namespace CCMBenchmark\Ting\Repository;
 use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
+/**
+ * @template T
+ *
+ * @template-implements CollectionInterface<T>
+ */
 class Collection implements CollectionInterface
 {
 
     /**
-     * @var ResultInterface
+     * @var ResultInterface<T>
      */
     protected $result = null;
 
     /**
-     * @var HydratorInterface|null
+     * @var HydratorInterface<T>|null
      */
     protected $hydrator = null;
 
@@ -46,9 +51,9 @@ class Collection implements CollectionInterface
     protected $fromCache = false;
 
     /**
-     * @param HydratorInterface $hydrator
+     * @param HydratorInterface<T>|null $hydrator
      */
-    public function __construct(HydratorInterface $hydrator = null)
+    public function __construct(?HydratorInterface $hydrator = null)
     {
         if ($hydrator === null) {
             $this->hydrator = new HydratorArray();
@@ -57,11 +62,6 @@ class Collection implements CollectionInterface
         }
     }
 
-    /**
-     * Fill collection from iterator
-     * @param ResultInterface $result
-     * @return void
-     */
     public function set(ResultInterface $result)
     {
         $this->result = $result;
@@ -121,9 +121,6 @@ class Collection implements CollectionInterface
         $this->set($cacheResult);
     }
 
-    /**
-     * @return mixed
-     */
     public function first()
     {
         if ($this->result === null) {
@@ -142,7 +139,7 @@ class Collection implements CollectionInterface
 
 
     /**
-     * @return \Generator
+     * @return \Generator<int, T>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()

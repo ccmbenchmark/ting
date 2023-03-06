@@ -31,6 +31,11 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 
+/**
+ * @template T
+ *
+ * @template-implements HydratorInterface<T>
+ */
 class Hydrator implements HydratorInterface
 {
 
@@ -44,7 +49,7 @@ class Hydrator implements HydratorInterface
     protected $metadataList       = [];
 
     /**
-     * @var ResultInterface
+     * @var ResultInterface<T>
      */
     protected $result = null;
 
@@ -91,10 +96,6 @@ class Hydrator implements HydratorInterface
         $this->unitOfWork = $unitOfWork;
     }
 
-    /**
-     * @param ResultInterface $result
-     * @return $this
-     */
     public function setResult(ResultInterface $result)
     {
         $this->result = $result;
@@ -102,7 +103,7 @@ class Hydrator implements HydratorInterface
     }
 
     /**
-     * @return \Generator
+     * @return \Generator<int, T|\stdClass>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
@@ -261,7 +262,7 @@ class Hydrator implements HydratorInterface
      * @param string $database
      * @param array  $columns
      *
-     * @return array
+     * @return array<int, T|\stdClass>
      */
     protected function hydrateColumns($connectionName, $database, array $columns)
     {
