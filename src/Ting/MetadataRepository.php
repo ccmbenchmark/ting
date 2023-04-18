@@ -27,6 +27,8 @@ namespace CCMBenchmark\Ting;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use function get_class;
+use function is_object;
 
 class MetadataRepository
 {
@@ -120,7 +122,7 @@ class MetadataRepository
     }
 
     /**
-     * @param object   $entity
+     * @param object|class-string $entity an instance or the class string of the entity
      * @param \Closure $callbackFound Called with applicable Metadata if applicable
      * @param \Closure $callbackNotFound called if unknown entity - no parameter
      *
@@ -128,13 +130,17 @@ class MetadataRepository
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
-        if (isset($this->entityToRepository[get_class($entity)]) === false) {
+        if (is_object($entity)) {
+            $entity = get_class($entity);
+        }
+
+        if (isset($this->entityToRepository[$entity]) === false) {
             $callbackNotFound();
             return;
         }
 
         $this->findMetadataForRepository(
-            $this->entityToRepository[get_class($entity)],
+            $this->entityToRepository[$entity],
             $callbackFound,
             $callbackNotFound
         );

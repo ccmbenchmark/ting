@@ -1,3 +1,6 @@
+Unreleased:
+    * Feature: support searching metadata with the class string of an entity
+
 3.6.2 (2022-04-12):
     * Fix: null values support in non-prepared query
 

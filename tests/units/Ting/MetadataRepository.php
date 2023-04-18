@@ -25,6 +25,8 @@
 namespace tests\units\CCMBenchmark\Ting;
 
 use atoum;
+use tests\fixtures\model\Bouh;
+use tests\fixtures\model\BouhRepository;
 
 class MetadataRepository extends atoum
 {
@@ -42,6 +44,31 @@ class MetadataRepository extends atoum
         $this
             ->if($metadataRepository->findMetadataForEntity(
                 $entity,
+                function ($metadata) use (&$outerCallbackFound) {
+                    $outerCallbackFound = true;
+                },
+                function () use (&$outerCallbackNotFound) {
+                    $outerCallbackNotFound = true;
+                }
+            ))
+            ->boolean($outerCallbackFound)
+                ->isTrue()
+            ->variable($outerCallbackNotFound)
+                ->isNull();
+    }
+
+    public function testFindMetadataForClassStringShouldCallCallbackFound()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity(Bouh::class);
+
+        $metadataRepository = new \CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadataRepository->addMetadata(BouhRepository::class, $metadata);
+
+        $this
+            ->if($metadataRepository->findMetadataForEntity(
+                Bouh::class,
                 function ($metadata) use (&$outerCallbackFound) {
                     $outerCallbackFound = true;
                 },
