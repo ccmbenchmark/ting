@@ -28,6 +28,7 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Exceptions\HydratorException;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
+use Generator;
 
 /**
  * @template T
@@ -106,38 +107,11 @@ final class HydratorRelational extends Hydrator
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        $this->resolveDependencies();
-
-        $this->referencesRelation = [];
-        $this->resources          = [];
-        $results                  = [];
-
-        foreach ($this->result as $columns) {
-            $result = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $columns);
-
-            foreach ($this->config as $config) {
-                if (isset($result[$config['target']]) === false) {
-                    continue;
-                }
-
-                $keyTarget = $this->saveTargetReference($config, $result);
-                if (isset($result[$config['source']]) === true) {
-                    $keySource = $this->saveSourceReference($config, $result);
-                    $this->saveResourceFor($config, $keyTarget, $keySource);
-                    unset($result[$config['source']]);
-                }
-            }
-
-            if (isset($results[$keyTarget]) === false) {
-                $results[$keyTarget] = $result;
-            }
+        if ($this->config->isEmpty()) {
+            return $this->hydrateNoAssociation();
         }
 
-        $this->assignResourcesToReferences();
-
-        foreach ($results as $result) {
-            yield $this->finalizeAggregate($result);
-        }
+        return $this->hydrate();
     }
 
     private function resolveDependencies()
@@ -222,6 +196,51 @@ final class HydratorRelational extends Hydrator
             foreach ($this->resources[$referenceKey] as $setter => $valuesToSet) {
                 $reference->$setter($valuesToSet);
             }
+        }
+    }
+
+    private function hydrate(): Generator
+    {
+        $this->resolveDependencies();
+
+        $this->referencesRelation = [];
+        $this->resources          = [];
+        $results                  = [];
+
+        foreach ($this->result as $columns) {
+            $result = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $columns);
+
+            foreach ($this->config as $config) {
+                if (isset($result[$config['target']]) === false) {
+                    continue;
+                }
+
+                $keyTarget = $this->saveTargetReference($config, $result);
+                if (isset($result[$config['source']]) === true) {
+                    $keySource = $this->saveSourceReference($config, $result);
+                    $this->saveResourceFor($config, $keyTarget, $keySource);
+                    unset($result[$config['source']]);
+                }
+            }
+
+            if (isset($results[$keyTarget]) === false) {
+                $results[$keyTarget] = $result;
+            }
+        }
+
+        $this->assignResourcesToReferences();
+
+        foreach ($results as $result) {
+            yield $this->finalizeAggregate($result);
+        }
+    }
+
+    private function hydrateNoAssociation(): Generator
+    {
+        foreach ($this->result as $columns) {
+            yield $this->finalizeAggregate(
+                $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $columns)
+            );
         }
     }
 

@@ -24,17 +24,24 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use function reset;
+
+/**
+ * @template T
+ *
+ * @template-extends Hydrator<T>
+ */
 class HydratorSingleObject extends Hydrator
 {
 
     /**
-     * @return \Generator
+     * @return \Generator<int, T>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
         foreach ($this->result as $key => $row) {
-            $data = parent::hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $row);
+            $data = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $row);
             yield $key => reset($data);
         }
     }

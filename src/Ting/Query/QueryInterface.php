@@ -39,7 +39,11 @@ interface QueryInterface
 
     /**
      * Execute a reading query (SELECT, SHOW, etc.)
-     * @param CollectionInterface $collection
+     * @param CollectionInterface<T>|null $collection
+     *
+     * @return CollectionInterface<T>
+     *
+     * @template T of object
      */
     public function query(CollectionInterface $collection = null);
 

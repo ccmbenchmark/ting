@@ -35,7 +35,20 @@ use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Serializer\SerializerInterface;
 
+/**
+ * @template T of object
+ * @phpstan-type Field array{
+ *     fieldName: string,
+ *     columnName: string,
+ *     type: string,
+ *     primary?: bool,
+ *     autoincrement?: bool,
+ *     serializer?: class-string<SerializerInterface>,
+ *     serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>}
+ * }
+ */
 class Metadata
 {
 
@@ -45,11 +58,15 @@ class Metadata
     protected $serializerFactory  = null;
     protected $connectionName     = null;
     protected $databaseName       = null;
+    /** @var class-string<Repository<T>>|null */
     protected $repository         = null;
+    /** @var class-string<T>|null */
     protected $entity             = null;
     protected $table              = null;
     protected $schemaName         = '';
+    /** @phpstan-var array<string, Field> */
     protected $fields             = [];
+    /** @phpstan-var array<string, Field> */
     protected $fieldsByProperty   = [];
     protected $primaries          = [];
     protected $autoincrement      = null;
@@ -123,7 +140,7 @@ class Metadata
 
     /**
      * Set repository name
-     * @param string $className
+     * @param class-string<Repository<T>> $className
      * @return $this
      * @throws SyntaxException
      */
@@ -139,7 +156,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @return class-string<Repository<T>>
      *
      * @internal
      */
@@ -150,7 +167,7 @@ class Metadata
 
     /**
      * Set entity name
-     * @param string $className
+     * @param class-string<T> $className
      * @return $this
      * @throws SyntaxException
      */
@@ -166,7 +183,7 @@ class Metadata
     }
 
     /**
-     * @return string
+     * @return class-string<T>
      *
      * @internal
      */
@@ -225,6 +242,7 @@ class Metadata
      *      columnName : string : name of the mysql column
      *      primary : boolean : is this field a primary - optional
      *      autoincrement : boolean : is this field an autoincrement - optional
+     * @phpstan-param Field $params
      * @throws ConfigException
      * @return $this
      */
@@ -275,7 +293,7 @@ class Metadata
     /**
      * Retrieve all defined fields.
      *
-     * @return array
+     * @return list<Field>
      */
     public function getFields()
     {
@@ -318,7 +336,7 @@ class Metadata
 
     /**
      * Create a new entity
-     * @return mixed
+     * @return T
      *
      * @internal
      */
