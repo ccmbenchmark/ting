@@ -1,6 +1,9 @@
 3.7.0 (2022-04-18):
     * Feature: support searching metadata with the class string of an entity
 
+3.7.0 (2023-04-19):
+	* new Feature: add support for MySQL type geometry
+
 3.6.2 (2022-04-12):
     * Fix: null values support in non-prepared query
 

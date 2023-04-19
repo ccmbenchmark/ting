@@ -24,6 +24,7 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
+use Brick\Geo\IO\WKBReader;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
@@ -143,6 +144,9 @@ class Result implements ResultInterface
                         // Bigint, bigger than PHP_INT_MAX
                         // These case is here as a reminder
                         $value = (string)$value;
+                        break;
+                    case MYSQLI_TYPE_GEOMETRY:
+                        $value = (new WKBReader)->read(\substr($value, 4));
                         break;
                 }
             }

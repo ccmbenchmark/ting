@@ -25,6 +25,7 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use atoum;
+use Brick\Geo\Point;
 
 class Result extends atoum
 {
@@ -78,5 +79,45 @@ class Result extends atoum
             ->then($result->setResult($mockMysqliResult))
             ->variable($result->getNumRows())
                 ->isEqualTo(10);
+    }
+
+    public function testGeometry()
+    {
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['geo' => "\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x24\x40\x00\x00\x00\x00\x00\x00\x34\x40"]]);
+
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'geo';
+            $stdClass->orgname  = 'geo';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_GEOMETRY;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $this
+            ->given($result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result())
+            ->and($result->setResult($mockMysqliResult))
+            ->and($result->next())
+            ->and($row = $result->current())
+            ->then
+                ->array($row)
+                ->hasKey(0)
+            ->then
+                ->array($row[0])
+                ->hasKeys(['name', 'orgName', 'table', 'orgTable', 'value'])
+            ->then
+                ->object($row[0]['value'])
+                ->isInstanceOf(Point::class)
+                ->and
+                    ->float($row[0]['value']->x())
+                    ->isEqualTo(10)
+                ->and
+                    ->float($row[0]['value']->y())
+                    ->isEqualTo(20)
+        ;
     }
 }

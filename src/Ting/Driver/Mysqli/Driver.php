@@ -120,6 +120,7 @@ class Driver implements DriverInterface
     {
         if ($connection === null) {
             $this->connection = \mysqli_init();
+            $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
         } else {
             $this->connection = $connection;
         }
