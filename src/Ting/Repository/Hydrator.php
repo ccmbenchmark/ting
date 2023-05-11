@@ -30,6 +30,7 @@ use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
+use Generator;
 
 /**
  * @template T
