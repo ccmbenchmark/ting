@@ -181,7 +181,8 @@ class Driver implements DriverInterface
         $this->database = $database;
 
         if ($resource === false) {
-            throw new DriverException('Connect Error: ' . $this->dsn . ' dbname=' . $database);
+            $dsn = preg_replace('/((user|password)=[^\s]+)/', '$2=<REDACTED>', $this->dsn);
+            throw new DriverException('Connect Error: ' . $dsn . ' dbname=' . $database);
         }
         $this->connection = $resource;
 
