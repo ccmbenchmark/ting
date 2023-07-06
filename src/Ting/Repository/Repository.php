@@ -124,7 +124,7 @@ abstract class Repository
         $this->cache              = $cache;
         $this->unitOfWork         = $unitOfWork;
 
-        $class = get_class($this);
+        $class = \get_class($this);
         $this->metadataRepository->findMetadataForRepository(
             $class,
             function ($metadata) {
