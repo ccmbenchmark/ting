@@ -25,22 +25,25 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
 use atoum;
+use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
+
+require_once dirname(__FILE__) . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Statement extends atoum
 {
 
     public function testExecuteShouldCallTheRightConnection()
     {
-        $this->function->pg_execute = function ($connection, $statementName, $values) use (&$outerConnection) {
+        PGMock::override('pg_execute', function ($connection, $statementName, $values) use (&$outerConnection) {
             $outerConnection = $connection;
             return [];
-        };
+        });
 
-        $this->function->pg_num_fields  = 0;
-        $this->function->pg_field_table = 'Bouh';
-        $this->function->pg_result_seek = 0;
-        $this->function->pg_fetch_array = false;
-        $this->function->pg_query = true;
+        PGMock::override('pg_num_fields', 0);
+        PGMock::override('pg_field_table', 'Bouh');
+        PGMock::override('pg_result_seek', 0);
+        PGMock::override('pg_fetch_array', false);
+        PGMock::override('pg_query', true);
 
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
@@ -60,15 +63,15 @@ class Statement extends atoum
 
     public function testExecuteShouldCallDriverExecuteWithParameters()
     {
-        $this->function->pg_num_fields  = 0;
-        $this->function->pg_field_table = 'Bouh';
-        $this->function->pg_execute     = function ($connection, $statementName, $values) use (&$outerValues) {
+        PGMock::override('pg_num_fields', 0);
+        PGMock::override('pg_field_table', 'Bouh');
+        PGMock::override('pg_execute', function ($connection, $statementName, $values) use (&$outerValues) {
             $outerValues = $values;
             return [];
-        };
-        $this->function->pg_result_seek = 0;
-        $this->function->pg_fetch_array = false;
-        $this->function->pg_query = true;
+        });
+        PGMock::override('pg_result_seek', 0);
+        PGMock::override('pg_fetch_array', false);
+        PGMock::override('pg_query', true);
 
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $params          = array(
@@ -80,7 +83,6 @@ class Statement extends atoum
         );
 
         $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null);
-
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
@@ -111,16 +113,15 @@ class Statement extends atoum
                 'nom'    => 'Leune'
             ]
         ]);
-        $this->function->pg_query = true;
+        PGMock::override('pg_query', true);
 
         $this->calling($collection)->set = function ($result) use (&$outerResult) {
             $outerResult = $result;
         };
 
-        $this->function->pg_num_fields  = 2;
-        $this->function->pg_field_table = 'Bouh';
-
-        $this->function->pg_field_name = function ($result, $index) {
+        PGMock::override('pg_num_fields', 2);
+        PGMock::override('pg_field_table', 'Bouh');
+        PGMock::override('pg_field_name', function ($result, $index) {
             switch ($index) {
                 case 0:
                     return 'prenom';
@@ -129,7 +130,7 @@ class Statement extends atoum
                 default:
                     return false;
             }
-        };
+        });
 
         $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result($result);
         $resultOk->setConnectionName('connectionName');
@@ -156,9 +157,9 @@ class Statement extends atoum
     public function testExecuteShouldRaiseQueryException()
     {
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $this->function->pg_execute = false;
-        $this->function->pg_query = true;
-        $this->function->pg_errormessage = 'unknown error';
+        PGMock::override('pg_execute', false);
+        PGMock::override('pg_query', true);
+        PGMock::override('pg_errormessage', 'unknown error');
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
@@ -175,8 +176,8 @@ class Statement extends atoum
 
     public function testExecuteShouldReturnTrueIfNoError()
     {
-        $this->function->pg_execute = true;
-        $this->function->pg_query = true;
+        PGMock::override('pg_execute', true);
+        PGMock::override('pg_query', true);
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
@@ -192,10 +193,10 @@ class Statement extends atoum
 
     public function testExecuteShouldLogQuery()
     {
-        $this->function->pg_execute = [];
-        $this->function->pg_result_seek = 0;
-        $this->function->pg_fetch_array = false;
-        $this->function->pg_query = true;
+        PGMock::override('pg_execute', []);
+        PGMock::override('pg_result_seek', 0);
+        PGMock::override('pg_fetch_array', false);
+        PGMock::override('pg_query', true);
 
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 

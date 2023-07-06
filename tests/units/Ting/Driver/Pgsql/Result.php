@@ -25,27 +25,30 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
 use atoum;
+use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
+
+require_once dirname(__FILE__) . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Result extends atoum
 {
     public function testSetQueryShouldRaiseExceptionOnColumnAsterisk()
     {
-        $this->function->pg_num_fields = 1;
-        $this->function->pg_field_table = function ($result, $index) {
+        PGMock::override('pg_num_fields', 1);
+        PGMock::override('pg_field_table', function ($result, $index) {
             if ($index === 1) {
                 return 'table';
             }
             return false;
-        };
+        });
 
-        $this->function->pg_field_name = function ($result, $index) {
+        PGMock::override('pg_field_name', function ($result, $index) {
             switch ($index) {
                 case 0:
                     return 't.*';
                 default:
                     return false;
             }
-        };
+        });
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
@@ -60,23 +63,22 @@ class Result extends atoum
 
     public function testSetQueryShouldNotRaiseExceptionWhenAsteriskIsInACondition()
     {
-        $this->function->pg_num_fields = 1;
-        $this->function->pg_field_table = function ($result, $index) {
+        PGMock::override('pg_num_fields', 1);
+        PGMock::override('pg_field_table', function ($result, $index) {
             if ($index === 1) {
                 return 'table';
             }
-
             return false;
-        };
+        });
 
-        $this->function->pg_field_name = function ($result, $index) {
+        PGMock::override('pg_field_name', function ($result, $index) {
             switch ($index) {
                 case 0:
                     return 't.*';
                 default:
                     return false;
             }
-        };
+        });
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result('result resource'))
@@ -92,7 +94,7 @@ class Result extends atoum
 
     public function testSetQueryShouldRaiseExceptionParseColumns()
     {
-        $this->function->pg_num_fields = 0;
+        PGMock::override('pg_num_fields', 0);
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
@@ -107,7 +109,7 @@ class Result extends atoum
 
     public function testSetQueryShouldNotRaiseExceptionWhenThereIsNoFromInTheQuery()
     {
-        $this->function->pg_num_fields = 0;
+        PGMock::override('pg_num_fields', 0);
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
@@ -120,8 +122,8 @@ class Result extends atoum
 
     public function testIterator()
     {
-        $this->function->pg_result_seek = true;
-        $this->function->pg_fetch_array = [];
+        PGMock::override('pg_result_seek', true);
+        PGMock::override('pg_fetch_array', []);
 
         $this
             ->if($result = new \mock\CCMBenchmark\Ting\Driver\Pgsql\Result())
@@ -147,8 +149,8 @@ class Result extends atoum
 
     public function testIteratorValidShouldReturnFalse()
     {
-        $this->function->pg_result_seek = true;
-        $this->function->pg_fetch_array = false;
+        PGMock::override('pg_result_seek', true);
+        PGMock::override('pg_fetch_array', false);
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())
@@ -165,9 +167,7 @@ class Result extends atoum
     {
         $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
 
-        $this->function->pg_num_rows = function ($result) {
-            return 10;
-        };
+        PGMock::override('pg_num_rows', 10);
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))
@@ -180,10 +180,11 @@ class Result extends atoum
     {
         $mockPgsqlResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
 
-        $this->function->pg_fetch_array = [1, 1, 2, 3, 6, 7, 8];
-        $this->function->pg_field_table = function ($result, $index) {
+        PGMock::override('pg_fetch_array', [1, 1, 2, 3, 6, 7, 8]);
+
+        PGMock::override('pg_field_table', function ($result, $index) {
             return 'table';
-        };
+        });
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))

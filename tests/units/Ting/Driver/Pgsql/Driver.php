@@ -25,6 +25,9 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
 use atoum;
+use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
+
+require_once dirname(__FILE__) . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Driver extends atoum
 {
@@ -67,13 +70,8 @@ class Driver extends atoum
     {
         $called = false;
 
-        $this->function->pg_connect = function ($dsn) {
-            return  true;
-        };
-
-        $this->function->pg_close = function () {
-            return  true;
-        };
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_close', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -90,9 +88,9 @@ class Driver extends atoum
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Pgsql();
-        $this->function->pg_set_client_encoding = function ($connection, $charset) use (&$outerCharset) {
+        PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset) {
             $outerCharset = $charset;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
@@ -105,9 +103,9 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Pgsql();
         $called = 0;
-        $this->function->pg_set_client_encoding = function () use (&$called) {
+        PGMock::override('pg_set_client_encoding', function () use (&$called) {
             $called++;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
@@ -121,11 +119,8 @@ class Driver extends atoum
     public function testSetCharsetWithInvalidCharsetShouldThrowAnException()
     {
         $mockDriver = new \mock\Fake\Pgsql();
-        $this->function->pg_set_client_encoding = function ($connection, $charset) {
-            return -1;
-        };
-
-        $this->function->pg_last_error = 'ERROR:  invalid value for parameter "client_encoding": "utf8x"';
+        PGMock::override('pg_set_client_encoding', -1);
+        PGMock::override('pg_last_error', 'ERROR:  invalid value for parameter "client_encoding": "utf8x"');
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
@@ -139,10 +134,9 @@ class Driver extends atoum
 
     public function testSetDatabaseShouldCompleteGeneratedDsnByConnect()
     {
-
-        $this->function->pg_connect = function ($dsn) use (&$outerDsn) {
+        PGMock::override('pg_connect', function ($dsn) use (&$outerDsn) {
             $outerDsn = $dsn;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -156,9 +150,7 @@ class Driver extends atoum
 
     public function testSetDatabaseWhenWrongAuthOrPortShouldRaiseDriverException()
     {
-        $this->function->pg_connect = function ($dsn) {
-            return false;
-        };
+        PGMock::override('pg_connect', false);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -172,10 +164,10 @@ class Driver extends atoum
     public function testsetDatabaseWithDatabaseAlreadySetShouldDoNothing()
     {
         $outerCount = 0;
-        $this->function->pg_connect = function ($dsn) use (&$outerCount) {
+        PGMock::override('pg_connect', function ($dsn) use (&$outerCount) {
             $outerCount++;
             return true;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -188,7 +180,7 @@ class Driver extends atoum
 
     public function testsetDatabaseShouldReturnSelf()
     {
-        $this->function->pg_connect = true;
+        PGMock::override('pg_connect', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -199,7 +191,7 @@ class Driver extends atoum
 
     public function testIfNotConnectedShouldCallCallback()
     {
-        $this->function->pg_connect = false;
+        PGMock::override('pg_connect', false);
         $called = false;
 
         $this
@@ -213,8 +205,9 @@ class Driver extends atoum
 
     public function testIfIsErrorShouldCallCallable()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_last_error = 'unknown error';
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_last_error', 'unknown error');
+
         $called = false;
 
         $this
@@ -230,10 +223,10 @@ class Driver extends atoum
 
     public function testPrepareShouldRaiseQueryException()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_query = true;
-        $this->function->pg_prepare = false;
-        $this->function->pg_last_error = 'unknown error';
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query', true);
+        PGMock::override('pg_prepare', false);
+        PGMock::override('pg_last_error', 'unknown error');
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -261,11 +254,11 @@ class Driver extends atoum
 
     public function testPrepareShouldNotTransformEscapedColon()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_query = true;
-        $this->function->pg_prepare = function ($resource, $statementName, $sql) use (&$outerSql) {
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query', true);
+        PGMock::override('pg_prepare', function ($resource, $statementName, $sql) use (&$outerSql) {
             $outerSql = $sql;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -281,11 +274,11 @@ class Driver extends atoum
 
     public function testPrepareShouldHandleMultipleNamedPatternWithSameName()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_query = true;
-        $this->function->pg_prepare = function ($resource, $statementName, $sql) use (&$outerSql) {
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query', true);
+        PGMock::override('pg_prepare', function ($resource, $statementName, $sql) use (&$outerSql) {
             $outerSql = $sql;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -301,7 +294,7 @@ class Driver extends atoum
 
     public function testEscapeFieldShouldReturnEscapedField()
     {
-        $this->function->pg_connect = true;
+        PGMock::override('pg_connect', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -312,9 +305,9 @@ class Driver extends atoum
 
     public function testStartTransactionShouldExecuteQueryBegin()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -325,9 +318,9 @@ class Driver extends atoum
 
     public function testStartTransactionShouldRaiseException()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -341,9 +334,9 @@ class Driver extends atoum
 
     public function testCommitShouldExecuteQueryCommit()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -355,9 +348,9 @@ class Driver extends atoum
 
     public function testCommitShouldRaiseException()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -370,9 +363,9 @@ class Driver extends atoum
 
     public function testRollbackShouldExecuteQueryRollback()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -384,9 +377,9 @@ class Driver extends atoum
 
     public function testRollbackShouldRaiseException()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -399,7 +392,8 @@ class Driver extends atoum
 
     public function testGetAffectedRowsWithoutResultShouldReturn0()
     {
-        $this->function->pg_affected_rows = 12;
+        PGMock::override('pg_affected_rows', 12);
+        PGMock::override('pg_affected_rows', 12);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -410,11 +404,11 @@ class Driver extends atoum
 
     public function testGetInsertIdShouldReturnInsertedId()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
+        PGMock::override('pg_fetch_row', [8]);
 
-        $this->function->pg_fetch_row = [8];
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -427,11 +421,11 @@ class Driver extends atoum
 
     public function testGetInsertIdForSequenceShouldReturnInsertedIdForSequence()
     {
-        $this->function->pg_query = function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
-        };
+        });
 
-        $this->function->pg_fetch_row = [4];
+        PGMock::override('pg_fetch_row', [4]);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -444,13 +438,8 @@ class Driver extends atoum
 
     public function testGetInsertIdForSequenceWithWrongSequenceShouldThrowAnException()
     {
-        $this->function->pg_query = function ($connection, $query) {
-            return false;
-        };
-
-        $this->function->pg_last_error = function () {
-            return 'A PGSQL error';
-        };
+        PGMock::override('pg_query', false);
+        PGMock::override('pg_last_error', 'A PGSQL error');
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -467,7 +456,7 @@ class Driver extends atoum
         $count = 0;
         $outerSql = '';
         $outerValues = '';
-        $this->function->pg_query_params = function (
+        PGMock::override('pg_query_params', function (
             $connection,
             $sql,
             $values
@@ -479,9 +468,9 @@ class Driver extends atoum
             $count++;
             $outerSql = $sql;
             $outerValues = $values;
-        };
-        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
-        $this->function->pg_fetch_assoc   = null;
+        });
+        PGMock::override('pg_result_status', \PGSQL_TUPLES_OK);
+        PGMock::override('pg_fetch_assoc', null);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -508,11 +497,12 @@ class Driver extends atoum
     public function testExecuteWithoutParametersShouldCallPGQuery()
     {
         $pgQueryCalled = false;
-        $this->function->pg_query = function () use (&$pgQueryCalled) {
+        PGMock::override('pg_query', function () use (&$pgQueryCalled) {
             $pgQueryCalled = true;
-        };
-        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
-        $this->function->pg_fetch_assoc = null;
+        });
+
+        PGMock::override('pg_result_status', \PGSQL_TUPLES_OK);
+        PGMock::override('pg_fetch_assoc', null);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -524,13 +514,13 @@ class Driver extends atoum
 
     public function testExecuteShouldCallSetOnCollection()
     {
-        $this->function->pg_connect      = true;
-        $this->function->pg_query_params = true;
-        $this->function->pg_fetch_array  = 'data';
-        $this->function->pg_result_seek  = true;
-        $this->function->pg_num_fields   = 1;
-        $this->function->pg_field_table  = 'myTable';
-        $this->function->pg_field_name   = '1';
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query_params', true);
+        PGMock::override('pg_fetch_array', 'data');
+        PGMock::override('pg_result_seek', true);
+        PGMock::override('pg_num_fields', 1);
+        PGMock::override('pg_field_table', 'myTable');
+        PGMock::override('pg_field_name', '1');
 
         $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->calling($mockCollection)->set = true;
@@ -545,10 +535,10 @@ class Driver extends atoum
 
     public function testExecuteShouldReturnArray()
     {
-        $this->function->pg_connect       = true;
-        $this->function->pg_query_params  = true;
-        $this->function->pg_fetch_assoc   = ['Bouh' => 'Hop'];
-        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query_params', true);
+        PGMock::override('pg_fetch_assoc', ['Bouh' => 'Hop']);
+        PGMock::override('pg_result_status', \PGSQL_TUPLES_OK);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -560,13 +550,13 @@ class Driver extends atoum
     {
         $outerSql = true;
         $outerValues = [];
-        $this->function->pg_connect       = true;
-        $this->function->pg_query_params  = function ($connection, $sql, $values) use (&$outerSql, &$outerValues) {
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query_params', function ($connection, $sql, $values) use (&$outerSql, &$outerValues) {
             $outerSql = $sql;
             $outerValues = $values;
-        };
-        $this->function->pg_fetch_assoc   = ['Bouh' => 'Hop'];
-        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
+        });
+        PGMock::override('pg_fetch_assoc', ['Bouh' => 'Hop']);
+        PGMock::override('pg_result_status', \PGSQL_TUPLES_OK);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -582,12 +572,12 @@ class Driver extends atoum
 
     public function testExecuteShouldRaiseExceptionWhenErrorHappensWithQuery()
     {
-        $this->function->pg_connect      = true;
-        $this->function->pg_query_params = false;
-        $this->function->pg_fetch_array  = 'data';
-        $this->function->pg_result_seek  = true;
-        $this->function->pg_field_table  = 'myTable';
-        $this->function->pg_last_error   = 'Unknown Error';
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query_params', false);
+        PGMock::override('pg_fetch_array', 'data');
+        PGMock::override('pg_result_seek', true);
+        PGMock::override('pg_field_table', 'myTable');
+        PGMock::override('pg_last_error', 'Unknown Error');
 
         $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $this->calling($mockCollection)->set = true;
@@ -605,12 +595,12 @@ class Driver extends atoum
 
     public function testExecuteShouldLogQuery()
     {
-        $this->function->pg_query_params = true;
-        $this->function->pg_fetch_array  = 'data';
-        $this->function->pg_result_seek  = true;
-        $this->function->pg_field_table  = 'myTable';
-        $this->function->pg_result_status = \PGSQL_TUPLES_OK;
-        $this->function->pg_fetch_assoc   = null;
+        PGMock::override('pg_query_params', true);
+        PGMock::override('pg_fetch_array', 'data');
+        PGMock::override('pg_result_seek', true);
+        PGMock::override('pg_field_table', 'myTable');
+        PGMock::override('pg_result_status', \PGSQL_TUPLES_OK);
+        PGMock::override('pg_fetch_assoc', null);
 
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 
@@ -628,11 +618,11 @@ class Driver extends atoum
 
     public function testPrepareShouldLogQuery()
     {
-        $this->function->pg_prepare      = true;
-        $this->function->pg_query = true;
-        $this->function->pg_fetch_array  = 'data';
-        $this->function->pg_result_seek  = true;
-        $this->function->pg_field_table  = 'myTable';
+        PGMock::override('pg_prepare', true);
+        PGMock::override('pg_query', true);
+        PGMock::override('pg_fetch_array', 'data');
+        PGMock::override('pg_result_seek', true);
+        PGMock::override('pg_field_table', 'myTable');
 
         $mockLogger = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 
@@ -649,8 +639,8 @@ class Driver extends atoum
 
     public function testPrepareCalledTwiceShouldReturnTheSameObject()
     {
-        $this->function->pg_prepare = true;
-        $this->function->pg_query = true;
+        PGMock::override('pg_prepare', true);
+        PGMock::override('pg_query', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -661,7 +651,7 @@ class Driver extends atoum
 
     public function testCloseStatementShouldRaiseExceptionOnNonExistentStatement()
     {
-        $this->function->pg_prepare = true;
+        PGMock::override('pg_prepare', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -674,8 +664,8 @@ class Driver extends atoum
 
     public function testPingShouldCallPingIfConnected()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_ping = true;
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_ping', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -688,30 +678,37 @@ class Driver extends atoum
 
     public function testPingShouldCallPingWithCharset()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_ping = true;
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_ping', true);
+        PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset, &$called) {
+            $called++;
+            $outerCharset = $charset;
+        });
 
         $mockDriver = new \mock\Fake\Pgsql();
-        $this->function->pg_set_client_encoding = function ($connection, $charset) use (&$outerCharset) {
-            $outerCharset = $charset;
-        };
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
-            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->then($driver->setDatabase('myDatabase'))
-            ->then($driver->setCharset('UTF8'))
+                ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+                ->then($driver->setDatabase('myDatabase'))
+                ->then($driver->setCharset('UTF8'))
             ->boolean($driver->ping())
-            ->isTrue()
-            ->function('pg_set_client_encoding')->wasCalled()->twice()
+                ->isTrue()
+            ->integer($called)->isIdenticalTo(2)
         ;
     }
 
     public function testPingShouldCallPingWithTimezone()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_ping = true;
-        $this->function->pg_query = true;
+        $called = 0;
+        $outerArgs = [];
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_ping', true);
+        PGMock::override('pg_query', function () use (&$called, &$outerArgs) {
+            $outerArgs[] = func_get_args();
+            $called++;
+            return true;
+        });
 
         $mockDriver = new \mock\Fake\Pgsql();
 
@@ -721,8 +718,10 @@ class Driver extends atoum
             ->then($driver->setDatabase('myDatabase'))
             ->then($driver->setTimezone('timezone'))
             ->boolean($driver->ping())
-            ->isTrue()
-            ->function('pg_query')->wasCalledWithArguments('SET timezone = "timezone";')->twice()
+                ->isTrue()
+            ->integer($called)->isIdenticalTo(2)
+            ->array(array_column($outerArgs, 1))
+                ->isIdenticalTo(array_fill(0, 2, 'SET timezone = "timezone";'));
         ;
     }
 
@@ -739,8 +738,8 @@ class Driver extends atoum
 
     public function testTimezone()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_query = true;
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -753,8 +752,8 @@ class Driver extends atoum
 
     public function testDefaultTimezone()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_query = true;
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_query', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -767,19 +766,25 @@ class Driver extends atoum
 
     public function testSetTimezoneThenDefaultTimezone()
     {
-        $this->function->pg_connect = true;
-        $this->function->pg_query = true;
+        PGMock::override('pg_connect', true);
+        $outerArgs = [];
+        PGMock::override('pg_query', function () use (&$outerArgs) {
+            $outerArgs[] = func_get_args();
+            return true;
+        });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('myDatabase'))
             ->then($driver->setTimezone('timezone'))
-            ->function('pg_query')->wasCalledWithArguments('SET timezone = "timezone";')->once()
+            ->variable($outerArgs[0][1])
+                ->isIdenticalTo('SET timezone = "timezone";')
             ->then($driver->setTimezone(null))
-            ->then->function('pg_query')->wasCalledWithArguments('SET timezone = DEFAULT;')->atLeastOnce()
-            ->then($driver->setTimezone(null))
-            ->function('pg_query')->wasCalled()->twice()
+            ->variable($outerArgs[1][1])
+                ->isIdenticalTo('SET timezone = DEFAULT;')
+            ->array($outerArgs)
+                ->hasSize(2)
         ;
     }
 }
