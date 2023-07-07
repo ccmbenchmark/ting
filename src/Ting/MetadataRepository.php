@@ -266,4 +266,9 @@ class MetadataRepository
 
         return $repositoryOptions;
     }
+
+    public function getAllEntities()
+    {
+        return array_keys($this->entityToRepository);
+    }
 }
