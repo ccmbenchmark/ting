@@ -276,9 +276,9 @@ class Hydrator implements HydratorInterface
 
             // Bypass if an entity has already been hydrated with this column
             if (
-                array_key_exists($column['table'], $fromReferences) === true
+                \array_key_exists($column['table'], $fromReferences) === true
                 && $fromReferences[$column['table']] === true
-                && array_key_exists($column['table'], $this->metadataList) === true
+                && \array_key_exists($column['table'], $this->metadataList) === true
                 && $this->metadataList[$column['table']]->hasColumn($column['orgName'])
             ) {
                 continue;
@@ -396,7 +396,7 @@ class Hydrator implements HydratorInterface
             }
 
             // It's a valid entity (unknown data are put in a value table 0)
-            if (is_int($table) === false) {
+            if (\is_int($table) === false) {
                 $ref = $table . '-';
                 foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
                     $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
@@ -444,7 +444,7 @@ class Hydrator implements HydratorInterface
             return;
         }
 
-        if (is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true) {
+        if (\is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true) {
             $this->unitOfWork->manage($entity);
             $this->alreadyManaged[$entity->tingUUID] = true;
         }

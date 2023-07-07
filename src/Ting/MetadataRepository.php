@@ -136,7 +136,7 @@ class MetadataRepository
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         if (is_object($entity)) {
-            $entity = get_class($entity);
+            $entity = \get_class($entity);
         }
 
         if (isset($this->entityToRepository[$entity]) === false) {

@@ -421,7 +421,7 @@ class Generator
         $i = 0;
         foreach ($orderList as $value) {
             $value = strtoupper($value);
-            if (in_array($value, ['ASC', 'DESC'])) {
+            if (\in_array($value, ['ASC', 'DESC'])) {
                 $orderCriteria[] = $fields[$i] . ' ' . $value;
             }
             $i++;

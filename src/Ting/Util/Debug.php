@@ -51,18 +51,18 @@ class Debug
         $return = [];
 
         if ($maxDepth === 0) {
-            if (is_object($var) === true) {
-                return get_class($var);
-            } elseif (is_array($var) === true) {
-                return 'Array(' . count($var) . ')';
+            if (\is_object($var) === true) {
+                return \get_class($var);
+            } elseif (\is_array($var) === true) {
+                return 'Array(' . \count($var) . ')';
             }
         }
 
-        if ($var instanceof \Traversable || is_array($var) === true) {
+        if ($var instanceof \Traversable || \is_array($var) === true) {
             foreach ($var as $key => $subVar) {
-                if ($subVar instanceof \Traversable || is_array($subVar) === true) {
+                if ($subVar instanceof \Traversable || \is_array($subVar) === true) {
                     $return[$key] = $this->export($subVar, $maxDepth - 1);
-                } elseif (is_object($subVar) === true) {
+                } elseif (\is_object($subVar) === true) {
                     $return[$key] = $this->clean($subVar, $maxDepth - 1);
                 } else {
                     $return[$key] = $subVar;
@@ -86,14 +86,14 @@ class Debug
     private function clean($object, $maxDepth)
     {
         if ($maxDepth === 0) {
-            return get_class($object);
+            return \get_class($object);
         }
 
         $objectToBeCleaned = clone $object;
         $reflectionObject = new \ReflectionObject($objectToBeCleaned);
 
         if ($reflectionObject->hasProperty('listeners') === true) {
-            $reflectionProperty = new \ReflectionProperty(get_class($objectToBeCleaned), 'listeners');
+            $reflectionProperty = new \ReflectionProperty(\get_class($objectToBeCleaned), 'listeners');
             $reflectionProperty->setAccessible(true);
             $reflectionProperty->setValue($objectToBeCleaned, null);
         }

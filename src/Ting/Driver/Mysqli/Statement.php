@@ -95,9 +95,9 @@ class Statement implements StatementInterface
 
         foreach (array_keys($this->paramsOrder) as $key) {
             $value = $params[$key];
-            $types .= self::PARAM_TYPE_BINDING[gettype($value)] ?? 's';
+            $types .= self::PARAM_TYPE_BINDING[\gettype($value)] ?? 's';
 
-            if (is_bool($value)) {
+            if (\is_bool($value)) {
                 $value = (int) $value;
             }
 

@@ -273,7 +273,7 @@ class Driver implements DriverInterface
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
             function ($match) use ($params) {
-                if (!array_key_exists($match[1], $params)) {
+                if (!\array_key_exists($match[1], $params)) {
                     throw new QueryException('Value has not been set for param ' . $match[1]);
                 }
 
@@ -314,7 +314,7 @@ class Driver implements DriverInterface
      */
     protected function quoteValue($value)
     {
-        switch (gettype($value)) {
+        switch (\gettype($value)) {
             case "boolean":
                 return (int) $value;
             case "integer":

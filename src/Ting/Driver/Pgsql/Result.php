@@ -190,10 +190,10 @@ class Result implements ResultInterface
 
                         if ($noAlias === false) {
                             if (isset($matches['prefix']) === true) {
-                                $cut += strlen($matches['prefix']);
+                                $cut += \strlen($matches['prefix']);
                             }
                             if (isset($matches['alias']) === true) {
-                                $cut += strlen($matches['alias']);
+                                $cut += \strlen($matches['alias']);
                             }
                         }
 

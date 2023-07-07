@@ -38,7 +38,7 @@ class Driver extends Mysqli\Driver
      */
     protected function quoteValue($value)
     {
-        switch (gettype($value)) {
+        switch (\gettype($value)) {
             case "integer":
                 // integer and double doesn't need quotes
             case "double":

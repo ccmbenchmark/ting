@@ -112,7 +112,7 @@ class Result implements ResultInterface
         foreach ($this->fields as $i => $rawField) {
             $value = $data[$i];
 
-            if (is_string($value)) {
+            if (\is_string($value)) {
                 switch ($rawField->type) {
                     case MYSQLI_TYPE_DECIMAL:
                         // Decimal
