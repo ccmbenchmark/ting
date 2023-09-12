@@ -80,7 +80,8 @@ class MetadataRepository
         $schema,
         $table,
         \Closure $callbackFound,
-        \Closure $callbackNotFound = null
+        \Closure $callbackNotFound = null,
+        string $entityClass = null
     ) {
 
         $connectionKey = $connectionName . '#' . $table;
@@ -93,12 +94,18 @@ class MetadataRepository
         }
 
         if (isset($this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database]) === true) {
-            $callbackFound(
-                $this->metadataList[$this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database]]
-            );
+            if ($entityClass !== null) {
+                $callbackFound(
+                    $this->metadataList[$this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database][$entityClass]]
+                );
+            } else {
+                $callbackFound(
+                    $this->metadataList[current($this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database])]
+                );
+            }
         } else {
             $callbackFound(
-                $this->metadataList[current($this->tableWithConnectionToMetadata[$connectionKey])]
+                $this->metadataList[current(current($this->tableWithConnectionToMetadata[$connectionKey]))]
             );
         }
     }
@@ -168,9 +175,14 @@ class MetadataRepository
             $this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable] = [];
         }
 
+        if (isset($this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable]
+                [$metadata->getSchema() . '#' . $metadata->getDatabase()]) === false) {
+            $this->tableWithConnectionToMetadata[$metadataConnection . '#' . $metadataTable]
+                [$metadata->getSchema() . '#' . $metadata->getDatabase()] = [];
+        }
         $this->tableWithConnectionToMetadata
             [$metadataConnection . '#' . $metadataTable]
-            [$metadata->getSchema() . '#' . $metadata->getDatabase()] = $repositoryClass;
+            [$metadata->getSchema() . '#' . $metadata->getDatabase()][$metadata->getEntity()] = $repositoryClass;
         $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
     }
 

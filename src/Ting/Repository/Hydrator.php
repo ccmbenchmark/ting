@@ -69,6 +69,9 @@ class Hydrator implements HydratorInterface
      */
     protected $identityMap = false;
 
+    /** @var string|null  */
+    protected $entityClass = null;
+
     /**
      * @param bool $enable
      * @throws Exception
@@ -100,6 +103,12 @@ class Hydrator implements HydratorInterface
     public function setResult(ResultInterface $result)
     {
         $this->result = $result;
+        return $this;
+    }
+
+    public function setEntityClass(string $entityClass)
+    {
+        $this->entityClass = $entityClass;
         return $this;
     }
 
@@ -304,7 +313,9 @@ class Hydrator implements HydratorInterface
                             $this->metadataList[$column['table']] = $metadata;
                             $result[$column['table']]             = $metadata->createEntity();
                             $tmpEntities[$column['table']]        = [];
-                        }
+                        },
+                        null,
+                        $this->entityClass
                     );
                 }
             }
