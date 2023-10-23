@@ -27,6 +27,8 @@
         "doctrine/cache": "^1.6"
     },
     "require-dev": {
+        "ext-pgsql": "*",
+        "ext-mysqli": "*",
         "atoum/atoum": "^4.0",
         "atoum/stubs": "^2.0"
     },
