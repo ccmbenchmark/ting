@@ -1,4 +1,4 @@
-Unreleased:
+3.7.3 (2023-11-28):
     * Fix: HydratorRelational hydration order when many nested entities
 
 3.7.2 (2023-10-23):
