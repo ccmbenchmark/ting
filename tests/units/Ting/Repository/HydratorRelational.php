@@ -652,6 +652,150 @@ class HydratorRelational extends atoum
         ;
     }
 
+    public function testHydrateWithDepth3()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setEntity('tests\fixtures\model\Nursery');
+        $metadata->setTable('T_NURSERY');
+
+        $metadata->addField([
+            'primary'    => true,
+            'fieldName'  => 'id',
+            'columnName' => 'nursery_id',
+            'type'       => 'int'
+        ]);
+
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\NurseryRepository', $metadata);
+
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setEntity('tests\fixtures\model\City');
+        $metadata->setTable('T_CITY_CIT');
+
+        $metadata->addField([
+            'primary'    => true,
+            'fieldName'  => 'id',
+            'columnName' => 'cit_id',
+            'type'       => 'int'
+        ]);
+
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\CityRepository', $metadata);
+
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setEntity('tests\fixtures\model\Department');
+        $metadata->setTable('T_DEPARTMENT');
+
+        $metadata->addField([
+            'primary'    => true,
+            'fieldName'  => 'id',
+            'columnName' => 'department_id',
+            'type'       => 'int'
+        ]);
+
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\DepartmentRepository', $metadata);
+
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setConnectionName('connectionName');
+        $metadata->setDatabase('database');
+        $metadata->setEntity('tests\fixtures\model\Authority');
+        $metadata->setTable('T_AUTHORITY');
+
+        $metadata->addField([
+            'primary'    => true,
+            'fieldName'  => 'id',
+            'columnName' => 'authority_id',
+            'type'       => 'int'
+        ]);
+
+        $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\AuthorityRepository', $metadata);
+
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
+            [1, 11, 22, 33],
+        ]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'nursery_id';
+            $stdClass->table    = 'o';
+            $stdClass->orgtable = 'T_NURSERY';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'cit_id';
+            $stdClass->table    = 'a1';
+            $stdClass->orgtable = 'T_CITY_CIT';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'department_id';
+            $stdClass->table    = 'a2';
+            $stdClass->orgtable = 'T_DEPARTMENT';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'authority_id';
+            $stdClass->table    = 'a3';
+            $stdClass->orgtable = 'T_AUTHORITY';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->addRelation(new RelationOne(
+                new AggregateFrom('a1'),
+                new AggregateTo('o'),
+                'setCity'
+            )))
+            ->and($hydrator->addRelation(new RelationOne(
+                new AggregateFrom('a2'),
+                new AggregateTo('a1'),
+                'setDepartment'
+            )))
+            ->and($hydrator->addRelation(new RelationOne(
+                new AggregateFrom('a3'),
+                new AggregateTo('a2'),
+                'setAuthority'
+            )))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->integer($data['o']->getId())
+                ->isIdenticalTo(1)
+            ->object($city = $data['o']->getCity())
+            ->integer($city->getId())
+                ->isIdenticalTo(11)
+            ->object($department = $city->getDepartment())
+            ->integer($department->getId())
+                ->isIdenticalTo(22)
+            ->object($authority = $department->getAuthority())
+            ->integer($authority->getId())
+                ->isIdenticalTo(33)
+        ;
+    }
+
     public function testHydrateWithNoRelation()
     {
         $services = new \CCMBenchmark\Ting\Services();

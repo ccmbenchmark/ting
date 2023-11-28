@@ -29,6 +29,14 @@ use CCMBenchmark\Ting\Exceptions\HydratorException;
 use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 use Generator;
+use SplDoublyLinkedList;
+use function array_reverse;
+use function array_search;
+use function array_splice;
+use function array_unshift;
+use function array_values;
+use function in_array;
+use function ksort;
 
 /**
  * @template T
@@ -116,15 +124,29 @@ final class HydratorRelational extends Hydrator
 
     private function resolveDependencies()
     {
-        $configAsArray = iterator_to_array($this->config);
-
-        foreach ($this->config as $index => $config) {
-            $dependencyIndex = array_search($config['target'], array_column($configAsArray, 'source'));
-
-            if ($dependencyIndex !== false && $dependencyIndex < $index) {
-                $this->config->offsetUnset($index);
-                $this->config->add($dependencyIndex, $config);
+        $order = [];
+        foreach ($this->config as $item) {
+            if (!in_array($item['target'], $order, true)) {
+                array_unshift($order, $item['target']);
             }
+            if (!in_array($item['source'], $order, true)) {
+                /** @var int $pos */
+                $pos = array_search($item['target'], $order, true);
+                array_splice($order, $pos+1, 0, $item['source']);
+            }
+        }
+        $order = array_reverse($order);
+
+        $output = [];
+        foreach ($this->config as $config) {
+            $index = array_search($config['source'], $order);
+            $output[$index] = $config;
+        }
+        ksort($output);
+
+        $this->config = new SplDoublyLinkedList();
+        foreach (array_values($output) as $index => $config) {
+            $this->config->add($index, $config);
         }
     }
 
