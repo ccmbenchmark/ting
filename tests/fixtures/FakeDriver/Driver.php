@@ -188,4 +188,8 @@ class Driver implements DriverInterface
     public function setTimezone($timezone)
     {
     }
+
+    public function ping()
+    {
+    }
 }
