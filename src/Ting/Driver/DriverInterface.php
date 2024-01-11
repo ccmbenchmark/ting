@@ -133,4 +133,6 @@ interface DriverInterface
      * @return void
      */
     public function ping();
+
+    public function setTimezone($timezone);
 }
