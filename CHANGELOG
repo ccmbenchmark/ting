@@ -1,3 +1,5 @@
+4.0.0 (unreleased):
+
 3.9.1 (2024-07-19):
     * Fix: Mysqli/Driver::ping() try to reconnect when mysqli::ping() throws an exception
 
