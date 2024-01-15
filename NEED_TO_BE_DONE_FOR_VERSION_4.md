@@ -5,4 +5,3 @@
 - UUID should be a real UUID (#34)
 - getInsertId should be named getInsertedId for consistency with getAffectedRows
 - add setTimezone to DriverInterface
-- add setDatabaseOptions to ConnectionPoolInterface
