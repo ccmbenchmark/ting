@@ -57,4 +57,6 @@ interface ConnectionPoolInterface
     public function slave($name, $database);
 
     public function closeAll();
+
+    public function setDatabaseOptions($options);
 }
