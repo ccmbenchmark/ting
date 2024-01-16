@@ -21,7 +21,7 @@
     "type": "library",
     "license": "Apache-2.0",
     "require": {
-        "php": ">=7.1",
+        "php": ">=8.0",
         "pimple/pimple": "^3.0",
         "aura/sqlquery": "^2.6",
         "doctrine/cache": "^1.6"
