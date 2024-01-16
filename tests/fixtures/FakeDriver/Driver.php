@@ -108,7 +108,7 @@ class Driver implements DriverInterface
     /**
      * @return int
      */
-    public function getInsertId()
+    public function getInsertedId()
     {
 
     }

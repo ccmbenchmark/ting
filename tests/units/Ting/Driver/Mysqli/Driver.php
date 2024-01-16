@@ -673,7 +673,7 @@ class Driver extends atoum
         ;
     }
 
-    public function testGetInsertIdShouldReturnInsertedId()
+    public function testGetInsertedIdShouldReturnInsertedId()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this->calling($mockDriver)->real_connect = $mockDriver;
