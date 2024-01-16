@@ -126,9 +126,9 @@ class Query implements QueryInterface
      * @return int
      * @throws Exception
      */
-    public function getInsertId()
+    public function getInsertedId()
     {
-        return $this->connection->master()->getInsertId();
+        return $this->connection->master()->getInsertedId();
     }
 
     /**
