@@ -416,11 +416,18 @@ class Driver implements DriverInterface
      * Return the last inserted id
      * @return int
      */
-    public function getInsertId()
+    public function getInsertedId()
     {
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
         $row = pg_fetch_row($resultResource);
         return (int) $row[0];
+    }
+
+    public function getInsertId()
+    {
+        error_log(sprintf('%s::getInsertId() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedId() instead.', self::class, self::class), E_USER_DEPRECATED);
+
+        return $this->getInsertedId();
     }
 
     /**
@@ -428,7 +435,7 @@ class Driver implements DriverInterface
      * @return int
      * @throws Exception
      */
-    public function getInsertIdForSequence($sequenceName)
+    public function getInsertedIdForSequence($sequenceName)
     {
         $sql = "SELECT currval('$sequenceName')";
         $resultResource = @pg_query($this->connection, $sql);
@@ -439,6 +446,13 @@ class Driver implements DriverInterface
 
         $row = pg_fetch_row($resultResource);
         return (int) $row[0];
+    }
+
+    public function getInsertIdForSequence($sequenceName)
+    {
+        error_log(sprintf('%s::getInsertIdForSequence() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedIdForSequence() instead.', self::class, self::class), E_USER_DEPRECATED);
+
+        return $this->getInsertedIdForSequence($sequenceName);
     }
 
     /**
