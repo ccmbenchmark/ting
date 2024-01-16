@@ -63,7 +63,7 @@ interface QueryInterface
      * @deprecated
      * @return int
      */
-    public function getInsertId();
+    public function getInsertedId();
 
     /**
      * @return int
