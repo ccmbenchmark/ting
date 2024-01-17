@@ -58,7 +58,7 @@ class Driver implements DriverInterface
     protected $currentTimezone = null;
 
     /**
-     * @var resource|null pgsql
+     * @var resource|null|\PgSql\Connection pgsql
      */
     protected $connection = null;
 
@@ -78,7 +78,7 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
-     * @var resource
+     * @var resource|\PgSql\Result
      */
     protected $result = null;
 
@@ -181,7 +181,8 @@ class Driver implements DriverInterface
         $this->database = $database;
 
         if ($resource === false) {
-            throw new DriverException('Connect Error: ' . $this->dsn . ' dbname=' . $database);
+            $dsn = preg_replace('/((user|password)=[^\s]+)/', '$2=<REDACTED>', $this->dsn);
+            throw new DriverException('Connect Error: ' . $dsn . ' dbname=' . $database);
         }
         $this->connection = $resource;
 

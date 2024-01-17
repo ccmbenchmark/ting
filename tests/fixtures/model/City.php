@@ -37,6 +37,7 @@ class City implements NotifyPropertyInterface
     protected $zipcode   = null;
     protected $bouhId    = null;
     protected $parks     = [];
+    protected $department = null;
 
     public function setId($id)
     {
@@ -90,5 +91,15 @@ class City implements NotifyPropertyInterface
     public function getParks()
     {
         return $this->parks;
+    }
+
+    public function setDepartment(Department $department)
+    {
+        $this->department = $department;
+    }
+
+    public function getDepartment()
+    {
+        return $this->department;
     }
 }

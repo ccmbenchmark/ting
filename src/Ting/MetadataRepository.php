@@ -26,6 +26,7 @@ namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
+use CCMBenchmark\Ting\Repository\Repository;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use function get_class;
 use function is_object;
@@ -103,9 +104,11 @@ class MetadataRepository
     }
 
     /**
-     * @param string $repositoryName
-     * @param \Closure $callbackFound Called with applicable Metadata if applicable
-     * @param \Closure $callbackNotFound called if unknown entity - no parameter
+     * @param class-string<Repository<T>> $repositoryName
+     * @param \Closure(Metadata<T>):void $callbackFound Called with applicable Metadata if applicable
+     * @param \Closure():void $callbackNotFound called if unknown entity - no parameter
+     *
+     * @template T of object
      *
      * @internal
      */
@@ -122,16 +125,18 @@ class MetadataRepository
     }
 
     /**
-     * @param object|class-string $entity an instance or the class string of the entity
-     * @param \Closure $callbackFound Called with applicable Metadata if applicable
-     * @param \Closure $callbackNotFound called if unknown entity - no parameter
+     * @param T|class-string<T> $entity an instance or the class string of the entity
+     * @param \Closure(Metadata<T>):void $callbackFound Called with applicable Metadata if applicable
+     * @param \Closure():void $callbackNotFound called if unknown entity - no parameter
+     *
+     * @template T of object
      *
      * @internal
      */
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         if (is_object($entity)) {
-            $entity = get_class($entity);
+            $entity = \get_class($entity);
         }
 
         if (isset($this->entityToRepository[$entity]) === false) {
@@ -147,8 +152,10 @@ class MetadataRepository
     }
 
     /**
-     * @param string   $repositoryClass
-     * @param Metadata $metadata
+     * @param class-string<Repository<T>> $repositoryClass
+     * @param Metadata<T> $metadata
+     *
+     * @template T of object
      *
      * @internal
      */
@@ -258,5 +265,10 @@ class MetadataRepository
         }
 
         return $repositoryOptions;
+    }
+
+    public function getAllEntities()
+    {
+        return array_keys($this->entityToRepository);
     }
 }

@@ -1,3 +1,14 @@
+3.7.3 (2023-11-28):
+    * Fix: HydratorRelational hydration order when many nested entities
+
+3.7.2 (2023-10-23):
+    * Make tests pass on PHP 8.1+
+    * Allow access to list of managed entities
+
+3.7.1 (2023-06-22):
+    * Security: avoid leaks of credentials
+    * Allow HydratorRelational even if no relation has been defined
+
 3.7.0 (2022-04-18):
     * Feature: support searching metadata with the class string of an entity
 
@@ -20,7 +31,7 @@
 
 3.5.7 (2020-08-28):
     * Fix: Revert Hydrator entity's reference calculation factorization [162f539]
-    * Fix: HydratorAggregator yield one time even when there is 0 result 
+    * Fix: HydratorAggregator yield one time even when there is 0 result
     * Fix: Query Generator use proper values
 
 3.5.6 (2019-10-02):
@@ -30,7 +41,7 @@
     * Merge back 3.4.3 and 3.4.4
 
 3.5.4 (2019-09-13):
-    * Fix: Result return from hydrator are identical when changing order of primary key field 
+    * Fix: Result return from hydrator are identical when changing order of primary key field
 
 3.5.3 (2019-07-24):
     * Fix: The timezone is now setted only on chang

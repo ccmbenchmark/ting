@@ -22,40 +22,37 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\SphinxQL;
+namespace tests\fixtures\model;
 
-use CCMBenchmark\Ting\Driver\Mysqli;
+use CCMBenchmark\Ting\Entity\NotifyProperty;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-class Driver extends Mysqli\Driver
+class Department implements NotifyPropertyInterface
 {
 
-    /**
-     * Quote value according to the type of variable
-     * @param mixed $value
-     * @return string
-     *
-     * @internal
-     */
-    protected function quoteValue($value)
+    use NotifyProperty;
+
+    protected $id = null;
+    protected $authority = null;
+
+    public function setId($id)
     {
-        switch (\gettype($value)) {
-            case "integer":
-                // integer and double doesn't need quotes
-            case "double":
-                return $value;
-                break;
-            default:
-                return "'" . $this->connection->real_escape_string($value) . "'";
-                break;
-        }
+        $this->propertyChanged('id', $this->id, $id);
+        $this->id = $id;
     }
 
-    /**
-     * @param $field
-     * @return string
-     */
-    public function escapeField($field)
+    public function getId()
     {
-        return $field;
+        return $this->id;
+    }
+
+    public function setAuthority(Authority $authority)
+    {
+        $this->authority = $authority;
+    }
+
+    public function getAuthority()
+    {
+        return $this->authority;
     }
 }

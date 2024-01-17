@@ -124,7 +124,7 @@ abstract class Repository
         $this->cache              = $cache;
         $this->unitOfWork         = $unitOfWork;
 
-        $class = get_class($this);
+        $class = \get_class($this);
         $this->metadataRepository->findMetadataForRepository(
             $class,
             function ($metadata) {
@@ -143,8 +143,10 @@ abstract class Repository
 
 
     /**
-     * @param HydratorInterface $hydrator|null
-     * @return Collection<T>
+     * @param HydratorInterface<U>|null $hydrator
+     * @return Collection<U>
+     *
+     * @template U
      */
     public function getCollection(HydratorInterface $hydrator = null)
     {
@@ -402,7 +404,7 @@ abstract class Repository
     /**
      * Returns the repository's corresponding metadata
      *
-     * @return Metadata
+     * @return Metadata<T>
      */
     public function getMetadata()
     {
