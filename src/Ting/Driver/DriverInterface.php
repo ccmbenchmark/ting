@@ -122,4 +122,9 @@ interface DriverInterface
      * @throws Exception
      */
     public function closeStatement($statement);
+
+    /**
+     * @return void
+     */
+    public function ping();
 }
