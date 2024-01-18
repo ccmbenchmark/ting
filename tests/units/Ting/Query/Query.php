@@ -131,17 +131,17 @@ class Query extends atoum
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
 
         $this->calling($mockConnection)->master = $mockDriver;
-        $this->calling($mockDriver)->getInsertId = 1;
+        $this->calling($mockDriver)->getInsertedId = 1;
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Query('INSERT', $mockConnection))
-            ->integer($query->getInsertId())
+            ->integer($query->getInsertedId())
                 ->isIdenticalTo(1)
             ->mock($mockConnection)
                 ->call('master')
                     ->once()
             ->mock($mockDriver)
-                ->call('getInsertId')
+                ->call('getInsertedId')
                     ->once()
         ;
     }

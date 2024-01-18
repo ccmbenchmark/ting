@@ -416,7 +416,7 @@ class Driver implements DriverInterface
      * Return the last inserted id
      * @return int
      */
-    public function getInsertId()
+    public function getInsertedId()
     {
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
         $row = pg_fetch_row($resultResource);
@@ -428,7 +428,7 @@ class Driver implements DriverInterface
      * @return int
      * @throws Exception
      */
-    public function getInsertIdForSequence($sequenceName)
+    public function getInsertedIdForSequence($sequenceName)
     {
         $sql = "SELECT currval('$sequenceName')";
         $resultResource = @pg_query($this->connection, $sql);

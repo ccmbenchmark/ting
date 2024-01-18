@@ -679,7 +679,7 @@ class Driver extends atoum
         ;
     }
 
-    public function testGetInsertIdShouldReturnInsertedId()
+    public function testGetInsertedIdShouldReturnInsertedId()
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this->calling($mockDriver)->real_connect = $mockDriver;
@@ -688,7 +688,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->integer($driver->getInsertId())
+            ->integer($driver->getInsertedId())
             ->isIdenticalTo(3)
         ;
     }
