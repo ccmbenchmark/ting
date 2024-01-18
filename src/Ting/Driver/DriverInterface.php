@@ -106,6 +106,11 @@ interface DriverInterface
     /**
      * @return int
      */
+    public function getInsertedId();
+
+    /**
+     * @return int
+     */
     public function getAffectedRows();
 
     public function setLogger(DriverLoggerInterface $logger = null);

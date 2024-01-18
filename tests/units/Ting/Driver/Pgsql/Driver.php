@@ -402,7 +402,7 @@ class Driver extends atoum
         ;
     }
 
-    public function testGetInsertIdShouldReturnInsertedId()
+    public function testgetInsertedIdShouldReturnInsertedId()
     {
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
@@ -412,14 +412,14 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->integer($driver->getInsertId())
+            ->integer($driver->getInsertedId())
                 ->isIdenticalTo(8)
             ->string($outerQuery)
                 ->isIdenticalTo('SELECT lastval()')
         ;
     }
 
-    public function testGetInsertIdForSequenceShouldReturnInsertedIdForSequence()
+    public function testgetInsertedIdForSequenceShouldReturnInsertedIdForSequence()
     {
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
             $outerQuery = $query;
@@ -429,14 +429,14 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->integer($driver->getInsertIdForSequence('sequenceName'))
+            ->integer($driver->getInsertedIdForSequence('sequenceName'))
                 ->isIdenticalTo(4)
             ->string($outerQuery)
                 ->isIdenticalTo("SELECT currval('sequenceName')")
         ;
     }
 
-    public function testGetInsertIdForSequenceWithWrongSequenceShouldThrowAnException()
+    public function testgetInsertedIdForSequenceWithWrongSequenceShouldThrowAnException()
     {
         PGMock::override('pg_query', false);
         PGMock::override('pg_last_error', 'A PGSQL error');
@@ -444,7 +444,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->exception(function () use ($driver) {
-                $driver->getInsertIdForSequence('sequenceName');
+                $driver->getInsertedIdForSequence('sequenceName');
             })
                 ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
                 ->hasMessage("A PGSQL error (Query: SELECT currval('sequenceName'))");

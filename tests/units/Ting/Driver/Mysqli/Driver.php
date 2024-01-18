@@ -688,7 +688,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->integer($driver->getInsertId())
+            ->integer($driver->getInsertedId())
             ->isIdenticalTo(3)
         ;
     }
