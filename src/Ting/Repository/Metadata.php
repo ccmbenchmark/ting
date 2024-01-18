@@ -585,6 +585,28 @@ class Metadata
         return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $forceMaster);
     }
 
+    public function getByCriteriaWithOrderAndLimit(
+        array $criteria,
+        $orderBy,
+        $limit,
+        Connection $connection,
+        QueryFactoryInterface $queryFactory,
+        CollectionFactoryInterface $collectionFactory,
+        $forceMaster = false
+    ) {
+        $fields = array_keys($this->fields);
+        $queryGenerator = new Generator(
+            $connection,
+            $queryFactory,
+            $this->schemaName,
+            $this->table,
+            $fields
+        );
+        $criteriaColumn = $this->getColumnsFromCriteria($criteria);
+
+        return $queryGenerator->getByCriteriaWithOrderAndLimit($criteriaColumn, $collectionFactory, $forceMaster, $orderBy, $limit);
+    }
+
     /**
      * @param $originalValue
      * @return array
