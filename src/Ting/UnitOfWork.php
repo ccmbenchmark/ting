@@ -79,7 +79,7 @@ class UnitOfWork implements PropertyListenerInterface
      */
     protected function generateUUID()
     {
-        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.', self::class, self::class), E_USER_DEPRECATED);
+        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.',self::class, self::class),E_USER_DEPRECATED);
 
         return $this->generateUid();
     }
@@ -225,7 +225,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param NotifyPropertyInterface $entity
      * @return $this
      */
-    public function pushDelete(NotifyPropertyInterface $entity)
+    public function pushDelete(NotifyPropertyInterface $entity): self
     {
         $hash = spl_object_hash($entity);
         $this->entitiesShouldBePersisted[$hash] = ['state' => self::STATE_DELETE, 'entity' => $entity];
