@@ -71,9 +71,10 @@ class Metadata
     protected $primaries          = [];
     protected $autoincrement      = null;
     protected $defaultSerializers = [
-        'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
-        'json'     => '\CCMBenchmark\Ting\Serializer\Json',
-        'ip'       => '\CCMBenchmark\Ting\Serializer\Ip'
+        'datetime'           => '\CCMBenchmark\Ting\Serializer\DateTime',
+        'datetime_immutable' => '\CCMBenchmark\Ting\Serializer\DateTimeImmutable',
+        'json'               => '\CCMBenchmark\Ting\Serializer\Json',
+        'ip'                 => '\CCMBenchmark\Ting\Serializer\Ip'
     ];
 
     /**
