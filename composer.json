@@ -24,14 +24,16 @@
         "php": ">=7.1",
         "pimple/pimple": "^3.0",
         "aura/sqlquery": "^2.6",
-        "doctrine/cache": "^1.6",
-        "brick/geo": "^0.5.0"
+        "doctrine/cache": "^1.6"
     },
     "require-dev": {
         "ext-pgsql": "*",
         "ext-mysqli": "*",
         "atoum/atoum": "^4.0",
         "atoum/stubs": "^2.0"
+    },
+    "suggest": {
+      "brick/geo": "Allow support of MariaDB Geometry type"
     },
     "autoload": {
         "psr-4" : {

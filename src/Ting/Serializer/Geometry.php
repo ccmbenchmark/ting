@@ -56,6 +56,10 @@ final class Geometry implements SerializerInterface
      */
     public function serialize($toSerialize, array $options = []): ?string
     {
+        if (!class_exists(WKBWriter::class) || !class_exists(BrickGeometry::class)) {
+            throw new RuntimeException("Package brick/geo is required to handle Geometry. Please run `composer require brick/geo`");
+        }
+
         if ($toSerialize === null) {
             return null;
         }
@@ -80,6 +84,10 @@ final class Geometry implements SerializerInterface
      */
     public function unserialize($serialized, array $options = []): ?BrickGeometry
     {
+        if (!class_exists(WKBReader::class)) {
+            throw new RuntimeException("Package brick/geo is required to handle Geometry. Please run `composer require brick/geo`");
+        }
+
         if ($serialized === null) {
             return null;
         }
