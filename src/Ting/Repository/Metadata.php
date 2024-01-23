@@ -73,7 +73,8 @@ class Metadata
     protected $defaultSerializers = [
         'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
         'json'     => '\CCMBenchmark\Ting\Serializer\Json',
-        'ip'       => '\CCMBenchmark\Ting\Serializer\Ip'
+        'ip'       => '\CCMBenchmark\Ting\Serializer\Ip',
+        'geometry' => '\CCMBenchmark\Ting\Serializer\Geometry'
     ];
 
     /**
