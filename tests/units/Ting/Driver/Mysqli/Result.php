@@ -79,5 +79,4 @@ class Result extends atoum
             ->variable($result->getNumRows())
                 ->isEqualTo(10);
     }
-
 }
