@@ -24,7 +24,6 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
-use Brick\Geo\IO\WKBReader;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
