@@ -25,7 +25,6 @@
 namespace tests\units\CCMBenchmark\Ting\Driver\Mysqli;
 
 use atoum;
-use Brick\Geo\Point;
 
 class Result extends atoum
 {
