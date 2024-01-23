@@ -30,7 +30,8 @@
         "ext-pgsql": "*",
         "ext-mysqli": "*",
         "atoum/atoum": "^4.0",
-        "atoum/stubs": "^2.0"
+        "atoum/stubs": "^2.0",
+        "brick/geo": "^0.5.1"
     },
     "suggest": {
       "brick/geo": "Allow support of MariaDB Geometry type"

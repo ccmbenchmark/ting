@@ -26,54 +26,47 @@ namespace tests\units\CCMBenchmark\Ting\Serializer;
 
 use atoum;
 use Brick\Geo\IO\WKBReader;
+use Brick\Geo\Geometry as BrickGeometry;
 
 class Geometry extends atoum
 {
 
     public function testUnserializeShouldReturnGeometryObject()
     {
-        if (class_exists(Brick\Geo\Geometry::class)) {
-            $this
-                ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-                ->object($geometrySerializer->unserialize(hex2bin("00000000010100000000000000000024400000000000003440")))
-                    ->isInstanceOf('\Brick\Geo\Geometry');
-        }
+        $this
+            ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->object($geometrySerializer->unserialize(hex2bin("00000000010100000000000000000024400000000000003440")))
+                ->isInstanceOf('\Brick\Geo\Geometry');
     }
 
     public function testUnserializeWithNullValueShouldReturnNull()
     {
-        if (class_exists(Brick\Geo\Geometry::class)) {
-            $this
-                ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-                ->variable($geometrySerializer->unserialize(null))
-                    ->isNull();
-        }
+        $this
+            ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->variable($geometrySerializer->unserialize(null))
+                ->isNull();
     }
 
     public function testSerializeShouldReturnStringValue()
     {
-        if (class_exists(Brick\Geo\Geometry::class)) {
-            $this->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-                ->string($geometrySerializer->serialize(
-                    (new WKBReader())->read(hex2bin('010100000000000000000024400000000000003440'))
-                ))
-                    ->isIdenticalTo(hex2bin("00000000010100000000000000000024400000000000003440"));
-        }
+        $this->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->string($geometrySerializer->serialize(
+                (new WKBReader())->read(hex2bin('010100000000000000000024400000000000003440'))
+            ))
+                ->isIdenticalTo(hex2bin("00000000010100000000000000000024400000000000003440"));
     }
 
     public function testSerializeWithNullValueShouldReturnNull()
     {
-        if (class_exists(Brick\Geo\Geometry::class)) {
-            $this
-                ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-                ->variable($geometrySerializer->serialize(null))
-                    ->isNull();
-        }
+        $this
+            ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->variable($geometrySerializer->serialize(null))
+                ->isNull();
     }
 
     public function testRuntimeExceptionWhenPackageNotPresent()
     {
-        if (!class_exists(Brick\Geo\Geometry::class)) {
+        if (!class_exists(BrickGeometry::class)) {
             $this
                 ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
                 ->exception(function () use ($geometrySerializer) {
