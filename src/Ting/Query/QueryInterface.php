@@ -67,5 +67,10 @@ interface QueryInterface
     /**
      * @return int
      */
+    public function getInsertedId();
+
+    /**
+     * @return int
+     */
     public function getAffectedRows();
 }
