@@ -145,9 +145,6 @@ class Result implements ResultInterface
                         // These case is here as a reminder
                         $value = (string)$value;
                         break;
-                    case MYSQLI_TYPE_GEOMETRY:
-                        $value = (new WKBReader)->read(\substr($value, 4));
-                        break;
                 }
             }
 
