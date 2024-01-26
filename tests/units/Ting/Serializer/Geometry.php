@@ -26,7 +26,7 @@ namespace tests\units\CCMBenchmark\Ting\Serializer;
 
 use atoum;
 use Brick\Geo\IO\WKBReader;
-use Brick\Geo\Geometry as BrickGeometry;
+use CCMBenchmark\Ting\Serializer\RuntimeException;
 
 class Geometry extends atoum
 {
@@ -35,7 +35,9 @@ class Geometry extends atoum
     {
         $this
             ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-            ->object($geometrySerializer->unserialize(hex2bin("00000000010100000000000000000024400000000000003440")))
+            ->object($geometrySerializer->unserialize(
+                hex2bin("00000000010100000000000000000024400000000000003440"))
+            )
                 ->isInstanceOf('\Brick\Geo\Geometry');
     }
 
@@ -66,14 +68,42 @@ class Geometry extends atoum
 
     public function testRuntimeExceptionWhenPackageNotPresent()
     {
-        if (!class_exists(BrickGeometry::class)) {
-            $this
-                ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-                ->exception(function () use ($geometrySerializer) {
-                    $geometrySerializer->unserialize(hex2bin("00000000010100000000000000000024400000000000003440"));
-                })
-                    ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException');
-        }
+        $this
+            ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->and($this->function->class_exists = false)
+            ->exception(function () use ($geometrySerializer) {
+                $geometrySerializer->unserialize(
+                    hex2bin("00000000010100000000000000000024400000000000003440")
+                );
+            })
+                ->isInstanceOf(RuntimeException::class)
+            ->exception(function () use ($geometrySerializer) {
+                $geometrySerializer->serialize(
+                    (new WKBReader())->read(hex2bin('010100000000000000000024400000000000003440'))
+                );
+            })
+                ->isInstanceOf(RuntimeException::class);
     }
 
+    public function testUnserializeThrowExceptionOnIncorrectData()
+    {
+        $this
+            ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->exception(function () use ($geometrySerializer) {
+                $geometrySerializer->unserialize("Incorrect data");
+            })
+                ->isInstanceOf(\UnexpectedValueException::class)
+        ;
+    }
+
+    public function testSerializeThrowExceptionOnIncorrectData()
+    {
+        $this
+            ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
+            ->exception(function () use ($geometrySerializer) {
+                $geometrySerializer->serialize((new \StdClass()));
+            })
+                ->isInstanceOf(\UnexpectedValueException::class)
+        ;
+    }
 }

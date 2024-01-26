@@ -65,7 +65,7 @@ final class Geometry implements SerializerInterface
         }
 
         if (!$toSerialize instanceof BrickGeometry) {
-            throw new RuntimeException(
+            throw new UnexpectedValueException(
                 sprintf(
                     'Expected an instance of "%s".',
                     BrickGeometry::class
