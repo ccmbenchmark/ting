@@ -1,7 +1,8 @@
 3.8.0 (unreleased):
     * Depreciate method DriverInterface::getInsertId() in favour of getInsertedId()
     * Depreciate method CCMBenchmark\Ting\Driver\Pgsql\Driver::getInsertIdForSequence() in favour of getInsertedIdForSequence()
-	* new Feature: add support for MySQL type geometry
+    * new Feature: add support for MySQL type geometry
+    * Add MYSQLI_OPT_INT_AND_FLOAT_NATIVE option in Mysqli driver
 
 3.7.3 (2023-11-28):
     * Fix: HydratorRelational hydration order when many nested entities
