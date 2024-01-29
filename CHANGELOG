@@ -1,4 +1,4 @@
-3.8.0 (unreleased):
+3.8.0 (2024-01-29):
     * Depreciate method DriverInterface::getInsertId() in favour of getInsertedId()
     * Depreciate method CCMBenchmark\Ting\Driver\Pgsql\Driver::getInsertIdForSequence() in favour of getInsertedIdForSequence()
     * new Feature: add support for MySQL type geometry
