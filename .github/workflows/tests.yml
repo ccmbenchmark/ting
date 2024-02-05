@@ -41,3 +41,47 @@ jobs:
 
       - name: Run Atoum tests
         run: php vendor/bin/atoum
+
+  static-code-analysis:
+    name: "Static Code Analysis"
+
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+        dependencies:
+          - "locked"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Install PHP with extensions"
+        uses: "shivammathur/setup-php@2.24.0"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          extensions: bcmath, bz2, gettext, mbstring, memcached, mcrypt, mysqli, opcache, pdo_mysql, zip, pdo, intl, json, pdo_pgsql, pgsql, session, simplexml, xml
+          tools: composer:v1, pecl
+
+      - name: "Set up problem matchers for PHP"
+        run: "echo \"::add-matcher::${{ runner.tool_cache }}/php.json\""
+
+      - name: "Install ${{ matrix.dependencies }} dependencies with composer"
+        uses: "ramsey/composer-install@2.2.0"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+
+      - name: "Create cache directory for phpstan/phpstan"
+        run: "mkdir -p .build/phpstan"
+
+      - name: "Cache cache directory for phpstan/phpstan"
+        uses: "actions/cache@v3"
+        with:
+          path: ".build/phpstan"
+          key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpstan-"
+
+      - name: "Run phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --memory-limit=-1"
