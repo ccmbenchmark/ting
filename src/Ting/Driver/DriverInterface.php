@@ -92,7 +92,7 @@ interface DriverInterface
      * @param $field
      * @return string
      */
-    public function escapeField($field);
+    public function escapeField($field): string;
 
     public function startTransaction();
     public function rollback();

@@ -22,43 +22,14 @@
  *
  **********************************************************************/
 
-namespace CCMBenchmark\Ting\Driver\Mysqli\Serializer;
+namespace CCMBenchmark\Ting\Metadata;
 
-use CCMBenchmark\Ting\Serializer\SerializerInterface;
-
-class Boolean implements SerializerInterface
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
+class Entity
 {
-    /**
-     * @param mixed $toSerialize
-     * @param array $options
-     * @return int|null
-     */
-    public function serialize($toSerialize, array $options = []): ?int
+    public ?string $repositoryClass;
+
+    public function __construct(?string $repositoryClass = null)
     {
-        if ($toSerialize === true) {
-            return 1;
-        }
-        if ($toSerialize === false) {
-            return 0;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $serialized
-     * @param array  $options
-     * @return bool|null
-     */
-    public function unserialize($serialized, array $options = []): ?bool
-    {
-        if ($serialized === 1 || $serialized === '1') {
-            return true;
-        }
-        if ($serialized === 0 || $serialized === '0') {
-            return false;
-        }
-
-        return null;
     }
 }

@@ -127,10 +127,10 @@ abstract class Repository
         $class = \get_class($this);
         $this->metadataRepository->findMetadataForRepository(
             $class,
-            function ($metadata) {
+            function ($metadata): void {
                 $this->metadata = $metadata;
             },
-            function () use ($class) {
+            function () use ($class): void {
                 throw new RepositoryException(
                     'Metadata not found for ' . $class
                     . ', you probably forgot to call MetadataRepository::batchLoadMetadata'
@@ -330,7 +330,7 @@ abstract class Repository
      *
      * @param T $entity
      */
-    public function save($entity)
+    public function save($entity): void
     {
         $this->unitOfWork->pushSave($entity)->process();
     }
@@ -340,7 +340,7 @@ abstract class Repository
      *
      * @param T $entity
      */
-    public function delete($entity)
+    public function delete($entity): void
     {
         $this->unitOfWork->pushDelete($entity)->process();
     }
@@ -350,7 +350,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->connection->master()->startTransaction();
     }
@@ -360,7 +360,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function rollback()
+    public function rollback(): void
     {
         $this->connection->master()->rollback();
     }
@@ -370,7 +370,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
         $this->connection->master()->commit();
     }

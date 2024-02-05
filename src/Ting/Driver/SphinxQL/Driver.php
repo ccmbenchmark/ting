@@ -54,7 +54,7 @@ class Driver extends Mysqli\Driver
      * @param $field
      * @return string
      */
-    public function escapeField($field)
+    public function escapeField($field): string
     {
         return $field;
     }

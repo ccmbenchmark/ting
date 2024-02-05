@@ -81,7 +81,7 @@ class MetadataRepository
         $table,
         \Closure $callbackFound,
         \Closure $callbackNotFound = null
-    ) {
+    ): void {
 
         $connectionKey = $connectionName . '#' . $table;
 
@@ -116,7 +116,7 @@ class MetadataRepository
         $repositoryName,
         \Closure $callbackFound,
         \Closure $callbackNotFound = null
-    ) {
+    ): void {
         if (isset($this->metadataList[$repositoryName]) === true) {
             $callbackFound($this->metadataList[$repositoryName]);
         } elseif ($callbackNotFound !== null) {
@@ -133,7 +133,7 @@ class MetadataRepository
      *
      * @internal
      */
-    public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
+    public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null): void
     {
         if (is_object($entity)) {
             $entity = \get_class($entity);
@@ -159,7 +159,7 @@ class MetadataRepository
      *
      * @internal
      */
-    public function addMetadata($repositoryClass, Metadata $metadata)
+    public function addMetadata($repositoryClass, Metadata $metadata): void
     {
         $this->metadataList[$repositoryClass] = $metadata;
         $metadataTable = $metadata->getTable();
@@ -267,7 +267,7 @@ class MetadataRepository
         return $repositoryOptions;
     }
 
-    public function getAllEntities()
+    public function getAllEntities(): array
     {
         return array_keys($this->entityToRepository);
     }

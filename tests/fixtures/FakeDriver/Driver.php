@@ -99,9 +99,9 @@ class Driver implements DriverInterface
      * @param $field
      * @return string
      */
-    public function escapeField($field)
+    public function escapeField($field): string
     {
-        return $field;
+        return (string)$field;
     }
 
     /**

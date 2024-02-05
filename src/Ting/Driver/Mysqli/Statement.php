@@ -88,7 +88,7 @@ class Statement implements StatementInterface
      * @return bool|CollectionInterface
      * @throws QueryException
      */
-    public function execute(array $params, CollectionInterface $collection = null)
+    public function execute(array $params, CollectionInterface $collection = null): mixed
     {
         $types = '';
         $values = array();
@@ -131,7 +131,7 @@ class Statement implements StatementInterface
      * @param DriverLoggerInterface $logger
      * @return void
      */
-    public function setLogger(DriverLoggerInterface $logger = null)
+    public function setLogger(DriverLoggerInterface $logger = null): void
     {
         if ($logger !== null) {
             $this->logger = $logger;
@@ -146,7 +146,7 @@ class Statement implements StatementInterface
      *
      * @internal
      */
-    public function setCollectionWithResult($resultData, CollectionInterface $collection)
+    public function setCollectionWithResult($resultData, CollectionInterface $collection): bool
     {
         $result = new Result();
         $result->setConnectionName($this->connectionName);

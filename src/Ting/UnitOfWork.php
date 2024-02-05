@@ -63,7 +63,7 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * @return string
      */
-    protected function generateUid()
+    protected function generateUid(): string
     {
         return uniqid(mt_rand(), true);
     }
@@ -84,7 +84,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param NotifyPropertyInterface $entity
      */
-    public function manage(NotifyPropertyInterface $entity)
+    public function manage(NotifyPropertyInterface $entity): void
     {
         if (isset($entity->tingUUID) === false) {
             $entity->tingUUID = $this->generateUid();
@@ -97,7 +97,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param NotifyPropertyInterface $entity
      * @return bool - true if the entity is managed
      */
-    public function isManaged(NotifyPropertyInterface $entity)
+    public function isManaged(NotifyPropertyInterface $entity): bool
     {
         return isset($entity->tingUUID);
     }
@@ -106,7 +106,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param NotifyPropertyInterface $entity
      * @return bool - true if the entity has not been persisted yet
      */
-    public function isNew(NotifyPropertyInterface $entity)
+    public function isNew(NotifyPropertyInterface $entity): bool
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -145,7 +145,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param NotifyPropertyInterface $entity
      * @return bool
      */
-    public function shouldBePersisted(NotifyPropertyInterface $entity)
+    public function shouldBePersisted(NotifyPropertyInterface $entity): bool
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -164,7 +164,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param mixed $oldValue
      * @param mixed $newValue
      */
-    public function propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue)
+    public function propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue): void
     {
         if ($oldValue === $newValue) {
             return;
@@ -190,7 +190,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param string $propertyName
      * @return bool
      */
-    public function isPropertyChanged(NotifyPropertyInterface $entity, $propertyName)
+    public function isPropertyChanged(NotifyPropertyInterface $entity, $propertyName): bool
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -208,7 +208,7 @@ class UnitOfWork implements PropertyListenerInterface
      *
      * @param NotifyPropertyInterface $entity
      */
-    public function detach(NotifyPropertyInterface $entity)
+    public function detach(NotifyPropertyInterface $entity): void
     {
         if (isset($entity->tingUUID) === false) {
             return;
@@ -222,7 +222,7 @@ class UnitOfWork implements PropertyListenerInterface
     /**
      * Stop watching changes on all entities
      */
-    public function detachAll()
+    public function detachAll(): void
     {
         $this->entitiesChanged = [];
         $this->entitiesShouldBePersisted = [];
@@ -253,7 +253,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @param NotifyPropertyInterface $entity
      * @return bool
      */
-    public function shouldBeRemoved(NotifyPropertyInterface $entity)
+    public function shouldBeRemoved(NotifyPropertyInterface $entity): bool
     {
         if (isset($entity->tingUUID) === false) {
             return false;
@@ -277,7 +277,7 @@ class UnitOfWork implements PropertyListenerInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function process()
+    public function process(): void
     {
         foreach ($this->entitiesShouldBePersisted as $uuid => $state) {
             switch ($state) {
@@ -329,7 +329,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties, $uuid) {
+            function (Metadata $metadata) use ($entity, $properties, $uuid): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForUpdate(
                     $connection,
@@ -344,7 +344,7 @@ class UnitOfWork implements PropertyListenerInterface
                 unset($this->entitiesChanged[$uuid]);
                 unset($this->entitiesShouldBePersisted[$uuid]);
             },
-            function () use ($entity) {
+            function () use ($entity): void {
                 throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
             }
         );
@@ -363,7 +363,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $uuid) {
+            function (Metadata $metadata) use ($entity, $uuid): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
                     $connection,
@@ -380,7 +380,7 @@ class UnitOfWork implements PropertyListenerInterface
 
                 $this->manage($entity);
             },
-            function () use ($entity) {
+            function () use ($entity): void {
                 throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
             }
         );
@@ -407,7 +407,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties) {
+            function (Metadata $metadata) use ($entity, $properties): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForDelete(
                     $connection,
@@ -419,7 +419,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $query->prepareExecute()->execute();
                 $this->detach($entity);
             },
-            function () use ($entity) {
+            function () use ($entity): void {
                 throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
             }
         );

@@ -33,7 +33,7 @@ class Ip implements SerializerInterface
      * @return int|null
      * @throws RuntimeException
      */
-    public function serialize($toSerialize, array $options = [])
+    public function serialize($toSerialize, array $options = []): ?int
     {
         if ($toSerialize === null) {
             return null;

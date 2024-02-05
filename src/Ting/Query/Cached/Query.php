@@ -62,7 +62,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @param Cache $cache
      * @return void
      */
-    public function setCache(Cache $cache)
+    public function setCache(Cache $cache): void
     {
         $this->cache = $cache;
     }
@@ -146,7 +146,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @return bool
      * @throws QueryException
      */
-    protected function checkCache($key, CollectionInterface $collection)
+    protected function checkCache($key, CollectionInterface $collection): bool
     {
         if ($key === null) {
             throw new QueryException('You must call setCacheKey to use query method');

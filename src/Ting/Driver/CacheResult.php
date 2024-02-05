@@ -93,7 +93,7 @@ class CacheResult implements ResultInterface
      * Iterator
      */
     #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->result !== null) {
             $this->result->rewind();
@@ -132,7 +132,7 @@ class CacheResult implements ResultInterface
      * Move to the next row in result set
      */
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         if ($this->result !== null) {
             $this->result->next();
@@ -156,7 +156,7 @@ class CacheResult implements ResultInterface
     /**
      * @return int
      */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return iterator_count($this->result);
     }

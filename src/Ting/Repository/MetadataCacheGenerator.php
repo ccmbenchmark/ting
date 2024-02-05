@@ -80,7 +80,7 @@ class MetadataCacheGenerator
         return $this->getFileName();
     }
 
-    protected function getFileName()
+    protected function getFileName(): string
     {
         return $this->cacheDir . '/' . $this->filename;
     }

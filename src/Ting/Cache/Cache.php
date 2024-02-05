@@ -42,7 +42,7 @@ class Cache implements CacheInterface
     /**
      * @param DoctrineCache $cache
      */
-    public function setCache(DoctrineCache $cache)
+    public function setCache(DoctrineCache $cache): void
     {
         $this->cache = $cache;
     }
@@ -52,7 +52,7 @@ class Cache implements CacheInterface
      *
      * @param CacheLoggerInterface $logger
      */
-    public function setLogger(CacheLoggerInterface $logger)
+    public function setLogger(CacheLoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

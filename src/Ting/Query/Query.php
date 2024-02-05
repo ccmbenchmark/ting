@@ -75,7 +75,7 @@ class Query implements QueryInterface
      * @param bool $value
      * @return void
      */
-    public function selectMaster($value)
+    public function selectMaster($value): void
     {
         $this->selectMaster = (bool) $value;
     }

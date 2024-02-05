@@ -736,7 +736,7 @@ class Metadata extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
+            return (string)$field;
         };
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -782,7 +782,7 @@ class Metadata extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
+            return (string)$field;
         };
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -831,7 +831,7 @@ class Metadata extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
+            return (string)$field;
         };
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -1015,7 +1015,7 @@ class Metadata extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
+            return (string)$field;
         };
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();

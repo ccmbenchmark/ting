@@ -74,7 +74,7 @@ class Hydrator implements HydratorInterface
      * @throws Exception
      * @return void
      */
-    public function identityMap($enable)
+    public function identityMap($enable): void
     {
         $this->identityMap = (bool) $enable;
     }
@@ -83,7 +83,7 @@ class Hydrator implements HydratorInterface
      * @param MetadataRepository $metadataRepository
      * @return void
      */
-    public function setMetadataRepository(MetadataRepository $metadataRepository)
+    public function setMetadataRepository(MetadataRepository $metadataRepository): void
     {
         $this->metadataRepository = $metadataRepository;
     }
@@ -92,7 +92,7 @@ class Hydrator implements HydratorInterface
      * @param UnitOfWork $unitOfWork
      * @return void
      */
-    public function setUnitOfWork(UnitOfWork $unitOfWork)
+    public function setUnitOfWork(UnitOfWork $unitOfWork): void
     {
         $this->unitOfWork = $unitOfWork;
     }
@@ -231,7 +231,7 @@ class Hydrator implements HydratorInterface
      *
      * @return bool
      */
-    private function hasVirtualObject(array $result)
+    private function hasVirtualObject(array $result): bool
     {
         return isset($result[0]);
     }
@@ -300,7 +300,7 @@ class Hydrator implements HydratorInterface
                         $column['orgTable'],
 
                         // Callback if table metadata found
-                        function (Metadata $metadata) use ($column, &$result) {
+                        function (Metadata $metadata) use ($column, &$result): void {
                             $this->metadataList[$column['table']] = $metadata;
                             $result[$column['table']]             = $metadata->createEntity();
                             $tmpEntities[$column['table']]        = [];
@@ -438,7 +438,7 @@ class Hydrator implements HydratorInterface
     /**
      * @param mixed $entity
      */
-    private function manageIfYouCan($entity)
+    private function manageIfYouCan($entity): void
     {
         if (isset($entity->tingUUID) === true && isset($this->alreadyManaged[$entity->tingUUID]) === true) {
             return;

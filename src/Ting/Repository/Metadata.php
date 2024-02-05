@@ -295,7 +295,7 @@ class Metadata
      *
      * @return list<Field>
      */
-    public function getFields()
+    public function getFields(): array
     {
         return array_values($this->fields);
     }
@@ -310,7 +310,7 @@ class Metadata
      *
      * @internal
      */
-    public function ifTableKnown($connectionName, $database, $table, \Closure $callback)
+    public function ifTableKnown($connectionName, $database, $table, \Closure $callback): bool
     {
         if ($this->table === $table
             && $this->connectionName === $connectionName && $this->databaseName === $database
@@ -329,7 +329,7 @@ class Metadata
      *
      * @internal
      */
-    public function hasColumn($column)
+    public function hasColumn($column): bool
     {
         return isset($this->fields[$column]);
     }
@@ -382,7 +382,7 @@ class Metadata
      *
      * @internal
      */
-    public function setEntityProperty($entity, $column, $value)
+    public function setEntityProperty($entity, $column, $value): void
     {
         $setter = $this->getSetter($this->fields[$column]['fieldName']);
 

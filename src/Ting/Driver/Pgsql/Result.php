@@ -94,7 +94,7 @@ class Result implements ResultInterface
      *
      * @internal
      */
-    public function setQuery($query)
+    public function setQuery($query): void
     {
         $tableToAlias = [];
         $aliasToSchema = [];
@@ -290,7 +290,7 @@ class Result implements ResultInterface
      * @param int $offset
      * @return bool
      */
-    protected function dataSeek($offset)
+    protected function dataSeek($offset): bool
     {
         return pg_result_seek($this->result, $offset);
     }
@@ -324,7 +324,7 @@ class Result implements ResultInterface
     /**
      * @return int
      */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return pg_num_rows($this->result);
     }
@@ -334,7 +334,7 @@ class Result implements ResultInterface
      * @param $field
      * @return string
      */
-    protected function unescapeField($field)
+    protected function unescapeField($field): string
     {
         return trim($field, '"');
     }
@@ -343,7 +343,7 @@ class Result implements ResultInterface
      * Iterator
      */
     #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->dataSeek(0);
         $this->iteratorOffset = -1;
@@ -363,7 +363,7 @@ class Result implements ResultInterface
     }
 
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, \PGSQL_NUM));
         $this->iteratorOffset++;

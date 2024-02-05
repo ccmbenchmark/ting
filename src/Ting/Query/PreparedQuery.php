@@ -110,7 +110,7 @@ class PreparedQuery extends Query
         return $this->statement->execute($this->params);
     }
 
-    public function getStatementName()
+    public function getStatementName(): string
     {
         return sha1($this->sql);
     }

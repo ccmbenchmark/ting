@@ -72,7 +72,7 @@ class Generator
      * @param DriverInterface $driver
      * @return string
      */
-    protected function getTarget(DriverInterface $driver)
+    protected function getTarget(DriverInterface $driver): string
     {
         $schema = '';
         if ($this->schemaName !== '') {
@@ -87,7 +87,7 @@ class Generator
      * @param DriverInterface $driver
      * @return string
      */
-    protected function getSelect(array $fields, DriverInterface $driver)
+    protected function getSelect(array $fields, DriverInterface $driver): string
     {
         return 'SELECT ' . implode(', ', $fields) . ' FROM ' .
             $this->getTarget($driver);
@@ -339,7 +339,7 @@ class Generator
      *
      * @return array
      */
-    protected function escapeFields(array $fields, DriverInterface $driver)
+    protected function escapeFields(array $fields, DriverInterface $driver): array
     {
         return array_map(
             function ($field) use ($driver) {
@@ -411,7 +411,7 @@ class Generator
      * @param DriverInterface   $driver
      * @return string
      */
-    protected function generateOrder(array $orderList, DriverInterface $driver)
+    protected function generateOrder(array $orderList, DriverInterface $driver): string
     {
         $fields = $this->escapeFields(array_keys($orderList), $driver);
 
@@ -440,7 +440,7 @@ class Generator
      * @param $limit
      * @return string
      */
-    protected function generateLimit($limit) {
+    protected function generateLimit($limit): string {
         return ' LIMIT ' . $limit;
     }
 }

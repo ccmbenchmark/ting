@@ -30,7 +30,8 @@
         "ext-pgsql": "*",
         "ext-mysqli": "*",
         "atoum/atoum": "^4.0",
-        "atoum/stubs": "^2.0"
+        "atoum/stubs": "^2.0",
+        "rector/rector": "^0.19.8"
     },
     "autoload": {
         "psr-4" : {

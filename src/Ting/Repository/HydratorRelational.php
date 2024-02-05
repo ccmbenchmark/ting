@@ -80,7 +80,7 @@ final class HydratorRelational extends Hydrator
      * @throws HydratorException
      * @return void
      */
-    public function identityMap($enable)
+    public function identityMap($enable): void
     {
         if ((bool) $enable === false) {
             throw new HydratorException('identityMap can\'t be disabled for this Hydrator');
@@ -97,7 +97,7 @@ final class HydratorRelational extends Hydrator
         return $this;
     }
 
-    public function addRelation(Relation $relation)
+    public function addRelation(Relation $relation): void
     {
         $this->config->push([
             'source' => $relation->getSource(),
@@ -122,7 +122,7 @@ final class HydratorRelational extends Hydrator
         return $this->hydrate();
     }
 
-    private function resolveDependencies()
+    private function resolveDependencies(): void
     {
         $order = [];
         foreach ($this->config as $item) {
@@ -158,7 +158,7 @@ final class HydratorRelational extends Hydrator
      *
      * @return string
      */
-    private function saveTargetReference($config, $result)
+    private function saveTargetReference($config, $result): string
     {
         $keyTarget = $config['target'] . '-' . $this->getIdentifiers($config['target'], $result[$config['target']]);
 
@@ -177,7 +177,7 @@ final class HydratorRelational extends Hydrator
      *
      * @return string
      */
-    private function saveSourceReference($config, $result)
+    private function saveSourceReference($config, $result): string
     {
         $keySource = $config['source'] . '-' . $this->getIdentifiers($config['source'], $result[$config['source']]);
 
@@ -193,7 +193,7 @@ final class HydratorRelational extends Hydrator
      * @param string $keyTarget
      * @param string $keySource
      */
-    private function saveResourceFor($config, $keyTarget, $keySource)
+    private function saveResourceFor($config, $keyTarget, $keySource): void
     {
         if (isset($this->resources[$keyTarget][$config['targetSetter']]) === false) {
             $this->resources[$keyTarget][$config['targetSetter']] = [];
@@ -208,7 +208,7 @@ final class HydratorRelational extends Hydrator
         }
     }
 
-    private function assignResourcesToReferences()
+    private function assignResourcesToReferences(): void
     {
         foreach ($this->referencesRelation as $referenceKey => $reference) {
             if (isset($this->resources[$referenceKey]) === false) {
@@ -289,7 +289,7 @@ final class HydratorRelational extends Hydrator
      *
      * @return string
      */
-    private function getIdentifiers($table, $entity)
+    private function getIdentifiers($table, $entity): string
     {
         $id = '';
         foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {

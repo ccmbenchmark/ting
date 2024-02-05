@@ -136,7 +136,7 @@ class Driver implements DriverInterface
      * @param string $database
      * @return string
      */
-    public static function getConnectionKey(array $connectionConfig, $database)
+    public static function getConnectionKey(array $connectionConfig, $database): string
     {
         return
             $connectionConfig['host'] . '|' .
@@ -194,7 +194,7 @@ class Driver implements DriverInterface
      * @return void
      * @throws DriverException
      */
-    public function setCharset($charset)
+    public function setCharset($charset): void
     {
         if ($this->currentCharset === $charset) {
             return;
@@ -209,7 +209,7 @@ class Driver implements DriverInterface
     /**
      * @param DriverLoggerInterface $logger
      */
-    public function setLogger(DriverLoggerInterface $logger = null)
+    public function setLogger(DriverLoggerInterface $logger = null): void
     {
         $this->logger = $logger;
         $this->objectHash = spl_object_hash($this);
@@ -239,7 +239,7 @@ class Driver implements DriverInterface
 
         $this->connection->select_db($database);
 
-        $this->ifIsError(function () {
+        $this->ifIsError(function (): void {
             throw new DatabaseException('Select database error: ' . $this->connection->error, $this->connection->errno);
         });
 
@@ -359,7 +359,7 @@ class Driver implements DriverInterface
         $paramsOrder = [];
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
-            function ($match) use (&$paramsOrder) {
+            function ($match) use (&$paramsOrder): string {
                 $paramsOrder[$match[1]] = null;
                 return '?';
             },
@@ -374,7 +374,7 @@ class Driver implements DriverInterface
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
-            $this->ifIsError(function () use ($sql) {
+            $this->ifIsError(function () use ($sql): void {
                 throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
             });
         }
@@ -409,7 +409,7 @@ class Driver implements DriverInterface
      * @param $field
      * @return string
      */
-    public function escapeField($field)
+    public function escapeField($field): string
     {
         return '`' . $field . '`';
     }
@@ -417,7 +417,7 @@ class Driver implements DriverInterface
     /**
      * @throws TransactionException
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         if ($this->transactionOpened === true) {
             throw new TransactionException('Cannot start another transaction');
@@ -429,7 +429,7 @@ class Driver implements DriverInterface
     /**
      * @throws TransactionException
      */
-    public function commit()
+    public function commit(): void
     {
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot commit no transaction');
@@ -441,7 +441,7 @@ class Driver implements DriverInterface
     /**
      * @throws TransactionException
      */
-    public function rollback()
+    public function rollback(): void
     {
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot rollback no transaction');
@@ -453,7 +453,7 @@ class Driver implements DriverInterface
     /**
      * @return int
      */
-    public function getInsertedId()
+    public function getInsertedId(): int
     {
         return (int) $this->connection->insert_id;
     }
@@ -474,7 +474,7 @@ class Driver implements DriverInterface
      * @param $statement
      * @throws StatementException
      */
-    public function closeStatement($statement)
+    public function closeStatement($statement): void
     {
         if (isset($this->preparedQueries[$statement]) === false) {
             throw new StatementException('Cannot close non prepared statement');
@@ -525,7 +525,7 @@ class Driver implements DriverInterface
     /**
      * @param $timezone
      */
-    public function setTimezone($timezone)
+    public function setTimezone($timezone): void
     {
         if ($this->currentTimezone === $timezone) {
             return;

@@ -62,7 +62,7 @@ class Collection implements CollectionInterface
         }
     }
 
-    public function set(ResultInterface $result)
+    public function set(ResultInterface $result): void
     {
         $this->result = $result;
         $this->hydrator->setResult($result);
@@ -72,7 +72,7 @@ class Collection implements CollectionInterface
      * @param bool $value
      * @return void
      */
-    public function setFromCache($value)
+    public function setFromCache($value): void
     {
         $this->fromCache = (bool) $value;
     }
@@ -111,7 +111,7 @@ class Collection implements CollectionInterface
      * @param array $result
      * @return void
      */
-    public function fromCache(array $result)
+    public function fromCache(array $result): void
     {
         $this->setFromCache(true);
         $cacheResult = new CacheResult();

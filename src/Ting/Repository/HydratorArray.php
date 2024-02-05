@@ -48,7 +48,7 @@ class HydratorArray implements HydratorInterface
      * @param MetadataRepository $metadataRepository
      * @return void
      */
-    public function setMetadataRepository(MetadataRepository $metadataRepository)
+    public function setMetadataRepository(MetadataRepository $metadataRepository): void
     {
         // Useless for this hydrator
     }
@@ -57,7 +57,7 @@ class HydratorArray implements HydratorInterface
      * @param UnitOfWork $unitOfWork
      * @return void
      */
-    public function setUnitOfWork(UnitOfWork $unitOfWork)
+    public function setUnitOfWork(UnitOfWork $unitOfWork): void
     {
         // Useless for this hydrator
     }

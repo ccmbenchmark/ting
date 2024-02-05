@@ -178,7 +178,7 @@ class Result implements ResultInterface
      *  the second column "cou_code" is missing, cause current() use an associative array
      */
     #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->result !== null) {
             $this->result->data_seek(0);
@@ -211,7 +211,7 @@ class Result implements ResultInterface
      * Move to the next row in result set
      */
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         if ($this->result !== null) {
             $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));

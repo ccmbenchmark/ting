@@ -33,7 +33,7 @@ class Boolean implements SerializerInterface
      * @param array $options
      * @return string|null
      */
-    public function serialize($toSerialize, array $options = [])
+    public function serialize($toSerialize, array $options = []): ?string
     {
         if ($toSerialize === true) {
             return 't';
@@ -50,7 +50,7 @@ class Boolean implements SerializerInterface
      * @param array  $options
      * @return bool|null
      */
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): ?bool
     {
         if ($serialized === 't') {
             return true;

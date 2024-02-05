@@ -67,12 +67,12 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * @param array $config
      */
-    public function setConfig($config)
+    public function setConfig($config): void
     {
         $this->connectionConfig = $config;
     }
 
-    public function setDatabaseOptions($options)
+    public function setDatabaseOptions($options): void
     {
         $this->databaseOptions = $options;
     }
@@ -205,7 +205,7 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * Close all opened connections
      */
-    public function closeAll()
+    public function closeAll(): void
     {
         foreach ($this->connections as $connectionKey => $connection) {
             $connection->close();
@@ -218,7 +218,7 @@ class ConnectionPool implements ConnectionPoolInterface
      * @return string
      * @throws ConnectionException
      */
-    public function getDriverClass($name)
+    public function getDriverClass($name): string
     {
         if (isset($this->connectionConfig[$name]) === false) {
             throw new ConnectionException('Connection not found: ' . $name);
