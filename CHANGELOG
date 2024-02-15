@@ -1,3 +1,6 @@
+3.8.1 (2024-02-15):
+    * Remove use of deprecated code to avoid deprecation logs from internal codebase
+
 3.8.0 (2024-01-29):
     * Depreciate method DriverInterface::getInsertId() in favour of getInsertedId()
     * Depreciate method CCMBenchmark\Ting\Driver\Pgsql\Driver::getInsertIdForSequence() in favour of getInsertedIdForSequence()
