@@ -60,6 +60,7 @@ interface QueryInterface
     public function setParams(array $params);
 
     /**
+     * @deprecated
      * @return int
      */
     public function getInsertId();

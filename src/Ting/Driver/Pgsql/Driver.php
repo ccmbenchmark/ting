@@ -206,7 +206,7 @@ class Driver implements DriverInterface
      */
     public function execute($originalSQL, array $params = array(), CollectionInterface $collection = null)
     {
-        list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
+        [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
 
         $values = array();
         foreach (array_keys($paramsOrder) as $key) {
@@ -270,7 +270,7 @@ class Driver implements DriverInterface
      */
     public function prepare($originalSQL)
     {
-        list ($sql, $paramsOrder) = $this->convertParameters($originalSQL);
+        [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
 
         $statementName = sha1($originalSQL);
 
@@ -423,6 +423,9 @@ class Driver implements DriverInterface
         return (int) $row[0];
     }
 
+    /**
+     * @deprecated
+     */
     public function getInsertId()
     {
         error_log(sprintf('%s::getInsertId() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedId() instead.', self::class, self::class), E_USER_DEPRECATED);
@@ -448,6 +451,9 @@ class Driver implements DriverInterface
         return (int) $row[0];
     }
 
+    /**
+     * @deprecated
+     */
     public function getInsertIdForSequence($sequenceName)
     {
         error_log(sprintf('%s::getInsertIdForSequence() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedIdForSequence() instead.', self::class, self::class), E_USER_DEPRECATED);

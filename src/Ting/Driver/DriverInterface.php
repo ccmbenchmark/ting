@@ -99,6 +99,7 @@ interface DriverInterface
     public function commit();
 
     /**
+     * @deprecated
      * @return int
      */
     public function getInsertId();

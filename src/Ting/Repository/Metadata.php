@@ -362,12 +362,12 @@ class Metadata
             return false;
         }
 
-        if (method_exists($driver, 'getInsertIdForSequence') === true
+        if (method_exists($driver, 'getInsertedIdForSequence') === true
             && isset($this->autoincrement['sequenceName']) === true
         ) {
-            $insertId = $driver->getInsertIdForSequence($this->autoincrement['sequenceName']);
+            $insertId = $driver->getInsertedIdForSequence($this->autoincrement['sequenceName']);
         } else {
-            $insertId = $driver->getInsertId();
+            $insertId = $driver->getInsertedId();
         }
 
         $property = 'set' . $this->autoincrement['fieldName'];

@@ -459,6 +459,9 @@ class Driver implements DriverInterface
         return (int) $this->connection->insert_id;
     }
 
+    /**
+     * @deprecated
+     */
     public function getInsertId()
     {
         error_log(sprintf('%s::getInsertId() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedId() instead.', self::class, self::class), E_USER_DEPRECATED);
