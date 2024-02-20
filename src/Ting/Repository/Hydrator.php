@@ -46,7 +46,7 @@ class Hydrator implements HydratorInterface
     protected $objectDatabase     = [];
     protected $objectSchema       = [];
     protected $unserializeAliases = [];
-    protected ?WeakMap $alreadyManaged = null;
+    protected WeakMap $alreadyManaged;
     protected $references         = [];
     protected $metadataList       = [];
 
@@ -445,9 +445,6 @@ class Hydrator implements HydratorInterface
      */
     private function manageIfYouCan($entity)
     {
-        if ($this->alreadyManaged === null) {
-            $this->alreadyManaged = new WeakMap();
-        }
         if (\is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true && $this->alreadyManaged->offsetExists($entity) === false) {
             $this->unitOfWork->manage($entity);
             $this->alreadyManaged[$entity] = true;
