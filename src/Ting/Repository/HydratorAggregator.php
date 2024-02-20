@@ -46,6 +46,11 @@ class HydratorAggregator extends Hydrator
      */
     protected $callableFinalizeAggregate;
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * @param callable $callableForId
      * @return $this
