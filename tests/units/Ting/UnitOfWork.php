@@ -313,7 +313,7 @@ class UnitOfWork extends atoum
         $this->calling($mockPreparedQuery)->execute = true;
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->getInsertId = 1;
+        $this->calling($mockDriver)->getInsertedId = 1;
         $this->calling($mockDriver)->closeStatement = true;
 
         $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
@@ -359,7 +359,7 @@ class UnitOfWork extends atoum
         $this->calling($mockPreparedQuery)->execute = true;
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->getInsertId = 1;
+        $this->calling($mockDriver)->getInsertedId = 1;
         $this->calling($mockDriver)->closeStatement = true;
 
 
@@ -407,7 +407,7 @@ class UnitOfWork extends atoum
         $this->calling($mockPreparedQuery)->execute = true;
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->getInsertId = 1;
+        $this->calling($mockDriver)->getInsertedId = 1;
 
 
         $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;

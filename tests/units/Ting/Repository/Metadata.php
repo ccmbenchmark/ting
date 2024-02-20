@@ -423,7 +423,7 @@ class Metadata extends atoum
         ));
 
         $driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($driver)->getInsertId = 321;
+        $this->calling($driver)->getInsertedId = 321;
 
         $bouh = $metadata->createEntity();
         $this->calling($bouh)->setId = function ($id) {
@@ -449,7 +449,7 @@ class Metadata extends atoum
         ));
 
         $driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($driver)->getInsertId = 321;
+        $this->calling($driver)->getInsertedId = 321;
 
         $bouh = $metadata->createEntity();
         $this->calling($bouh)->setId = function ($id) {

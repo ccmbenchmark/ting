@@ -133,6 +133,7 @@ class Query implements QueryInterface
     }
 
     /**
+     * @deprecated
      * @return int
      * @throws Exception
      */
