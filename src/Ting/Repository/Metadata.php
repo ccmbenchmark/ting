@@ -587,12 +587,12 @@ class Metadata
 
     public function getByCriteriaWithOrderAndLimit(
         array $criteria,
-        $orderBy,
-        $limit,
+        array $orderBy,
+        int $limit,
         Connection $connection,
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false
+        bool $forceMaster = false
     ) {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
