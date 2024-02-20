@@ -1,4 +1,4 @@
-3.9.0 (unreleased):
+3.9.0 (2024-02-20):
     * Add support of order and limit in method `getBy()` of repositories
 
 3.8.1 (2024-02-20):
