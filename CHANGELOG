@@ -1,3 +1,6 @@
+3.9.0 (unreleased):
+    * Add support of order and limit in method `getBy()` of repositories
+
 3.8.1 (2024-02-20):
     * Remove use of deprecated code to avoid deprecation logs from internal codebase
 
