@@ -46,7 +46,7 @@ class Hydrator implements HydratorInterface
     protected $objectDatabase     = [];
     protected $objectSchema       = [];
     protected $unserializeAliases = [];
-    protected ?WeakMap $alreadyManaged = null;
+    protected WeakMap $alreadyManaged;
     protected $references         = [];
 
     /**
