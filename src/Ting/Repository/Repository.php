@@ -289,7 +289,7 @@ abstract class Repository
      * @param bool  $forceMaster
      * @return CollectionInterface<T>
      */
-    public function getBy(array $criteria, $forceMaster = false, $order = [], $limit = 0)
+    public function getBy(array $criteria, $forceMaster = false, array $order = [], int $limit = 0)
     {
         $query = $this->metadata->getByCriteriaWithOrderAndLimit(
             $criteria,
