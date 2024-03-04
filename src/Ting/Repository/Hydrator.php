@@ -31,6 +31,7 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use Generator;
+use WeakMap;
 
 /**
  * @template T
@@ -45,7 +46,7 @@ class Hydrator implements HydratorInterface
     protected $objectDatabase     = [];
     protected $objectSchema       = [];
     protected $unserializeAliases = [];
-    protected $alreadyManaged     = [];
+    protected WeakMap $alreadyManaged;
     protected $references         = [];
     protected $metadataList       = [];
 
@@ -68,6 +69,11 @@ class Hydrator implements HydratorInterface
      * @var bool
      */
     protected $identityMap = false;
+
+    public function __construct()
+    {
+        $this->alreadyManaged = new WeakMap();
+    }
 
     /**
      * @param bool $enable
@@ -243,7 +249,7 @@ class Hydrator implements HydratorInterface
      */
     private function unserializeVirtualObjectProperty(\stdClass $virtualObject)
     {
-        foreach ($this->unserializeAliases as $aliasName => list($unserialize, $options)) {
+        foreach ($this->unserializeAliases as $aliasName => [$unserialize, $options]) {
             if (isset($virtualObject->$aliasName) === true) {
                 $virtualObject->$aliasName = $unserialize->unserialize($virtualObject->$aliasName, $options);
             }
@@ -326,7 +332,6 @@ class Hydrator implements HydratorInterface
                         if ($this->identityMap === false) {
                             // If identityMap is disabled, it clones the object and reset UUID
                             $result[$column['table']] = clone $this->references[$ref];
-                            unset($result[$column['table']]->tingUUID);
                         } else {
                             // If identityMap is enabled, it uses the same object
                             $result[$column['table']] = $this->references[$ref];
@@ -440,13 +445,9 @@ class Hydrator implements HydratorInterface
      */
     private function manageIfYouCan($entity)
     {
-        if (isset($entity->tingUUID) === true && isset($this->alreadyManaged[$entity->tingUUID]) === true) {
-            return;
-        }
-
-        if (\is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true) {
+        if (\is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true && $this->alreadyManaged->offsetExists($entity) === false) {
             $this->unitOfWork->manage($entity);
-            $this->alreadyManaged[$entity->tingUUID] = true;
+            $this->alreadyManaged[$entity] = true;
         }
     }
 }
