@@ -38,7 +38,7 @@ class CacheResult implements ResultInterface
     protected $database = null;
 
     /**
-     * @var \Iterator|null
+     * @var (\Iterator&\Traversable)|null
      */
     protected $result = null;
 

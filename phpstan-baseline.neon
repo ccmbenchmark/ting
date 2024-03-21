@@ -1576,16 +1576,6 @@ parameters:
 			path: src/Ting/Repository/CollectionInterface.php
 
 		-
-			message: "#^Access to an undefined property CCMBenchmark\\\\Ting\\\\Entity\\\\NotifyPropertyInterface\\:\\:\\$tingUUID\\.$#"
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: "#^Cannot access property \\$tingUUID on mixed\\.$#"
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
 			message: "#^Generator expects value type stdClass\\|T, array\\<int, stdClass\\|T\\> given\\.$#"
 			count: 1
 			path: src/Ting/Repository/Hydrator.php
@@ -1632,11 +1622,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$columns of method CCMBenchmark\\\\Ting\\\\Repository\\\\Hydrator\\<T\\>\\:\\:hydrateColumns\\(\\) expects array, T given\\.$#"
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: "#^Property CCMBenchmark\\\\Ting\\\\Repository\\\\Hydrator\\:\\:\\$alreadyManaged has no type specified\\.$#"
 			count: 1
 			path: src/Ting/Repository/Hydrator.php
 
@@ -2431,67 +2416,7 @@ parameters:
 			path: src/Ting/Services.php
 
 		-
-			message: "#^Access to an undefined property CCMBenchmark\\\\Ting\\\\Entity\\\\NotifyPropertyInterface\\:\\:\\$tingUUID\\.$#"
-			count: 4
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:addStatementToClose\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
 			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:addStatementToClose\\(\\) has parameter \\$statementName with no type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:detach\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:detachAll\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:manage\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:process\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:processDelete\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:processDelete\\(\\) has parameter \\$uuid with no type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:processManaged\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:processManaged\\(\\) has parameter \\$uuid with no type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:processNew\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:processNew\\(\\) has parameter \\$uuid with no type specified\\.$#"
 			count: 1
 			path: src/Ting/UnitOfWork.php
 
@@ -2502,21 +2427,6 @@ parameters:
 
 		-
 			message: "#^Property CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:\\$connectionPool has no type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Property CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:\\$entities has no type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Property CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:\\$entitiesChanged has no type specified\\.$#"
-			count: 1
-			path: src/Ting/UnitOfWork.php
-
-		-
-			message: "#^Property CCMBenchmark\\\\Ting\\\\UnitOfWork\\:\\:\\$entitiesShouldBePersisted has no type specified\\.$#"
 			count: 1
 			path: src/Ting/UnitOfWork.php
 
