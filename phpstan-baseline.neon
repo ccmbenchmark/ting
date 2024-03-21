@@ -706,11 +706,6 @@ parameters:
 			path: src/Ting/Driver/Pgsql/Driver.php
 
 		-
-			message: "#^Parameter \\#1 \\$result of method CCMBenchmark\\\\Ting\\\\Driver\\\\Pgsql\\\\Result\\:\\:setResult\\(\\) expects object, PgSql\\\\Result\\|resource given\\.$#"
-			count: 1
-			path: src/Ting/Driver/Pgsql/Driver.php
-
-		-
 			message: "#^Parameter \\#1 \\$statementName of class CCMBenchmark\\\\Ting\\\\Driver\\\\Pgsql\\\\Statement constructor expects object, string given\\.$#"
 			count: 1
 			path: src/Ting/Driver/Pgsql/Driver.php
@@ -1596,11 +1591,6 @@ parameters:
 			path: src/Ting/Repository/Hydrator.php
 
 		-
-			message: "#^Method CCMBenchmark\\\\Ting\\\\Repository\\\\Hydrator\\:\\:hydrateColumns\\(\\) should return array\\<int, stdClass\\|T\\> but returns array\\<int\\|string, mixed\\>\\.$#"
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
 			message: "#^Method CCMBenchmark\\\\Ting\\\\Repository\\\\Hydrator\\:\\:manageIfYouCan\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: src/Ting/Repository/Hydrator.php
@@ -1717,11 +1707,6 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'value' on mixed\\.$#"
-			count: 1
-			path: src/Ting/Repository/HydratorArray.php
-
-		-
-			message: "#^Generator expects value type T, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: src/Ting/Repository/HydratorArray.php
 

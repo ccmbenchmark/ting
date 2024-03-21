@@ -41,9 +41,11 @@ class UnitOfWork implements PropertyListenerInterface
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
     protected $queryFactory              = null;
+    /** @var WeakMap<NotifyPropertyInterface, NotifyPropertyInterface|bool> */
     protected WeakMap $entities;
-    /** @var WeakMap<PropertyListenerInterface, array<string, array<mixed, mixed>>>  */
+    /** @var WeakMap<NotifyPropertyInterface, array<string, array<mixed, mixed>>>  */
     protected WeakMap $entitiesChanged;
+    /** @var WeakMap<NotifyPropertyInterface, int>  */
     protected WeakMap $entitiesShouldBePersisted;
     protected $statements = [];
 
