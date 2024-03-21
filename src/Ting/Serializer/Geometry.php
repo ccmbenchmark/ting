@@ -51,7 +51,7 @@ final class Geometry implements SerializerInterface
     /**
      * @inheritdoc
      *
-     * @param ?BrickGeometry $toSerialize
+     * @param mixed $toSerialize
      * @param array{} $options
      */
     public function serialize($toSerialize, array $options = []): ?string

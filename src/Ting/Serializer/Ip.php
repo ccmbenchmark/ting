@@ -28,7 +28,7 @@ namespace CCMBenchmark\Ting\Serializer;
 class Ip implements SerializerInterface
 {
     /**
-     * @param string $toSerialize
+     * @param mixed $toSerialize
      * @param array $options
      * @throws RuntimeException
      */
@@ -48,7 +48,7 @@ class Ip implements SerializerInterface
     }
 
     /**
-     * @param int $serialized
+     * @param mixed $serialized
      * @param array  $options
      * @throws RuntimeException
      */

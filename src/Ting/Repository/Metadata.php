@@ -39,7 +39,7 @@ use CCMBenchmark\Ting\Serializer;
 use CCMBenchmark\Ting\Util\PropertyAccessor;
 
 /**
- * @template T of object
+ * @template T
  * @phpstan-type Field array{
  *     fieldName: string,
  *     columnName: string,
@@ -47,7 +47,9 @@ use CCMBenchmark\Ting\Util\PropertyAccessor;
  *     primary?: bool,
  *     autoincrement?: bool,
  *     serializer?: class-string<Serializer\SerializerInterface>,
- *     serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>}
+ *     serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>},
+ *     setter?: string,
+ *     getter?: string
  * }
  */
 class Metadata
@@ -157,7 +159,7 @@ class Metadata
     }
 
     /**
-     * @return class-string<Repository<T>>
+     * @return class-string<Repository<T>>|null
      *
      * @internal
      */
@@ -243,7 +245,6 @@ class Metadata
      *      columnName : string : name of the mysql column
      *      primary : boolean : is this field a primary - optional
      *      autoincrement : boolean : is this field an autoincrement - optional
-     * @phpstan-param Field $params
      * @throws ConfigException
      * @return $this
      */
@@ -351,8 +352,6 @@ class Metadata
      * @param object          $entity
      * @param DriverInterface $driver
      * @return $this|bool
-     *
-     * @throws
      *
      * @internal
      */

@@ -63,7 +63,7 @@ class Json implements SerializerInterface
     }
 
     /**
-     * @param string $serialized
+     * @param string|null $serialized
      * @param array $options
      * @return null|\stdClass|array<mixed>
      * @throws RuntimeException

@@ -36,12 +36,12 @@ class DateTime implements SerializerInterface
     private static $defaultOptions = ['format' => 'Y-m-d H:i:s', 'unSerializeUseFormat' => true];
 
     /**
-     * @param \DateTime $toSerialize
+     * @param mixed $toSerialize
      * @param array $options
      * @return string|null
      * @throws RuntimeException
      */
-    public function serialize($toSerialize, array $options = []): ?string
+    public function serialize(mixed $toSerialize, array $options = []): ?string
     {
         if ($toSerialize === null) {
             return null;
@@ -58,12 +58,12 @@ class DateTime implements SerializerInterface
     }
 
     /**
-     * @param string $serialized
+     * @param mixed $serialized
      * @param array  $options
      * @return \Datetime|null
      * @throws RuntimeException
      */
-    public function unserialize($serialized, array $options = []): ?\DateTime
+    public function unserialize(mixed $serialized, array $options = []): ?\DateTime
     {
         if ($serialized === null) {
             return null;
