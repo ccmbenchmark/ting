@@ -158,6 +158,6 @@ class CacheResult implements ResultInterface
      */
     public function getNumRows()
     {
-        return iterator_count($this->result);
+        return $this->result !== null ? iterator_count($this->result) : 0;
     }
 }

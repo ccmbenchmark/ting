@@ -27,6 +27,7 @@ namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 
 use atoum;
 use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
+use PgSql\Connection;
 
 require_once __DIR__ . '/../../../../fixtures/mock_native_pgsql.php';
 
@@ -103,6 +104,11 @@ class Driver extends atoum
     public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
     {
         $mockDriver = new \mock\Fake\Pgsql();
+        if (PHP_VERSION_ID >= 80100) {
+            PGMock::override('pg_connect', new Connection());
+        } else {
+            PGMock::override('pg_connect', true);
+        }
         $called = 0;
         PGMock::override('pg_set_client_encoding', function () use (&$called): void {
             $called++;
@@ -425,6 +431,7 @@ class Driver extends atoum
     {
         PGMock::override('pg_query', false);
         PGMock::override('pg_last_error', 'A PGSQL error');
+        PGMock::override('pg_connect', new \PgSql\Connection());
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
@@ -559,7 +566,11 @@ class Driver extends atoum
 
     public function testExecuteShouldRaiseExceptionWhenErrorHappensWithQuery()
     {
-        PGMock::override('pg_connect', true);
+        if (PHP_VERSION_ID >= 80100) {
+            PGMock::override('pg_connect', new Connection());
+        } else {
+            PGMock::override('pg_connect', true);
+        }
         PGMock::override('pg_query_params', false);
         PGMock::override('pg_fetch_array', 'data');
         PGMock::override('pg_result_seek', true);
@@ -665,7 +676,11 @@ class Driver extends atoum
 
     public function testPingShouldCallPingWithCharset()
     {
-        PGMock::override('pg_connect', true);
+        if (PHP_VERSION_ID >= 80100) {
+            PGMock::override('pg_connect', new Connection());
+        } else {
+            PGMock::override('pg_connect', true);
+        }
         PGMock::override('pg_ping', true);
         PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset, &$called): void {
             $called++;

@@ -235,6 +235,7 @@ final class HydratorRelational extends Hydrator
         foreach ($this->result as $columns) {
             $result = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $columns);
 
+            $keyTarget = null;
             foreach ($this->config as $config) {
                 if (isset($result[$config['target']]) === false) {
                     continue;
