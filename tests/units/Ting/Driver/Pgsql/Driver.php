@@ -89,12 +89,14 @@ class Driver extends atoum
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Pgsql();
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset): void {
             $outerCharset = $charset;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->setDatabase('database.test'))
             ->then($driver->setCharset('utf8'))
             ->variable($outerCharset)
                 ->isIdenticalTo('utf8');
@@ -104,12 +106,14 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Pgsql();
         $called = 0;
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_set_client_encoding', function () use (&$called): void {
             $called++;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->setDatabase('database.test'))
             ->then($driver->setCharset('utf8'))
             ->then($driver->setCharset('utf8'))
             ->variable($called)
@@ -252,6 +256,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
             ))
@@ -270,6 +275,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = ":name" OR firstname = ":name" OR lastname = ":lastname"'
             ))
@@ -290,12 +296,14 @@ class Driver extends atoum
 
     public function testStartTransactionShouldExecuteQueryBegin()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->startTransaction())
             ->string($outerQuery)
                 ->isIdenticalTo('BEGIN');
@@ -303,12 +311,14 @@ class Driver extends atoum
 
     public function testStartTransactionShouldRaiseException()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->startTransaction())
             ->exception(function () use ($driver): void {
                 $driver->startTransaction();
@@ -319,12 +329,14 @@ class Driver extends atoum
 
     public function testCommitShouldExecuteQueryCommit()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->startTransaction())
             ->then($driver->commit())
             ->string($outerQuery)
@@ -348,12 +360,14 @@ class Driver extends atoum
 
     public function testRollbackShouldExecuteQueryRollback()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->startTransaction())
             ->then($driver->rollback())
             ->string($outerQuery)
@@ -389,6 +403,7 @@ class Driver extends atoum
 
     public function testgetInsertedIdShouldReturnInsertedId()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
@@ -397,6 +412,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->integer($driver->getInsertedId())
                 ->isIdenticalTo(8)
             ->string($outerQuery)
@@ -406,6 +422,7 @@ class Driver extends atoum
 
     public function testgetInsertedIdForSequenceShouldReturnInsertedIdForSequence()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
@@ -414,6 +431,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->integer($driver->getInsertedIdForSequence('sequenceName'))
                 ->isIdenticalTo(4)
             ->string($outerQuery)
@@ -423,11 +441,13 @@ class Driver extends atoum
 
     public function testgetInsertedIdForSequenceWithWrongSequenceShouldThrowAnException()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', false);
         PGMock::override('pg_last_error', 'A PGSQL error');
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->exception(function () use ($driver): void {
                 $driver->getInsertedIdForSequence('sequenceName');
             })
@@ -441,6 +461,7 @@ class Driver extends atoum
         $count = 0;
         $outerSql = '';
         $outerValues = '';
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query_params', function (
             $connection,
             $sql,
@@ -459,6 +480,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+                ->then($driver->setDatabase('myDatabase'))
                 ->then($driver->execute('SELECT 1 FROM "myTable" WHERE id = :id', ['id' => 12]))
                     ->array($outerValues)
                         ->isIdenticalTo([0 => 12])
@@ -482,6 +504,7 @@ class Driver extends atoum
     public function testExecuteWithoutParametersShouldCallPGQuery()
     {
         $pgQueryCalled = false;
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query', function () use (&$pgQueryCalled): void {
             $pgQueryCalled = true;
         });
@@ -491,6 +514,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->execute('SELECT 1 FROM "myTable"'))
             ->boolean($pgQueryCalled)
                 ->isTrue();
@@ -512,6 +536,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
             ->mock($mockCollection)
                 ->call('set')->once();
@@ -527,6 +552,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->array($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]))
             ->isIdenticalTo(['Bouh' => 'Hop']);
     }
@@ -545,6 +571,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($driver->execute(
                 "SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
                 . ' FROM Bouh WHERE id = :id AND login = :login",
@@ -571,6 +598,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+                ->then($driver->setDatabase('myDatabase'))
                 ->exception(function () use ($driver): void {
                     $driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]);
                 })
@@ -582,6 +610,7 @@ class Driver extends atoum
 
     public function testExecuteShouldLogQuery()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_query_params', true);
         PGMock::override('pg_fetch_array', 'data');
         PGMock::override('pg_result_seek', true);
@@ -593,6 +622,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->and($driver->setLogger($mockLogger))
             ->then($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]))
                 ->mock($mockLogger)
@@ -605,6 +635,7 @@ class Driver extends atoum
 
     public function testPrepareShouldLogQuery()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_prepare', true);
         PGMock::override('pg_query', true);
         PGMock::override('pg_fetch_array', 'data');
@@ -615,6 +646,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->and($driver->setLogger($mockLogger))
             ->then($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
                 ->mock($mockLogger)
@@ -626,11 +658,13 @@ class Driver extends atoum
 
     public function testPrepareCalledTwiceShouldReturnTheSameObject()
     {
+        PGMock::override('pg_connect', true);
         PGMock::override('pg_prepare', true);
         PGMock::override('pg_query', true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setDatabase('myDatabase'))
             ->then($statement = $driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
             ->object($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
             ->isIdenticalTo($statement);

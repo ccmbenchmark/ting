@@ -2,8 +2,6 @@ name: Tests
 
 on:
   push:
-    branches:
-      - "master"
   pull_request:
 
 jobs:
@@ -50,7 +48,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.0"
         dependencies:
           - "locked"
     steps:
@@ -58,12 +56,12 @@ jobs:
         uses: "actions/checkout@v3"
 
       - name: "Install PHP with extensions"
-        uses: "shivammathur/setup-php@2.24.0"
+        uses: "shivammathur/setup-php@2.18.1"
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
           extensions: bcmath, bz2, gettext, mbstring, memcached, mcrypt, mysqli, opcache, pdo_mysql, zip, pdo, intl, json, pdo_pgsql, pgsql, session, simplexml, xml
-          tools: composer:v1, pecl
+          tools: composer:v2, pecl
 
       - name: "Set up problem matchers for PHP"
         run: "echo \"::add-matcher::${{ runner.tool_cache }}/php.json\""

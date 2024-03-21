@@ -58,7 +58,7 @@ class Driver implements DriverInterface
     protected $currentTimezone = null;
 
     /**
-     * @var resource|null|\PgSql\Connection pgsql
+     * @var resource|null
      */
     protected $connection = null;
 
@@ -78,7 +78,7 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
-     * @var resource|\PgSql\Result
+     * @var resource|null
      */
     protected $result = null;
 
@@ -147,7 +147,7 @@ class Driver implements DriverInterface
             return;
         }
 
-        if (pg_set_client_encoding($this->connection, $charset) === -1) {
+        if ($this->connection === null || pg_set_client_encoding($this->connection, $charset) === -1) {
             throw new DriverException('Can\'t set charset ' . $charset . ' (' . pg_last_error($this->connection) . ')');
         }
 
@@ -208,6 +208,10 @@ class Driver implements DriverInterface
     {
         [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
 
+        if ($this->connection === null) {
+            throw new QueryException('No active connection.');
+        }
+
         $values = [];
         foreach (array_keys($paramsOrder) as $key) {
             $values[] = &$params[$key];
@@ -218,18 +222,23 @@ class Driver implements DriverInterface
         }
 
         if ($values === []) {
-            $this->result = pg_query($this->connection, $sql);
+            $result = pg_query($this->connection, $sql);
+            if ($result === false) {
+                throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
+            }
+            $this->result = $result;
         } else {
-            $this->result = pg_query_params($this->connection, $sql, $values);
+            $result = pg_query_params($this->connection, $sql, $values);
+            if ($result === false) {
+                throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
+            }
+            $this->result = $result;
         }
 
         if ($this->logger !== null) {
             $this->logger->stopQuery();
         }
 
-        if ($this->result === false) {
-            throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
-        }
 
         if ($collection === null) {
             $resultStatus = pg_result_status($this->result);
@@ -283,6 +292,9 @@ class Driver implements DriverInterface
         if ($this->logger !== null) {
             $this->logger->startPrepare($originalSQL, $this->objectHash, $this->database);
             $statement->setLogger($this->logger);
+        }
+        if ($this->connection === null) {
+            throw new QueryException('No active connection.');
         }
         $result = pg_prepare($this->connection, $statementName, $sql);
         if ($this->logger !== null) {
@@ -382,18 +394,24 @@ class Driver implements DriverInterface
         if ($this->transactionOpened === true) {
             throw new TransactionException('Cannot start another transaction');
         }
+        if ($this->connection === null) {
+            throw new DriverException('No active connection.');
+        }
         pg_query($this->connection, 'BEGIN');
         $this->transactionOpened = true;
     }
 
     /**
      * Commit the transaction against the current connection
-     * @throws TransactionException()
+     * @throws TransactionException
      */
     public function commit()
     {
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot commit no transaction');
+        }
+        if ($this->connection === null) {
+            throw new DriverException('No active connection.');
         }
         pg_query($this->connection, 'COMMIT');
         $this->transactionOpened = false;
@@ -408,6 +426,9 @@ class Driver implements DriverInterface
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot rollback no transaction');
         }
+        if ($this->connection === null) {
+            throw new DriverException('No active connection.');
+        }
         pg_query($this->connection, 'ROLLBACK');
         $this->transactionOpened = false;
     }
@@ -418,8 +439,17 @@ class Driver implements DriverInterface
      */
     public function getInsertedId()
     {
+        if ($this->connection === null) {
+            throw new DriverException('No active connection.');
+        }
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
+        if ($resultResource === false) {
+            throw new DriverException('Could not fetch last inserted id.');
+        }
         $row = pg_fetch_row($resultResource);
+        if ($row === false) {
+            throw new DriverException('Could not fetch last inserted id.');
+        }
         return (int) $row[0];
     }
 
@@ -430,6 +460,9 @@ class Driver implements DriverInterface
      */
     public function getInsertedIdForSequence($sequenceName)
     {
+        if ($this->connection === null) {
+            throw new QueryException('No active connection.');
+        }
         $sql = "SELECT currval('$sequenceName')";
         $resultResource = @pg_query($this->connection, $sql);
 
@@ -438,6 +471,9 @@ class Driver implements DriverInterface
         }
 
         $row = pg_fetch_row($resultResource);
+        if ($row === false) {
+            throw new QueryException('Could not fetch last inserted id. Details: '. pg_last_error($this->connection));
+        }
         return (int) $row[0];
     }
 
@@ -501,6 +537,9 @@ class Driver implements DriverInterface
         if ($timezone === null) {
             $value = 'DEFAULT';
             $query = str_replace('"', '', $query);
+        }
+        if ($this->connection === null) {
+            throw new QueryException('No active connection.');
         }
         pg_query($this->connection, sprintf($query, $value));
         $this->currentTimezone = $timezone;

@@ -47,6 +47,7 @@ class Hydrator implements HydratorInterface
     protected $objectDatabase     = [];
     protected $objectSchema       = [];
     protected $unserializeAliases = [];
+    /** @var WeakMap<NotifyPropertyInterface, bool> */
     protected WeakMap $alreadyManaged;
     protected $references         = [];
 
@@ -82,7 +83,6 @@ class Hydrator implements HydratorInterface
 
     /**
      * @param bool $enable
-     * @throws Exception
      * @return void
      */
     public function identityMap($enable)
@@ -288,7 +288,6 @@ class Hydrator implements HydratorInterface
             // Bypass if an entity has already been hydrated with this column
             if (
                 \array_key_exists($column['table'], $fromReferences) === true
-                && $fromReferences[$column['table']] === true
                 && \array_key_exists($column['table'], $this->metadataList) === true
                 && $this->metadataList[$column['table']]->hasColumn($column['orgName'])
             ) {

@@ -61,7 +61,6 @@ class Query implements QueryInterface
     {
         $this->connection        = $connection;
         $this->collectionFactory = $collectionFactory;
-        return $this;
     }
 
     /**

@@ -104,7 +104,6 @@ abstract class Repository
      * @param CollectionFactory $collectionFactory
      * @param Cache $cache
      * @param UnitOfWork $unitOfWork
-     * @param SerializerFactoryInterface $serializerFactory
      *
      * @internal
      */
@@ -114,8 +113,7 @@ abstract class Repository
         QueryFactory $queryFactory,
         CollectionFactory $collectionFactory,
         Cache $cache,
-        UnitOfWork $unitOfWork,
-        SerializerFactoryInterface $serializerFactory
+        UnitOfWork $unitOfWork
     ) {
         $this->connectionPool     = $connectionPool;
         $this->metadataRepository = $metadataRepository;
@@ -372,26 +370,18 @@ abstract class Repository
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      * @return bool
      */
-    public function ping()
+    public function ping(): bool
     {
-        if (method_exists($this->connection->slave(), 'ping') === true) {
-            return $this->connection->slave()->ping();
-        }
-
-        return false;
+        return $this->connection->slave()->ping();
     }
 
     /**
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      * @return bool
      */
-    public function pingMaster()
+    public function pingMaster(): bool
     {
-        if (method_exists($this->connection->master(), 'ping') === true) {
-            return $this->connection->master()->ping();
-        }
-
-        return false;
+        return $this->connection->master()->ping();
     }
 
     /**

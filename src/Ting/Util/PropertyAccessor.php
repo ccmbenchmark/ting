@@ -39,7 +39,7 @@ class PropertyAccessor
             // We use it only if there is a hook we want to bypass
             // In any other case we let the property accessor
             $reflectionProperty = $this->getReflectionProperty($object, $propertyPath);
-            $reflectionProperty->setRawValue($object, $value);
+            $reflectionProperty->setRawValue($object, $value); // @phpstan-ignore method.notFound
             return;
         }
         $this->propertyAccessor->setValue($object, $propertyPath, $value);
@@ -94,7 +94,7 @@ class PropertyAccessor
         $data = [
             'public' => $reflection->isPublic(),
             'supportsHook' => \PHP_VERSION_ID >= 80400,
-            'hasSetHook' => \PHP_VERSION_ID >= 80400 && $reflection->getHook(\PropertyHookType::Set) !== null,
+            'hasSetHook' => \PHP_VERSION_ID >= 80400 && $reflection->getHook(\PropertyHookType::Set) !== null, // @phpstan-ignore method.notFound, class.notFound
         ];
 
         if (isset($item)) {

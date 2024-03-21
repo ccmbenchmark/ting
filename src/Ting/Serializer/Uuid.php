@@ -4,7 +4,7 @@ namespace CCMBenchmark\Ting\Serializer;
 
 class Uuid implements SerializerInterface
 {
-    public function serialize($toSerialize, array $options = []): ?string
+    public function serialize(mixed $toSerialize, array $options = []): ?string
     {
         if ($toSerialize === null) {
             return null;
@@ -16,6 +16,11 @@ class Uuid implements SerializerInterface
         return $toSerialize->toRfc4122();
     }
 
+    /**
+     * @param string|null $serialized
+     * @param array $options
+     * @return mixed
+     */
     public function unserialize($serialized, array $options = []): mixed
     {
         if ($serialized === null) {
