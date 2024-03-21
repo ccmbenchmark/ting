@@ -89,6 +89,8 @@ class Driver extends atoum
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Pgsql();
+        PGMock::override('pg_connect', true);
+        PGMock::override('pg_close', true);
         PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset): void {
             $outerCharset = $charset;
         });
@@ -103,6 +105,7 @@ class Driver extends atoum
     public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
     {
         $mockDriver = new \mock\Fake\Pgsql();
+        PGMock::override('pg_connect', true);
         $called = 0;
         PGMock::override('pg_set_client_encoding', function () use (&$called): void {
             $called++;
