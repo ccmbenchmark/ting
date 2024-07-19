@@ -506,7 +506,16 @@ class Driver implements DriverInterface
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
         }
 
-        if ($this->connection->ping() === true) {
+        $pingResult = false;
+
+        try {
+            $pingResult = $this->connection->ping();
+        } catch(\Exception $errorException) {
+            // mysqli::ping() throws an exception if the connection has gone down ("MySQL server has gone away").
+            // We catch it as a ping failure (returns false) in order to try to reconnect.
+        }
+
+        if ($pingResult === true) {
             return true;
         }
 

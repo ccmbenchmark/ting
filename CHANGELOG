@@ -1,3 +1,6 @@
+3.9.1 (2024-XX-XX):
+    * Fix: Mysqli/Driver::ping() try to reconnect when mysqli::ping() throws an exception
+
 3.9.0 (2024-02-20):
     * Add support of order and limit in method `getBy()` of repositories
 
