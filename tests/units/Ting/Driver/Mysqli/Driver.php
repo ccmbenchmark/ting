@@ -945,6 +945,35 @@ class Driver extends atoum
         ;
     }
 
+    public function testPingShouldReconnectIfConnectionHasGone()
+    {
+        $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->ping = function() {
+            throw new \Exception("MySQL server has gone away");
+        };
+        $mockDriver->error = '';
+
+        $hostName = 'hostname.test';
+        $userName = 'user.test';
+        $password = 'password.test';
+        $database = uniqid('database');
+        $port = 1234;
+
+        $this
+            ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->and($driver->connect($hostName, $userName, $password, $port))
+            ->and($driver->setDatabase($database))
+            ->boolean($driver->ping())
+                ->isTrue()
+            ->mock($mockDriver)
+                ->call('ping')
+                ->once()
+            ->call('real_connect')
+                ->withArguments($hostName, $userName, $password, null, $port)
+                // 1 call for connect() = try to reconnect
+                ->once();
+    }
+
     public function testPingException()
     {
         $mockDriver = new \mock\Fake\Mysqli();
