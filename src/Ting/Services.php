@@ -35,6 +35,9 @@ class Services implements ContainerInterface
 
     public function __construct()
     {
+        if (!class_exists('\Pimple\Container')) {
+            throw new \RuntimeException('Pimple not found. Please install it with composer require pimple/pimple.');
+        }
         $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
