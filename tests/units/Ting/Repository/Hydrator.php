@@ -712,9 +712,7 @@ class Hydrator extends atoum
             ->and($hydrator->mapObjectTo('cit', 'bouh', 'setCity'))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
-            ->object($city = $data['bouh']->getOriginalCity())
-            ->string($city->tingUUID)
-                ->isNotNull();
+            ->object($city = $data['bouh']->getOriginalCity());
     }
 
     public function testHydrateWithUnserializeAlias()

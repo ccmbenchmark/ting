@@ -1,7 +1,9 @@
 3.10.0 (unreleased):
+    * Drop PHP 7
     * Remove hard dependency to pimple, add it in suggest
     * Collection is now JsonSerializable
     * Add DateTimeImmutable serialization
+    * Refacto: use, when possible, Weakmap for UnitOfWork internal storage instead of uuid indexed array
     * Fix: Query Generator now handle null values
 
 3.9.1 (2024-07-19):

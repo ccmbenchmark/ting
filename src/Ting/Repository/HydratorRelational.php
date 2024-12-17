@@ -72,6 +72,7 @@ final class HydratorRelational extends Hydrator
 
     public function __construct()
     {
+        parent::__construct();
         $this->config = new \SplDoublyLinkedList();
     }
 
