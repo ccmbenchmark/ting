@@ -361,7 +361,9 @@ class Generator
         $i = 0;
 
         foreach ($values as $field => $value) {
-            if (is_array($value) === true) {
+            if ($value === null) {
+                $conditions[] = $fields[$i] . ' IS NULL';
+            } elseif (is_array($value) === true) {
                 // handle array values...
                 $j = 0;
                 $condition = $fields[$i] . ' IN (';
