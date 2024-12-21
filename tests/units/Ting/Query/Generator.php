@@ -119,6 +119,29 @@ class Generator extends atoum
         ;
     }
 
+    public function testGetByCriteriaWithNullValueShouldReturnAQuery()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    '',
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->object($generator->getByCriteria(['name' => null], $services->get('CollectionFactory')))
+                ->isInstanceOf('\CCMBenchmark\Ting\Query\Query')
+            ->mock($this->mockQueryFactory)
+                ->call('get')
+                    ->withAtLeastArguments(['SELECT `id`, `population` FROM `table` WHERE name IS NULL'])
+                        ->once()
+        ;
+    }
+
     public function testGetByCriteriaShouldReturnAQuery()
     {
         $services = new \CCMBenchmark\Ting\Services();
