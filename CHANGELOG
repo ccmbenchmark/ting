@@ -1,5 +1,6 @@
 3.10.0 (unreleased):
     * Remove hard dependency to pimple, add it in suggest
+    * Collection is now JsonSerializable
     * Fix: Query Generator now handle null values
 
 3.9.1 (2024-07-19):

@@ -210,4 +210,33 @@ class Collection extends atoum
                 ->isTrue()
         ;
     }
+    
+    public function testCollectionShouldBeJsonSerializable()
+    {
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Bob']]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'prenom';
+            $stdClass->orgname  = 'firstname';
+            $stdClass->table    = 'bouh';
+            $stdClass->orgtable = 'T_BOUH_BOO';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            return $fields;
+        };
+
+        $result = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Result();
+        $result->setConnectionName('connectionName');
+        $result->setDatabase('database');
+        $result->setResult($mockMysqliResult);
+        
+        $this
+            ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
+                ->and($collection->set($result))
+                    ->string(json_encode($collection))
+                        ->isEqualTo('[{"prenom":"Bob"}]')
+        ;
+    }
 }
