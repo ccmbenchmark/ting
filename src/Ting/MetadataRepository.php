@@ -28,6 +28,7 @@ use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Repository\Repository;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use function get_class;
 use function is_object;
 
@@ -59,7 +60,7 @@ class MetadataRepository
     /**
      * @param SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(SerializerFactoryInterface $serializerFactory)
+    public function __construct(SerializerFactoryInterface $serializerFactory, private ?CacheItemPoolInterface $cacheItemPool = null)
     {
         $this->serializerFactory = $serializerFactory;
     }
@@ -161,6 +162,7 @@ class MetadataRepository
      */
     public function addMetadata($repositoryClass, Metadata $metadata)
     {
+        $metadata->propertyAccessor->setCacheItemPool($this->cacheItemPool);
         $this->metadataList[$repositoryClass] = $metadata;
         $metadataTable = $metadata->getTable();
         $metadataConnection = $metadata->getConnectionName();
