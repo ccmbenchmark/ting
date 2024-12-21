@@ -1,5 +1,6 @@
 3.10.0 (unreleased):
     * Remove hard dependency to pimple, add it in suggest
+    * Collection is now JsonSerializable
 
 3.9.1 (2024-07-19):
     * Fix: Mysqli/Driver::ping() try to reconnect when mysqli::ping() throws an exception
