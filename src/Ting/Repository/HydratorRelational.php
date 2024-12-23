@@ -293,7 +293,7 @@ final class HydratorRelational extends Hydrator
     {
         $id = '';
         foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
-            $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+            $id .= $this->metadataList[$table]->getEntityPropertyByFieldName($entity, $primary['fieldName']) . '-';
         }
 
         if ($id === '') {

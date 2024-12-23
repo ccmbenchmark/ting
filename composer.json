@@ -21,9 +21,10 @@
     "type": "library",
     "license": "Apache-2.0",
     "require": {
-        "php": ">=7.1",
+        "php": ">=8.0",
         "aura/sqlquery": "^2.6",
-        "doctrine/cache": "^1.6"
+        "doctrine/cache": "^1.6",
+        "symfony/property-access": "^6.0 || ^7.0"
     },
     "require-dev": {
         "ext-pgsql": "*",
@@ -31,7 +32,8 @@
         "atoum/atoum": "^4.0",
         "atoum/stubs": "^2.0",
         "brick/geo": "^0.5.1",
-	"pimple/pimple": "^3.0"
+        "pimple/pimple": "^3.0",
+        "symfony/cache": "^6.0 || ^7.0"
     },
     "suggest": {
       "brick/geo": "Allow support of MariaDB Geometry type",

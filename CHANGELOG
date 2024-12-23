@@ -3,6 +3,7 @@
     * Collection is now JsonSerializable
     * Add DateTimeImmutable serialization
     * Fix: Query Generator now handle null values
+    * Feature: Support for public properties with hooks (8.4+)
 
 3.9.1 (2024-07-19):
     * Fix: Mysqli/Driver::ping() try to reconnect when mysqli::ping() throws an exception
