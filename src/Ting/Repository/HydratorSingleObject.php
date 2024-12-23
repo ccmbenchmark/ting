@@ -33,7 +33,6 @@ use function reset;
  */
 class HydratorSingleObject extends Hydrator
 {
-
     /**
      * @return \Generator<int, T>
      */
