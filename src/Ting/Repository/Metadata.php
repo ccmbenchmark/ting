@@ -34,8 +34,9 @@ use CCMBenchmark\Ting\Exceptions\ValueException;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
-use CCMBenchmark\Ting\Serializer\SerializerInterface;
+#use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+#use CCMBenchmark\Ting\Serializer\SerializerInterface;
+use CCMBenchmark\Ting\Serializer;
 
 /**
  * @template T of object
@@ -45,17 +46,14 @@ use CCMBenchmark\Ting\Serializer\SerializerInterface;
  *     type: string,
  *     primary?: bool,
  *     autoincrement?: bool,
- *     serializer?: class-string<SerializerInterface>,
+ *     serializer?: class-string<Serializer\SerializerInterface>,
  *     serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>}
  * }
  */
 class Metadata
 {
 
-    /**
-     * @var SerializerFactoryInterface|null
-     */
-    protected $serializerFactory  = null;
+    protected ?Serializer\SerializerFactoryInterface $serializerFactory  = null;
     protected $connectionName     = null;
     protected $databaseName       = null;
     /** @var class-string<Repository<T>>|null */
@@ -71,16 +69,18 @@ class Metadata
     protected $primaries          = [];
     protected $autoincrement      = null;
     protected $defaultSerializers = [
-        'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
-        'json'     => '\CCMBenchmark\Ting\Serializer\Json',
-        'ip'       => '\CCMBenchmark\Ting\Serializer\Ip',
-        'geometry' => '\CCMBenchmark\Ting\Serializer\Geometry'
+        'datetime' => Serializer\DateTime::class,
+        'json'     => Serializer\Json::class,
+        'ip'       => Serializer\Ip::class,
+        'geometry' => Serializer\Geometry::class,
+        'uuid'     => Serializer\Uuid::class,
+        'datetimezone' => Serializer\DateTimeZone::class,
     ];
 
     /**
-     * @param SerializerFactoryInterface $serializerFactory
+     * @param Serializer\SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(SerializerFactoryInterface $serializerFactory)
+    public function __construct(Serializer\SerializerFactoryInterface $serializerFactory)
     {
         $this->serializerFactory = $serializerFactory;
     }
@@ -408,7 +408,11 @@ class Metadata
             }
         }
 
-        $entity->$setter($value);
+        if (method_exists($entity, $setter)) {
+            $entity->$setter($value);
+        } elseif ((new \ReflectionProperty($entity, $this->fields[$column]['fieldName']))->isPublic()) {
+            $entity->{$this->fields[$column]['fieldName']} = $value;
+        }
     }
 
     /**
@@ -420,8 +424,16 @@ class Metadata
      */
     protected function getEntityProperty($entity, $field)
     {
-        $getter = $this->getGetter($field['fieldName']);
-        $value = $entity->$getter();
+        $truc = $field['fieldName'];
+        $getter = $this->getGetter($truc);
+        if (method_exists($entity, $getter)) {
+            $value = $entity->$getter();
+        } else {
+            $property = new \ReflectionProperty($entity, $truc);
+            if ($property->isPublic() && $property->isInitialized($entity)) {
+                $value = $entity->$truc;
+            }
+        }
 
         if (isset($field['serializer']) === true) {
             $options = [];
@@ -647,7 +659,7 @@ class Metadata
         $values = [];
 
         foreach ($this->fields as $column => $field) {
-            if (isset($field['autoincrement']) === true && $field['autoincrement'] === true) {
+            if ((isset($field['autoincrement']) === true && $field['autoincrement'] === true) || !(new \ReflectionProperty($entity, $field['fieldName']))->isInitialized($entity)) {
                 continue;
             }
 
@@ -695,6 +707,9 @@ class Metadata
         $values = [];
         foreach ($properties as $name => $value) {
             $columnName = $this->fieldsByProperty[$name]['columnName'];
+            if (!(new \ReflectionProperty($entity, $name))->isInitialized($entity)) {
+                continue;
+            }
             $values[$columnName] = $this->getEntityProperty($entity, $this->fieldsByProperty[$name]);
         }
 
