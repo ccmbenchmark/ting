@@ -66,25 +66,6 @@ class UnitOfWork implements PropertyListenerInterface
     }
 
     /**
-     * @return string
-     */
-    protected function generateUid()
-    {
-        return uniqid(mt_rand(), true);
-    }
-
-    /**
-     * @return string
-     * @deprecated generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use generateUid() instead.
-     */
-    protected function generateUUID()
-    {
-        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.',self::class, self::class),E_USER_DEPRECATED);
-
-        return $this->generateUid();
-    }
-
-    /**
      * Watch changes on provided entity
      *
      * @param NotifyPropertyInterface $entity
