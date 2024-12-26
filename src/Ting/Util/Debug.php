@@ -33,7 +33,7 @@ class Debug
      * @param mixed $var
      * @param int $maxDepth
      */
-    public function dump($var, $maxDepth = 10)
+    public function dump($var, $maxDepth = 10): void
     {
         var_dump($this->export($var, $maxDepth));
     }

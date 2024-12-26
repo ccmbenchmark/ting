@@ -332,7 +332,7 @@ abstract class Repository
      *
      * @param T $entity
      */
-    public function save($entity)
+    public function save($entity): void
     {
         $this->unitOfWork->pushSave($entity)->process();
     }
@@ -342,7 +342,7 @@ abstract class Repository
      *
      * @param T $entity
      */
-    public function delete($entity)
+    public function delete($entity): void
     {
         $this->unitOfWork->pushDelete($entity)->process();
     }
@@ -352,7 +352,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->connection->master()->startTransaction();
     }
@@ -362,7 +362,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function rollback()
+    public function rollback(): void
     {
         $this->connection->master()->rollback();
     }
@@ -372,7 +372,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
         $this->connection->master()->commit();
     }
@@ -381,7 +381,7 @@ abstract class Repository
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      * @return bool
      */
-    public function ping()
+    public function ping(): bool
     {
         if (method_exists($this->connection->slave(), 'ping') === true) {
             return $this->connection->slave()->ping();
@@ -394,7 +394,7 @@ abstract class Repository
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
      * @return bool
      */
-    public function pingMaster()
+    public function pingMaster(): bool
     {
         if (method_exists($this->connection->master(), 'ping') === true) {
             return $this->connection->master()->ping();
@@ -408,7 +408,7 @@ abstract class Repository
      *
      * @return Metadata<T>
      */
-    public function getMetadata()
+    public function getMetadata(): ?Metadata
     {
         return $this->metadata;
     }

@@ -30,5 +30,5 @@ interface SerializerFactoryInterface
      * @param string $serializerName
      * @return SerializerInterface
      */
-    public function get($serializerName);
+    public function get($serializerName): SerializerInterface;
 }

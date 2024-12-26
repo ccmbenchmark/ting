@@ -40,15 +40,16 @@ use WeakMap;
  */
 class Hydrator implements HydratorInterface
 {
-
-    protected $mapAliases         = [];
-    protected $mapObjects         = [];
-    protected $objectDatabase     = [];
-    protected $objectSchema       = [];
-    protected $unserializeAliases = [];
+    /** @var array<string, string[]>  */
+    protected array $mapAliases         = [];
+    /** @var array<string, string[]>  */
+    protected array $mapObjects         = [];
+    protected array $objectDatabase     = [];
+    protected array $objectSchema       = [];
+    protected array $unserializeAliases = [];
     protected WeakMap $alreadyManaged;
-    protected $references         = [];
-    protected $metadataList       = [];
+    protected array $references         = [];
+    protected array $metadataList       = [];
 
     /**
      * @var ResultInterface<T>

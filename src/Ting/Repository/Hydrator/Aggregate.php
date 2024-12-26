@@ -26,7 +26,7 @@ namespace CCMBenchmark\Ting\Repository\Hydrator;
 
 abstract class Aggregate
 {
-    private $target;
+    private ?string $target = null;
 
     /**
      * Aggregate constructor.

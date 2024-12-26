@@ -34,8 +34,8 @@ interface CacheLoggerInterface
     /**
      * Log an operation
      *
-     * @param $operation string one of defined constant starting with OPERATION_
-     * @param $keys array|string impacted keys by the operation
+     * @param string $operation  one of defined constant starting with OPERATION_
+     * @param array|string $keys impacted keys by the operation
      * @return void
      */
     public function startOperation($operation, $keys);
@@ -43,7 +43,7 @@ interface CacheLoggerInterface
     /**
      * Flag the previously operation as stopped. Useful for time logging.
      *
-     * @param $miss boolean tells if the last get was a miss if it was a read operation
+     * @param boolean $miss tells if the last get was a miss if it was a read operation
      * @return void
      */
     public function stopOperation($miss = false);

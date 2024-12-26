@@ -53,17 +53,17 @@ abstract class Relation
         $this->setter = (string) $setter;
     }
 
-    public function getSource()
+    public function getSource(): string
     {
         return $this->from->getTarget();
     }
 
-    public function getTarget()
+    public function getTarget(): string
     {
         return $this->to->getTarget();
     }
 
-    public function getSetter()
+    public function getSetter(): string
     {
         return $this->setter;
     }

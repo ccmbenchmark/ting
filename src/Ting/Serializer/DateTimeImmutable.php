@@ -27,16 +27,15 @@ namespace CCMBenchmark\Ting\Serializer;
 class DateTimeImmutable implements SerializerInterface
 {
     /**
-     * @var array
+     * @var array<string, string|bool>
      * format => Always used for serialization. Used for unserialization only if unSerializeUseFormat is true
      * unSerializeUseFormat => if false, any valid datetime format is automatically used
      * @see http://php.net/manual/en/datetime.formats.compound.php
      */
     private static $defaultOptions = ['format' => \DateTimeInterface::ATOM, 'unSerializeUseFormat' => true];
-    private static $deserialisationFormat = 'Y-m-d\TH:i:sO';
 
     /**
-     * @param \DateTime $toSerialize
+     * @param \DateTime|null $toSerialize
      * @param array $options
      * @return string|null
      * @throws RuntimeException
@@ -69,7 +68,6 @@ class DateTimeImmutable implements SerializerInterface
             return null;
         }
 
-        //$this->parseSerialized($serialized);
         $options = array_merge(self::$defaultOptions, $options);
         if ($options['unSerializeUseFormat'] === true) {
             $value = \DateTimeImmutable::createFromFormat($options['format'], $serialized);

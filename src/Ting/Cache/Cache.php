@@ -41,7 +41,8 @@ class Cache implements CacheInterface
 
     /**
      * @param DoctrineCache $cache
-     */
+     * @return void
+     **/
     public function setCache(DoctrineCache $cache)
     {
         $this->cache = $cache;
@@ -51,6 +52,7 @@ class Cache implements CacheInterface
      * Add the ability to log operations
      *
      * @param CacheLoggerInterface $logger
+     * @return void
      */
     public function setLogger(CacheLoggerInterface $logger)
     {
@@ -60,8 +62,8 @@ class Cache implements CacheInterface
     /**
      * Logs an operation with $this->logger if provided
      *
-     * @param $type
-     * @param $operation
+     * @param string $type one of defined constant in CacheLoggerInterface starting with OPERATION_
+     * @param array|string $operation
      * @return void
      */
     protected function log($type, $operation)
@@ -74,7 +76,7 @@ class Cache implements CacheInterface
     /**
      * Flag the last operation logged as stopped
      *
-     * @param $miss boolean optional : required if last operation was a read
+     * @param boolean $miss optional : required if last operation was a read
      * @return void
      */
     protected function stopLog($miss = false)

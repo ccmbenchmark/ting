@@ -29,9 +29,10 @@ use Pimple\Container;
 class Services implements ContainerInterface
 {
 
-    protected $container = null;
+    protected Container|null $container = null;
 
-    protected $serviceOptions = null;
+    /** @var array<string, array<mixed, mixed>>|null  */
+    protected array|null $serviceOptions = null;
 
     public function __construct()
     {
@@ -149,7 +150,13 @@ class Services implements ContainerInterface
         );
     }
 
-    public function set($id, \Closure $callable, $factory = false)
+    /**
+     * @param mixed    $id
+     * @param \Closure $callable
+     * @param  bool    $factory
+     * @return $this
+     */
+    public function set(mixed $id, \Closure $callable, $factory = false): self
     {
         if ($factory === true) {
             $callable = $this->container->factory($callable);
@@ -159,7 +166,12 @@ class Services implements ContainerInterface
         return $this;
     }
 
-    public function get($id, array $options = null)
+    /**
+     * @param mixed                    $id
+     * @param array<mixed, mixed>|null $options
+     * @return mixed
+     */
+    public function get(mixed $id, array $options = null): mixed
     {
         if ($options !== null) {
             if (isset($this->serviceOptions[$id]) && $this->serviceOptions[$id] !== $options) {
@@ -171,7 +183,7 @@ class Services implements ContainerInterface
         return $this->container->offsetGet($id);
     }
 
-    public function has($id)
+    public function has(mixed $id): bool
     {
         return $this->container->offsetExists($id);
     }

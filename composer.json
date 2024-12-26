@@ -32,7 +32,8 @@
         "atoum/stubs": "^2.0",
         "brick/geo": "^0.5.1",
 	    "pimple/pimple": "^3.0",
-        "symfony/uid": "^6.0 || ^7.0"
+        "symfony/uid": "^6.0 || ^7.0",
+        "phpstan/phpstan": "^2.0"
     },
     "suggest": {
       "brick/geo": "Allow support of MariaDB Geometry type",

@@ -29,7 +29,7 @@ interface SerializeInterface
     /**
      * @param mixed $toSerialize
      * @param array $options
-     * @return string
+     * @return string|null
      */
     public function serialize($toSerialize, array $options = []);
 }

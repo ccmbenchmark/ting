@@ -28,7 +28,7 @@ interface UnserializeInterface
 {
     /**
      * @param string $serialized
-     * @param array $options
+     * @param array<mixed, mixed> $options
      * @return mixed
      */
     public function unserialize($serialized, array $options = []);

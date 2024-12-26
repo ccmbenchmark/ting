@@ -29,19 +29,20 @@ interface DriverLoggerInterface
     /**
      * Add an opened connection to the list
      *
-     * @param $name       string connection name
-     * @param $connection string spl_object_hash of the connection
-     * @param $connectionConfig array Connection parameters
+     * @param string $name connection name
+     * @param string $connection spl_object_hash of the connection
+     * @param array $connectionConfig Connection parameters
+     * @return void
      */
     public function addConnection($name, $connection, array $connectionConfig);
 
     /**
      * Logs a SQL Query
      *
-     * @param      $sql
-     * @param      $params
-     * @param      $connection string spl_object_hash of the connection
-     * @param      $database   string name of the database
+     * @param string $sql
+     * @param array $params
+     * @param string $connection spl_object_hash of the connection
+     * @param string $database name of the database
      * @return void
      */
     public function startQuery($sql, $params, $connection, $database);
@@ -49,9 +50,9 @@ interface DriverLoggerInterface
     /**
      * Log the preparation of a statement
      *
-     * @param $sql string the query
-     * @param $connection string spl_object_hash of the connection
-     * @param $database string name of the database
+     * @param string $sql the query
+     * @param string $connection spl_object_hash of the connection
+     * @param string $database name of the database
      * @return void
      */
     public function startPrepare($sql, $connection, $database);
@@ -59,8 +60,8 @@ interface DriverLoggerInterface
     /**
      * Log the parameters applied to a statement when executed
      *
-     * @param $statement string statement name
-     * @param $params
+     * @param string $statement statement name
+     * @param array $params
      * @return void
      */
     public function startStatementExecute($statement, $params);
@@ -76,7 +77,7 @@ interface DriverLoggerInterface
     /**
      * Log the end of the preparation (for timing purposes)
      *
-     * @param $statement string statement name
+     * @param string $statement statement name
      * @return void
      */
     public function stopPrepare($statement);
@@ -84,7 +85,7 @@ interface DriverLoggerInterface
     /**
      * Log the end of execution of a prepared statement
      *
-     * @param $statement string statement name
+     * @param string $statement statement name
      * @return void
      */
     public function stopStatementExecute($statement);

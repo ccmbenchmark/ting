@@ -38,12 +38,16 @@ class UnitOfWork implements PropertyListenerInterface
     const STATE_MANAGED = 2;
     const STATE_DELETE  = 3;
 
-    protected $connectionPool            = null;
-    protected $metadataRepository        = null;
-    protected $queryFactory              = null;
+    protected ConnectionPool|null $connectionPool            = null;
+    protected MetadataRepository|null $metadataRepository        = null;
+    protected QueryFactoryInterface|null $queryFactory              = null;
+    /** @var WeakMap<NotifyPropertyInterface, bool|NotifyPropertyInterface> */
     protected WeakMap $entities;
+    /** @var WeakMap<NotifyPropertyInterface, array<0|1, mixed>> */
     protected WeakMap $entitiesChanged;
+    /** @var array<string, array<'state'|'entity', mixed>> */
     protected array $entitiesShouldBePersisted;
+    /** @var array<string, array<string, DriverInterface>> */
     protected $statements = [];
 
     /**
@@ -334,7 +338,7 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Insert all applicable entities in database
-     * @param  string $hash
+     * @param  NotifyPropertyInterface $entity
      * @throws Exception
      * @throws QueryException
      */
@@ -403,7 +407,7 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function addStatementToClose($statementName, DriverInterface $connection): void
+    protected function addStatementToClose(string $statementName, DriverInterface $connection): void
     {
         if (isset($this->statements[$statementName]) === false) {
             $this->statements[$statementName] = [];

@@ -27,18 +27,20 @@ namespace CCMBenchmark\Ting\Serializer;
 class SerializerFactory implements SerializerFactoryInterface
 {
     /**
-     * @var SerializerInterface[]
+     * @var array<string, SerializerInterface>
      */
     protected $serializers = [];
 
     /**
-     * @param string $serializerName
+     * @param class-string $serializerName
      * @return SerializerInterface
      */
-    public function get($serializerName)
+    public function get($serializerName): SerializerInterface
     {
         if (isset($this->serializers[$serializerName]) === false) {
-            $this->serializers[$serializerName] = new $serializerName();
+            /** @var SerializerInterface $serializer */
+            $serializer = new $serializerName();
+            $this->serializers[$serializerName] = $serializer;
         }
 
         return $this->serializers[$serializerName];

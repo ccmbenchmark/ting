@@ -24,6 +24,9 @@
 
 namespace CCMBenchmark\Ting\Entity;
 
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait NotifyProperty
 {
     protected $listeners = array();

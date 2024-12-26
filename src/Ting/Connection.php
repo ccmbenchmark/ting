@@ -50,7 +50,7 @@ class Connection
      *
      * @internal
      */
-    public function __construct(ConnectionPoolInterface $connectionPool, $name, $database)
+    public function __construct(ConnectionPoolInterface $connectionPool, ?string $name, ?string $database)
     {
         if ($name === null || $database === null) {
             throw new \RuntimeException('Name and databases cannot be null on connection');

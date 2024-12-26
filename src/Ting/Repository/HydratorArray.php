@@ -36,8 +36,8 @@ use CCMBenchmark\Ting\UnitOfWork;
 class HydratorArray implements HydratorInterface
 {
 
-    protected $metadataRepository = null;
-    protected $unitOfWork         = null;
+    protected ?MetadataRepository $metadataRepository = null;
+    protected ?UnitOfWork $unitOfWork         = null;
 
     /**
      * @var ResultInterface
