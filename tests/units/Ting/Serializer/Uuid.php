@@ -37,8 +37,8 @@ class Uuid extends atoum
             ->dump($serializer->serialize($uuid))
             ->object($serializer->unserialize($serializer->serialize($uuid)))
                 ->isInstanceOf(Uuidv4::class)
-            ->string($serializer->unserialize($serializer->serialize($uuid))->toString())
-                ->isEqualTo($uuid->toString())
+            ->string($serializer->unserialize($serializer->serialize($uuid))->toRfc4122())
+                ->isEqualTo($uuid->toRfc4122())
         ;
     }
 
