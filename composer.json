@@ -31,11 +31,13 @@
         "atoum/atoum": "^4.0",
         "atoum/stubs": "^2.0",
         "brick/geo": "^0.5.1",
-	"pimple/pimple": "^3.0"
+	    "pimple/pimple": "^3.0",
+        "symfony/uid": "^6.0 || ^7.0"
     },
     "suggest": {
       "brick/geo": "Allow support of MariaDB Geometry type",
-      "pimple/pimple": "Service container."
+      "pimple/pimple": "Service container.",
+      "symfony/uid": "To work with Uuid."
     },
     "autoload": {
         "psr-4" : {

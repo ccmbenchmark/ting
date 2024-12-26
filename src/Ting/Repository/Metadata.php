@@ -34,9 +34,7 @@ use CCMBenchmark\Ting\Exceptions\ValueException;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
-use CCMBenchmark\Ting\Serializer\SerializerInterface;
-
+use CCMBenchmark\Ting\Serializer;
 /**
  * @template T of object
  * @phpstan-type Field array{
@@ -45,7 +43,7 @@ use CCMBenchmark\Ting\Serializer\SerializerInterface;
  *     type: string,
  *     primary?: bool,
  *     autoincrement?: bool,
- *     serializer?: class-string<SerializerInterface>,
+ *     serializer?: class-string<Serializer\SerializerInterface>,
  *     serializer_options?: array{serialize?: array<mixed>, unserialize?: array<mixed>}
  * }
  */
@@ -53,7 +51,7 @@ class Metadata
 {
 
     /**
-     * @var SerializerFactoryInterface|null
+     * @var Serializer\SerializerFactoryInterface|null
      */
     protected $serializerFactory  = null;
     protected $connectionName     = null;
@@ -71,16 +69,19 @@ class Metadata
     protected $primaries          = [];
     protected $autoincrement      = null;
     protected $defaultSerializers = [
-        'datetime' => '\CCMBenchmark\Ting\Serializer\DateTime',
-        'json'     => '\CCMBenchmark\Ting\Serializer\Json',
-        'ip'       => '\CCMBenchmark\Ting\Serializer\Ip',
-        'geometry' => '\CCMBenchmark\Ting\Serializer\Geometry'
+        'datetime' => Serializer\DateTime::class,
+        'datetime_immutable' => Serializer\DateTimeImmutable::class,
+        'datetimezone' => Serializer\DateTimeZone::class,
+        'json'     => Serializer\Json::class,
+        'ip'       => Serializer\Ip::class,
+        'geometry' => Serializer\Geometry::class,
+        'uuid'     => Serializer\Uuid::class,
     ];
 
     /**
-     * @param SerializerFactoryInterface $serializerFactory
+     * @param Serializer\SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(SerializerFactoryInterface $serializerFactory)
+    public function __construct(Serializer\SerializerFactoryInterface $serializerFactory)
     {
         $this->serializerFactory = $serializerFactory;
     }
@@ -530,7 +531,7 @@ class Metadata
      * @param QueryFactoryInterface      $queryFactory
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
-     * @return \CCMBenchmark\Ting\Query\Query
+     * @return \CCMBenchmark\Ting\Query\QueryInterface
      *
      * @internal
      */
