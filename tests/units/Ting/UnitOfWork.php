@@ -87,21 +87,6 @@ class UnitOfWork extends atoum
                 ->isFalse();
     }
 
-    public function testIsManagedWithUUIDShouldReturnTrue()
-    {
-        $mockEntity = new \mock\tests\fixtures\model\Bouh();
-        $mockEntity->tingUUID = uniqid();
-
-        $this
-            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
-                $this->services->get('ConnectionPool'),
-                $this->services->get('MetadataRepository'),
-                $this->services->get('QueryFactory')
-            ))
-            ->boolean($unitOfWork->isManaged($mockEntity))
-            ->isTrue();
-    }
-
     public function testSave()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
@@ -154,7 +139,6 @@ class UnitOfWork extends atoum
     public function testIsPropertyChangedWithUUIDShouldReturnFalse()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
-        $mockEntity->tingUUID = uniqid();
 
         $this
             ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
@@ -238,7 +222,6 @@ class UnitOfWork extends atoum
     public function testShouldBeRemovedWithUUIDShouldReturnFalse()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
-        $mockEntity->tingUUID = uniqid();
 
         $this
             ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
