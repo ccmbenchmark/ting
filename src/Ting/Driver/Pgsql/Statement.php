@@ -32,18 +32,7 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 class Statement implements StatementInterface
 {
 
-    /**
-     * @var string
-     */
-    protected $connectionName;
-
-    /**
-     * @var string database name
-     */
-    protected $database  = '';
-
     protected $connection    = null;
-    protected $statementName = null;
     protected $paramsOrder   = [];
     protected $queryType     = null;
     protected $query         = null;
@@ -61,12 +50,9 @@ class Statement implements StatementInterface
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct($statementName, array $paramsOrder, $connectionName, $database)
+    public function __construct(protected $statementName, array $paramsOrder, protected $connectionName, protected $database)
     {
-        $this->statementName  = $statementName;
         $this->paramsOrder    = $paramsOrder;
-        $this->connectionName = $connectionName;
-        $this->database       = $database;
     }
 
     /**
@@ -114,7 +100,7 @@ class Statement implements StatementInterface
      */
     public function execute(array $params, CollectionInterface $collection = null)
     {
-        $values = array();
+        $values = [];
         foreach (array_keys($this->paramsOrder) as $key) {
             $values[] = $params[$key];
         }

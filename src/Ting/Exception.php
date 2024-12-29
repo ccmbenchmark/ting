@@ -25,9 +25,9 @@ namespace CCMBenchmark\Ting;
 
 class Exception extends \Exception
 {
-    public function __toString()
+    public function __toString(): string
     {
-        return \get_class($this) . " {$this->code} '{$this->message}' in {$this->file} ({$this->line})\n"
+        return static::class . " {$this->code} '{$this->message}' in {$this->file} ({$this->line})\n"
         . "{$this->getTraceAsString()}";
     }
 }

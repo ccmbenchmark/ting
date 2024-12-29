@@ -39,17 +39,13 @@ class Generator
      */
     protected $queryFactory = null;
 
-    protected $schemaName = '';
-
-    protected $tableName = '';
-
     protected $fields = [];
 
     /**
      * @param Connection            $connection
      * @param QueryFactoryInterface $queryFactory
-     * @param string                $schema
-     * @param string                $table
+     * @param string $schemaName
+     * @param string $tableName
      * @param array                 $fields
      *
      * @internal
@@ -57,14 +53,12 @@ class Generator
     public function __construct(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
-        $schema,
-        $table,
+        protected $schemaName,
+        protected $tableName,
         array $fields
     ) {
         $this->connection = $connection;
         $this->queryFactory = $queryFactory;
-        $this->schemaName = $schema;
-        $this->tableName = $table;
         $this->fields = $fields;
     }
 
@@ -342,9 +336,7 @@ class Generator
     protected function escapeFields(array $fields, DriverInterface $driver)
     {
         return array_map(
-            function ($field) use ($driver) {
-                return $driver->escapeField($field);
-            },
+            fn($field) => $driver->escapeField($field),
             $fields
         );
     }

@@ -33,8 +33,8 @@ class SerializerFactory extends atoum
     {
         $this
             ->if($serializerFactory = new \CCMBenchmark\Ting\Serializer\SerializerFactory())
-            ->object($serializerFactory->get('CCMBenchmark\Ting\Serializer\Json'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Serializer\Json');
+            ->object($serializerFactory->get(\CCMBenchmark\Ting\Serializer\Json::class))
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\Json::class);
         ;
     }
 
@@ -42,8 +42,8 @@ class SerializerFactory extends atoum
     {
         $this
             ->if($serializerFactory = new \CCMBenchmark\Ting\Serializer\SerializerFactory())
-            ->object($serializerFactory->get('CCMBenchmark\Ting\Serializer\Json'))
-            ->isIdenticalTo($serializerFactory->get('CCMBenchmark\Ting\Serializer\Json'));
+            ->object($serializerFactory->get(\CCMBenchmark\Ting\Serializer\Json::class))
+            ->isIdenticalTo($serializerFactory->get(\CCMBenchmark\Ting\Serializer\Json::class));
         ;
     }
 }

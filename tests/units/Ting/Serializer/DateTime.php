@@ -43,10 +43,10 @@ class DateTime extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->unserialize('1345-67-89 bouh');
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 
@@ -64,10 +64,10 @@ class DateTime extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTime())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->serialize(new \StdClass());
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 

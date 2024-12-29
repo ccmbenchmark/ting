@@ -38,17 +38,17 @@ class HydratorSingleObject extends atoum
         $metadata->setEntity('tests\fixtures\model\Bouh');
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'firstname',
             'columnName' => 'boo_firstname',
             'type'       => 'string'
-        ));
+        ]);
 
         $services->get('MetadataRepository')->addMetadata('tests\fixtures\model\BouhRepository', $metadata);
 

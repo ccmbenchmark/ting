@@ -306,7 +306,7 @@ class Hydrator implements HydratorInterface
                         $column['orgTable'],
 
                         // Callback if table metadata found
-                        function (Metadata $metadata) use ($column, &$result) {
+                        function (Metadata $metadata) use ($column, &$result): void {
                             $this->metadataList[$column['table']] = $metadata;
                             $result[$column['table']]             = $metadata->createEntity();
                             $tmpEntities[$column['table']]        = [];
@@ -403,7 +403,7 @@ class Hydrator implements HydratorInterface
             // It's a valid entity (unknown data are put in a value table 0)
             if (\is_int($table) === false) {
                 $ref = $table . '-';
-                foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+                foreach ($this->metadataList[$table]->getPrimaries() as $primary) {
                     $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
                 }
 

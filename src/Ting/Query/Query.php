@@ -33,11 +33,6 @@ class Query implements QueryInterface
 {
 
     /**
-     * @var string|null
-     */
-    protected $sql = null;
-
-    /**
      * @var Connection|null
      */
     protected $connection = null;
@@ -62,9 +57,8 @@ class Query implements QueryInterface
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
+    public function __construct(protected $sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
     {
-        $this->sql               = $sql;
         $this->connection        = $connection;
         $this->collectionFactory = $collectionFactory;
         return $this;

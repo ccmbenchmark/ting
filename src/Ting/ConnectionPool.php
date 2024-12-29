@@ -34,22 +34,22 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * @var array
      */
-    protected $connectionConfig = array();
+    protected $connectionConfig = [];
 
     /**
      * @var array
      */
-    protected $databaseOptions = array();
+    protected $databaseOptions = [];
 
     /**
      * @var array
      */
-    protected $connectionSlaves = array();
+    protected $connectionSlaves = [];
 
     /**
      * @var array
      */
-    protected $connections = array();
+    protected $connections = [];
 
     /**
      * @var DriverLoggerInterface|null

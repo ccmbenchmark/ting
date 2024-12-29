@@ -512,7 +512,7 @@ class Metadata
      */
     protected function getColumnsFromCriteria(array $criteria)
     {
-        $criteriaColumn = array();
+        $criteriaColumn = [];
         foreach ($criteria as $property => $value) {
             if (isset($this->fieldsByProperty[$property]) === false) {
                 throw new ValueException(sprintf('Undefined property %s in your criteria', $property));
@@ -618,8 +618,7 @@ class Metadata
         if (is_array($originalValue) === false) {
             $primariesKeyValue = [];
             if (count($this->primaries) == 1) {
-                reset($this->primaries);
-                $columnName = key($this->primaries);
+                $columnName = array_key_first($this->primaries);
                 $primariesKeyValue[$columnName] = $originalValue;
                 return $primariesKeyValue;
             } else {

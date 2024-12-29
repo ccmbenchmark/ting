@@ -286,9 +286,7 @@ class HydratorRelational extends atoum
                 new AggregateTo('bouh'),
                 'citiesAre'
             )))
-            ->and($hydrator->callableFinalizeAggregate(function ($result) {
-                return $result['bouh'];
-            }))
+            ->and($hydrator->callableFinalizeAggregate(fn($result) => $result['bouh']))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data->getName())
@@ -946,7 +944,7 @@ class HydratorRelational extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->callableFinalizeAggregate(static function (array $row) { return $row['bouh']; }))
+            ->and($hydrator->callableFinalizeAggregate(static fn(array $row) => $row['bouh']))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data->getName())

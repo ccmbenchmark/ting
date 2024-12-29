@@ -456,7 +456,7 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getAll())
-                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\CollectionInterface::class);
     }
 
     public function testGetByCriteriaShouldReturnAQuery()
@@ -497,7 +497,7 @@ class Repository extends atoum
                 $services->get('SerializerFactory')
             ))
             ->object($repository->getBy(['name' => 'bouh']))
-                ->isInstanceOf('CCMBenchmark\Ting\Repository\CollectionInterface');
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\CollectionInterface::class);
     }
 
     public function testGetOneByCriteriaShouldReturnAnEntityOrNull()
@@ -587,7 +587,7 @@ class Repository extends atoum
 
         $this
             ->if($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
-            ->exception(function () use ($bouhRepository) {
+            ->exception(function () use ($bouhRepository): void {
                 $bouhRepository->getQueryBuilder($bouhRepository::QUERY_SELECT);
             })
                 ->hasMessage('Driver Unknown\Driver\Mysqli\Driver is unknown to build QueryBuilder');
@@ -607,19 +607,19 @@ class Repository extends atoum
                 ->setConfig(['main' => ['namespace' => '\CCMBenchmark\Ting\Driver\SphinxQL']]))
             ->then($bouhRepository = $services->get('RepositoryFactory')->get('\tests\fixtures\model\BouhRepository'))
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_SELECT))
-                ->isInstanceOf('Aura\SqlQuery\Common\SelectInterface')
+                ->isInstanceOf(\Aura\SqlQuery\Common\SelectInterface::class)
             ->if($services->get('ConnectionPool')
                 ->setConfig(['main' => ['namespace' => 'CCMBenchmark\Ting\Driver\Pgsql']]))
             ->object($queryBuilder = $bouhRepository->getQueryBuilder("unkwnon"))
-                ->isInstanceOf('Aura\SqlQuery\Common\SelectInterface')
+                ->isInstanceOf(\Aura\SqlQuery\Common\SelectInterface::class)
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_UPDATE))
-                ->isInstanceOf('Aura\SqlQuery\Common\UpdateInterface')
+                ->isInstanceOf(\Aura\SqlQuery\Common\UpdateInterface::class)
             ->if($services->get('ConnectionPool')
                 ->setConfig(['main' => ['namespace' => '\CCMBenchmark\Ting\Driver\Mysqli']]))
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_DELETE))
-                ->isInstanceOf('Aura\SqlQuery\Common\DeleteInterface')
+                ->isInstanceOf(\Aura\SqlQuery\Common\DeleteInterface::class)
             ->object($queryBuilder = $bouhRepository->getQueryBuilder($bouhRepository::QUERY_INSERT))
-                ->isInstanceOf('Aura\SqlQuery\Common\InsertInterface')
+                ->isInstanceOf(\Aura\SqlQuery\Common\InsertInterface::class)
         ;
     }
 
@@ -674,7 +674,7 @@ class Repository extends atoum
         $this->calling($metadata)->getConnection = null;
 
         $this->calling($metadataRepository)
-            ->findMetadataForRepository = function($repository, $callback, $error) use ($metadata) {
+            ->findMetadataForRepository = function($repository, $callback, $error) use ($metadata): void {
             $callback($metadata);
         };
 

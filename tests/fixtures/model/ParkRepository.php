@@ -50,19 +50,19 @@ class ParkRepository extends Repository implements MetadataInitializer
         $metadata->setDatabase('database');
         $metadata->setTable('T_PARK_PA');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'pa_id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'pa_name',
             'type'       => 'string'
-        ));
+        ]);
 
         return $metadata;
     }

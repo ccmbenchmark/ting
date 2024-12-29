@@ -124,13 +124,13 @@ abstract class Repository
         $this->cache              = $cache;
         $this->unitOfWork         = $unitOfWork;
 
-        $class = \get_class($this);
+        $class = static::class;
         $this->metadataRepository->findMetadataForRepository(
             $class,
-            function ($metadata) {
+            function ($metadata): void {
                 $this->metadata = $metadata;
             },
-            function () use ($class) {
+            function () use ($class): void {
                 throw new RepositoryException(
                     'Metadata not found for ' . $class
                     . ', you probably forgot to call MetadataRepository::batchLoadMetadata'
@@ -223,21 +223,12 @@ abstract class Repository
                 throw new DriverException('Driver ' . $driver . ' is unknown to build QueryBuilder');
         }
 
-        switch ($type) {
-            case self::QUERY_UPDATE:
-                $queryBuilder = $queryFactory->newUpdate();
-                break;
-            case self::QUERY_DELETE:
-                $queryBuilder = $queryFactory->newDelete();
-                break;
-            case self::QUERY_INSERT:
-                $queryBuilder = $queryFactory->newInsert();
-                break;
-            case self::QUERY_SELECT:
-                // We fallback on select for default case
-            default:
-                $queryBuilder = $queryFactory->newSelect();
-        }
+        $queryBuilder = match ($type) {
+            self::QUERY_UPDATE => $queryFactory->newUpdate(),
+            self::QUERY_DELETE => $queryFactory->newDelete(),
+            self::QUERY_INSERT => $queryFactory->newInsert(),
+            default => $queryFactory->newSelect(),
+        };
 
         return $queryBuilder;
     }

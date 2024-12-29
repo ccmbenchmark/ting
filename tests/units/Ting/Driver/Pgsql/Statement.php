@@ -27,7 +27,7 @@ namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 use atoum;
 use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
 
-require_once dirname(__FILE__) . '/../../../../fixtures/mock_native_pgsql.php';
+require_once __DIR__ . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Statement extends atoum
 {
@@ -74,15 +74,15 @@ class Statement extends atoum
         PGMock::override('pg_query', true);
 
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $params          = array(
+        $params          = [
             'firstname'   => 'Sylvain',
             'id'          => 3,
             'old'         => 32.1,
             'description' => 'A very long description',
             'date' => '2014-03-01 14:02:05'
-        );
+        ];
 
-        $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null);
+        $paramsOrder = ['firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null];
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(
@@ -94,7 +94,7 @@ class Statement extends atoum
             ->then($statement->setQuery('SELECT firstname FROM Bouh'))
             ->then($statement->execute($params, $collection))
             ->array($outerValues)
-                ->isIdenticalTo(array('Sylvain', 3, 'A very long description', 32.1, '2014-03-01 14:02:05'));
+                ->isIdenticalTo(['Sylvain', 3, 'A very long description', 32.1, '2014-03-01 14:02:05']);
     }
 
     public function testSetCollectionWithResult()
@@ -115,21 +115,16 @@ class Statement extends atoum
         ]);
         PGMock::override('pg_query', true);
 
-        $this->calling($collection)->set = function ($result) use (&$outerResult) {
+        $this->calling($collection)->set = function ($result) use (&$outerResult): void {
             $outerResult = $result;
         };
 
         PGMock::override('pg_num_fields', 2);
         PGMock::override('pg_field_table', 'Bouh');
-        PGMock::override('pg_field_name', function ($result, $index) {
-            switch ($index) {
-                case 0:
-                    return 'prenom';
-                case 1:
-                    return 'nom';
-                default:
-                    return false;
-            }
+        PGMock::override('pg_field_name', fn($result, $index) => match ($index) {
+            0 => 'prenom',
+            1 => 'nom',
+            default => false,
         });
 
         $resultOk = new \CCMBenchmark\Ting\Driver\Pgsql\Result($result);
@@ -168,10 +163,10 @@ class Statement extends atoum
                 'connectionName',
                 'database'
             ))
-            ->exception(function () use ($statement, $collection) {
+            ->exception(function () use ($statement, $collection): void {
                 $statement->execute([]);
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\QueryException::class);
     }
 
     public function testExecuteShouldReturnTrueIfNoError()

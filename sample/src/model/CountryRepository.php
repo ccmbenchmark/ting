@@ -39,37 +39,37 @@ class CountryRepository extends \CCMBenchmark\Ting\Repository\Repository impleme
         $metadata->setDatabase('world');
         $metadata->setTable('t_country_cou');
 
-        $metadata->addField(array(
+        $metadata->addField([
            'primary'       => true,
            'autoincrement' => true,
            'fieldName'     => 'code',
            'columnName'    => 'cou_code',
             'type'         => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'cou_name',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'continent',
             'columnName' => 'cou_continent',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'region',
             'columnName' => 'cou_region',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'president',
             'columnName' => 'cou_head_of_state',
             'type'       => 'string'
-        ));
+        ]);
 
         return $metadata;
     }

@@ -25,7 +25,7 @@ class DateTimeZone implements SerializerInterface
         }
         try {
             return new \DateTimeZone($serialized);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             throw new RuntimeException('Cannot convert ' . $serialized . ' to DateTimeZone.');
         }
     }

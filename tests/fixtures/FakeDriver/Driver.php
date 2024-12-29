@@ -81,7 +81,7 @@ class Driver implements DriverInterface
      * @param CollectionInterface $collection
      * @return mixed
      */
-    public function execute($sql, array $params = array(), CollectionInterface $collection = null)
+    public function execute($sql, array $params = [], CollectionInterface $collection = null)
     {
 
     }

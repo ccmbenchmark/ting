@@ -52,7 +52,7 @@ class Debug
 
         if ($maxDepth === 0) {
             if (\is_object($var) === true) {
-                return \get_class($var);
+                return $var::class;
             } elseif (\is_array($var) === true) {
                 return 'Array(' . \count($var) . ')';
             }
@@ -86,14 +86,14 @@ class Debug
     private function clean($object, $maxDepth)
     {
         if ($maxDepth === 0) {
-            return \get_class($object);
+            return $object::class;
         }
 
         $objectToBeCleaned = clone $object;
         $reflectionObject = new \ReflectionObject($objectToBeCleaned);
 
         if ($reflectionObject->hasProperty('listeners') === true) {
-            $reflectionProperty = new \ReflectionProperty(\get_class($objectToBeCleaned), 'listeners');
+            $reflectionProperty = new \ReflectionProperty($objectToBeCleaned::class, 'listeners');
             $reflectionProperty->setAccessible(true);
             $reflectionProperty->setValue($objectToBeCleaned, null);
         }

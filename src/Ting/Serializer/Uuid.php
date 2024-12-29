@@ -24,7 +24,7 @@ class Uuid implements SerializerInterface
         }
         try {
             return \Symfony\Component\Uid\Uuid::fromString($serialized);
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             throw new RuntimeException('Cannot convert ' . $serialized . ' to UUID.');
         }
     }

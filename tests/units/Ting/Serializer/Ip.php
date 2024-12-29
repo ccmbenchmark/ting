@@ -43,10 +43,10 @@ class Ip extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\Ip())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->serialize('badip');
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+            ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 

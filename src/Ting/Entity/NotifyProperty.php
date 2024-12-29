@@ -26,7 +26,7 @@ namespace CCMBenchmark\Ting\Entity;
 
 trait NotifyProperty
 {
-    protected $listeners = array();
+    protected $listeners = [];
 
     /**
      * Add an observer to the current object

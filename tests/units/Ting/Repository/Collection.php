@@ -156,7 +156,7 @@ class Collection extends atoum
 
         $outerResult = null;
         $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $this->calling($mockCollection)->set = function(ResultInterface $result) use (&$outerResult) {
+        $this->calling($mockCollection)->set = function(ResultInterface $result) use (&$outerResult): void {
             $outerResult = $result;
         };
 
@@ -165,7 +165,7 @@ class Collection extends atoum
                 ['connection' => 'connection_name', 'database' => 'database_name', 'data' => ['bouh']]
             ))
             ->object($outerResult)
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\CacheResult')
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\CacheResult::class)
         ;
     }
 

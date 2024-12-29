@@ -311,7 +311,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties) {
+            function (Metadata $metadata) use ($entity, $properties): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForUpdate(
                     $connection,
@@ -326,8 +326,8 @@ class UnitOfWork implements PropertyListenerInterface
                 $this->entitiesChanged->offsetUnset($entity);
                 unset($this->entitiesShouldBePersisted[spl_object_hash($entity)]);
             },
-            function () use ($entity) {
-                throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
+            function () use ($entity): void {
+                throw new QueryException('Could not find repository matching entity "' . $entity::class . '"');
             }
         );
     }
@@ -342,7 +342,7 @@ class UnitOfWork implements PropertyListenerInterface
     {
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity) {
+            function (Metadata $metadata) use ($entity): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
                     $connection,
@@ -359,8 +359,8 @@ class UnitOfWork implements PropertyListenerInterface
 
                 $this->manage($entity);
             },
-            function () use ($entity) {
-                throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
+            function () use ($entity): void {
+                throw new QueryException('Could not find repository matching entity "' . $entity::class . '"');
             }
         );
     }
@@ -385,7 +385,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties) {
+            function (Metadata $metadata) use ($entity, $properties): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForDelete(
                     $connection,
@@ -397,8 +397,8 @@ class UnitOfWork implements PropertyListenerInterface
                 $query->prepareExecute()->execute();
                 $this->detach($entity);
             },
-            function () use ($entity) {
-                throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
+            function () use ($entity): void {
+                throw new QueryException('Could not find repository matching entity "' . $entity::class . '"');
             }
         );
     }

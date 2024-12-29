@@ -38,52 +38,40 @@ class Services implements ContainerInterface
         $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
-            function () {
-                return new ConnectionPool();
-            }
+            fn() => new ConnectionPool()
         );
 
         $this->container->offsetSet(
             'MetadataRepository',
-            function () {
-                return new MetadataRepository($this->get('SerializerFactory'));
-            }
+            fn() => new MetadataRepository($this->get('SerializerFactory'))
         );
 
         $this->container->offsetSet(
             'UnitOfWork',
-            function () {
-                return new UnitOfWork(
-                    $this->get('ConnectionPool'),
-                    $this->get('MetadataRepository'),
-                    $this->get('QueryFactory')
-                );
-            }
+            fn() => new UnitOfWork(
+                $this->get('ConnectionPool'),
+                $this->get('MetadataRepository'),
+                $this->get('QueryFactory')
+            )
         );
 
         $this->container->offsetSet(
             'CollectionFactory',
-            $this->container->factory(function () {
-                return new Repository\CollectionFactory(
-                    $this->get('MetadataRepository'),
-                    $this->get('UnitOfWork'),
-                    $this->get('Hydrator')
-                );
-            })
+            $this->container->factory(fn() => new Repository\CollectionFactory(
+                $this->get('MetadataRepository'),
+                $this->get('UnitOfWork'),
+                $this->get('Hydrator')
+            ))
         );
 
         $this->container->offsetSet(
             'QueryFactory',
-            function () {
-                return new Query\QueryFactory();
-            }
+            fn() => new Query\QueryFactory()
         );
 
         $this->container->offsetSet(
             'SerializerFactory',
-            function () {
-                return new Serializer\SerializerFactory();
-            }
+            fn() => new Serializer\SerializerFactory()
         );
 
         $this->container->offsetSet(
@@ -128,24 +116,20 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'RepositoryFactory',
-            function () {
-                return new Repository\RepositoryFactory(
-                    $this->get('ConnectionPool'),
-                    $this->get('MetadataRepository'),
-                    $this->get('QueryFactory'),
-                    $this->get('CollectionFactory'),
-                    $this->get('UnitOfWork'),
-                    $this->get('Cache'),
-                    $this->get('SerializerFactory')
-                );
-            }
+            fn() => new Repository\RepositoryFactory(
+                $this->get('ConnectionPool'),
+                $this->get('MetadataRepository'),
+                $this->get('QueryFactory'),
+                $this->get('CollectionFactory'),
+                $this->get('UnitOfWork'),
+                $this->get('Cache'),
+                $this->get('SerializerFactory')
+            )
         );
 
         $this->container->offsetSet(
             'Cache',
-            function () {
-                return new Cache\Cache();
-            }
+            fn() => new Cache\Cache()
         );
     }
 

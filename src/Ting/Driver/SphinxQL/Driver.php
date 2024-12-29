@@ -38,16 +38,10 @@ class Driver extends Mysqli\Driver
      */
     protected function quoteValue($value)
     {
-        switch (\gettype($value)) {
-            case "integer":
-                // integer and double doesn't need quotes
-            case "double":
-                return $value;
-                break;
-            default:
-                return "'" . $this->connection->real_escape_string($value) . "'";
-                break;
-        }
+        return match (\gettype($value)) {
+            "integer", "double" => $value,
+            default => "'" . $this->connection->real_escape_string($value) . "'",
+        };
     }
 
     /**

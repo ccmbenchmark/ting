@@ -51,10 +51,10 @@ class Json extends atoum
     {
         $this
             ->if($jsonSerializer = new \CCMBenchmark\Ting\Serializer\Json())
-            ->exception(function () use ($jsonSerializer) {
+            ->exception(function () use ($jsonSerializer): void {
                 $jsonSerializer->serialize(['Bouh' => ['subBouh' => ['subSubBouh']]], ['depth' => 2]);
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException');
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class);
         ;
     }
 
@@ -93,10 +93,10 @@ class Json extends atoum
     {
         $this
             ->if($jsonSerializer = new \CCMBenchmark\Ting\Serializer\Json())
-            ->exception(function () use ($jsonSerializer) {
+            ->exception(function () use ($jsonSerializer): void {
                 $jsonSerializer->unserialize('bouh');
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException');
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class);
         ;
     }
 

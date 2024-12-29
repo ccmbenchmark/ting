@@ -891,25 +891,25 @@ class Hydrator extends atoum
         $cityMetadata->setDatabase('bouh_world');
         $cityMetadata->setTable('T_CITY_CIT');
 
-        $cityMetadata->addField(array(
+        $cityMetadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'cit_id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $cityMetadata->addField(array(
+        $cityMetadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'cit_name',
             'type'      => 'string'
-        ));
+        ]);
 
-        $cityMetadata->addField(array(
+        $cityMetadata->addField([
             'fieldName'  => 'zipcode',
             'columnName' => 'cit_zipcode',
             'type'       => 'string'
-        ));
+        ]);
 
 
         $primaryMultiFieldMetadata = new \CCMBenchmark\Ting\Repository\Metadata(new \mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface());
@@ -919,25 +919,25 @@ class Hydrator extends atoum
         $primaryMultiFieldMetadata->setDatabase('bouh_world');
         $primaryMultiFieldMetadata->setTable('T_PRIMARY_MULTI_FIELD');
 
-        $primaryMultiFieldMetadata->addField(array(
+        $primaryMultiFieldMetadata->addField([
             'primary'       => true,
             'fieldName'     => 'cityId',
             'columnName'    => 'city_id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $primaryMultiFieldMetadata->addField(array(
+        $primaryMultiFieldMetadata->addField([
             'fieldName'  => 'otherItemId',
             'columnName' => 'other_item_id',
             'type'      => 'string',
             'primary'   => true
-        ));
+        ]);
 
-        $primaryMultiFieldMetadata->addField(array(
+        $primaryMultiFieldMetadata->addField([
             'fieldName'  => 'value',
             'columnName' => 'value',
             'type'       => 'string'
-        ));
+        ]);
 
         //*
         $primaryMultiFieldMetadataInverted = new \CCMBenchmark\Ting\Repository\Metadata(new \mock\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface());
@@ -946,23 +946,23 @@ class Hydrator extends atoum
         $primaryMultiFieldMetadataInverted->setDatabase('bouh_world');
         $primaryMultiFieldMetadataInverted->setTable('T_PRIMARY_MULTI_FIELD');
 
-        $primaryMultiFieldMetadataInverted->addField(array(
+        $primaryMultiFieldMetadataInverted->addField([
              'fieldName'  => 'otherItemId',
              'columnName' => 'other_item_id',
              'type'      => 'string',
              'primary'   => true
-         ));
-        $primaryMultiFieldMetadataInverted->addField(array(
+         ]);
+        $primaryMultiFieldMetadataInverted->addField([
              'primary'       => true,
              'fieldName'     => 'cityId',
              'columnName'    => 'city_id',
              'type'          => 'int'
-         ));
-        $primaryMultiFieldMetadataInverted->addField(array(
+         ]);
+        $primaryMultiFieldMetadataInverted->addField([
              'fieldName'  => 'value',
              'columnName' => 'value',
              'type'       => 'string'
-         ));
+         ]);
         //*/
 
         /** @var MetadataRepository $metadataRepo1 */

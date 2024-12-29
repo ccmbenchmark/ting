@@ -48,15 +48,13 @@ class UnitOfWork extends atoum
             ]
         );
 
-        $this->services->set('ConnectionPool', function ($container) use ($connectionPool) {
-            return $connectionPool;
-        });
+        $this->services->set('ConnectionPool', fn($container) => $connectionPool);
     }
 
     public function testManageShouldAddPropertyListener()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
-        $this->calling($mockEntity)->addPropertyListener = function ($unitOfWork) use (&$outerUnitOfWork) {
+        $this->calling($mockEntity)->addPropertyListener = function ($unitOfWork) use (&$outerUnitOfWork): void {
             $outerUnitOfWork = $unitOfWork;
         };
 
@@ -403,22 +401,22 @@ class UnitOfWork extends atoum
                 $mockQueryFactory
             ))
             ->then($unitOfWork->pushSave($entity))
-            ->exception(function () use ($unitOfWork) {
+            ->exception(function () use ($unitOfWork): void {
                 $unitOfWork->process();
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf(\CCMBenchmark\Ting\Exception::class)
             ->then($unitOfWork->pushDelete($entity))
-            ->exception(function () use ($unitOfWork) {
+            ->exception(function () use ($unitOfWork): void {
                 $unitOfWork->process();
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf(\CCMBenchmark\Ting\Exception::class)
             ->and($unitOfWork->manage($entity))
             ->then($entity->setName('newName'))
             ->then($unitOfWork->pushSave($entity))
-            ->exception(function () use ($unitOfWork) {
+            ->exception(function () use ($unitOfWork): void {
                 $unitOfWork->process();
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf(\CCMBenchmark\Ting\Exception::class)
         ;
     }
 }

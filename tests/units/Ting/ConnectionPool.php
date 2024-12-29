@@ -33,14 +33,14 @@ class ConnectionPool extends atoum
         $this
             ->if($connectionPool = new \CCMBenchmark\Ting\ConnectionPool())
             ->and($connectionPool->setConfig(['connectionName' => []]))
-            ->exception(function () use ($connectionPool) {
+            ->exception(function () use ($connectionPool): void {
                 $connectionPool->master(
                     'bouh',
                     'bouhDb'
                 );
             })
                 ->hasMessage('Connection not found: bouh')
-            ->exception(function () use ($connectionPool) {
+            ->exception(function () use ($connectionPool): void {
                 $connectionPool->slave(
                     'bouh',
                     'bouhDb'

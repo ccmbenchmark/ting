@@ -78,12 +78,8 @@ left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_co
 
 $hydrator = $services->get('HydratorAggregator');
 $hydrator->identityMap(true);
-$hydrator->callableIdIs(function ($result) {
-    return $result['t_city_cit']->getId();
-});
-$hydrator->callableDataIs(function ($result) {
-    return $result['t_countrylanguage_col'];
-});
+$hydrator->callableIdIs(fn($result) => $result['t_city_cit']->getId());
+$hydrator->callableDataIs(fn($result) => $result['t_countrylanguage_col']);
 
 $collection = $query->query(new Collection($hydrator));
 $withUUID = false;
@@ -125,9 +121,7 @@ $hydrator->addRelation(
     new Hydrator\AggregateTo('t_city_cit', 'getId'),
     'countryIs'
 ));
-$hydrator->callableFinalizeAggregate(function ($result) {
-    return $result['t_city_cit'];
-});
+$hydrator->callableFinalizeAggregate(fn($result) => $result['t_city_cit']);
 
 $withUUID = false;
 
@@ -168,9 +162,7 @@ $hydrator = $services->get('HydratorRelational');
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('worker')->to('producer')->setter('workersAre'));
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('movie')->to('producer')->setter('moviesAre'));
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('actor')->to('movie')->setter('actorsAre'));
-$hydrator->callableFinalizeAggregate(function ($result) {
-    return $result['producer'];
-});
+$hydrator->callableFinalizeAggregate(fn($result) => $result['producer']);
 
 $collection = $query->query(new Collection($hydrator));
 $withUUID = true;
