@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -128,8 +129,8 @@ class HydratorAggregator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorAggregator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->callableDataIs(fn($result) => $result['c']))
-            ->and($hydrator->callableIdIs(fn($result) => $result['bouh']->getId()))
+            ->and($hydrator->callableDataIs(fn ($result) => $result['c']))
+            ->and($hydrator->callableIdIs(fn ($result) => $result['bouh']->getId()))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())
@@ -152,7 +153,7 @@ class HydratorAggregator extends atoum
                 ->isIdenticalTo('Montbéliard')
             ->string($data['aggregate'][2]->getName())
                 ->isIdenticalTo('Luxiol')
-            ;
+        ;
     }
 
     public function testHydrateWithFinalize()
@@ -251,8 +252,8 @@ class HydratorAggregator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorAggregator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->callableDataIs(fn($result) => $result['c']))
-            ->and($hydrator->callableIdIs(fn($result) => $result['bouh']->getId()))
+            ->and($hydrator->callableDataIs(fn ($result) => $result['c']))
+            ->and($hydrator->callableIdIs(fn ($result) => $result['bouh']->getId()))
             ->and($hydrator->callableFinalizeAggregate(function ($result, $aggregate) {
                 $result['bouh']->aggregate = $aggregate;
                 return $result['bouh'];
@@ -378,8 +379,8 @@ class HydratorAggregator extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorAggregator())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->callableDataIs(fn($result) => $result['c']))
-            ->and($hydrator->callableIdIs(fn($result) => $result['bouh']->getId()))
+            ->and($hydrator->callableDataIs(fn ($result) => $result['c']))
+            ->and($hydrator->callableIdIs(fn ($result) => $result['bouh']->getId()))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data['bouh']->getName())

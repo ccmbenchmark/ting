@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class RepositoryFactory extends atoum
 {
-
     public function testGet()
     {
         $services = new \CCMBenchmark\Ting\Services();

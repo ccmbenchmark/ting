@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -62,7 +63,7 @@ class Services extends atoum
 
     public function testGetCallbackShouldBeSameCallbackUsedWithSet()
     {
-        $callback = (fn($bouh) => 'Bouh Wow');
+        $callback = (fn ($bouh) => 'Bouh Wow');
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
@@ -73,7 +74,7 @@ class Services extends atoum
 
     public function testGetShouldReturnSameInstance()
     {
-        $callback = (fn($bouh) => new \stdClass());
+        $callback = (fn ($bouh) => new \stdClass());
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
@@ -85,7 +86,7 @@ class Services extends atoum
 
     public function testGetShouldReturnNewInstance()
     {
-        $callback = (fn($bouh) => new \stdClass());
+        $callback = (fn ($bouh) => new \stdClass());
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
@@ -97,7 +98,7 @@ class Services extends atoum
 
     public function testHasShouldReturnTrue()
     {
-        $callback = (fn($bouh) => 'Bouh Wow');
+        $callback = (fn ($bouh) => 'Bouh Wow');
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())

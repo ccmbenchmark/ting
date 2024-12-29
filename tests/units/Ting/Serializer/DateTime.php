@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class DateTime extends atoum
 {
-
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
         $datetime = new \DateTime('now');

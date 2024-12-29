@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,13 +31,14 @@ use CCMBenchmark\Ting\Serializer\RuntimeException;
 
 class Geometry extends atoum
 {
-
     public function testUnserializeShouldReturnGeometryObject()
     {
         $this
             ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-            ->object($geometrySerializer->unserialize(
-                hex2bin("00000000010100000000000000000024400000000000003440"))
+            ->object(
+                $geometrySerializer->unserialize(
+                    hex2bin("00000000010100000000000000000024400000000000003440")
+                )
             )
                 ->isInstanceOf(\Brick\Geo\Geometry::class);
     }

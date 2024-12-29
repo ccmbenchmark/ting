@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -116,7 +117,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->exception(function () use ($metadata): void {
-                    $metadata->setEntity('\my\namespace\Bouh');
+                $metadata->setEntity('\my\namespace\Bouh');
             })
                 ->hasMessage('Class must not start with a \\');
     }
@@ -135,11 +136,15 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->addField(
-                ['columnName' => 'user_firstname', 'fieldName' => 'firstname', 'type' => 'string'])
+            ->and(
+                $metadata->addField(
+                    ['columnName' => 'user_firstname', 'fieldName' => 'firstname', 'type' => 'string']
+                )
             )
-            ->and($metadata->addField(
-                ['columnName' => 'user_lastname', 'fieldName' => 'lastname', 'type' => 'string'])
+            ->and(
+                $metadata->addField(
+                    ['columnName' => 'user_lastname', 'fieldName' => 'lastname', 'type' => 'string']
+                )
             )
             ->array($metadata->getFields())
                 ->isIdenticalTo([
@@ -735,7 +740,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -779,7 +784,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -826,7 +831,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -1008,7 +1013,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;

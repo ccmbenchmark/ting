@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,7 +31,6 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
 {
-
     public function getZCountryWithLotsPopulation()
     {
 

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
 {
-
     /**
      * @param \mysqli_stmt|Object $driverStatement
      * @param array               $paramsOrder

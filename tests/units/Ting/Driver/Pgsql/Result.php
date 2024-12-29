@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -41,7 +42,7 @@ class Result extends atoum
             return false;
         });
 
-        PGMock::override('pg_field_name', fn($result, $index) => match ($index) {
+        PGMock::override('pg_field_name', fn ($result, $index) => match ($index) {
             0 => 't.*',
             default => false,
         });
@@ -67,7 +68,7 @@ class Result extends atoum
             return false;
         });
 
-        PGMock::override('pg_field_name', fn($result, $index) => match ($index) {
+        PGMock::override('pg_field_name', fn ($result, $index) => match ($index) {
             0 => 't.*',
             default => false,
         });
@@ -174,7 +175,7 @@ class Result extends atoum
 
         PGMock::override('pg_fetch_array', [1, 1, 2, 3, 6, 7, 8]);
 
-        PGMock::override('pg_field_table', fn($result, $index) => 'table');
+        PGMock::override('pg_field_table', fn ($result, $index) => 'table');
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))
@@ -254,6 +255,6 @@ class Result extends atoum
                             ]
                         ]
                     )
-            ;
+        ;
     }
 }

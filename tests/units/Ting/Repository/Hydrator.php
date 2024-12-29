@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -986,7 +987,7 @@ class Hydrator extends atoum
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult($mysqliResult);
         $mockMysqliResult2 = new \mock\tests\fixtures\FakeDriver\MysqliResult($mysqliResult);
 
-        $fetchFields = function() {
+        $fetchFields = function () {
             $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'cityId';
@@ -1063,13 +1064,13 @@ class Hydrator extends atoum
                 ->and($iterator2 = $hydrator2->setResult($sqlResult2)->getIterator())
 
             ->then($result2 = iterator_to_array($iterator2))
-            ;
+        ;
 
         $this->then()
                 ->integer(count($result1))
                     ->isEqualTo(count($result2));
 
-        foreach($result1 as $i => $row) {
+        foreach ($result1 as $i => $row) {
             $this
                 ->integer($row['cit']->getId())
                    ->isEqualTo($result2[$i]['cit']->getId())

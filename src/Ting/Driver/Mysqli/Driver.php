@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -39,7 +40,6 @@ use function is_null;
 
 class Driver implements DriverInterface
 {
-
     /**
      * @var string
      */
@@ -504,7 +504,7 @@ class Driver implements DriverInterface
 
         try {
             $pingResult = $this->connection->ping();
-        } catch(\Exception) {
+        } catch (\Exception) {
             // mysqli::ping() throws an exception if the connection has gone down ("MySQL server has gone away").
             // We catch it as a ping failure (returns false) in order to try to reconnect.
         }

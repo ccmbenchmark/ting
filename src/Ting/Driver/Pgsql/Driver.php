@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -36,7 +37,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
-
     /**
      * @var string
      */

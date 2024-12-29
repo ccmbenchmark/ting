@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,5 +29,4 @@ use CCMBenchmark\Ting\Repository\Repository;
 
 class CitySecondRepository extends Repository
 {
-
 }

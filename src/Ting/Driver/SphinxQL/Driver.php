@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use CCMBenchmark\Ting\Driver\Mysqli;
 
 class Driver extends Mysqli\Driver
 {
-
     /**
      * Quote value according to the type of variable
      * @param mixed $value

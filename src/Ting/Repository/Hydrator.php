@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -40,7 +41,6 @@ use WeakMap;
  */
 class Hydrator implements HydratorInterface
 {
-
     protected $mapAliases         = [];
     protected $mapObjects         = [];
     protected $objectDatabase     = [];
@@ -276,7 +276,7 @@ class Hydrator implements HydratorInterface
         $result        = [];
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
         $validEntities = []; // Entity marked as valid will fill an object
-                             // (a valid Entity is a entity with at less one property not null)
+        // (a valid Entity is a entity with at less one property not null)
         $fromReferences = []; // Prevents from hydrating if an entity is already ref for a table
         foreach ($columns as $column) {
 

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -89,7 +90,7 @@ class Query extends atoum
         );
 
         $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
-        $this->calling($mockMemcached)->fetch = (fn() => [
+        $this->calling($mockMemcached)->fetch = (fn () => [
             'connection' => 'connectionName',
             'database'   => 'database',
             'data'       =>

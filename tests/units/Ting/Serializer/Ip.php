@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class Ip extends atoum
 {
-
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
         $value = '127.0.0.1';

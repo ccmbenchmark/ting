@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -674,9 +675,9 @@ class Repository extends atoum
         $this->calling($metadata)->getConnection = null;
 
         $this->calling($metadataRepository)
-            ->findMetadataForRepository = function($repository, $callback, $error) use ($metadata): void {
-            $callback($metadata);
-        };
+            ->findMetadataForRepository = function ($repository, $callback, $error) use ($metadata): void {
+                $callback($metadata);
+            };
 
         $this->calling($mockConnectionPool)->slave = $mockDriverSlave;
         $this->calling($mockConnectionPool)->master = $mockDriverMaster;

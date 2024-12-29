@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -31,6 +32,7 @@ use CCMBenchmark\Ting\Repository\Hydrator\AggregateTo;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationOne;
 use CCMBenchmark\Ting\Services;
+
 use const MYSQLI_TYPE_VAR_STRING;
 
 /**
@@ -190,7 +192,7 @@ class HydratorRelational extends atoum
                 ->isIdenticalTo('Montbéliard')
             ->string(next($cities)->getName())
                 ->isIdenticalTo('Luxiol')
-            ;
+        ;
     }
 
     public function testHydrateWithDefaultPk()
@@ -286,7 +288,7 @@ class HydratorRelational extends atoum
                 new AggregateTo('bouh'),
                 'citiesAre'
             )))
-            ->and($hydrator->callableFinalizeAggregate(fn($result) => $result['bouh']))
+            ->and($hydrator->callableFinalizeAggregate(fn ($result) => $result['bouh']))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data->getName())
@@ -944,7 +946,7 @@ class HydratorRelational extends atoum
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
             ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
             ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
-            ->and($hydrator->callableFinalizeAggregate(static fn(array $row) => $row['bouh']))
+            ->and($hydrator->callableFinalizeAggregate(static fn (array $row) => $row['bouh']))
             ->then($iterator = $hydrator->setResult($result)->getIterator())
             ->then($data = $iterator->current())
             ->string($data->getName())

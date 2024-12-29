@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -31,7 +32,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
 {
-
     protected $connection    = null;
     protected $paramsOrder   = [];
     protected $queryType     = null;

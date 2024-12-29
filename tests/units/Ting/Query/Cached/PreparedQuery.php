@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use atoum;
 
 class PreparedQuery extends atoum
 {
-
     public function testQueryShouldCallOnlyCacheGetIfDataInCache()
     {
         $services              = new \CCMBenchmark\Ting\Services();
@@ -46,7 +46,7 @@ class PreparedQuery extends atoum
         );
 
         $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
-        $this->calling($mockMemcached)->fetch = (fn() => [
+        $this->calling($mockMemcached)->fetch = (fn () => [
             'connection' => 'connectionName',
             'database'   => 'database',
             'data' =>

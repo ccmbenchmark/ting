@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,10 +30,9 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-
-    const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
-    const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
-    const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/i';
+    public const SQL_TABLE_SEPARATOR = 'inner|join|left|right|full|cross|where|group|having|window|union|intersect|except|order|limit|offset|fetch|for|on|using|natural';
+    public const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
+    public const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/i';
 
     protected $connectionName  = null;
     protected $database        = null;
@@ -119,8 +119,8 @@ class Result implements ResultInterface
             }
         }
 
-        $tokens = preg_split('/(\W)/', strtolower($query), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-        $tokensWithCase = preg_split('/(\W)/', $query, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+        $tokens = preg_split('/(\W)/', strtolower($query), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $tokensWithCase = preg_split('/(\W)/', $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         $startCapture = false;
         $columnsMatches = [];
@@ -153,10 +153,10 @@ class Result implements ResultInterface
             }
 
             if ($startCapture === true) {
-                if ($brackets === 0 && ($token === ',' || $token === 'from' || $index === $totalTokens-1)) {
+                if ($brackets === 0 && ($token === ',' || $token === 'from' || $index === $totalTokens - 1)) {
                     $scope = 'column';
 
-                    if ($index === $totalTokens-1 && $token !== ';') {
+                    if ($index === $totalTokens - 1 && $token !== ';') {
                         $column .= $token;
                     }
 

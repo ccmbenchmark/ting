@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use Pimple\Container;
 
 class Services implements ContainerInterface
 {
-
     protected $container = null;
 
     protected $serviceOptions = null;
@@ -38,17 +38,17 @@ class Services implements ContainerInterface
         $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
-            fn() => new ConnectionPool()
+            fn () => new ConnectionPool()
         );
 
         $this->container->offsetSet(
             'MetadataRepository',
-            fn() => new MetadataRepository($this->get('SerializerFactory'))
+            fn () => new MetadataRepository($this->get('SerializerFactory'))
         );
 
         $this->container->offsetSet(
             'UnitOfWork',
-            fn() => new UnitOfWork(
+            fn () => new UnitOfWork(
                 $this->get('ConnectionPool'),
                 $this->get('MetadataRepository'),
                 $this->get('QueryFactory')
@@ -57,7 +57,7 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'CollectionFactory',
-            $this->container->factory(fn() => new Repository\CollectionFactory(
+            $this->container->factory(fn () => new Repository\CollectionFactory(
                 $this->get('MetadataRepository'),
                 $this->get('UnitOfWork'),
                 $this->get('Hydrator')
@@ -66,12 +66,12 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'QueryFactory',
-            fn() => new Query\QueryFactory()
+            fn () => new Query\QueryFactory()
         );
 
         $this->container->offsetSet(
             'SerializerFactory',
-            fn() => new Serializer\SerializerFactory()
+            fn () => new Serializer\SerializerFactory()
         );
 
         $this->container->offsetSet(
@@ -116,7 +116,7 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'RepositoryFactory',
-            fn() => new Repository\RepositoryFactory(
+            fn () => new Repository\RepositoryFactory(
                 $this->get('ConnectionPool'),
                 $this->get('MetadataRepository'),
                 $this->get('QueryFactory'),
@@ -129,7 +129,7 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'Cache',
-            fn() => new Cache\Cache()
+            fn () => new Cache\Cache()
         );
     }
 

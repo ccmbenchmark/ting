@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -48,7 +49,7 @@ class UnitOfWork extends atoum
             ]
         );
 
-        $this->services->set('ConnectionPool', fn($container) => $connectionPool);
+        $this->services->set('ConnectionPool', fn ($container) => $connectionPool);
     }
 
     public function testManageShouldAddPropertyListener()

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -21,9 +22,9 @@
  * permissions and limitations under the License.
  *
  **********************************************************************/
+
 namespace CCMBenchmark\Ting\Driver;
 
 class Exception extends \CCMBenchmark\Ting\Exception
 {
-
 }

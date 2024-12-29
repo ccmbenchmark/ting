@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use atoum;
 
 class Driver extends atoum
 {
-
     public function testGetConnectionKeyShouldBeIdempotent()
     {
         $mockDriver = new \mock\Fake\Mysqli();
@@ -193,7 +193,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = 'Invalid characterset or character set not supported';
-        $this->calling($mockDriver)->set_charset = (fn($charset) => false);
+        $this->calling($mockDriver)->set_charset = (fn ($charset) => false);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -209,7 +209,7 @@ class Driver extends atoum
         $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
         $this->calling($mockDriver)->select_db = function ($database): void {
-                $this->database = $database;
+            $this->database = $database;
         };
 
         $this
@@ -226,7 +226,7 @@ class Driver extends atoum
         $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
         $this->calling($mockDriver)->select_db = function ($database): void {
-                $this->database = $database;
+            $this->database = $database;
         };
 
         $this
@@ -245,7 +245,7 @@ class Driver extends atoum
         $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
         $this->calling($mockDriver)->select_db = function ($database): void {
-                $this->database = $database;
+            $this->database = $database;
         };
 
         $this
@@ -361,14 +361,16 @@ class Driver extends atoum
         $driverFake->error = 'none';
         $driverFake->errno = 0;
         $this->calling($driverFake)->query = false;
-        $this->calling($driverFake)->real_escape_string = (fn($value) => $value);
+        $this->calling($driverFake)->real_escape_string = (fn ($value) => $value);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->exception(function () use ($driver): void {
-                $driver->execute("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
+                $driver->execute(
+                    "SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
                 . ' FROM Bouh WHERE id = :id AND login = :login AND is_banned = :is_banned",
-                    ['id' => 3, 'login' => 'Sylvain', 'is_banned' => false]);
+                    ['id' => 3, 'login' => 'Sylvain', 'is_banned' => false]
+                );
             })
                 ->hasCode(0)
             ->mock($driverFake)
@@ -509,7 +511,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
             ->and(
-                $this->calling($driverFake)->real_escape_string = (fn($value) => addcslashes($value, '"'))
+                $this->calling($driverFake)->real_escape_string = (fn ($value) => addcslashes($value, '"'))
             )
             ->and(
                 $this->calling($driverFake)->query = function ($sql) use (&$outerSql, $mockMysqliResult) {
@@ -538,7 +540,7 @@ class Driver extends atoum
     public function testExecuteShouldReturnTrue()
     {
         $driverFake = new \mock\Fake\Mysqli();
-        $this->calling($driverFake)->query = (fn($sql) => true);
+        $this->calling($driverFake)->query = (fn ($sql) => true);
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($driverFake))
@@ -612,7 +614,7 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->startTransaction())
             ->exception(function () use ($driver): void {
-                    $driver->startTransaction();
+                $driver->startTransaction();
             })
                 ->isInstanceOf(\CCMBenchmark\Ting\Driver\Exception::class)
         ;
@@ -629,7 +631,7 @@ class Driver extends atoum
                 $driver->commit();
             })
                 ->hasMessage('Cannot commit no transaction')
-            ;
+        ;
     }
 
     public function testCommitShouldRaiseExceptionIfNoTransaction()
@@ -638,7 +640,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->exception(function () use ($driver): void {
-                    $driver->commit();
+                $driver->commit();
             })
                 ->isInstanceOf(\CCMBenchmark\Ting\Driver\Exception::class)
         ;
@@ -656,7 +658,7 @@ class Driver extends atoum
             })
                 ->isInstanceOf(\CCMBenchmark\Ting\Driver\Exception::class)
                 ->hasMessage('Cannot rollback no transaction')
-            ;
+        ;
     }
 
     public function testRollbackShouldRaiseExceptionIfNoTransaction()
@@ -665,7 +667,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->exception(function () use ($driver): void {
-                    $driver->rollback();
+                $driver->rollback();
             })
                 ->isInstanceOf(\CCMBenchmark\Ting\Driver\Exception::class)
         ;
@@ -940,7 +942,7 @@ class Driver extends atoum
     public function testPingShouldReconnectIfConnectionHasGone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = function(): void {
+        $this->calling($mockDriver)->ping = function (): void {
             throw new \Exception("MySQL server has gone away");
         };
         $mockDriver->error = '';

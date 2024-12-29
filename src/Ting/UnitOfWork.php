@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -34,9 +35,9 @@ use WeakMap;
 
 class UnitOfWork implements PropertyListenerInterface
 {
-    const STATE_NEW     = 1;
-    const STATE_MANAGED = 2;
-    const STATE_DELETE  = 3;
+    public const STATE_NEW     = 1;
+    public const STATE_MANAGED = 2;
+    public const STATE_DELETE  = 3;
 
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
@@ -78,7 +79,7 @@ class UnitOfWork implements PropertyListenerInterface
      */
     protected function generateUUID()
     {
-        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.',self::class, self::class),E_USER_DEPRECATED);
+        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.', self::class, self::class), E_USER_DEPRECATED);
 
         return $this->generateUid();
     }

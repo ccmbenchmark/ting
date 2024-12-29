@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -26,7 +27,6 @@ namespace CCMBenchmark\Ting;
 
 class Connection
 {
-
     /**
      * @var ConnectionPoolInterface|null
      */

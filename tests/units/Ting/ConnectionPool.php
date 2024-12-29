@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -85,7 +86,7 @@ class ConnectionPool extends atoum
                 ->isIdenticalTo($connectionPool->slave('bouh', 'bouhDb'))
                 ->isIdenticalTo($connectionPool->slave('bouh', 'bouhDb'))
                 ->isIdenticalTo($connectionPool->slave('bouh', 'bouhDb'))
-            ;
+        ;
     }
 
     public function testConnectSlaveShouldReturnMasterIfNoMasterDefined()
@@ -108,7 +109,7 @@ class ConnectionPool extends atoum
             ))
             ->object($connectionPool->slave('bouh', 'bouhDb'))
                 ->isIdenticalTo($connectionPool->master('bouh', 'bouhDb'))
-            ;
+        ;
     }
 
     public function testConnectShouldReturnADriver()
@@ -140,7 +141,7 @@ class ConnectionPool extends atoum
                 ->isInstanceOf('\tests\fixtures\FakeDriver\Driver')
             ->object($connectionPool->slave('bouh', 'bouhDb'))
                 ->isInstanceOf('\tests\fixtures\FakeDriver\Driver')
-            ;
+        ;
     }
 
 
@@ -217,7 +218,7 @@ class ConnectionPool extends atoum
                 ->mock($mockLogger)
                     ->call('addConnection')
                         ->twice()
-            ;
+        ;
     }
 
     public function testGetDriveClassShouldreturnFakeDriver()
@@ -266,7 +267,8 @@ class ConnectionPool extends atoum
                             'port'      => 3306
                         ]
                     ]
-                ]))
+                ]
+            ))
             ->then($driver = $connectionPool->master('connection1', 'databaseOnConnection1'))
             ->string($driver->getName())
                 ->isIdenticalTo('connection1')
@@ -290,7 +292,8 @@ class ConnectionPool extends atoum
                             'port'      => 3306
                         ],
                     ]
-                ]))
+                ]
+            ))
             ->and($connectionPool->setDatabaseOptions([
                 "bouhDb" => [
                     'timezone' => 'UTF-8'

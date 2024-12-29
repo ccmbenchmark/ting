@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -35,6 +36,7 @@ use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Serializer;
+
 /**
  * @template T of object
  * @phpstan-type Field array{
@@ -49,7 +51,6 @@ use CCMBenchmark\Ting\Serializer;
  */
 class Metadata
 {
-
     /**
      * @var Serializer\SerializerFactoryInterface|null
      */
@@ -344,7 +345,7 @@ class Metadata
      */
     public function createEntity()
     {
-        return new $this->entity;
+        return new $this->entity();
     }
 
     /**
@@ -401,7 +402,7 @@ class Metadata
                     $value = (int) $value;
                     break;
                 case "double":
-                    $value = (double) $value;
+                    $value = (float) $value;
                     break;
                 case "bool":
                     $value = (bool) $value;

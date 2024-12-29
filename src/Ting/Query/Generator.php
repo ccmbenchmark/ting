@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -224,8 +225,7 @@ class Generator
         $forceMaster = false,
         array $order = [],
         $limit = 0
-    )
-    {
+    ) {
         $driver = $this->getDriver($forceMaster);
 
         [$sql, $params] = $this->getSqlAndParamsByCriteria($criteria, $driver);
@@ -336,7 +336,7 @@ class Generator
     protected function escapeFields(array $fields, DriverInterface $driver)
     {
         return array_map(
-            fn($field) => $driver->escapeField($field),
+            fn ($field) => $driver->escapeField($field),
             $fields
         );
     }
@@ -434,7 +434,8 @@ class Generator
      * @param $limit
      * @return string
      */
-    protected function generateLimit($limit) {
+    protected function generateLimit($limit)
+    {
         return ' LIMIT ' . $limit;
     }
 }

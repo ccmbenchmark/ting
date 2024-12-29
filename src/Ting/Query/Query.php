@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -31,7 +32,6 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 class Query implements QueryInterface
 {
-
     /**
      * @var Connection|null
      */

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,7 +31,6 @@ use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
 class ConnectionPool implements ConnectionPoolInterface
 {
-
     /**
      * @var array
      */

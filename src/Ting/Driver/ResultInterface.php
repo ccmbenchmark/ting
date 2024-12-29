@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -31,7 +32,6 @@ namespace CCMBenchmark\Ting\Driver;
  */
 interface ResultInterface extends \Iterator
 {
-
     /**
      * @param string $connectionName
      * @return $this

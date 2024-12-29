@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -21,6 +22,7 @@
  * permissions and limitations under the License.
  *
  **********************************************************************/
+
 namespace CCMBenchmark\Ting;
 
 class Exception extends \Exception

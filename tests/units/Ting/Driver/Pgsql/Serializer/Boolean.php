@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class Boolean extends atoum
 {
-
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
         $this

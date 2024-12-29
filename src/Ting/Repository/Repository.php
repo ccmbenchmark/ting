@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -46,11 +47,10 @@ use Doctrine\Common\Cache\Cache;
  */
 abstract class Repository
 {
-
-    const QUERY_SELECT = 'select';
-    const QUERY_INSERT = 'insert';
-    const QUERY_UPDATE = 'update';
-    const QUERY_DELETE = 'delete';
+    public const QUERY_SELECT = 'select';
+    public const QUERY_INSERT = 'insert';
+    public const QUERY_UPDATE = 'update';
+    public const QUERY_DELETE = 'delete';
 
     /**
      * @var ContainerInterface

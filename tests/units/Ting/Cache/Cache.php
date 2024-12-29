@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,7 +31,6 @@ use atoum;
 
 class Cache extends atoum
 {
-
     public function testDeleteShouldCallLogger()
     {
         $mockLogger = new \mock\CCMBenchmark\Ting\Logger\CacheLoggerInterface();

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -31,7 +32,6 @@ require_once __DIR__ . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Statement extends atoum
 {
-
     public function testExecuteShouldCallTheRightConnection()
     {
         PGMock::override('pg_execute', function ($connection, $statementName, $values) use (&$outerConnection) {
@@ -121,7 +121,7 @@ class Statement extends atoum
 
         PGMock::override('pg_num_fields', 2);
         PGMock::override('pg_field_table', 'Bouh');
-        PGMock::override('pg_field_name', fn($result, $index) => match ($index) {
+        PGMock::override('pg_field_name', fn ($result, $index) => match ($index) {
             0 => 'prenom',
             1 => 'nom',
             default => false,

@@ -2,7 +2,6 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
-
 class Uuid implements SerializerInterface
 {
     public function serialize($toSerialize, array $options = [])
