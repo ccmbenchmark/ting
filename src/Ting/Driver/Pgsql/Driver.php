@@ -424,16 +424,6 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @deprecated
-     */
-    public function getInsertId()
-    {
-        error_log(sprintf('%s::getInsertId() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedId() instead.', self::class, self::class), E_USER_DEPRECATED);
-
-        return $this->getInsertedId();
-    }
-
-    /**
      * Return the last inserted id for a sequence
      * @return int
      * @throws Exception
@@ -449,16 +439,6 @@ class Driver implements DriverInterface
 
         $row = pg_fetch_row($resultResource);
         return (int) $row[0];
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getInsertIdForSequence($sequenceName)
-    {
-        error_log(sprintf('%s::getInsertIdForSequence() method is deprecated as of version 3.8 of Ting and will be removed in 4.0. Use %s::getInsertedIdForSequence() instead.', self::class, self::class), E_USER_DEPRECATED);
-
-        return $this->getInsertedIdForSequence($sequenceName);
     }
 
     /**
