@@ -43,7 +43,7 @@ class UnitOfWork implements PropertyListenerInterface
     protected $queryFactory              = null;
     protected WeakMap $entities;
     protected WeakMap $entitiesChanged;
-    protected WeakMap $entitiesShouldBePersisted;
+    protected array $entitiesShouldBePersisted;
     protected $statements = [];
 
     /**
@@ -61,7 +61,7 @@ class UnitOfWork implements PropertyListenerInterface
         $this->queryFactory       = $queryFactory;
         $this->entities = new WeakMap();
         $this->entitiesChanged = new WeakMap();
-        $this->entitiesShouldBePersisted = new WeakMap();
+        $this->entitiesShouldBePersisted = [];
     }
 
     /**
@@ -112,8 +112,9 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function isNew(NotifyPropertyInterface $entity): bool
     {
-        if (isset($this->entitiesShouldBePersisted[$entity]) === true
-            && $this->entitiesShouldBePersisted[$entity] === self::STATE_NEW
+        $hash = spl_object_hash($entity);
+        if (isset($this->entitiesShouldBePersisted[$hash]) === true
+            && $this->entitiesShouldBePersisted[$hash]['state'] === self::STATE_NEW
         ) {
             return true;
         }
@@ -134,7 +135,8 @@ class UnitOfWork implements PropertyListenerInterface
             $state = self::STATE_NEW;
         }
 
-        $this->entitiesShouldBePersisted[$entity] = $state;
+        $hash = spl_object_hash($entity);
+        $this->entitiesShouldBePersisted[$hash] = ['state' => $state, 'entity' => $entity];
         $this->entities[$entity] = $entity;
 
         return $this;
@@ -146,7 +148,12 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function shouldBePersisted(NotifyPropertyInterface $entity): bool
     {
-        return isset($this->entitiesShouldBePersisted[$entity]);
+        $hash = spl_object_hash($entity);
+        if (isset($this->entitiesShouldBePersisted[$hash]) === true) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -193,7 +200,10 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function detach(NotifyPropertyInterface $entity): void
     {
-        $this->entitiesShouldBePersisted->offsetUnset($entity);
+        $hash = spl_object_hash($entity);
+        if ($this->entitiesShouldBePersisted[$hash]) {
+            unset($this->entitiesShouldBePersisted[$hash]);
+        }
         $this->entitiesChanged->offsetUnset($entity);
         $this->entities->offsetUnset($entity);
     }
@@ -204,7 +214,7 @@ class UnitOfWork implements PropertyListenerInterface
     public function detachAll(): void
     {
         $this->entitiesChanged = new WeakMap();
-        $this->entitiesShouldBePersisted = new WeakMap();
+        $this->entitiesShouldBePersisted = [];
         $this->entities = new WeakMap();
     }
 
@@ -216,7 +226,8 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function pushDelete(NotifyPropertyInterface $entity): self
     {
-        $this->entitiesShouldBePersisted[$entity] = self::STATE_DELETE;
+        $hash = spl_object_hash($entity);
+        $this->entitiesShouldBePersisted[$hash] = ['state' => self::STATE_DELETE, 'entity' => $entity];
         $this->entities[$entity] = $entity;
 
         return $this;
@@ -230,8 +241,9 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function shouldBeRemoved(NotifyPropertyInterface $entity): bool
     {
-        if (isset($this->entitiesShouldBePersisted[$entity]) === true
-            && $this->entitiesShouldBePersisted[$entity] === self::STATE_DELETE
+        $hash = spl_object_hash($entity);
+        if (isset($this->entitiesShouldBePersisted[$hash]) === true
+            && $this->entitiesShouldBePersisted[$hash]['state'] === self::STATE_DELETE
         ) {
             return true;
         }
@@ -250,18 +262,18 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function process(): void
     {
-        foreach ($this->entitiesShouldBePersisted as $entity => $state) {
-            switch ($state) {
+        foreach ($this->entitiesShouldBePersisted as $details) {
+            switch ($details['state']) {
                 case self::STATE_MANAGED:
-                    $this->processManaged($entity);
+                    $this->processManaged($details['entity']);
                     break;
 
                 case self::STATE_NEW:
-                    $this->processNew($entity);
+                    $this->processNew($details['entity']);
                     break;
 
                 case self::STATE_DELETE:
-                    $this->processDelete($entity);
+                    $this->processDelete($details['entity']);
                     break;
             }
         }
@@ -312,7 +324,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $query->prepareExecute()->execute();
 
                 $this->entitiesChanged->offsetUnset($entity);
-                $this->entitiesShouldBePersisted->offsetUnset($entity);
+                unset($this->entitiesShouldBePersisted[spl_object_hash($entity)]);
             },
             function () use ($entity) {
                 throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
@@ -322,14 +334,12 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Insert all applicable entities in database
-     *
-     * @param NotifyPropertyInterface $entity
+     * @param  string $hash
      * @throws Exception
      * @throws QueryException
      */
     protected function processNew(NotifyPropertyInterface $entity): void
     {
-
         $this->metadataRepository->findMetadataForEntity(
             $entity,
             function (Metadata $metadata) use ($entity) {
@@ -345,7 +355,7 @@ class UnitOfWork implements PropertyListenerInterface
                 $metadata->setEntityPropertyForAutoIncrement($entity, $connection->master());
 
                 $this->entitiesChanged->offsetUnset($entity);
-                $this->entitiesShouldBePersisted->offsetUnset($entity);
+                unset($this->entitiesShouldBePersisted[spl_object_hash($entity)]);
 
                 $this->manage($entity);
             },

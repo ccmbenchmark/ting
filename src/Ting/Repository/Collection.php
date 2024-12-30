@@ -32,7 +32,7 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
  *
  * @template-implements CollectionInterface<T>
  */
-class Collection implements CollectionInterface
+class Collection implements CollectionInterface, \JsonSerializable
 {
 
     /**
@@ -154,5 +154,10 @@ class Collection implements CollectionInterface
     public function count()
     {
         return $this->hydrator->count();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return iterator_to_array($this->hydrator->getIterator());
     }
 }

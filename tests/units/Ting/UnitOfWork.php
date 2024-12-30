@@ -139,7 +139,6 @@ class UnitOfWork extends atoum
     public function testIsPropertyChangedWithUUIDShouldReturnFalse()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
-        $mockEntity->tingUUID = uniqid();
 
         $this
             ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
@@ -223,7 +222,6 @@ class UnitOfWork extends atoum
     public function testShouldBeRemovedWithUUIDShouldReturnFalse()
     {
         $mockEntity = new \mock\tests\fixtures\model\Bouh();
-        $mockEntity->tingUUID = uniqid();
 
         $this
             ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
