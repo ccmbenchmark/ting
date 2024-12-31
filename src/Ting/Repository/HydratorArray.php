@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -35,7 +36,6 @@ use CCMBenchmark\Ting\UnitOfWork;
  */
 class HydratorArray implements HydratorInterface
 {
-
     protected $metadataRepository = null;
     protected $unitOfWork         = null;
 

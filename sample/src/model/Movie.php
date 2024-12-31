@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -27,10 +28,8 @@ namespace sample\src\model;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
-
 class Movie implements NotifyPropertyInterface
 {
-
     use NotifyProperty;
 
     protected $id          = null;

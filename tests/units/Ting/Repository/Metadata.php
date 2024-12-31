@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -40,7 +41,7 @@ class Metadata extends atoum
             ->and($metadata->setDatabase('myDatabase'))
             ->and($metadata->setConnectionName('myConnection'))
             ->object($metadata->getConnection($mockConnectionPool))
-                ->isInstanceOf('\CCMBenchmark\Ting\Connection')
+                ->isInstanceOf(\CCMBenchmark\Ting\Connection::class)
         ;
     }
 
@@ -73,7 +74,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->exception(function () use ($metadata) {
+            ->exception(function () use ($metadata): void {
                 $metadata->setRepository('\my\namespace\Bouh');
             })
                 ->hasMessage('Class must not start with a \\');
@@ -115,8 +116,8 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->exception(function () use ($metadata) {
-                    $metadata->setEntity('\my\namespace\Bouh');
+            ->exception(function () use ($metadata): void {
+                $metadata->setEntity('\my\namespace\Bouh');
             })
                 ->hasMessage('Class must not start with a \\');
     }
@@ -126,7 +127,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->object($metadata->addField(array('columnName' => 'BO_BOUH', 'fieldName' => 'bouh', 'type' => 'string')))
+            ->object($metadata->addField(['columnName' => 'BO_BOUH', 'fieldName' => 'bouh', 'type' => 'string']))
                 ->isIdenticalTo($metadata);
     }
 
@@ -135,11 +136,15 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->addField(
-                array('columnName' => 'user_firstname', 'fieldName' => 'firstname', 'type' => 'string'))
+            ->and(
+                $metadata->addField(
+                    ['columnName' => 'user_firstname', 'fieldName' => 'firstname', 'type' => 'string']
+                )
             )
-            ->and($metadata->addField(
-                array('columnName' => 'user_lastname', 'fieldName' => 'lastname', 'type' => 'string'))
+            ->and(
+                $metadata->addField(
+                    ['columnName' => 'user_lastname', 'fieldName' => 'lastname', 'type' => 'string']
+                )
             )
             ->array($metadata->getFields())
                 ->isIdenticalTo([
@@ -161,18 +166,18 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->exception(function () use ($metadata) {
-                $metadata->addField(array('fieldName' => 'bouh'));
+            ->exception(function () use ($metadata): void {
+                $metadata->addField(['fieldName' => 'bouh']);
             })
                 ->hasDefaultCode()
                 ->hasMessage('Field configuration must have "columnName" property')
-            ->exception(function () use ($metadata) {
-                $metadata->addField(array('columnName' => 'BOO_BOUH'));
+            ->exception(function () use ($metadata): void {
+                $metadata->addField(['columnName' => 'BOO_BOUH']);
             })
                 ->hasDefaultCode()
                 ->hasMessage('Field configuration must have "fieldName" property')
-            ->exception(function () use ($metadata) {
-                $metadata->addField(array('fieldName' => 'bouh', 'columnName' => 'BOO_BOUH'));
+            ->exception(function () use ($metadata): void {
+                $metadata->addField(['fieldName' => 'bouh', 'columnName' => 'BOO_BOUH']);
             })
                 ->hasDefaultCode()
                 ->hasMessage('Field configuration must have "type" property');
@@ -190,7 +195,7 @@ class Metadata extends atoum
                 'connectionName',
                 'database',
                 'Bouh',
-                function ($metadata) use (&$outerMetadata) {
+                function ($metadata) use (&$outerMetadata): void {
                     $outerMetadata = $metadata;
                 }
             ))
@@ -209,7 +214,7 @@ class Metadata extends atoum
                 'connectionName',
                 'database',
                 'Bim',
-                function () {
+                function (): void {
                 }
             ))
                 ->isFalse();
@@ -221,7 +226,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->then($metadata->setTable('Bouh'))
-            ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'boo_bouh', 'type' => 'string')))
+            ->then($metadata->addField(['fieldName' => 'Bouh', 'columnName' => 'boo_bouh', 'type' => 'string']))
             ->boolean($metadata->hasColumn('boo_bouh'))
                 ->isTrue();
     }
@@ -232,7 +237,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->then($metadata->setTable('Bouh'))
-            ->then($metadata->addField(array('fieldName' => 'Bouh', 'columnName' => 'BOO_bouh', 'type' => 'string')))
+            ->then($metadata->addField(['fieldName' => 'Bouh', 'columnName' => 'BOO_bouh', 'type' => 'string']))
             ->boolean($metadata->hasColumn('boo_no'))
                 ->isFalse();
     }
@@ -252,14 +257,14 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string'
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setName = function ($name) {
+        $this->calling($bouh)->setName = function ($name): void {
             $this->name = $name;
         };
 
@@ -277,14 +282,14 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'old',
             'columnName' => 'boo_old',
             'type'       => 'int'
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setOld = function ($old) {
+        $this->calling($bouh)->setOld = function ($old): void {
             $this->old = $old;
         };
 
@@ -299,14 +304,14 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'old',
             'columnName' => 'boo_old',
             'type'       => 'int'
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setOld = function ($old) {
+        $this->calling($bouh)->setOld = function ($old): void {
             $this->old = $old;
         };
 
@@ -321,14 +326,14 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'old',
             'columnName' => 'boo_old',
             'type'       => 'double'
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setOld = function ($old) {
+        $this->calling($bouh)->setOld = function ($old): void {
             $this->old = $old;
         };
 
@@ -343,14 +348,14 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'swag',
             'columnName' => 'boo_swag',
             'type'       => 'bool'
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setSwag = function ($isSwag) {
+        $this->calling($bouh)->setSwag = function ($isSwag): void {
             $this->swag = $isSwag;
         };
 
@@ -365,15 +370,15 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'roles',
             'columnName' => 'boo_roles',
             'type'       => 'string',
-            'serializer' => 'CCMBenchmark\Ting\Serializer\Json'
-        ));
+            'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setRoles = function ($roles) {
+        $this->calling($bouh)->setRoles = function ($roles): void {
             $this->roles = $roles;
         };
 
@@ -388,18 +393,18 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'roles',
             'columnName' => 'boo_roles',
             'type'       => 'string',
-            'serializer' => 'CCMBenchmark\Ting\Serializer\Json',
+            'serializer' => \CCMBenchmark\Ting\Serializer\Json::class,
             'serializer_options' => [
                 'unserialize' => ['assoc' => true]
             ]
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setRoles = function ($roles) {
+        $this->calling($bouh)->setRoles = function ($roles): void {
             $this->roles = $roles;
         };
 
@@ -414,19 +419,19 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'boo_id',
             'type'          => 'int'
-        ));
+        ]);
 
         $driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($driver)->getInsertedId = 321;
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setId = function ($id) {
+        $this->calling($bouh)->setId = function ($id): void {
             $this->id = $id;
         };
 
@@ -441,18 +446,18 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'    => true,
             'fieldName'  => 'id',
             'columnName' => 'boo_id',
             'type'       => 'int'
-        ));
+        ]);
 
         $driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($driver)->getInsertedId = 321;
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setId = function ($id) {
+        $this->calling($bouh)->setId = function ($id): void {
             $this->id = $id;
         };
 
@@ -488,7 +493,7 @@ class Metadata extends atoum
                 ])
             )
             ->exception(
-                function () use ($metadata, $mockConnection, $services) {
+                function () use ($metadata, $mockConnection, $services): void {
                     $metadata->getByPrimaries(
                         $mockConnection,
                         $services->get('QueryFactory'),
@@ -497,7 +502,7 @@ class Metadata extends atoum
                     );
                 }
             )
-                ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf(\CCMBenchmark\Ting\Exception::class)
                 ->hasMessage('Incorrect format for primaries')
         ;
     }
@@ -528,7 +533,7 @@ class Metadata extends atoum
                     ['id' => 1]
                 )
             )
-                ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
             ->object(
                 $metadata->getByPrimaries(
                     $mockConnection,
@@ -537,7 +542,7 @@ class Metadata extends atoum
                     1
                 )
             )
-                ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
         ;
     }
 
@@ -573,7 +578,7 @@ class Metadata extends atoum
                     ['name' => 'Xavier']
                 )
             )
-                ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
         ;
     }
 
@@ -602,7 +607,7 @@ class Metadata extends atoum
                 ])
             )
             ->exception(
-                function () use ($metadata, $mockConnection, $services) {
+                function () use ($metadata, $mockConnection, $services): void {
                     $metadata->getOneByCriteria(
                         $mockConnection,
                         $services->get('QueryFactory'),
@@ -611,7 +616,7 @@ class Metadata extends atoum
                     );
                 }
             )
-                ->isInstanceOf('CCMBenchmark\Ting\Exception')
+                ->isInstanceOf(\CCMBenchmark\Ting\Exception::class)
         ;
     }
 
@@ -640,7 +645,7 @@ class Metadata extends atoum
                     $services->get('CollectionFactory')
                 )
             )
-            ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+            ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
         ;
     }
 
@@ -676,7 +681,7 @@ class Metadata extends atoum
                     $services->get('CollectionFactory')
                 )
             )
-            ->isInstanceOf('CCMBenchmark\Ting\Query\Query')
+            ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
         ;
     }
 
@@ -716,7 +721,7 @@ class Metadata extends atoum
             )
             ->then($query = $metadata->generateQueryForInsert($mockConnection, $services->get('QueryFactory'), $entity))
             ->object($query)
-                ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\PreparedQuery::class)
                 ->if($query->execute())
                     ->mock($mockDriver)
                         ->call('prepare')
@@ -735,9 +740,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
-        };
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -749,7 +752,7 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
             $outerParams = $params;
         };
 
@@ -768,7 +771,7 @@ class Metadata extends atoum
                     'fieldName'  => 'roles',
                     'columnName' => 'boo_roles',
                     'type'       => 'string',
-                    'serializer' => 'CCMBenchmark\Ting\Serializer\Json'
+                    'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
@@ -781,9 +784,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
-        };
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -795,7 +796,7 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
             $outerParams = $params;
         };
 
@@ -814,7 +815,7 @@ class Metadata extends atoum
                     'fieldName'  => 'roles',
                     'columnName' => 'boo_roles',
                     'type'       => 'string',
-                    'serializer' => '\CCMBenchmark\Ting\Serializer\Json',
+                    'serializer' => \CCMBenchmark\Ting\Serializer\Json::class,
                     'serializer_options' => [
                         'serialize'   => ['options' => JSON_HEX_QUOT]
                     ]
@@ -830,9 +831,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
-        };
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -844,7 +843,7 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
             $outerParams = $params;
         };
 
@@ -867,7 +866,7 @@ class Metadata extends atoum
                     'fieldName'     => 'id',
                     'columnName'    => 'boo_id',
                     'type'          => 'int',
-                    'serializer'    => 'CCMBenchmark\Ting\Serializer\Json'
+                    'serializer'    => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
             ->and(
@@ -875,7 +874,7 @@ class Metadata extends atoum
                     'fieldName'  => 'roles',
                     'columnName' => 'boo_roles',
                     'type'       => 'string',
-                    'serializer' => 'CCMBenchmark\Ting\Serializer\Json'
+                    'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
@@ -926,7 +925,7 @@ class Metadata extends atoum
                 )
             )
             ->object($query)
-                ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\PreparedQuery::class)
                     ->if($query->execute())
                         ->mock($mockDriver)
                             ->call('prepare')
@@ -970,7 +969,7 @@ class Metadata extends atoum
             ->object(
                 $query
             )
-                ->isInstanceOf('CCMBenchmark\Ting\Query\PreparedQuery')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\PreparedQuery::class)
                     ->if($query->execute())
                         ->mock($mockDriver)
                             ->call('prepare')
@@ -988,15 +987,15 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string',
             'setter'     => 'nameIs'
-        ));
+        ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->nameIs = function ($name) {
+        $this->calling($bouh)->nameIs = function ($name): void {
             $this->name = $name;
         };
 
@@ -1014,9 +1013,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
-        };
+        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -1028,7 +1025,7 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
             $outerParams = $params;
         };
 
@@ -1061,11 +1058,11 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
         $metadata->setEntity('mock\repository\Bouh');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string',
-        ));
+        ]);
 
         $this
             ->string($metadata->getGetter('name'))
@@ -1081,13 +1078,13 @@ class Metadata extends atoum
         $metadata->setEntity('mock\repository\Bouh');
         $getter = uniqid('getter');
         $setter = uniqid('setter');
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string',
             'getter'     => $getter,
             'setter'     => $setter
-        ));
+        ]);
 
         $this
             ->string($metadata->getGetter('name'))

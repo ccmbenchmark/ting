@@ -27,5 +27,4 @@ namespace CCMBenchmark\Ting\Repository\Hydrator;
 
 class AggregateFrom extends Aggregate
 {
-
 }

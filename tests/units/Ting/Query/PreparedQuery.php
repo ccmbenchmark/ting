@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use atoum;
 
 class PreparedQuery extends atoum
 {
-
     public function testPrepareQueryShouldCallSlavePrepare()
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();

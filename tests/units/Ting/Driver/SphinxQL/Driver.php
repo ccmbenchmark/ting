@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class Driver extends atoum
 {
-
     public function testEscapeFieldShouldEscapeField()
     {
         $mockDriver = new \mock\Fake\SphinxQL();

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -33,15 +34,15 @@ class Statement extends atoum
         $driverStatement = new \mock\Fake\DriverStatement();
         $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $params          = array(
+        $params          = [
             'firstname'   => 'Sylvain',
             'id'          => 3,
             'old'         => 32.1,
             'description' => 'A very long description',
             'date'        => '2014-03-01 14:02:05',
             'is_banned'   => false,
-        );
-        $paramsOrder = array('firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null, 'is_banned' => null);
+        ];
+        $paramsOrder = ['firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null, 'is_banned' => null];
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
         $driverStatement->errno = 0;
@@ -79,11 +80,11 @@ class Statement extends atoum
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Mysqli\Statement(
                 $driverStatement,
-                array(),
+                [],
                 'connectionName',
                 'database'
             ))
-            ->then($statement->execute(array(), $collection))
+            ->then($statement->execute([], $collection))
             ->mock($driverStatement)
                 ->call('execute')
                     ->once();
@@ -108,7 +109,7 @@ class Statement extends atoum
         );
 
         $this->calling($result)->fetch_fields = function () {
-            $fields = array();
+            $fields = [];
             $stdClass = new \stdClass();
             $stdClass->name     = 'prenom';
             $stdClass->orgname  = 'firstname';
@@ -129,7 +130,7 @@ class Statement extends atoum
         };
 
         $this->calling($driverStatement)->get_result = $result;
-        $this->calling($collection)->set = function ($result) use (&$outerResult) {
+        $this->calling($collection)->set = function ($result) use (&$outerResult): void {
             $outerResult = $result;
         };
 
@@ -170,10 +171,10 @@ class Statement extends atoum
                 'connectionName',
                 'database'
             ))
-            ->exception(function () use ($statement, $driverStatement, $collection) {
+            ->exception(function () use ($statement, $driverStatement, $collection): void {
                 $statement->execute([], $collection);
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\QueryException::class);
     }
 
     public function testExecuteShouldReturnTrueIfNoError()
@@ -214,7 +215,7 @@ class Statement extends atoum
                 'database'
             ))
             ->and($statement->setLogger($mockLogger))
-            ->then($statement->execute(array(), $collection))
+            ->then($statement->execute([], $collection))
                 ->mock($mockLogger)
                     ->call('startStatementExecute')
                         ->once()

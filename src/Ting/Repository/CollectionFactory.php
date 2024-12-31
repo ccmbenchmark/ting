@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -34,7 +35,6 @@ use CCMBenchmark\Ting\UnitOfWork;
  */
 class CollectionFactory implements CollectionFactoryInterface
 {
-
     /**
      * @var MetadataRepository|null
      */

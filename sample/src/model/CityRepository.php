@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,7 +31,6 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements MetadataInitializer
 {
-
     public function getZCountryWithLotsPopulation()
     {
 
@@ -60,37 +60,37 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
         $metadata->setSchema('public');
         $metadata->setTable('t_city_cit');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'cit_id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'cit_name',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'countryCode',
             'columnName' => 'cou_code',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'district',
             'columnName' => 'cit_district',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'population',
             'columnName' => 'cit_population',
             'type'       => 'int'
-        ));
+        ]);
 
         return $metadata;
     }

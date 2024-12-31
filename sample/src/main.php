@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -78,12 +79,8 @@ left join t_countrylanguage_col on t_countrylanguage_col.cou_code = t_country_co
 
 $hydrator = $services->get('HydratorAggregator');
 $hydrator->identityMap(true);
-$hydrator->callableIdIs(function ($result) {
-    return $result['t_city_cit']->getId();
-});
-$hydrator->callableDataIs(function ($result) {
-    return $result['t_countrylanguage_col'];
-});
+$hydrator->callableIdIs(fn ($result) => $result['t_city_cit']->getId());
+$hydrator->callableDataIs(fn ($result) => $result['t_countrylanguage_col']);
 
 $collection = $query->query(new Collection($hydrator));
 $withUUID = false;
@@ -121,13 +118,12 @@ $hydrator->addRelation(new Hydrator\RelationMany(
 ));
 $hydrator->addRelation(
     new Hydrator\RelationOne(
-    new Hydrator\AggregateFrom('t_country_cou', 'getCode'),
-    new Hydrator\AggregateTo('t_city_cit', 'getId'),
-    'countryIs'
-));
-$hydrator->callableFinalizeAggregate(function ($result) {
-    return $result['t_city_cit'];
-});
+        new Hydrator\AggregateFrom('t_country_cou', 'getCode'),
+        new Hydrator\AggregateTo('t_city_cit', 'getId'),
+        'countryIs'
+    )
+);
+$hydrator->callableFinalizeAggregate(fn ($result) => $result['t_city_cit']);
 
 $withUUID = false;
 
@@ -168,9 +164,7 @@ $hydrator = $services->get('HydratorRelational');
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('worker')->to('producer')->setter('workersAre'));
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('movie')->to('producer')->setter('moviesAre'));
 $hydrator->addRelation((new Hydrator\RelationMany())->aggregate('actor')->to('movie')->setter('actorsAre'));
-$hydrator->callableFinalizeAggregate(function ($result) {
-    return $result['producer'];
-});
+$hydrator->callableFinalizeAggregate(fn ($result) => $result['producer']);
 
 $collection = $query->query(new Collection($hydrator));
 $withUUID = true;
@@ -341,13 +335,13 @@ try {
     $nb = $cityRepository->getNumberOfCities();
     var_dump(['initial' => $nb]);
     $cityRepository->startTransaction();
-        $query = $cityRepository->getQuery(
-            "INSERT INTO t_city_cit
+    $query = $cityRepository->getQuery(
+        "INSERT INTO t_city_cit
                 (cit_name, cit_population) VALUES
                 (:name, :pop)"
-        );
+    );
 
-        $query->setParams(['name' => 'BOUH_TEST', 'pop' => 25000])->execute();
+    $query->setParams(['name' => 'BOUH_TEST', 'pop' => 25000])->execute();
     $cityRepository->rollback();
     $nb = $cityRepository->getNumberOfCities();
     var_dump(['apres' => $nb]);

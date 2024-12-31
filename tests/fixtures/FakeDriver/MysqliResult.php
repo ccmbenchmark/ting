@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class MysqliResult implements ResultInterface
 {
-
     protected $offset = 0;
     protected $data   = null;
 

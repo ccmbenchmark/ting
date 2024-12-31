@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-
     protected $connectionName  = null;
     protected $database        = null;
     protected $result          = null;

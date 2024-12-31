@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -60,6 +61,6 @@ class NotifyProperty extends atoum
             ->mock($mockListener2)
                 ->call('propertyChanged')
                     ->once()
-            ;
+        ;
     }
 }

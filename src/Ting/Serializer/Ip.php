@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -26,7 +27,6 @@ namespace CCMBenchmark\Ting\Serializer;
 
 class Ip implements SerializerInterface
 {
-
     /**
      * @param string $toSerialize
      * @param array $options

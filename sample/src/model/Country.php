@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
 class Country implements NotifyPropertyInterface
 {
-
     use NotifyProperty;
 
     protected $code      = null;

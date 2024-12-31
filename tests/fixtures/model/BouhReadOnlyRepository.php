@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -50,32 +51,32 @@ class BouhReadOnlyRepository extends Repository implements MetadataInitializer
         $metadata->setDatabase('bouh_world');
         $metadata->setTable('T_BOUH_BOO');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'boo_id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'firstname',
             'columnName' => 'boo_firstname',
             'type'      => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'roles',
             'columnName' => 'boo_roles',
             'type'       => 'string',
-            'serializer' => '\CCMBenchmark\Ting\Serializer\Json'
-        ));
+            'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
+        ]);
 
         return $metadata;
     }

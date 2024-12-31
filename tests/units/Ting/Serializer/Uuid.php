@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -46,10 +47,10 @@ class Uuid extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\Uuid())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->unserialize('Invalid uuid');
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 
@@ -57,10 +58,10 @@ class Uuid extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\Uuid())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->serialize(new \StdClass());
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 

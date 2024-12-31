@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -34,9 +35,9 @@ use WeakMap;
 
 class UnitOfWork implements PropertyListenerInterface
 {
-    const STATE_NEW     = 1;
-    const STATE_MANAGED = 2;
-    const STATE_DELETE  = 3;
+    public const STATE_NEW     = 1;
+    public const STATE_MANAGED = 2;
+    public const STATE_DELETE  = 3;
 
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
@@ -78,7 +79,7 @@ class UnitOfWork implements PropertyListenerInterface
      */
     protected function generateUUID()
     {
-        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.',self::class, self::class),E_USER_DEPRECATED);
+        error_log(sprintf('%s::generateUUID() method is deprecated as of version 3.6 of Ting and will be removed in 4.0. Use %s::generateUid() instead.', self::class, self::class), E_USER_DEPRECATED);
 
         return $this->generateUid();
     }
@@ -311,7 +312,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties) {
+            function (Metadata $metadata) use ($entity, $properties): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForUpdate(
                     $connection,
@@ -326,8 +327,8 @@ class UnitOfWork implements PropertyListenerInterface
                 $this->entitiesChanged->offsetUnset($entity);
                 unset($this->entitiesShouldBePersisted[spl_object_hash($entity)]);
             },
-            function () use ($entity) {
-                throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
+            function () use ($entity): void {
+                throw new QueryException('Could not find repository matching entity "' . $entity::class . '"');
             }
         );
     }
@@ -342,7 +343,7 @@ class UnitOfWork implements PropertyListenerInterface
     {
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity) {
+            function (Metadata $metadata) use ($entity): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForInsert(
                     $connection,
@@ -359,8 +360,8 @@ class UnitOfWork implements PropertyListenerInterface
 
                 $this->manage($entity);
             },
-            function () use ($entity) {
-                throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
+            function () use ($entity): void {
+                throw new QueryException('Could not find repository matching entity "' . $entity::class . '"');
             }
         );
     }
@@ -385,7 +386,7 @@ class UnitOfWork implements PropertyListenerInterface
 
         $this->metadataRepository->findMetadataForEntity(
             $entity,
-            function (Metadata $metadata) use ($entity, $properties) {
+            function (Metadata $metadata) use ($entity, $properties): void {
                 $connection = $metadata->getConnection($this->connectionPool);
                 $query = $metadata->generateQueryForDelete(
                     $connection,
@@ -397,8 +398,8 @@ class UnitOfWork implements PropertyListenerInterface
                 $query->prepareExecute()->execute();
                 $this->detach($entity);
             },
-            function () use ($entity) {
-                throw new QueryException('Could not find repository matching entity "' . \get_class($entity) . '"');
+            function () use ($entity): void {
+                throw new QueryException('Could not find repository matching entity "' . $entity::class . '"');
             }
         );
     }

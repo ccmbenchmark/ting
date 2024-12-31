@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -27,7 +28,6 @@ namespace CCMBenchmark\Ting\Serializer;
 use Brick\Geo\Geometry as BrickGeometry;
 use Brick\Geo\IO\WKBWriter;
 use Brick\Geo\IO\WKBReader;
-
 use Exception;
 use UnexpectedValueException;
 
@@ -69,7 +69,6 @@ final class Geometry implements SerializerInterface
                 sprintf(
                     'Expected an instance of "%s".',
                     BrickGeometry::class
-
                 )
             );
         }
@@ -93,7 +92,7 @@ final class Geometry implements SerializerInterface
         }
 
         try {
-            return (new WKBReader)->read(
+            return (new WKBReader())->read(
                 substr(
                     $serialized,
                     strlen(

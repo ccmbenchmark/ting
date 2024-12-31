@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use atoum;
 
 class PreparedQuery extends atoum
 {
-
     public function testQueryShouldCallOnlyCacheGetIfDataInCache()
     {
         $services              = new \CCMBenchmark\Ting\Services();
@@ -46,25 +46,23 @@ class PreparedQuery extends atoum
         );
 
         $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
-        $this->calling($mockMemcached)->fetch = function () {
-            return [
-                'connection' => 'connectionName',
-                'database'   => 'database',
-                'data' =>
+        $this->calling($mockMemcached)->fetch = (fn () => [
+            'connection' => 'connectionName',
+            'database'   => 'database',
+            'data' =>
+                [
                     [
                         [
-                            [
-                                'name'     => 'prenom',
-                                'orgName'  => 'firstname',
-                                'table'    => 'bouh',
-                                'orgTable' => 'T_BOUH_BOO',
-                                'type'     => MYSQLI_TYPE_VAR_STRING,
-                                'value'    => 'Xavier',
-                            ]
+                            'name'     => 'prenom',
+                            'orgName'  => 'firstname',
+                            'table'    => 'bouh',
+                            'orgTable' => 'T_BOUH_BOO',
+                            'type'     => MYSQLI_TYPE_VAR_STRING,
+                            'value'    => 'Xavier',
                         ]
                     ]
-            ];
-        };
+                ]
+        ]);
 
         $collection = new Collection();
 
@@ -80,7 +78,7 @@ class PreparedQuery extends atoum
                     ->call('get')
                         ->never()
             ->object($query->query())
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Collection')
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\Collection::class)
                 ->mock($mockCollectionFactory)
                     ->call('get')
                         ->once()

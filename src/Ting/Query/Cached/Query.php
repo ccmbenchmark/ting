@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -31,7 +32,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Query extends \CCMBenchmark\Ting\Query\Query
 {
-
     /**
      * @var Cache|null
      */

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,6 +31,7 @@ use CCMBenchmark\Ting\Repository\Hydrator\Relation;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 use Generator;
 use SplDoublyLinkedList;
+
 use function array_reverse;
 use function array_search;
 use function array_splice;
@@ -133,7 +135,7 @@ final class HydratorRelational extends Hydrator
             if (!in_array($item['source'], $order, true)) {
                 /** @var int $pos */
                 $pos = array_search($item['target'], $order, true);
-                array_splice($order, $pos+1, 0, $item['source']);
+                array_splice($order, $pos + 1, 0, $item['source']);
             }
         }
         $order = array_reverse($order);
@@ -293,7 +295,7 @@ final class HydratorRelational extends Hydrator
     private function getIdentifiers($table, $entity)
     {
         $id = '';
-        foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+        foreach ($this->metadataList[$table]->getPrimaries() as $primary) {
             $id .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
         }
 

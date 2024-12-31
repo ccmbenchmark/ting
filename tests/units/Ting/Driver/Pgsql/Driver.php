@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -27,7 +28,7 @@ namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 use atoum;
 use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
 
-require_once dirname(__FILE__) . '/../../../../fixtures/mock_native_pgsql.php';
+require_once __DIR__ . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Driver extends atoum
 {
@@ -46,7 +47,7 @@ class Driver extends atoum
     {
         $this
             ->object(new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->isInstanceOf('\CCMBenchmark\Ting\Driver\DriverInterface');
+            ->isInstanceOf(\CCMBenchmark\Ting\Driver\DriverInterface::class);
     }
 
     public function testConnectShouldReturnSelf()
@@ -78,7 +79,7 @@ class Driver extends atoum
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
             ->then($driver->close())
-            ->then($driver->ifIsNotConnected(function () use (&$called) {
+            ->then($driver->ifIsNotConnected(function () use (&$called): void {
                 $called = true;
             }))
             ->boolean($called)
@@ -88,7 +89,7 @@ class Driver extends atoum
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Pgsql();
-        PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset) {
+        PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset): void {
             $outerCharset = $charset;
         });
 
@@ -103,7 +104,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Pgsql();
         $called = 0;
-        PGMock::override('pg_set_client_encoding', function () use (&$called) {
+        PGMock::override('pg_set_client_encoding', function () use (&$called): void {
             $called++;
         });
 
@@ -124,7 +125,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->setCharset('BadCharset');
             })
                 ->hasMessage(
@@ -134,7 +135,7 @@ class Driver extends atoum
 
     public function testSetDatabaseShouldCompleteGeneratedDsnByConnect()
     {
-        PGMock::override('pg_connect', function ($dsn) use (&$outerDsn) {
+        PGMock::override('pg_connect', function ($dsn) use (&$outerDsn): void {
             $outerDsn = $dsn;
         });
 
@@ -155,10 +156,10 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->setDatabase('bouh');
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\Exception');
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\Exception::class);
     }
 
     public function testsetDatabaseWithDatabaseAlreadySetShouldDoNothing()
@@ -196,7 +197,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->then($driver->ifIsNotConnected(function () use (&$called) {
+            ->then($driver->ifIsNotConnected(function () use (&$called): void {
                 $called = true;
             }))
             ->boolean($called)
@@ -214,7 +215,7 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
-            ->then($driver->ifIsError(function () use (&$called) {
+            ->then($driver->ifIsError(function () use (&$called): void {
                 $called = true;
             }))
             ->boolean($called)
@@ -232,31 +233,19 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('database.test'))
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->prepare(
-                    'SELECT 1 FROM bouh WHERE first = :first AND second = :second',
-                    function (
-                        $statement,
-                        $paramsOrder,
-                        $driverStatement,
-                        $collection
-                    ) use (
-                        &$outerStatement,
-                        &$outerParamsOrder,
-                        &$outerDriverStatement
-                    ) {
-                        $outerParamsOrder = $paramsOrder;
-                    }
+                    'SELECT 1 FROM bouh WHERE first = :first AND second = :second'
                 );
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException');
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\QueryException::class);
     }
 
     public function testPrepareShouldNotTransformEscapedColon()
     {
         PGMock::override('pg_connect', true);
         PGMock::override('pg_query', true);
-        PGMock::override('pg_prepare', function ($resource, $statementName, $sql) use (&$outerSql) {
+        PGMock::override('pg_prepare', function ($resource, $statementName, $sql) use (&$outerSql): void {
             $outerSql = $sql;
         });
 
@@ -264,9 +253,7 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
-                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"',
-                function () {
-                }
+                'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
             ))
             ->string($outerSql)
                 ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = ":bim"');
@@ -276,7 +263,7 @@ class Driver extends atoum
     {
         PGMock::override('pg_connect', true);
         PGMock::override('pg_query', true);
-        PGMock::override('pg_prepare', function ($resource, $statementName, $sql) use (&$outerSql) {
+        PGMock::override('pg_prepare', function ($resource, $statementName, $sql) use (&$outerSql): void {
             $outerSql = $sql;
         });
 
@@ -284,9 +271,7 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
-                'SELECT * FROM T_BOUH_BOO WHERE name = ":name" OR firstname = ":name" OR lastname = ":lastname"',
-                function () {
-                }
+                'SELECT * FROM T_BOUH_BOO WHERE name = ":name" OR firstname = ":name" OR lastname = ":lastname"'
             ))
             ->string($outerSql)
                 ->isIdenticalTo('SELECT * FROM T_BOUH_BOO WHERE name = "$1" OR firstname = "$1" OR lastname = "$2"');
@@ -305,7 +290,7 @@ class Driver extends atoum
 
     public function testStartTransactionShouldExecuteQueryBegin()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
@@ -318,14 +303,14 @@ class Driver extends atoum
 
     public function testStartTransactionShouldRaiseException()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->startTransaction())
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->startTransaction();
             })
                 ->hasMessage('Cannot start another transaction');
@@ -334,7 +319,7 @@ class Driver extends atoum
 
     public function testCommitShouldExecuteQueryCommit()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
@@ -348,13 +333,13 @@ class Driver extends atoum
 
     public function testCommitShouldRaiseException()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->commit();
             })
                 ->hasMessage('Cannot commit no transaction');
@@ -363,7 +348,7 @@ class Driver extends atoum
 
     public function testRollbackShouldExecuteQueryRollback()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
@@ -377,13 +362,13 @@ class Driver extends atoum
 
     public function testRollbackShouldRaiseException()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->rollback();
             })
                 ->hasMessage('Cannot rollback no transaction');
@@ -404,7 +389,7 @@ class Driver extends atoum
 
     public function testgetInsertedIdShouldReturnInsertedId()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
         PGMock::override('pg_fetch_row', [8]);
@@ -421,7 +406,7 @@ class Driver extends atoum
 
     public function testgetInsertedIdForSequenceShouldReturnInsertedIdForSequence()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery) {
+        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
             $outerQuery = $query;
         });
 
@@ -443,10 +428,10 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->getInsertedIdForSequence('sequenceName');
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\QueryException::class)
                 ->hasMessage("A PGSQL error (Query: SELECT currval('sequenceName'))");
         ;
     }
@@ -464,7 +449,7 @@ class Driver extends atoum
             &$count,
             &$outerSql,
             &$outerValues
-        ) {
+        ): void {
             $count++;
             $outerSql = $sql;
             $outerValues = $values;
@@ -497,7 +482,7 @@ class Driver extends atoum
     public function testExecuteWithoutParametersShouldCallPGQuery()
     {
         $pgQueryCalled = false;
-        PGMock::override('pg_query', function () use (&$pgQueryCalled) {
+        PGMock::override('pg_query', function () use (&$pgQueryCalled): void {
             $pgQueryCalled = true;
         });
 
@@ -551,7 +536,7 @@ class Driver extends atoum
         $outerSql = true;
         $outerValues = [];
         PGMock::override('pg_connect', true);
-        PGMock::override('pg_query_params', function ($connection, $sql, $values) use (&$outerSql, &$outerValues) {
+        PGMock::override('pg_query_params', function ($connection, $sql, $values) use (&$outerSql, &$outerValues): void {
             $outerSql = $sql;
             $outerValues = $values;
         });
@@ -560,9 +545,11 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->then($driver->execute("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
+            ->then($driver->execute(
+                "SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
                 . ' FROM Bouh WHERE id = :id AND login = :login",
-                ['id' => 3, 'login' => 'Sylvain']))
+                ['id' => 3, 'login' => 'Sylvain']
+            ))
             ->string($outerSql)
                 ->isIdenticalTo("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
                 . ' FROM Bouh WHERE id = $1 AND login = $2")
@@ -584,10 +571,10 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-                ->exception(function () use ($driver) {
+                ->exception(function () use ($driver): void {
                     $driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12]);
                 })
-                    ->isInstanceOf('\CCMBenchmark\Ting\Driver\QueryException')
+                    ->isInstanceOf(\CCMBenchmark\Ting\Driver\QueryException::class)
                     ->hasMessage('Unknown Error (Query: SELECT 1 FROM myTable WHERE id = $1)')
 
         ;
@@ -655,10 +642,10 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->closeStatement('NonExistentStatement');
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Driver\Exception')
+            ->isInstanceOf(\CCMBenchmark\Ting\Driver\Exception::class)
         ;
     }
 
@@ -680,7 +667,7 @@ class Driver extends atoum
     {
         PGMock::override('pg_connect', true);
         PGMock::override('pg_ping', true);
-        PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset, &$called) {
+        PGMock::override('pg_set_client_encoding', function ($connection, $charset) use (&$outerCharset, &$called): void {
             $called++;
             $outerCharset = $charset;
         });
@@ -729,10 +716,10 @@ class Driver extends atoum
     {
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
-            ->exception(function () use ($driver) {
+            ->exception(function () use ($driver): void {
                 $driver->ping();
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Driver\NeverConnectedException')
+            ->isInstanceOf(\CCMBenchmark\Ting\Driver\NeverConnectedException::class)
         ;
     }
 

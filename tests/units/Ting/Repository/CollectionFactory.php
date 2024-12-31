@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use atoum;
 
 class CollectionFactory extends atoum
 {
-
     public function testGetShouldReturnInstanceOfCollection()
     {
 

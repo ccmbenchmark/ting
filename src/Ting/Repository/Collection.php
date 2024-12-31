@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -34,7 +35,6 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
  */
 class Collection implements CollectionInterface, \JsonSerializable
 {
-
     /**
      * @var ResultInterface<T>
      */

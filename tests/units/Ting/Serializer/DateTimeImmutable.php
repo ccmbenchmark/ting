@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class DateTimeImmutable extends atoum
 {
-
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
         $datetime = new \DateTimeImmutable('now');
@@ -43,10 +43,10 @@ class DateTimeImmutable extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTimeImmutable())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->unserialize('1345-67-89 bouh');
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+            ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 
@@ -64,10 +64,10 @@ class DateTimeImmutable extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTimeImmutable())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->serialize(new \StdClass());
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+            ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 
