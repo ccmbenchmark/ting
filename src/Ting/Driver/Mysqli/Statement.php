@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -39,21 +40,6 @@ class Statement implements StatementInterface
     ];
 
     /**
-     * @var string
-     */
-    protected $connectionName;
-
-    /**
-     * @var string database name
-     */
-    protected $database  = '';
-
-    /**
-     * @var mixed
-     */
-    protected $driverStatement = null;
-
-    /**
      * @var array|null
      */
     protected $paramsOrder = null;
@@ -74,12 +60,9 @@ class Statement implements StatementInterface
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct($driverStatement, array $paramsOrder, $connectionName, $database)
+    public function __construct(protected $driverStatement, array $paramsOrder, protected $connectionName, protected $database)
     {
-        $this->driverStatement = $driverStatement;
         $this->paramsOrder     = $paramsOrder;
-        $this->connectionName  = $connectionName;
-        $this->database        = $database;
     }
 
     /**
@@ -91,7 +74,7 @@ class Statement implements StatementInterface
     public function execute(array $params, CollectionInterface $collection = null)
     {
         $types = '';
-        $values = array();
+        $values = [];
 
         foreach (array_keys($this->paramsOrder) as $key) {
             $value = $params[$key];

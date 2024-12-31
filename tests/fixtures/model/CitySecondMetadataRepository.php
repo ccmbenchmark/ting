@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -50,25 +51,25 @@ class CitySecondMetadataRepository implements MetadataInitializer
         $metadata->setDatabase('bouh_world_2');
         $metadata->setTable('T_CITY_CIT');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'cit_id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'cit_name',
             'type'      => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'zipcode',
             'columnName' => 'cit_zipcode',
             'type'       => 'string'
-        ));
+        ]);
 
         return $metadata;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -44,10 +45,10 @@ class MetadataRepository extends atoum
         $this
             ->if($metadataRepository->findMetadataForEntity(
                 $entity,
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -69,10 +70,10 @@ class MetadataRepository extends atoum
         $this
             ->if($metadataRepository->findMetadataForEntity(
                 Bouh::class,
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -96,10 +97,10 @@ class MetadataRepository extends atoum
         $this
             ->if($metadataRepository->findMetadataForEntity(
                 $entity,
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -126,10 +127,10 @@ class MetadataRepository extends atoum
                 'database',
                 '',
                 'T_BOUH_BOO',
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -154,10 +155,10 @@ class MetadataRepository extends atoum
                 'database',
                 '',
                 'T_BOUH2_BOO',
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -185,10 +186,10 @@ class MetadataRepository extends atoum
                 'database',
                 'schemaName',
                 'T_BOUH_BOO',
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -214,10 +215,10 @@ class MetadataRepository extends atoum
                 'database',
                 'otherSchema',
                 'T_BOUH2_BOO',
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -365,10 +366,10 @@ class MetadataRepository extends atoum
                 'bouh_world',
                 '',
                 'bouh',
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -396,10 +397,10 @@ class MetadataRepository extends atoum
                 'bouh_world',
                 '',
                 'bouh',
-                function ($metadata) use (&$outerCallbackFound) {
+                function ($metadata) use (&$outerCallbackFound): void {
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))
@@ -435,11 +436,11 @@ class MetadataRepository extends atoum
                 'bouh_world_2',
                 '',
                 'bouh',
-                function ($metadata) use (&$outerMetadata, &$outerCallbackFound) {
+                function ($metadata) use (&$outerMetadata, &$outerCallbackFound): void {
                     $outerMetadata = $metadata;
                     $outerCallbackFound = true;
                 },
-                function () use (&$outerCallbackNotFound) {
+                function () use (&$outerCallbackNotFound): void {
                     $outerCallbackNotFound = true;
                 }
             ))

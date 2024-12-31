@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -39,31 +40,31 @@ class CountryLanguageRepository extends \CCMBenchmark\Ting\Repository\Repository
         $metadata->setDatabase('world');
         $metadata->setTable('t_countrylanguage_col');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'    => true,
             'fieldName'  => 'code',
             'columnName' => 'cou_code',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'    => true,
             'fieldName'  => 'language',
             'columnName' => 'col_language',
             'type'       => 'string'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'isOfficial',
             'columnName' => 'col_is_official',
             'type'       => 'boolean'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'percentage',
             'columnName' => 'col_percentage',
             'type'       => 'double'
-        ));
+        ]);
 
         return $metadata;
     }

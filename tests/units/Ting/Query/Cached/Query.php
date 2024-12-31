@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -89,25 +90,23 @@ class Query extends atoum
         );
 
         $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
-        $this->calling($mockMemcached)->fetch = function () {
-            return [
-                'connection' => 'connectionName',
-                'database'   => 'database',
-                'data'       =>
+        $this->calling($mockMemcached)->fetch = (fn () => [
+            'connection' => 'connectionName',
+            'database'   => 'database',
+            'data'       =>
+                [
                     [
                         [
-                            [
-                                'name'     => 'prenom',
-                                'orgName'  => 'firstname',
-                                'table'    => 'bouh',
-                                'orgTable' => 'T_BOUH_BOO',
-                                'type'     => MYSQLI_TYPE_VAR_STRING,
-                                'value'    => 'Xavier',
-                            ]
+                            'name'     => 'prenom',
+                            'orgName'  => 'firstname',
+                            'table'    => 'bouh',
+                            'orgTable' => 'T_BOUH_BOO',
+                            'type'     => MYSQLI_TYPE_VAR_STRING,
+                            'value'    => 'Xavier',
                         ]
                     ]
-            ];
-        };
+                ]
+        ]);
 
         $collection = new Collection();
 
@@ -121,7 +120,7 @@ class Query extends atoum
                     ->call('get')
                         ->never()
             ->object($query->query())
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Collection')
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\Collection::class)
                 ->mock($mockCollectionFactory)
                     ->call('get')
                         ->once()
@@ -171,10 +170,10 @@ class Query extends atoum
         $this
             ->if($cachedQuery = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection))
             ->and($cachedQuery->setCacheKey('myCacheKey'))
-            ->exception(function () use ($cachedQuery) {
+            ->exception(function () use ($cachedQuery): void {
                 $cachedQuery->query();
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\QueryException::class)
                 ->hasMessage('You should call setTtl to use query method')
         ;
     }
@@ -186,10 +185,10 @@ class Query extends atoum
         $this
             ->if($cachedQuery = new \CCMBenchmark\Ting\Query\Cached\Query('', $mockConnection))
             ->and($cachedQuery->setTtl(10))
-            ->exception(function () use ($cachedQuery) {
+            ->exception(function () use ($cachedQuery): void {
                 $cachedQuery->query(new Collection());
             })
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\QueryException::class)
                 ->hasMessage('You must call setCacheKey to use query method')
         ;
     }

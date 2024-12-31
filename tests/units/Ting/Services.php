@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -33,23 +34,23 @@ class Services extends atoum
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
             ->object($services->get('ConnectionPool'))
-                ->isInstanceOf('\CCMBenchmark\Ting\ConnectionPoolInterface')
+                ->isInstanceOf(\CCMBenchmark\Ting\ConnectionPoolInterface::class)
             ->object($services->get('MetadataRepository'))
-                ->isInstanceOf('\CCMBenchmark\Ting\MetadataRepository')
+                ->isInstanceOf(\CCMBenchmark\Ting\MetadataRepository::class)
             ->object($services->get('UnitOfWork'))
-                ->isInstanceOf('\CCMBenchmark\Ting\UnitOfWork')
+                ->isInstanceOf(\CCMBenchmark\Ting\UnitOfWork::class)
             ->object($services->get('CollectionFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\CollectionFactory')
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\CollectionFactory::class)
             ->object($services->get('QueryFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Query\QueryFactoryInterface')
+                ->isInstanceOf(\CCMBenchmark\Ting\Query\QueryFactoryInterface::class)
             ->object($services->get('SerializerFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\SerializerFactoryInterface::class)
             ->object($services->get('Hydrator'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\Hydrator')
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\Hydrator::class)
             ->object($services->get('HydratorSingleObject'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\HydratorSingleObject')
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\HydratorSingleObject::class)
             ->object($services->get('RepositoryFactory'))
-                ->isInstanceOf('\CCMBenchmark\Ting\Repository\RepositoryFactory')
+                ->isInstanceOf(\CCMBenchmark\Ting\Repository\RepositoryFactory::class)
         ;
     }
 
@@ -57,14 +58,12 @@ class Services extends atoum
     {
         $this
             ->object($services = new \CCMBenchmark\Ting\Services())
-            ->isInstanceOf('\CCMBenchmark\Ting\ContainerInterface');
+            ->isInstanceOf(\CCMBenchmark\Ting\ContainerInterface::class);
     }
 
     public function testGetCallbackShouldBeSameCallbackUsedWithSet()
     {
-        $callback = function ($bouh) {
-            return 'Bouh Wow';
-        };
+        $callback = (fn ($bouh) => 'Bouh Wow');
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
@@ -75,9 +74,7 @@ class Services extends atoum
 
     public function testGetShouldReturnSameInstance()
     {
-        $callback = function ($bouh) {
-            return new \stdClass();
-        };
+        $callback = (fn ($bouh) => new \stdClass());
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
@@ -89,9 +86,7 @@ class Services extends atoum
 
     public function testGetShouldReturnNewInstance()
     {
-        $callback = function ($bouh) {
-            return new \stdClass();
-        };
+        $callback = (fn ($bouh) => new \stdClass());
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())
@@ -103,9 +98,7 @@ class Services extends atoum
 
     public function testHasShouldReturnTrue()
     {
-        $callback = function ($bouh) {
-            return 'Bouh Wow';
-        };
+        $callback = (fn ($bouh) => 'Bouh Wow');
 
         $this
             ->if($services = new \CCMBenchmark\Ting\Services())

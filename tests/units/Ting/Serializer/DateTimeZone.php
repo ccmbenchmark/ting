@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -44,10 +45,10 @@ class DateTimeZone extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTimeZone())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->unserialize('Not a timezone');
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 
@@ -55,10 +56,10 @@ class DateTimeZone extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\DateTimeZone())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->serialize(new \StdClass());
             })
-                ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+                ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -29,7 +30,6 @@ use atoum;
 
 class Collection extends atoum
 {
-
     public function testCollectionShouldDoNothingWithoutHydrator()
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Sylvain', 'Robez-Masson']]);
@@ -156,7 +156,7 @@ class Collection extends atoum
 
         $outerResult = null;
         $mockCollection = new \mock\CCMBenchmark\Ting\Repository\Collection();
-        $this->calling($mockCollection)->set = function(ResultInterface $result) use (&$outerResult) {
+        $this->calling($mockCollection)->set = function (ResultInterface $result) use (&$outerResult): void {
             $outerResult = $result;
         };
 
@@ -165,7 +165,7 @@ class Collection extends atoum
                 ['connection' => 'connection_name', 'database' => 'database_name', 'data' => ['bouh']]
             ))
             ->object($outerResult)
-                ->isInstanceOf('\CCMBenchmark\Ting\Driver\CacheResult')
+                ->isInstanceOf(\CCMBenchmark\Ting\Driver\CacheResult::class)
         ;
     }
 
@@ -210,7 +210,7 @@ class Collection extends atoum
                 ->isTrue()
         ;
     }
-    
+
     public function testCollectionShouldBeJsonSerializable()
     {
         $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([['Bob']]);
@@ -231,7 +231,7 @@ class Collection extends atoum
         $result->setConnectionName('connectionName');
         $result->setDatabase('database');
         $result->setResult($mockMysqliResult);
-        
+
         $this
             ->if($collection = new \CCMBenchmark\Ting\Repository\Collection())
                 ->and($collection->set($result))

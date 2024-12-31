@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -39,7 +40,6 @@ use function is_null;
 
 class Driver implements DriverInterface
 {
-
     /**
      * @var string
      */
@@ -240,7 +240,7 @@ class Driver implements DriverInterface
 
         $this->connection->select_db($database);
 
-        $this->ifIsError(function () {
+        $this->ifIsError(function (): void {
             throw new DatabaseException('Select database error: ' . $this->connection->error, $this->connection->errno);
         });
 
@@ -315,18 +315,12 @@ class Driver implements DriverInterface
      */
     protected function quoteValue($value)
     {
-        switch (\gettype($value)) {
-            case "boolean":
-                return (int) $value;
-            case "integer":
-                // integer and double don't need quotes
-            case "double":
-                return $value;
-            case "NULL":
-                return 'null';
-            default:
-                return '"' . $this->connection->real_escape_string($value) . '"';
-        }
+        return match (\gettype($value)) {
+            "boolean" => (int) $value,
+            "integer", "double" => $value,
+            "NULL" => 'null',
+            default => '"' . $this->connection->real_escape_string($value) . '"',
+        };
     }
 
     /**
@@ -375,7 +369,7 @@ class Driver implements DriverInterface
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
-            $this->ifIsError(function () use ($sql) {
+            $this->ifIsError(function () use ($sql): void {
                 throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
             });
         }
@@ -510,7 +504,7 @@ class Driver implements DriverInterface
 
         try {
             $pingResult = $this->connection->ping();
-        } catch(\Exception $errorException) {
+        } catch (\Exception) {
             // mysqli::ping() throws an exception if the connection has gone down ("MySQL server has gone away").
             // We catch it as a ping failure (returns false) in order to try to reconnect.
         }
@@ -537,7 +531,7 @@ class Driver implements DriverInterface
             }
 
             return true;
-        } catch (\Exception $exception) {
+        } catch (\Exception) {
             return false;
         }
     }

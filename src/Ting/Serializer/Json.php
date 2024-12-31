@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -26,9 +27,8 @@ namespace CCMBenchmark\Ting\Serializer;
 
 class Json implements SerializerInterface
 {
-
-    const JSON_DEFAULT_DEPTH   = 512;
-    const JSON_DEFAULT_OPTIONS = 0;
+    public const JSON_DEFAULT_DEPTH   = 512;
+    public const JSON_DEFAULT_OPTIONS = 0;
 
     /**
      * @param mixed $toSerialize

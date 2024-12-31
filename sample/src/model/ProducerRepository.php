@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -40,19 +41,19 @@ class ProducerRepository extends \CCMBenchmark\Ting\Repository\Repository implem
         $metadata->setSchema('public');
         $metadata->setTable('producer');
 
-        $metadata->addField(array(
+        $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
             'fieldName'     => 'id',
             'columnName'    => 'id',
             'type'          => 'int'
-        ));
+        ]);
 
-        $metadata->addField(array(
+        $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'name',
             'type'       => 'string'
-        ));
+        ]);
 
         return $metadata;
     }

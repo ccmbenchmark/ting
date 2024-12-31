@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -26,10 +27,10 @@ namespace CCMBenchmark\Ting\Logger;
 
 interface CacheLoggerInterface
 {
-    const OPERATION_GET    = 'GET';
-    const OPERATION_STORE  = 'STORE';
-    const OPERATION_DELETE = 'DELETE';
-    const OPERATION_EXIST  = 'EXIST';
+    public const OPERATION_GET    = 'GET';
+    public const OPERATION_STORE  = 'STORE';
+    public const OPERATION_DELETE = 'DELETE';
+    public const OPERATION_EXIST  = 'EXIST';
 
     /**
      * Log an operation

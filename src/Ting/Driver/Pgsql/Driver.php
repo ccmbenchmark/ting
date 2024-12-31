@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -36,7 +37,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Driver implements DriverInterface
 {
-
     /**
      * @var string
      */
@@ -85,7 +85,7 @@ class Driver implements DriverInterface
     /**
      * @var array List of already prepared queries
      */
-    protected $preparedQueries = array();
+    protected $preparedQueries = [];
 
     /**
      * @var string
@@ -204,11 +204,11 @@ class Driver implements DriverInterface
      * @return CollectionInterface|mixed|resource
      * @throws QueryException
      */
-    public function execute($originalSQL, array $params = array(), CollectionInterface $collection = null)
+    public function execute($originalSQL, array $params = [], CollectionInterface $collection = null)
     {
         [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
 
-        $values = array();
+        $values = [];
         foreach (array_keys($paramsOrder) as $key) {
             $values[] = &$params[$key];
         }
@@ -290,7 +290,7 @@ class Driver implements DriverInterface
         }
 
         if ($result === false) {
-            $this->ifIsError(function () use ($sql) {
+            $this->ifIsError(function () use ($sql): void {
                 throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
             });
         }

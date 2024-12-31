@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -30,15 +31,16 @@ use CCMBenchmark\Ting\Serializer\RuntimeException;
 
 class Geometry extends atoum
 {
-
     public function testUnserializeShouldReturnGeometryObject()
     {
         $this
             ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-            ->object($geometrySerializer->unserialize(
-                hex2bin("00000000010100000000000000000024400000000000003440"))
+            ->object(
+                $geometrySerializer->unserialize(
+                    hex2bin("00000000010100000000000000000024400000000000003440")
+                )
             )
-                ->isInstanceOf('\Brick\Geo\Geometry');
+                ->isInstanceOf(\Brick\Geo\Geometry::class);
     }
 
     public function testUnserializeWithNullValueShouldReturnNull()
@@ -71,13 +73,13 @@ class Geometry extends atoum
         $this
             ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
             ->and($this->function->class_exists = false)
-            ->exception(function () use ($geometrySerializer) {
+            ->exception(function () use ($geometrySerializer): void {
                 $geometrySerializer->unserialize(
                     hex2bin("00000000010100000000000000000024400000000000003440")
                 );
             })
                 ->isInstanceOf(RuntimeException::class)
-            ->exception(function () use ($geometrySerializer) {
+            ->exception(function () use ($geometrySerializer): void {
                 $geometrySerializer->serialize(
                     (new WKBReader())->read(hex2bin('010100000000000000000024400000000000003440'))
                 );
@@ -89,7 +91,7 @@ class Geometry extends atoum
     {
         $this
             ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-            ->exception(function () use ($geometrySerializer) {
+            ->exception(function () use ($geometrySerializer): void {
                 $geometrySerializer->unserialize("Incorrect data");
             })
                 ->isInstanceOf(\UnexpectedValueException::class)
@@ -100,7 +102,7 @@ class Geometry extends atoum
     {
         $this
             ->if($geometrySerializer = new \CCMBenchmark\Ting\Serializer\Geometry())
-            ->exception(function () use ($geometrySerializer) {
+            ->exception(function () use ($geometrySerializer): void {
                 $geometrySerializer->serialize((new \StdClass()));
             })
                 ->isInstanceOf(\UnexpectedValueException::class)

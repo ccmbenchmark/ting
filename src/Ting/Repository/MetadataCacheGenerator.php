@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,8 +29,6 @@ use CCMBenchmark\Ting\Exceptions\IOException;
 
 class MetadataCacheGenerator
 {
-    protected $cacheDir = '';
-
     protected $filename = 'ting.php';
 
     protected $template = '<?php
@@ -47,16 +46,14 @@ class MetadataCacheGenerator
      *
      * @internal
      */
-    public function __construct($cacheDir, $filename = null)
+    public function __construct(protected $cacheDir, $filename = null)
     {
-        $this->cacheDir = $cacheDir;
-
         if ($filename !== null) {
             $this->filename = $filename;
         }
 
         if (is_writable($this->cacheDir . '/') === false) {
-            throw new IOException('Cache directory for Metadata is not writable: ' . $cacheDir);
+            throw new IOException('Cache directory for Metadata is not writable: ' . $this->cacheDir);
         }
         if (touch($this->getFileName()) === false) {
             throw new IOException('Cache file for Metadata is not writable: ' . $this->getFileName());

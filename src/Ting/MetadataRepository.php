@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,6 +29,7 @@ use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Repository\Repository;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+
 use function get_class;
 use function is_object;
 
@@ -49,7 +51,7 @@ class MetadataRepository
     /**
      * @var array Fast array access to RepositoryClassName
      */
-    private $tableWithConnectionToMetadata = array();
+    private $tableWithConnectionToMetadata = [];
 
     /**
      * @var SerializerFactoryInterface|null
@@ -136,7 +138,7 @@ class MetadataRepository
     public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
     {
         if (is_object($entity)) {
-            $entity = \get_class($entity);
+            $entity = $entity::class;
         }
 
         if (isset($this->entityToRepository[$entity]) === false) {

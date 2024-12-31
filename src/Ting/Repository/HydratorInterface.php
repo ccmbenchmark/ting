@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -35,7 +36,6 @@ use CCMBenchmark\Ting\UnitOfWork;
  */
 interface HydratorInterface extends \IteratorAggregate, \Countable
 {
-
     /**
      * @param MetadataRepository $metadataRepository
      * @return void

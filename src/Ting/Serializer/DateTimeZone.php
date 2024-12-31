@@ -2,7 +2,6 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
-
 class DateTimeZone implements SerializerInterface
 {
     public function serialize($toSerialize, array $options = [])
@@ -25,7 +24,7 @@ class DateTimeZone implements SerializerInterface
         }
         try {
             return new \DateTimeZone($serialized);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             throw new RuntimeException('Cannot convert ' . $serialized . ' to DateTimeZone.');
         }
     }

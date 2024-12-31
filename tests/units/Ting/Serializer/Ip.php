@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -28,7 +29,6 @@ use atoum;
 
 class Ip extends atoum
 {
-
     public function testSerializeThenUnSerializeShouldReturnOriginalValue()
     {
         $value = '127.0.0.1';
@@ -43,10 +43,10 @@ class Ip extends atoum
     {
         $this
             ->if($serializer = new \CCMBenchmark\Ting\Serializer\Ip())
-            ->exception(function () use ($serializer) {
+            ->exception(function () use ($serializer): void {
                 $serializer->serialize('badip');
             })
-            ->isInstanceOf('CCMBenchmark\Ting\Serializer\RuntimeException')
+            ->isInstanceOf(\CCMBenchmark\Ting\Serializer\RuntimeException::class)
         ;
     }
 

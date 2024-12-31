@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -27,7 +28,7 @@ namespace tests\units\CCMBenchmark\Ting\Driver\Pgsql;
 use atoum;
 use CCMBenchmark\Ting\Driver\Pgsql\PGMock;
 
-require_once dirname(__FILE__) . '/../../../../fixtures/mock_native_pgsql.php';
+require_once __DIR__ . '/../../../../fixtures/mock_native_pgsql.php';
 
 class Result extends atoum
 {
@@ -41,13 +42,9 @@ class Result extends atoum
             return false;
         });
 
-        PGMock::override('pg_field_name', function ($result, $index) {
-            switch ($index) {
-                case 0:
-                    return 't.*';
-                default:
-                    return false;
-            }
+        PGMock::override('pg_field_name', fn ($result, $index) => match ($index) {
+            0 => 't.*',
+            default => false,
         });
 
         $this
@@ -55,7 +52,7 @@ class Result extends atoum
             ->then($result->setConnectionName('connectionName'))
             ->then($result->setDatabase('database'))
             ->then($result->setResult('result resource'))
-            ->exception(function () use ($result) {
+            ->exception(function () use ($result): void {
                 $result->setQuery('select t.* from table as t');
             })
                 ->hasMessage('Query invalid: usage of asterisk in column definition is forbidden');
@@ -71,13 +68,9 @@ class Result extends atoum
             return false;
         });
 
-        PGMock::override('pg_field_name', function ($result, $index) {
-            switch ($index) {
-                case 0:
-                    return 't.*';
-                default:
-                    return false;
-            }
+        PGMock::override('pg_field_name', fn ($result, $index) => match ($index) {
+            0 => 't.*',
+            default => false,
         });
 
         $this
@@ -101,7 +94,7 @@ class Result extends atoum
             ->then($result->setConnectionName('connectionName'))
             ->then($result->setDatabase('database'))
             ->then($result->setResult('result resource'))
-            ->exception(function () use ($result) {
+            ->exception(function () use ($result): void {
                 $result->setQuery('selectcolumn from table');
             })
                 ->hasMessage('Query invalid: can\'t parse columns');
@@ -182,9 +175,7 @@ class Result extends atoum
 
         PGMock::override('pg_fetch_array', [1, 1, 2, 3, 6, 7, 8]);
 
-        PGMock::override('pg_field_table', function ($result, $index) {
-            return 'table';
-        });
+        PGMock::override('pg_field_table', fn ($result, $index) => 'table');
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result($mockPgsqlResult))
@@ -264,6 +255,6 @@ class Result extends atoum
                             ]
                         ]
                     )
-            ;
+        ;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -40,7 +41,6 @@ use WeakMap;
  */
 class Hydrator implements HydratorInterface
 {
-
     protected $mapAliases         = [];
     protected $mapObjects         = [];
     protected $objectDatabase     = [];
@@ -276,7 +276,7 @@ class Hydrator implements HydratorInterface
         $result        = [];
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
         $validEntities = []; // Entity marked as valid will fill an object
-                             // (a valid Entity is a entity with at less one property not null)
+        // (a valid Entity is a entity with at less one property not null)
         $fromReferences = []; // Prevents from hydrating if an entity is already ref for a table
         foreach ($columns as $column) {
 
@@ -306,7 +306,7 @@ class Hydrator implements HydratorInterface
                         $column['orgTable'],
 
                         // Callback if table metadata found
-                        function (Metadata $metadata) use ($column, &$result) {
+                        function (Metadata $metadata) use ($column, &$result): void {
                             $this->metadataList[$column['table']] = $metadata;
                             $result[$column['table']]             = $metadata->createEntity();
                             $tmpEntities[$column['table']]        = [];
@@ -403,7 +403,7 @@ class Hydrator implements HydratorInterface
             // It's a valid entity (unknown data are put in a value table 0)
             if (\is_int($table) === false) {
                 $ref = $table . '-';
-                foreach ($this->metadataList[$table]->getPrimaries() as $columnName => $primary) {
+                foreach ($this->metadataList[$table]->getPrimaries() as $primary) {
                     $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
                 }
 

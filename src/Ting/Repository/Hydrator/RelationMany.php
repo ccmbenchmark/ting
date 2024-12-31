@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************
  *
  * Ting - PHP Datamapper
@@ -26,5 +27,4 @@ namespace CCMBenchmark\Ting\Repository\Hydrator;
 
 class RelationMany extends Relation
 {
-
 }
