@@ -115,14 +115,6 @@ class Driver implements DriverInterface
     /**
      * @return int
      */
-    public function getInsertedId()
-    {
-
-    }
-
-    /**
-     * @return int
-     */
     public function getAffectedRows()
     {
 
