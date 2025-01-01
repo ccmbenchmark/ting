@@ -4,7 +4,7 @@ namespace CCMBenchmark\Ting\Serializer;
 
 class DateTimeZone implements SerializerInterface
 {
-    public function serialize($toSerialize, array $options = [])
+    public function serialize($toSerialize, array $options = []): ?string
     {
         if ($toSerialize === null) {
             return null;
@@ -17,7 +17,7 @@ class DateTimeZone implements SerializerInterface
         return $toSerialize->getName();
     }
 
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): ?\DateTimeZone
     {
         if ($serialized === null) {
             return null;

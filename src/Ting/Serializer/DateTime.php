@@ -41,7 +41,7 @@ class DateTime implements SerializerInterface
      * @return string|null
      * @throws RuntimeException
      */
-    public function serialize($toSerialize, array $options = [])
+    public function serialize($toSerialize, array $options = []): ?string
     {
         if ($toSerialize === null) {
             return null;
@@ -63,7 +63,7 @@ class DateTime implements SerializerInterface
      * @return \Datetime|null
      * @throws RuntimeException
      */
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): ?\DateTime
     {
         if ($serialized === null) {
             return null;
