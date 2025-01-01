@@ -33,10 +33,9 @@ class Json implements SerializerInterface
     /**
      * @param mixed $toSerialize
      * @param array $options
-     * @return string|null
      * @throws RuntimeException
      */
-    public function serialize($toSerialize, array $options = [])
+    public function serialize($toSerialize, array $options = []): ?string
     {
         if ($toSerialize === null) {
             return null;
@@ -66,10 +65,10 @@ class Json implements SerializerInterface
     /**
      * @param string $serialized
      * @param array $options
+     * @return null|\stdClass|array<mixed>
      * @throws RuntimeException
-     * @return mixed
      */
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): mixed
     {
         if ($serialized === null) {
             return null;
