@@ -30,10 +30,9 @@ class Ip implements SerializerInterface
     /**
      * @param string $toSerialize
      * @param array $options
-     * @return int|null
      * @throws RuntimeException
      */
-    public function serialize($toSerialize, array $options = [])
+    public function serialize($toSerialize, array $options = []): ?int
     {
         if ($toSerialize === null) {
             return null;
@@ -51,10 +50,9 @@ class Ip implements SerializerInterface
     /**
      * @param int $serialized
      * @param array  $options
-     * @return string|null
      * @throws RuntimeException
      */
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): null|string|bool
     {
         if ($serialized === null) {
             return null;
