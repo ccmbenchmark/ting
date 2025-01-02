@@ -48,6 +48,10 @@ class Hydrator implements HydratorInterface
     protected $unserializeAliases = [];
     protected WeakMap $alreadyManaged;
     protected $references         = [];
+
+    /**
+     * @var Metadata[]
+     */
     protected $metadataList       = [];
 
     /**
@@ -404,7 +408,7 @@ class Hydrator implements HydratorInterface
             if (\is_int($table) === false) {
                 $ref = $table . '-';
                 foreach ($this->metadataList[$table]->getPrimaries() as $primary) {
-                    $ref .= $entity->{$this->metadataList[$table]->getGetter($primary['fieldName'])}() . '-';
+                    $ref .= $this->metadataList[$table]->getEntityPropertyByFieldName($entity, $primary['fieldName']) . '-';
                 }
 
                 if (isset($this->references[$ref]) === false) {

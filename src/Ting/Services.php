@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Util\PropertyAccessor;
 use Pimple\Container;
 
 class Services implements ContainerInterface
@@ -130,6 +131,13 @@ class Services implements ContainerInterface
         $this->container->offsetSet(
             'Cache',
             fn () => new Cache\Cache()
+        );
+
+        $this->container->offsetSet(
+            'PropertyAccessor',
+            function () {
+                return new PropertyAccessor();
+            }
         );
     }
 
