@@ -28,6 +28,8 @@ namespace tests\units\CCMBenchmark\Ting\Repository;
 use atoum;
 use tests\fixtures\model\Bouh;
 use tests\fixtures\model\BouhCustomGetter;
+use tests\fixtures\model\HookedPropertiesEntity;
+use tests\fixtures\model\PublicPropertiesEntity;
 
 class Metadata extends atoum
 {
@@ -247,16 +249,17 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->then($metadata->setEntity('mock\repository\Bouh'))
+            ->then($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->object($bouh = $metadata->createEntity())
-                ->isInstanceOf('\mock\repository\Bouh');
+                ->isInstanceOf('mock\tests\fixtures\model\Bouh');
     }
 
     public function testSetEntityPropertyWithDefaultSetter()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
             'fieldName'  => 'name',
             'columnName' => 'boo_name',
@@ -264,112 +267,109 @@ class Metadata extends atoum
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setName = function ($name): void {
-            $this->name = $name;
-        };
 
         $this
             ->if($metadata->setEntityProperty($bouh, 'boo_name', 'Sylvain'))
-            ->string($bouh->name)
-                ->isIdenticalTo('Sylvain')
             ->mock($bouh)
                 ->call('setName')
-                    ->once();
+                    ->withArguments('Sylvain')
+                        ->once();
     }
 
     public function testSetEntityPropertyShouldKeepNull()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
-            'fieldName'  => 'old',
-            'columnName' => 'boo_old',
+            'fieldName'  => 'price',
+            'columnName' => 'boo_price',
             'type'       => 'int'
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setOld = function ($old): void {
-            $this->old = $old;
-        };
 
         $this
-            ->if($metadata->setEntityProperty($bouh, 'boo_old', null))
-            ->variable($bouh->old)
-                ->isIdenticalTo(null);
+            ->if($metadata->setEntityProperty($bouh, 'boo_price', null))
+            ->mock($bouh)
+                ->call('setPrice')
+                    ->withArguments(null)
+                        ->once()
+        ;
     }
 
     public function testSetEntityPropertyShouldCastToInt()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
-            'fieldName'  => 'old',
-            'columnName' => 'boo_old',
+            'fieldName'  => 'price',
+            'columnName' => 'boo_price',
             'type'       => 'int'
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setOld = function ($old): void {
-            $this->old = $old;
-        };
 
         $this
-            ->if($metadata->setEntityProperty($bouh, 'boo_old', '32'))
-            ->integer($bouh->old)
-                ->isIdenticalTo(32);
+            ->if($metadata->setEntityProperty($bouh, 'boo_price', '32'))
+            ->mock($bouh)
+                ->call('setPrice')
+                    ->withArguments(32)
+                        ->once()
+        ;
     }
 
     public function testSetEntityPropertyShouldCastToDouble()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
-            'fieldName'  => 'old',
-            'columnName' => 'boo_old',
+            'fieldName'  => 'price',
+            'columnName' => 'boo_price',
             'type'       => 'double'
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setOld = function ($old): void {
-            $this->old = $old;
-        };
 
         $this
-            ->if($metadata->setEntityProperty($bouh, 'boo_old', '32.3'))
-            ->float($bouh->old)
-                ->isIdenticalTo(32.3);
+            ->if($metadata->setEntityProperty($bouh, 'boo_price', '32.3'))
+            ->mock($bouh)
+                ->call('setPrice')
+                    ->withArguments(32.3)
+                        ->once()
+        ;
     }
 
     public function testSetEntityPropertyShouldCastToBool()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
-            'fieldName'  => 'swag',
-            'columnName' => 'boo_swag',
+            'fieldName'  => 'enabled',
+            'columnName' => 'boo_enabled',
             'type'       => 'bool'
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setSwag = function ($isSwag): void {
-            $this->swag = $isSwag;
-        };
 
         $this
-            ->if($metadata->setEntityProperty($bouh, 'boo_swag', '1'))
-            ->variable($bouh->swag)
-                ->isIdenticalTo(true);
+            ->if($metadata->setEntityProperty($bouh, 'boo_enabled', '1'))
+                ->mock($bouh)
+                    ->call('setEnabled')
+                        ->withArguments(true)
+                            ->once()
+        ;
     }
 
     public function testSetEntityPropertyShouldUnserializeData()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
             'fieldName'  => 'roles',
             'columnName' => 'boo_roles',
@@ -378,21 +378,20 @@ class Metadata extends atoum
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setRoles = function ($roles): void {
-            $this->roles = $roles;
-        };
 
         $this
             ->if($metadata->setEntityProperty($bouh, 'boo_roles', json_encode(['Bouh', 'Sylvain'])))
-            ->array($bouh->roles)
-                ->isIdenticalTo(['Bouh', 'Sylvain']);
+            ->mock($bouh)
+                ->call('setRoles')
+                    ->withArguments(['Bouh', 'Sylvain'])
+                        ->once();
     }
 
     public function testSetEntityPropertyShouldUnserializeDataWithOptions()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
             'fieldName'  => 'roles',
             'columnName' => 'boo_roles',
@@ -404,21 +403,20 @@ class Metadata extends atoum
         ]);
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setRoles = function ($roles): void {
-            $this->roles = $roles;
-        };
 
         $this
             ->if($metadata->setEntityProperty($bouh, 'boo_roles', json_encode(['Bouh', 'Sylvain'])))
-            ->array($bouh->roles)
-            ->isIdenticalTo(['Bouh', 'Sylvain']);
+                ->mock($bouh)
+                    ->call('setRoles')
+                        ->withArguments(['Bouh', 'Sylvain'])
+                            ->once();
     }
 
     public function testSetEntityPropertyForAutoIncrement()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
             'primary'       => true,
             'autoincrement' => true,
@@ -431,21 +429,21 @@ class Metadata extends atoum
         $this->calling($driver)->getInsertedId = 321;
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setId = function ($id): void {
-            $this->id = $id;
-        };
 
         $this
             ->if($metadata->setEntityPropertyForAutoIncrement($bouh, $driver))
-            ->integer($bouh->id)
-                ->isIdenticalTo(321);
+            ->mock($bouh)
+                ->call('setId')
+                    ->withArguments(321)
+                        ->once();
+        ;
     }
 
     public function testSetEntityPropertyForAutoIncrementWithoutAutoIncrementColumnShouldReturnFalse()
     {
         $services = new \CCMBenchmark\Ting\Services();
         $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $metadata->setEntity('mock\repository\Bouh');
+        $metadata->setEntity('mock\tests\fixtures\model\Bouh');
         $metadata->addField([
             'primary'    => true,
             'fieldName'  => 'id',
@@ -457,9 +455,6 @@ class Metadata extends atoum
         $this->calling($driver)->getInsertedId = 321;
 
         $bouh = $metadata->createEntity();
-        $this->calling($bouh)->setId = function ($id): void {
-            $this->id = $id;
-        };
 
         $this
             ->boolean($metadata->setEntityPropertyForAutoIncrement($bouh, $driver))
@@ -475,7 +470,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -555,7 +550,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -591,7 +586,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -629,7 +624,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -658,7 +653,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -702,7 +697,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and($metadata->setTable('bouh'))
             ->and(
                 $metadata->addField([
@@ -777,6 +772,69 @@ class Metadata extends atoum
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerParams['boo_roles'])
                 ->isIdenticalTo(json_encode(['USER', 'ADMIN']));
+    }
+
+    public function testGenerateQueryForInsertShouldSkipUnitializedFields()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
+        $this->calling($mockDriver)->escapeField = function ($field) {
+            return $field;
+        };
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $this->calling($mockConnectionPool)->master = $mockDriver;
+
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery(
+            '',
+            $mockConnection,
+            $services->get('CollectionFactory')
+        );
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+            $outerParams = $params;
+        };
+
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+
+        $entity = new PublicPropertiesEntity();
+
+        $this
+            ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
+            ->and($metadata->setEntity('mock\tests\fixtures\PublicPropertiesEntity'))
+            ->and(
+                $metadata
+                    ->addField([
+                        'primary'    => false,
+                        'fieldName'  => 'propertyWithSetter',
+                        'columnName' => 'property_with_setter',
+                        'type'       => 'string',
+                    ])
+                    ->addField([
+                        'primary'    => false,
+                        'fieldName'  => 'propertyWithoutSetter',
+                        'columnName' => 'property_without_setter',
+                        'type'       => 'string',
+                    ])
+                    ->addField([
+                        'primary'    => false,
+                        'fieldName'  => 'propertyWithDefaultValue',
+                        'columnName' => 'property_with_default_value',
+                        'type'       => 'string',
+                    ])
+                    ->addField([
+                        'primary'    => false,
+                        'fieldName'  => 'propertyWithGetter',
+                        'columnName' => 'property_with_getter',
+                        'type'       => 'string',
+                    ])
+            )
+            ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
+            ->array($outerParams)
+                ->isIdenticalTo(['property_with_default_value' => 'default', 'property_with_getter' => 'with getter']);
     }
 
     public function testGenerateQueryForInsertShouldSerializeWithOptions()
@@ -858,7 +916,7 @@ class Metadata extends atoum
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-            ->and($metadata->setEntity('mock\repository\Bouh'))
+            ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
             ->and(
                 $metadata->addField([
                     'primary'       => true,
@@ -1037,7 +1095,7 @@ class Metadata extends atoum
 
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
-                ->and($metadata->setEntity('mock\repository\BouhCustomGetter'))
+                ->and($metadata->setEntity('mock\tests\fixtures\model\BouhCustomGetter'))
                 ->and(
                     $metadata->addField([
                         'primary'    => true,
@@ -1093,4 +1151,49 @@ class Metadata extends atoum
                 ->isIdenticalTo($setter);
     }
 
+    /**
+     * @php >= 8.4
+     */
+    public function testSetEntityPropertyShouldByPassPropertyHook()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity(HookedPropertiesEntity::class);
+        $metadata
+            ->addField(array(
+                'fieldName'  => 'hookSetOnly',
+                'columnName' => 'hook_set_only',
+                'type'       => 'string',
+            ))
+        ;
+        $entity = new HookedPropertiesEntity();
+        $metadata->setEntityProperty($entity, 'hook_set_only', 'value');
+        $this
+            ->string($entity->hookSetOnly)
+                ->isIdenticalTo('value')
+        ;
+    }
+    
+    /**
+     * @php >= 8.4
+     */
+    public function testGetEntityPropertyShouldUsePropertyHook()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $metadata->setEntity(HookedPropertiesEntity::class);
+        $metadata
+            ->addField(array(
+                'fieldName'  => 'hookBoth',
+                'columnName' => 'hook_both',
+                'type'       => 'string',
+            ))
+        ;
+        $entity = new HookedPropertiesEntity();
+        $metadata->setEntityProperty($entity, 'hook_both', 'value');
+        $this
+            ->string($metadata->getEntityPropertyByFieldName($entity, 'hookBoth'))
+                ->isIdenticalTo('value (hooked on get)')
+        ;
+    }
 }

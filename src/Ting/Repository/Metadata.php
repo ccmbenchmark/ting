@@ -36,6 +36,7 @@ use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Serializer;
+use CCMBenchmark\Ting\Util\PropertyAccessor;
 
 /**
  * @template T of object
@@ -51,10 +52,6 @@ use CCMBenchmark\Ting\Serializer;
  */
 class Metadata
 {
-    /**
-     * @var Serializer\SerializerFactoryInterface|null
-     */
-    protected $serializerFactory  = null;
     protected $connectionName     = null;
     protected $databaseName       = null;
     /** @var class-string<Repository<T>>|null */
@@ -78,13 +75,14 @@ class Metadata
         'geometry' => Serializer\Geometry::class,
         'uuid'     => Serializer\Uuid::class,
     ];
+    public PropertyAccessor $propertyAccessor;
 
     /**
      * @param Serializer\SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(Serializer\SerializerFactoryInterface $serializerFactory)
+    public function __construct(private Serializer\SerializerFactoryInterface $serializerFactory)
     {
-        $this->serializerFactory = $serializerFactory;
+        $this->propertyAccessor = new PropertyAccessor();
     }
 
     /**
@@ -372,8 +370,7 @@ class Metadata
             $insertId = $driver->getInsertedId();
         }
 
-        $property = 'set' . $this->autoincrement['fieldName'];
-        $entity->$property($insertId);
+        $this->propertyAccessor->setValue($entity, $this->autoincrement['fieldName'], $insertId, $this->fieldsByProperty[$this->autoincrement['fieldName']]['setter'] ?? null);
         return $this;
     }
 
@@ -387,8 +384,6 @@ class Metadata
      */
     public function setEntityProperty($entity, $column, $value)
     {
-        $setter = $this->getSetter($this->fields[$column]['fieldName']);
-
         if (isset($this->fields[$column]['serializer']) === true) {
             $options = [];
 
@@ -410,7 +405,7 @@ class Metadata
             }
         }
 
-        $entity->$setter($value);
+        $this->propertyAccessor->setValue($entity, $this->fields[$column]['fieldName'], $value, $this->fields[$column]['setter'] ?? null);
     }
 
     /**
@@ -422,8 +417,7 @@ class Metadata
      */
     protected function getEntityProperty($entity, $field)
     {
-        $getter = $this->getGetter($field['fieldName']);
-        $value = $entity->$getter();
+        $value = $this->propertyAccessor->getValue($entity, $field['fieldName'], $field['getter'] ?? null);
 
         if (isset($field['serializer']) === true) {
             $options = [];
@@ -436,8 +430,13 @@ class Metadata
 
         return $value;
     }
-
-
+    
+    public function getEntityPropertyByFieldName($entity, $fieldName)
+    {
+        $field = $this->fieldsByProperty[$fieldName];
+        return $this->getEntityProperty($entity, $field);
+    }
+    
     /**
      * Return a Query to get one object by it's primaries
      *
@@ -648,11 +647,15 @@ class Metadata
         $values = [];
 
         foreach ($this->fields as $column => $field) {
-            if (isset($field['autoincrement']) === true && $field['autoincrement'] === true) {
+            if ($field['autoincrement'] ?? false) {
                 continue;
             }
-
-            $values[$column] = $this->getEntityProperty($entity, $field);
+            
+            // Public typed properties non initialized is non-readable
+            // In this case we don't insert it, relying on database default value
+            if ($this->propertyAccessor->isReadable($entity, $field['fieldName'], $field['getter'] ?? null)) {
+                $values[$column] = $this->getEntityProperty($entity, $field);
+            }
         }
 
         $fields = array_keys($this->fields);
@@ -696,7 +699,12 @@ class Metadata
         $values = [];
         foreach ($properties as $name => $value) {
             $columnName = $this->fieldsByProperty[$name]['columnName'];
-            $values[$columnName] = $this->getEntityProperty($entity, $this->fieldsByProperty[$name]);
+
+            // Public typed properties non initialized is non-readable
+            // In this case we don't update it, so it will keep the current value
+            if ($this->propertyAccessor->isReadable($entity, $this->fieldsByProperty[$name]['fieldName'], $this->fieldsByProperty[$name]['getter'] ?? null)) {
+                $values[$columnName] = $this->getEntityProperty($entity, $this->fieldsByProperty[$name]);
+            }
         }
 
         $primariesKeyValue = $this->getPrimariesKeyValuesByProperties($properties, $entity);
@@ -749,8 +757,7 @@ class Metadata
                 $primariesKeyValue[$key] = $properties[$fieldName];
             } else {
                 // No update, get the actual
-                $propertyName = 'get' . $primary['fieldName'];
-                $primariesKeyValue[$key] = $entity->$propertyName();
+                $primariesKeyValue[$key] = $this->propertyAccessor->getValue($entity, $primary['fieldName']);
             }
         }
         return $primariesKeyValue;
@@ -760,8 +767,9 @@ class Metadata
      * Returns the getter name for a given field name
      *
      * @param $fieldName
-     *
      * @return string
+     * 
+     * @deprecated Use getEntityProperty, never try to get the value from the outside
      */
     public function getGetter($fieldName)
     {
@@ -775,8 +783,9 @@ class Metadata
      * Returns the setter name for a given field name
      *
      * @param $fieldName
-     *
      * @return string
+     * 
+     * @deprecated Use setEntityProperty, never try to set the value from the outside
      */
     public function getSetter($fieldName)
     {
