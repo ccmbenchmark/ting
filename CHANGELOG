@@ -1,4 +1,4 @@
-3.10.0 (unreleased):
+3.10.0 (2025-01-06):
     * Drop PHP 7
     * Remove hard dependency to pimple, add it in suggest
     * Collection is now JsonSerializable
