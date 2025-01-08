@@ -120,7 +120,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @throws Exception
      * @throws QueryException
      */
-    public function query(CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null)
     {
         $this->checkTtl();
 

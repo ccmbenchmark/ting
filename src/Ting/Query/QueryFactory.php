@@ -37,7 +37,7 @@ class QueryFactory implements QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return Query
      */
-    public function get($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
+    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
     {
         return new Query($sql, $connection, $collectionFactory);
     }
@@ -48,7 +48,7 @@ class QueryFactory implements QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return PreparedQuery
      */
-    public function getPrepared($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
+    public function getPrepared($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
     {
         return new PreparedQuery($sql, $connection, $collectionFactory);
     }
@@ -64,7 +64,7 @@ class QueryFactory implements QueryFactoryInterface
         $sql,
         Connection $connection,
         Cache $cache,
-        CollectionFactoryInterface $collectionFactory = null
+        ?CollectionFactoryInterface $collectionFactory = null
     ) {
         $cachedQuery = new Cached\Query($sql, $connection, $collectionFactory);
         $cachedQuery->setCache($cache);
@@ -82,7 +82,7 @@ class QueryFactory implements QueryFactoryInterface
         $sql,
         Connection $connection,
         Cache $cache,
-        CollectionFactoryInterface $collectionFactory = null
+        ?CollectionFactoryInterface $collectionFactory = null
     ) {
         $cachedPreparedQuery = new Cached\PreparedQuery($sql, $connection, $collectionFactory);
         $cachedPreparedQuery->setCache($cache);

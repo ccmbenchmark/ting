@@ -210,7 +210,7 @@ class Driver implements DriverInterface
     /**
      * @param DriverLoggerInterface $logger
      */
-    public function setLogger(DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null)
     {
         $this->logger = $logger;
         $this->objectHash = spl_object_hash($this);
@@ -269,7 +269,7 @@ class Driver implements DriverInterface
      * @return mixed|CollectionInterface
      * @throws QueryException
      */
-    public function execute($sql, array $params = [], CollectionInterface $collection = null)
+    public function execute($sql, array $params = [], ?CollectionInterface $collection = null)
     {
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',

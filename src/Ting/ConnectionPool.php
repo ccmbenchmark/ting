@@ -59,7 +59,7 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * @param DriverLoggerInterface $logger
      */
-    public function __construct(DriverLoggerInterface $logger = null)
+    public function __construct(?DriverLoggerInterface $logger = null)
     {
         $this->logger = $logger;
     }

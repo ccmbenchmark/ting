@@ -71,7 +71,7 @@ class Statement implements StatementInterface
      * @return bool|CollectionInterface
      * @throws QueryException
      */
-    public function execute(array $params, CollectionInterface $collection = null)
+    public function execute(array $params, ?CollectionInterface $collection = null)
     {
         $types = '';
         $values = [];
@@ -114,7 +114,7 @@ class Statement implements StatementInterface
      * @param DriverLoggerInterface $logger
      * @return void
      */
-    public function setLogger(DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null)
     {
         if ($logger !== null) {
             $this->logger = $logger;

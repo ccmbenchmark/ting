@@ -81,7 +81,7 @@ class MetadataRepository
         $schema,
         $table,
         \Closure $callbackFound,
-        \Closure $callbackNotFound = null
+        ?\Closure $callbackNotFound = null
     ) {
 
         $connectionKey = $connectionName . '#' . $table;
@@ -116,7 +116,7 @@ class MetadataRepository
     public function findMetadataForRepository(
         $repositoryName,
         \Closure $callbackFound,
-        \Closure $callbackNotFound = null
+        ?\Closure $callbackNotFound = null
     ) {
         if (isset($this->metadataList[$repositoryName]) === true) {
             $callbackFound($this->metadataList[$repositoryName]);
@@ -134,7 +134,7 @@ class MetadataRepository
      *
      * @internal
      */
-    public function findMetadataForEntity($entity, \Closure $callbackFound, \Closure $callbackNotFound = null)
+    public function findMetadataForEntity($entity, \Closure $callbackFound, ?\Closure $callbackNotFound = null)
     {
         if (is_object($entity)) {
             $entity = $entity::class;

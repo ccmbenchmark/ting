@@ -36,7 +36,7 @@ interface QueryInterface
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct($sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null);
+    public function __construct($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null);
 
     /**
      * Execute a reading query (SELECT, SHOW, etc.)
@@ -46,7 +46,7 @@ interface QueryInterface
      *
      * @template T of object
      */
-    public function query(CollectionInterface $collection = null);
+    public function query(?CollectionInterface $collection = null);
 
     /**
      * Execute a writing query (UPDATE, INSERT, etc.)

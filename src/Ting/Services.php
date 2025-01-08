@@ -151,7 +151,7 @@ class Services implements ContainerInterface
         return $this;
     }
 
-    public function get($id, array $options = null)
+    public function get($id, ?array $options = null)
     {
         if ($options !== null) {
             if (isset($this->serviceOptions[$id]) && $this->serviceOptions[$id] !== $options) {
