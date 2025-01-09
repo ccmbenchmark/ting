@@ -1,3 +1,6 @@
+3.10.3 (unreleased):
+    * Fix for: "Creation of dynamic property %s is deprecated"
+
 3.10.2 (2025-01-09):
     * Fix phpdoc for static analysis
 

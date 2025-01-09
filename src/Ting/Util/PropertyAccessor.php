@@ -11,10 +11,11 @@ class PropertyAccessor
 {
     private array $reflectionData = [];
     private array $reflectionProperties = [];
+    private array $writePropertyCache = [];
     private const CACHE_PREFIX_WRITE = 'write_property_';
     private PropertyAccessorInterface $propertyAccessor;
     private ?CacheItemPoolInterface $cacheItemPool = null;
-    
+
     public function __construct() {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
