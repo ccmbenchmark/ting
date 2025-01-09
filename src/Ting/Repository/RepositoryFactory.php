@@ -102,9 +102,10 @@ class RepositoryFactory
     }
 
     /**
-     * @param class-string<Repository<T>> $repositoryName
-     * @return Repository<T>
+     * @param class-string<R> $repositoryName
+     * @return R
      * @template T of object
+     * @template R of Repository<T>
      */
     public function get($repositoryName)
     {
