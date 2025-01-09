@@ -1,4 +1,7 @@
-3.10.1 (unreleased):
+3.10.2 (2025-01-09):
+    * Fix phpdoc for static analysis
+
+3.10.1 (2025-01-09):
     * Fix for PHP8.4: "Implicitly marking parameter %s as nullable is deprecated"
 
 3.10.0 (2025-01-06):
