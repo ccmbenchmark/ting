@@ -44,11 +44,11 @@ interface StatementInterface
      * @return mixed
      * @throws QueryException
      */
-    public function execute(array $params, CollectionInterface $collection = null);
+    public function execute(array $params, ?CollectionInterface $collection = null);
 
     /**
      * @param DriverLoggerInterface $logger
      * @return void
      */
-    public function setLogger(DriverLoggerInterface $logger = null);
+    public function setLogger(?DriverLoggerInterface $logger = null);
 }

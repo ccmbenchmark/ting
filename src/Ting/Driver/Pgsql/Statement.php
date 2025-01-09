@@ -85,7 +85,7 @@ class Statement implements StatementInterface
      * @param DriverLoggerInterface $logger
      * @return void
      */
-    public function setLogger(DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null)
     {
         $this->logger = $logger;
     }
@@ -98,7 +98,7 @@ class Statement implements StatementInterface
      * @return bool|mixed
      * @throws QueryException
      */
-    public function execute(array $params, CollectionInterface $collection = null)
+    public function execute(array $params, ?CollectionInterface $collection = null)
     {
         $values = [];
         foreach (array_keys($this->paramsOrder) as $key) {
@@ -132,7 +132,7 @@ class Statement implements StatementInterface
      *
      * @internal
      */
-    public function setCollectionWithResult($resultResource, CollectionInterface $collection = null)
+    public function setCollectionWithResult($resultResource, ?CollectionInterface $collection = null)
     {
         $result = new Result();
         $result->setConnectionName($this->connectionName);

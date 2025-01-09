@@ -86,7 +86,7 @@ class PreparedQuery extends Query
      * @return CollectionInterface
      * @throws QueryException
      */
-    public function query(CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();

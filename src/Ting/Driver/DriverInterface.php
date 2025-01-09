@@ -64,7 +64,7 @@ interface DriverInterface
      * @return mixed
      * @throws QueryException
      */
-    public function execute($sql, array $params = [], CollectionInterface $collection = null);
+    public function execute($sql, array $params = [], ?CollectionInterface $collection = null);
 
     /**
      * @param string $sql
@@ -114,7 +114,7 @@ interface DriverInterface
      */
     public function getAffectedRows();
 
-    public function setLogger(DriverLoggerInterface $logger = null);
+    public function setLogger(?DriverLoggerInterface $logger = null);
 
     /**
      * @param array $connectionConfig

@@ -148,7 +148,7 @@ abstract class Repository
      *
      * @template U
      */
-    public function getCollection(HydratorInterface $hydrator = null)
+    public function getCollection(?HydratorInterface $hydrator = null)
     {
         return $this->collectionFactory->get($hydrator);
     }

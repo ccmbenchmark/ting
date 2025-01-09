@@ -57,7 +57,7 @@ class Query implements QueryInterface
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct(protected $sql, Connection $connection, CollectionFactoryInterface $collectionFactory = null)
+    public function __construct(protected $sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
     {
         $this->connection        = $connection;
         $this->collectionFactory = $collectionFactory;
@@ -92,7 +92,7 @@ class Query implements QueryInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function query(CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null)
     {
         if ($collection === null) {
             $collection = $this->collectionFactory->get();
