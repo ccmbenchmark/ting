@@ -1,4 +1,4 @@
-3.10.3 (unreleased):
+3.10.3 (2025-01-10):
     * Fix for: "Creation of dynamic property %s is deprecated"
 
 3.10.2 (2025-01-09):
