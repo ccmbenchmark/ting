@@ -32,6 +32,7 @@ use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use Generator;
+use Symfony\Component\PropertyAccess\Exception\UninitializedPropertyException;
 use WeakMap;
 
 /**
@@ -301,7 +302,7 @@ class Hydrator implements HydratorInterface
                     if (isset($this->objectDatabase[$column['table']]) === true) {
                         $database = $this->objectDatabase[$column['table']];
                     }
-
+                    
                     $schema = $this->extractSchemaFromColumn($column);
                     $this->metadataRepository->findMetadataForTable(
                         $connectionName,
@@ -327,7 +328,7 @@ class Hydrator implements HydratorInterface
                         $id = $column['value'] . '-';
                     }
                 }
-
+                
                 if ($id !== '') {
                     $ref = $column['table'] . '-' . $id;
                     if (isset($this->references[$ref]) === true) {
@@ -408,7 +409,11 @@ class Hydrator implements HydratorInterface
             if (\is_int($table) === false) {
                 $ref = $table . '-';
                 foreach ($this->metadataList[$table]->getPrimaries() as $primary) {
-                    $ref .= $this->metadataList[$table]->getEntityPropertyByFieldName($entity, $primary['fieldName']) . '-';
+                    try {
+                        $ref .= $this->metadataList[$table]->getEntityPropertyByFieldName($entity, $primary['fieldName']) . '-';
+                    } catch (UninitializedPropertyException) {
+                        // Skip primary if value not fetched
+                    }
                 }
 
                 if (isset($this->references[$ref]) === false) {

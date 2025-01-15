@@ -1,3 +1,6 @@
+3.10.4 (unreleased):
+    * Fix HydratorRelational on null join where primary keys are public properties without default value
+
 3.10.3 (2025-01-10):
     * Fix for: "Creation of dynamic property %s is deprecated"
 

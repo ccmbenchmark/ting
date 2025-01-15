@@ -290,12 +290,14 @@ class MetadataRepository extends atoum
                 __DIR__ . '/../../fixtures/model/*Repository.php'
             ))
             ->isIdenticalTo([
-                'tests\fixtures\model\BouhMySchemaRepository' => 'tests\fixtures\model\BouhMySchemaRepository',
-                'tests\fixtures\model\BouhReadOnlyRepository' => 'tests\fixtures\model\BouhReadOnlyRepository',
-                'tests\fixtures\model\BouhRepository'         => 'tests\fixtures\model\BouhRepository',
-                'tests\fixtures\model\CityRepository'         => 'tests\fixtures\model\CityRepository',
-                'tests\fixtures\model\CitySecondRepository'   => 'tests\fixtures\model\CitySecondMetadataRepository',
-                'tests\fixtures\model\ParkRepository'         => 'tests\fixtures\model\ParkRepository',
+                'tests\fixtures\model\BouhMySchemaRepository'                => 'tests\fixtures\model\BouhMySchemaRepository',
+                'tests\fixtures\model\BouhReadOnlyRepository'                => 'tests\fixtures\model\BouhReadOnlyRepository',
+                'tests\fixtures\model\BouhRepository'                        => 'tests\fixtures\model\BouhRepository',
+                'tests\fixtures\model\CityRepository'                        => 'tests\fixtures\model\CityRepository',
+                'tests\fixtures\model\CitySecondRepository'                  => 'tests\fixtures\model\CitySecondMetadataRepository',
+                'tests\fixtures\model\CityWithPublicPropertiesRepository'    => 'tests\fixtures\model\CityWithPublicPropertiesRepository',
+                'tests\fixtures\model\CountryWithPublicPropertiesRepository' => 'tests\fixtures\model\CountryWithPublicPropertiesRepository',
+                'tests\fixtures\model\ParkRepository'                        => 'tests\fixtures\model\ParkRepository',
             ]);
     }
 
