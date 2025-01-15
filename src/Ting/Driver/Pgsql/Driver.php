@@ -470,7 +470,7 @@ class Driver implements DriverInterface
      * @return bool true on success, false on failure
      * @throws NeverConnectedException when you have not been connected to your database before trying to pint it.
      */
-    public function ping()
+    public function ping(): bool
     {
         if ($this->connection === null) {
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
