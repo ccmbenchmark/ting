@@ -123,10 +123,7 @@ interface DriverInterface
      */
     public function closeStatement($statement);
 
-    /**
-     * @return void
-     */
-    public function ping();
+    public function ping(): bool;
 
     public function setTimezone($timezone);
 }

@@ -182,7 +182,7 @@ class Driver implements DriverInterface
     {
     }
 
-    public function ping()
+    public function ping(): bool
     {
     }
 }
