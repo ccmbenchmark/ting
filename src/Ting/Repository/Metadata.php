@@ -762,36 +762,4 @@ class Metadata
         }
         return $primariesKeyValue;
     }
-
-    /**
-     * Returns the getter name for a given field name
-     *
-     * @param $fieldName
-     * @return string
-     * 
-     * @deprecated Use getEntityProperty, never try to get the value from the outside
-     */
-    public function getGetter($fieldName)
-    {
-        if (isset($this->fieldsByProperty[$fieldName]['getter']) === true) {
-            return $this->fieldsByProperty[$fieldName]['getter'];
-        }
-        return 'get' . $fieldName;
-    }
-
-    /**
-     * Returns the setter name for a given field name
-     *
-     * @param $fieldName
-     * @return string
-     * 
-     * @deprecated Use setEntityProperty, never try to set the value from the outside
-     */
-    public function getSetter($fieldName)
-    {
-        if (isset($this->fieldsByProperty[$fieldName]['setter']) === true) {
-            return $this->fieldsByProperty[$fieldName]['setter'];
-        }
-        return 'set' . $fieldName;
-    }
 }

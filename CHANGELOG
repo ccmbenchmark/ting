@@ -1,4 +1,7 @@
 4.0.0 (unreleased):
+    * BC add ping and setTimezone on DriverInterface
+    * BC deleted Metadata setter & getter
+    * BC deleted deprecated methods on Mysqli and Pgsql drivers
 
 3.10.2 (2025-01-09):
     * Fix phpdoc for static analysis
