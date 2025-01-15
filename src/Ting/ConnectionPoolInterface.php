@@ -58,5 +58,5 @@ interface ConnectionPoolInterface
 
     public function closeAll();
 
-    public function setDatabaseOptions($options);
+    public function setDatabaseOptions($options): void;
 }
