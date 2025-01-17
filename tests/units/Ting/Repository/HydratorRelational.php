@@ -33,6 +33,8 @@ use CCMBenchmark\Ting\Repository\Hydrator\RelationMany;
 use CCMBenchmark\Ting\Repository\Hydrator\RelationOne;
 use CCMBenchmark\Ting\Services;
 
+use tests\fixtures\model\CityWithPublicPropertiesRepository;
+use tests\fixtures\model\CountryWithPublicPropertiesRepository;
 use const MYSQLI_TYPE_VAR_STRING;
 
 /**
@@ -953,5 +955,102 @@ class HydratorRelational extends atoum
             ->isIdenticalTo('Leune')
             ->string($data->getFirstname())
             ->isIdenticalTo('Xavier');
+    }
+
+    /**
+     * This test simulates a query with a relation, where the join row is null.
+     * The id are public properties without default values.
+     */
+    public function testHydrateNullJoinWithPublicProperties(): void
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+        $metadataCity = CityWithPublicPropertiesRepository::initMetadata($services->get('SerializerFactory'));
+        $metadataCountry = CountryWithPublicPropertiesRepository::initMetadata($services->get('SerializerFactory'));
+
+        $services->get('MetadataRepository')->addMetadata($metadataCity->getEntity(), $metadataCity);
+        $services->get('MetadataRepository')->addMetadata($metadataCountry->getEntity(), $metadataCountry);
+        
+        
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult([
+            [1, 'Paris', 2, 'France'],
+            [2, 'London', 3, 'United Kingdom'],
+            [3, 'Tokyo', null, null], // No relation
+        ]);
+        $this->calling($mockMysqliResult)->fetch_fields = function () {
+            $fields = [];
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'id';
+            $stdClass->table    = 'city';
+            $stdClass->orgtable = 'T_CITY_PUB';
+            $stdClass->type     = MYSQLI_TYPE_INT24;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'name';
+            $stdClass->table    = 'city';
+            $stdClass->orgtable = 'T_CITY_PUB';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'id';
+            $stdClass->orgname  = 'id';
+            $stdClass->table    = 'country';
+            $stdClass->orgtable = 'T_COUNTRY_PUB';
+            $stdClass->type     = MYSQLI_TYPE_INT24;
+            $fields[] = $stdClass;
+
+            $stdClass = new \stdClass();
+            $stdClass->name     = 'name';
+            $stdClass->orgname  = 'name';
+            $stdClass->table    = 'country';
+            $stdClass->orgtable = 'T_COUNTRY_PUB';
+            $stdClass->type     = MYSQLI_TYPE_VAR_STRING;
+            $fields[] = $stdClass;
+            
+            return $fields;
+        };
+
+        $result = new Result();
+        $result->setResult($mockMysqliResult);
+        $result->setConnectionName('main');
+        $result->setDatabase('database');
+
+        $this
+            ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorRelational())
+            ->and($hydrator->setMetadataRepository($services->get('MetadataRepository')))
+            ->and($hydrator->setUnitOfWork($services->get('UnitOfWork')))
+            ->and($hydrator->addRelation(new RelationOne(
+                new AggregateFrom('country'),
+                new AggregateTo('city'),
+                'setCountry'
+            )))
+            ->and($hydrator->callableFinalizeAggregate(static fn (array $row) => $row['city']))
+            //->and($hydrator->callableFinalizeAggregate(static function (array $row) { var_dump($row); return $row['city']; }))
+            ->then($iterator = $hydrator->setResult($result)->getIterator())
+            ->then($data = $iterator->current())
+            ->string($data->name)
+                ->isIdenticalTo('Paris')
+            ->then($country = $data->getCountry())
+            ->string($country->name)
+                ->isIdenticalTo('France')
+            ->then($iterator->next())
+            ->and($data = $iterator->current())
+            ->string($data->name)
+                ->isIdenticalTo('London')
+                ->and($country = $data->getCountry())
+                ->string($country->name)
+                ->isIdenticalTo('United Kingdom')
+            ->then($iterator->next())
+            ->and($data = $iterator->current())
+            ->string($data->name)
+                ->isIdenticalTo('Tokyo')
+            ->and($country = $data->getCountry())
+                ->variable($country)
+                    ->isNull()
+        ;
     }
 }
