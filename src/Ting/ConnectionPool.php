@@ -72,7 +72,7 @@ class ConnectionPool implements ConnectionPoolInterface
         $this->connectionConfig = $config;
     }
 
-    public function setDatabaseOptions($options)
+    public function setDatabaseOptions($options): void
     {
         $this->databaseOptions = $options;
     }
