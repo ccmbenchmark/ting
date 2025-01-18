@@ -17,7 +17,12 @@ class DateTimeZone implements SerializerInterface
         return $toSerialize->getName();
     }
 
-    public function unserialize($serialized, array $options = []): ?\DateTimeZone
+    /**
+     * @param mixed $serialized
+     * @param array $options
+     * @return \DateTimeZone|null
+     */
+    public function unserialize(mixed $serialized, array $options = []): ?\DateTimeZone
     {
         if ($serialized === null) {
             return null;
