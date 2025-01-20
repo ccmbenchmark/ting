@@ -59,7 +59,7 @@ class Driver implements DriverInterface
     protected $currentTimezone = null;
 
     /**
-     * @var resource|null
+     * @var \PgSql\Connection|null
      */
     protected $connection = null;
 
@@ -79,7 +79,7 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
-     * @var resource|null
+     * @var resource|\PgSql\Result|null
      */
     protected $result = null;
 
