@@ -1,4 +1,4 @@
-3.10.5 (unreleased):
+3.10.5 (2025-01-29):
     * Fix throws exception if Pimple is missing when using CCMBenchmark\Ting\Services
 
 3.10.4 (2025-01-17):
