@@ -36,6 +36,9 @@ class Services implements ContainerInterface
 
     public function __construct()
     {
+        if (!\class_exists(Container::class)) {
+            throw new \RuntimeException('pimple/pimple is required to use Ting services, please run "composer require pimple/pimple" to install it');
+        }
         $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
