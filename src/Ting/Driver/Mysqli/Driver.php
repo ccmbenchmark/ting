@@ -355,7 +355,7 @@ class Driver implements DriverInterface
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
             function ($match) use (&$paramsOrder) {
-                $paramsOrder[$match[1]] = null;
+                $paramsOrder[] = $match[1];
                 return '?';
             },
             $sql

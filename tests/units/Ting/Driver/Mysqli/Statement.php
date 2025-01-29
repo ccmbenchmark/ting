@@ -42,7 +42,7 @@ class Statement extends atoum
             'date'        => '2014-03-01 14:02:05',
             'is_banned'   => false,
         ];
-        $paramsOrder = ['firstname' => null, 'id' => null, 'description' => null, 'old' => null, 'date' => null, 'is_banned' => null];
+        $paramsOrder = ['firstname', 'id', 'description', 'old', 'date', 'is_banned'];
 
         $this->calling($driverStatement)->get_result = new \mock\Iterator();
         $driverStatement->errno = 0;
