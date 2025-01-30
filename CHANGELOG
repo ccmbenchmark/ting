@@ -1,3 +1,6 @@
+3.10.6 (unreleased):
+    * Fix Driver Mysqli: you can now repeat a same parameter in your query
+
 3.10.5 (2025-01-29):
     * Fix throws exception if Pimple is missing when using CCMBenchmark\Ting\Services
 

@@ -76,7 +76,7 @@ class Statement implements StatementInterface
         $types = '';
         $values = [];
 
-        foreach (array_keys($this->paramsOrder) as $key) {
+        foreach ($this->paramsOrder as $key) {
             $value = $params[$key];
             $types .= self::PARAM_TYPE_BINDING[\gettype($value)] ?? 's';
 
@@ -86,7 +86,7 @@ class Statement implements StatementInterface
 
             $values[] = $value;
         }
-
+        
         $this->driverStatement->bind_param($types, ...$values);
 
         if ($this->logger !== null) {
