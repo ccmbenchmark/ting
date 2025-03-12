@@ -1,3 +1,6 @@
+3.10.7 (unreleased):
+    * Fix Driver Mysqli: mysqli_ping has no effect since PHP 8.2, fix that.
+
 3.10.6 (2025-03-12):
     * Fix Driver Mysqli: you can now repeat a same parameter in your query
 

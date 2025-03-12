@@ -119,8 +119,7 @@ class Driver implements DriverInterface
     public function __construct($connection = null, $driver = null)
     {
         if ($connection === null) {
-            $this->connection = \mysqli_init();
-            $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
+            $this->createConnection();
         } else {
             $this->connection = $connection;
         }
@@ -346,11 +345,8 @@ class Driver implements DriverInterface
      */
     public function prepare($sql)
     {
-
         $statementName = sha1($sql);
-        if (isset($this->preparedQueries[$statementName])) {
-            return $this->preparedQueries[$statementName];
-        }
+
         $paramsOrder = [];
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
@@ -500,27 +496,20 @@ class Driver implements DriverInterface
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
         }
 
-        $pingResult = false;
+        // mysqli.reconnect has been removed in PHP 8.2 and mysqli_ping has been deprecated in PHP 8.4 as it has no effect, so we cannot rely on ping
+        // We need to reimplement the logic here.
+
+        // First try a simple query, if it works we don't need to do anything
+        try {
+            $result = $this->connection->query('SELECT 1');
+            if ($result !== false) {
+                return true;
+            }
+        } catch (mysqli_sql_exception) { }
 
         try {
-            $pingResult = $this->connection->ping();
-        } catch (\Exception) {
-            // mysqli::ping() throws an exception if the connection has gone down ("MySQL server has gone away").
-            // We catch it as a ping failure (returns false) in order to try to reconnect.
-        }
-
-        if ($pingResult === true) {
-            return true;
-        }
-
-        try {
-            $this->connection->real_connect(
-                $this->connectionConfig['hostname'],
-                $this->connectionConfig['username'],
-                $this->connectionConfig['password'],
-                $this->currentDatabase,
-                $this->connectionConfig['port']
-            );
+            $this->createConnection();
+            $this->connected = $this->connection->real_connect($this->connectionConfig['hostname'], $this->connectionConfig['username'], $this->connectionConfig['password'], $this->currentDatabase, $this->connectionConfig['port']);
 
             if ($this->currentCharset !== null) {
                 $this->connection->set_charset($this->currentCharset);
@@ -531,7 +520,7 @@ class Driver implements DriverInterface
             }
 
             return true;
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -553,5 +542,11 @@ class Driver implements DriverInterface
         }
         $this->connection->query(sprintf($query, $value));
         $this->currentTimezone = $timezone;
+    }
+
+    private function createConnection(): void
+    {
+        $this->connection = \mysqli_init();
+        $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
     }
 }
