@@ -1,4 +1,4 @@
-3.10.6 (unreleased):
+3.10.6 (2025-03-12):
     * Fix Driver Mysqli: you can now repeat a same parameter in your query
 
 3.10.5 (2025-01-29):
