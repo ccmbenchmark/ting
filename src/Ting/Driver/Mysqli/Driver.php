@@ -484,7 +484,7 @@ class Driver implements DriverInterface
      */
     public function closeStatement($statement)
     {
-        if (isset($this->preparedQueries[$statement], $this->oldPreparedQueries[$statement]) === false) {
+        if (!isset($this->preparedQueries[$statement]) && !isset($this->oldPreparedQueries[$statement])) {
             throw new StatementException('Cannot close non prepared statement');
         }
         unset($this->preparedQueries[$statement], $this->oldPreparedQueries[$statement]);
