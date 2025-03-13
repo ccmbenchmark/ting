@@ -70,7 +70,7 @@ class Driver implements DriverInterface
 
     }
 
-    public function setLogger(DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null)
     {
 
     }
@@ -82,7 +82,7 @@ class Driver implements DriverInterface
      * @param CollectionInterface $collection
      * @return mixed
      */
-    public function execute($sql, array $params = [], CollectionInterface $collection = null)
+    public function execute($sql, array $params = [], ?CollectionInterface $collection = null)
     {
 
     }

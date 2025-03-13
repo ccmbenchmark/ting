@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
+use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Exceptions\ConnectionException;
 use CCMBenchmark\Ting\Exceptions\DatabaseException;
 use CCMBenchmark\Ting\Exceptions\DriverException;
@@ -36,7 +37,7 @@ use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
-use function is_null;
+use mysqli_sql_exception;
 
 class Driver implements DriverInterface
 {
@@ -91,9 +92,14 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
-     * @var array List of already prepared queries
+     * @var array<string,StatementInterface> List of already prepared queries
      */
     protected $preparedQueries = [];
+
+    /**
+     * @var array<string,StatementInterface> Old list of prepared queries, filled after a reconnect
+     */
+    protected $oldPreparedQueries = [];
 
     /**
      * @var string Match parameter in SQL
@@ -346,7 +352,9 @@ class Driver implements DriverInterface
     public function prepare($sql)
     {
         $statementName = sha1($sql);
-
+        if (isset($this->preparedQueries[$statementName])) {
+            return $this->preparedQueries[$statementName];
+        }
         $paramsOrder = [];
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
@@ -378,7 +386,6 @@ class Driver implements DriverInterface
         $statement->setLogger($this->logger);
 
         $this->preparedQueries[$statementName] = $statement;
-
 
         return $statement;
     }
@@ -477,10 +484,10 @@ class Driver implements DriverInterface
      */
     public function closeStatement($statement)
     {
-        if (isset($this->preparedQueries[$statement]) === false) {
+        if (isset($this->preparedQueries[$statement], $this->oldPreparedQueries[$statement]) === false) {
             throw new StatementException('Cannot close non prepared statement');
         }
-        unset($this->preparedQueries[$statement]);
+        unset($this->preparedQueries[$statement], $this->oldPreparedQueries[$statement]);
     }
 
     /**
@@ -518,7 +525,8 @@ class Driver implements DriverInterface
             if ($this->currentTimezone !== null) {
                 $this->connection->query(sprintf('SET time_zone = "%s";', $this->currentTimezone));
             }
-
+            $this->oldPreparedQueries = array_merge($this->preparedQueries, $this->oldPreparedQueries);
+            $this->preparedQueries = [];
             return true;
         } catch (\Exception $e) {
             return false;
@@ -546,7 +554,7 @@ class Driver implements DriverInterface
 
     private function createConnection(): void
     {
-        $this->connection = \mysqli_init();
+        $this->connection = mysqli_init();
         $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
     }
 }
