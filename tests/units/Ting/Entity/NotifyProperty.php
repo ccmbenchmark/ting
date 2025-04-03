@@ -26,6 +26,7 @@
 namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use atoum;
+use tests\fixtures\model\Bouh;
 
 class NotifyProperty extends atoum
 {
@@ -61,6 +62,36 @@ class NotifyProperty extends atoum
             ->mock($mockListener2)
                 ->call('propertyChanged')
                     ->once()
+        ;
+    }
+
+    public function testSerializationWithoutListerners()
+    {
+        $mockListener  = new \mock\CCMBenchmark\Ting\Entity\PropertyListenerInterface();
+        $mockListener2 = new \mock\CCMBenchmark\Ting\Entity\PropertyListenerInterface();
+        $entity = new Bouh();
+        $entity->setId(20);
+        $entity->setName('Xavier');
+        $entity->addPropertyListener($mockListener);
+        $entity->addPropertyListener($mockListener2);
+
+        var_dump($entity);
+
+        $expected = [
+            'id' => 20,
+            'firstname' => null,
+            'name' => 'Xavier',
+            'enabled' => null,
+            'price' => null,
+            'roles' => ['USER'],
+            'city' => null,
+            'retrievedTime' => null,
+            'originalCity' => null,
+            'cities' => [],
+        ];
+        $this
+            ->array($serialized = $entity->__serialize())
+            ->isIdenticalTo($expected)
         ;
     }
 }
