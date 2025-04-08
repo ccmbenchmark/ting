@@ -42,7 +42,7 @@ interface CollectionInterface extends \IteratorAggregate, \Countable
     public function set(ResultInterface $result);
 
     /**
-     * @return T
+     * @return T|null
      */
     public function first();
 

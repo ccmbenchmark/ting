@@ -1,5 +1,6 @@
 3.12.0 (unreleased):
     * add __debuginfo() in NotifyInterface to reduce context when dumping an entity
+    * Driver now supports reconnect, useful in forked processes
 
 3.11.0 (2025-03.14):
     * Fix Driver Mysqli: mysqli_ping has no effect since PHP 8.2, fix that.
