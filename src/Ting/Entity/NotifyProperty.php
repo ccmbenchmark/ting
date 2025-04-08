@@ -63,4 +63,12 @@ trait NotifyProperty
 
         return $properties;
     }
+
+    public function __serialize(): array
+    {
+        $properties = get_object_vars($this);
+        unset($properties['listeners']);
+
+        return $properties;
+    }
 }
