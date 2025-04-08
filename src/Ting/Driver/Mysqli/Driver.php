@@ -514,23 +514,7 @@ class Driver implements DriverInterface
             }
         } catch (mysqli_sql_exception) { }
 
-        try {
-            $this->createConnection();
-            $this->connected = $this->connection->real_connect($this->connectionConfig['hostname'], $this->connectionConfig['username'], $this->connectionConfig['password'], $this->currentDatabase, $this->connectionConfig['port']);
-
-            if ($this->currentCharset !== null) {
-                $this->connection->set_charset($this->currentCharset);
-            }
-
-            if ($this->currentTimezone !== null) {
-                $this->connection->query(sprintf('SET time_zone = "%s";', $this->currentTimezone));
-            }
-            $this->oldPreparedQueries = array_merge($this->preparedQueries, $this->oldPreparedQueries);
-            $this->preparedQueries = [];
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
+        return $this->reconnect();
     }
 
     /**
@@ -556,5 +540,26 @@ class Driver implements DriverInterface
     {
         $this->connection = mysqli_init();
         $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
+    }
+
+    public function reconnect(): bool
+    {
+        try {
+            $this->createConnection();
+            $this->connected = $this->connection->real_connect($this->connectionConfig['hostname'], $this->connectionConfig['username'], $this->connectionConfig['password'], $this->currentDatabase, $this->connectionConfig['port']);
+
+            if ($this->currentCharset !== null) {
+                $this->connection->set_charset($this->currentCharset);
+            }
+
+            if ($this->currentTimezone !== null) {
+                $this->connection->query(sprintf('SET time_zone = "%s";', $this->currentTimezone));
+            }
+            $this->oldPreparedQueries = array_merge($this->preparedQueries, $this->oldPreparedQueries);
+            $this->preparedQueries = [];
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
