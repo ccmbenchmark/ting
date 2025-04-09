@@ -30,9 +30,10 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 interface MetadataInitializer
 {
     /**
+     * @template M of \CCMBenchmark\Ting\Repository\Metadata
      * @param  SerializerFactoryInterface $serializerFactory
      * @param  array                      $options
-     * @return \CCMBenchmark\Ting\Repository\Metadata
+     * @return M
      */
     public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []);
 }

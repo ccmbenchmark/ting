@@ -3,6 +3,7 @@
     * Driver now supports reconnect, useful in forked processes
     * Prevent entity listeners serialization
     * bump aura/sqlquery to 3.0.0
+    * Fix generics for phpstan on MetadataInitializer interface
 
 3.11.0 (2025-03.14):
     * Fix Driver Mysqli: mysqli_ping has no effect since PHP 8.2, fix that.
