@@ -92,8 +92,7 @@ class CacheResult implements ResultInterface
     /**
      * Iterator
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->result !== null) {
             $this->result->rewind();
@@ -102,10 +101,8 @@ class CacheResult implements ResultInterface
 
     /**
      * Return current row
-     * @return mixed|null
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         if ($this->result === null) {
             return null;
@@ -116,10 +113,8 @@ class CacheResult implements ResultInterface
 
     /**
      * Return the key of the actual row
-     * @return int|mixed
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         if ($this->result === null) {
             return null;
@@ -131,8 +126,7 @@ class CacheResult implements ResultInterface
     /**
      * Move to the next row in result set
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         if ($this->result !== null) {
             $this->result->next();
@@ -141,10 +135,8 @@ class CacheResult implements ResultInterface
 
     /**
      * Is the actual row valid
-     * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         if ($this->result === null) {
             return false;
