@@ -76,7 +76,7 @@ class PropertyAccessor
      * @throws \Psr\Cache\InvalidArgumentException
      * @throws \ReflectionException
      */
-    private function getReflectionData(object $object, string $propertyPath): array
+    public function getReflectionData(object $object, string $propertyPath): array
     {
         $key = \get_class($object).'..'.$propertyPath;
         if (isset($this->reflectionData[$key])) {
@@ -95,6 +95,8 @@ class PropertyAccessor
             'public' => $reflection->isPublic(),
             'supportsHook' => \PHP_VERSION_ID >= 80400,
             'hasSetHook' => \PHP_VERSION_ID >= 80400 && $reflection->getHook(\PropertyHookType::Set) !== null,
+            'type' => $reflection->getType()?->getName(),
+            'nullable' => $reflection->getType() !== null && $reflection->getType()->allowsNull()
         ];
 
         if (isset($item)) {
