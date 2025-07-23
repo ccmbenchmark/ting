@@ -95,8 +95,30 @@ class HydratorValueObject implements HydratorInterface
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        foreach ($this->result as $key => $row) {
-            yield $key => $this->hydrateObject($row);
+        if (method_exists($this->objectToHydrate, '__construct')) {
+            foreach ($this->result as $key => $row) {
+                yield $key => new $this->objectToHydrate(...array_combine(array_column($row, 'name'), array_column($row, 'value')));
+            }
+        } else {
+
+            $methods = [];
+            foreach ($this->result as $key => $row) {
+                foreach ($row as $column) {
+                    $setter = 'set'.str_replace("_", "", ucwords($column['name'], " /_")); // snake case by default in database
+                    if (method_exists($this->objectToHydrate, $setter)) {
+                        $methods[$column['name']] = $setter;
+                    } else {
+                        throw new Exception('There is no setter for column "'.$column['name'].'"');
+                    }
+                }
+                break;
+            }
+
+            $this->result->rewind();
+
+            foreach ($this->result as $key => $row) {
+                yield $key => $this->hydrateObject($row, $methods);
+            }
         }
     }
 
@@ -116,21 +138,12 @@ class HydratorValueObject implements HydratorInterface
     /**
      * @throws Exception
      */
-    private function hydrateObject(array $row)
+    private function hydrateObject(array $row, $methods)
     {
-
-        if (method_exists($this->objectToHydrate, '__construct')) {
-            return new $this->objectToHydrate(...array_combine(array_column($row, 'name'), array_column($row, 'value')));
-        }
-
         $object = new $this->objectToHydrate();
         foreach ($row as $column) {
-            $setter = 'set'.str_replace("_", "", ucwords($column['name'], " /_")); // snake case by default in database
-            if (method_exists($object, $setter)) {
-                $object->$setter($column['value']);
-            } else {
-                throw new Exception('There is no setter for column "'.$column['name'].'"');
-            }
+            $setter = $methods[$column['name']];
+            $object->$setter($column['value']);
         }
 
         return $object;
