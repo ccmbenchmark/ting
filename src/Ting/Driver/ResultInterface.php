@@ -51,6 +51,12 @@ interface ResultInterface extends \Iterator
     public function setResult($result);
 
     /**
+     * @param class-string<T> $objectToFetch
+     * @return $this
+     */
+    public function setObjectToFetch($objectToFetch);
+
+    /**
      * @return string|null
      */
     public function getConnectionName();
@@ -64,4 +70,5 @@ interface ResultInterface extends \Iterator
      * @return int
      */
     public function getNumRows();
+
 }

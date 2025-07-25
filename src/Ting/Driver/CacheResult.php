@@ -42,6 +42,10 @@ class CacheResult implements ResultInterface
      */
     protected $result = null;
 
+    /**
+     * @var string|null
+     */
+    protected $objectToFetch = null;
 
     /**
      * @param string $connectionName
@@ -70,6 +74,13 @@ class CacheResult implements ResultInterface
     public function setResult($result)
     {
         $this->result = $result;
+        return $this;
+    }
+
+
+    public function setObjectToFetch($objectToFetch)
+    {
+        $this->objectToFetch = $objectToFetch;
         return $this;
     }
 

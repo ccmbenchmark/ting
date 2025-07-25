@@ -35,6 +35,8 @@ class Result implements ResultInterface
     protected $fields          = [];
     protected $iteratorOffset  = 0;
     protected $iteratorCurrent = null;
+    /** @var string|null  */
+    protected $objectToFetch = null;
 
     /**
      * @param string $connectionName
@@ -64,6 +66,16 @@ class Result implements ResultInterface
     {
         $this->result = $result;
         $this->fields = $this->result->fetch_fields();
+        return $this;
+    }
+
+    /**
+     * @param string $objectToFetch
+     * @return $this
+     */
+    public function setObjectToFetch($objectToFetch)
+    {
+        $this->objectToFetch = $objectToFetch;
         return $this;
     }
 
@@ -208,7 +220,11 @@ class Result implements ResultInterface
     public function next(): void
     {
         if ($this->result !== null) {
-            $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
+            if ($this->objectToFetch !== null) {
+                $this->iteratorCurrent = $this->result->fetch_object($this->objectToFetch);
+            } else {
+                $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
+            }
 
             $this->iteratorOffset++;
         }
