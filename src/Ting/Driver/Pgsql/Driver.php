@@ -440,8 +440,8 @@ class Driver implements DriverInterface
      */
     public function getInsertedIdForSequence($sequenceName)
     {
-        $sql = "SELECT currval('$sequenceName')";
-        $resultResource = @pg_query($this->connection, $sql);
+        $sql = "SELECT currval($1)";
+        $resultResource = @pg_query_params($this->connection, $sql, [$sequenceName]);
 
         if ($resultResource === false) {
             throw new QueryException(pg_last_error($this->connection) . ' (Query: ' . $sql . ')');
