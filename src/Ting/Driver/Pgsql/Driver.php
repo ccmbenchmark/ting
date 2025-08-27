@@ -540,6 +540,7 @@ class Driver implements DriverInterface
                 $this->currentCharset = null;
                 $this->setCharset($charset);
             }
+            return true;
         } catch (DriverException) {
             return false;
         }
