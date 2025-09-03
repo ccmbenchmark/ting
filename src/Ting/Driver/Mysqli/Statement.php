@@ -80,7 +80,7 @@ class Statement implements StatementInterface
 
             $values[] = $value;
         }
-        
+
         $this->driverStatement->bind_param($types, ...$values);
 
         if ($this->logger !== null) {
@@ -97,7 +97,7 @@ class Statement implements StatementInterface
 
         $result = $this->driverStatement->get_result();
 
-        if ($collection !== null) {
+        if ($collection instanceof CollectionInterface) {
             return $this->setCollectionWithResult($result, $collection);
         }
 
@@ -106,7 +106,7 @@ class Statement implements StatementInterface
 
     public function setLogger(?DriverLoggerInterface $logger = null): void
     {
-        if ($logger !== null) {
+        if ($logger instanceof DriverLoggerInterface) {
             $this->logger = $logger;
             $this->objectHash = spl_object_hash($this->driverStatement);
         }

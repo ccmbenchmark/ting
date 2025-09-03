@@ -275,11 +275,11 @@ class Driver implements DriverInterface
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
         }
 
-        if ($result === true) {
-            return true;
-        }
+        if (!$collection instanceof CollectionInterface) {
+            if ($result === true) {
+                return true;
+            }
 
-        if ($collection === null) {
             return $result->fetch_assoc();
         }
 
@@ -301,7 +301,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param mysqli_result $resultData
+     * @param mysqli_result|Object $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */

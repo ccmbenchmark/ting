@@ -48,12 +48,9 @@ class Statement implements StatementInterface
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct(
-        protected $statementName,
-        protected array $paramsOrder,
-        protected string $connectionName,
-        protected string $database
-    ) {
+    public function __construct(protected $statementName, array $paramsOrder, protected $connectionName, protected $database)
+    {
+        $this->paramsOrder    = $paramsOrder;
     }
 
     /**

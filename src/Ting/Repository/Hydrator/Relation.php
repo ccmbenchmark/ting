@@ -33,8 +33,11 @@ abstract class Relation
      * @param AggregateTo   $to
      * @param string        $setter
      */
-    public function __construct(private readonly AggregateFrom $from, private readonly AggregateTo $to, private readonly string $setter)
-    {
+    public function __construct(
+        private readonly AggregateFrom $from,
+        private readonly AggregateTo $to,
+        private readonly string $setter
+    ) {
     }
 
     public function getSource(): string

@@ -186,8 +186,10 @@ class ConnectionPool implements ConnectionPoolInterface
             $this->connections[$connectionKey]->setCharset($charset);
         }
 
-        $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
-        $this->connections[$connectionKey]->setTimezone($timezone);
+        if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
+            $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
+            $this->connections[$connectionKey]->setTimezone($timezone);
+        }
 
         return $this->connections[$connectionKey];
     }
