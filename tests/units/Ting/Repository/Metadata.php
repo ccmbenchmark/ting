@@ -735,7 +735,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -747,8 +747,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -780,7 +781,7 @@ class Metadata extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
+            return (string) $field;
         };
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -793,8 +794,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -842,7 +844,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -854,8 +856,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -889,7 +892,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -901,8 +904,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -1071,7 +1075,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -1083,8 +1087,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();

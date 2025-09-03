@@ -101,12 +101,10 @@ final class Geometry implements SerializerInterface
                 )
             );
         } catch (Exception $e) {
-            throw new UnexpectedValueException(
-                sprintf(
-                    'Error during Geometry conversion "%s".',
-                    $e->getMessage()
-                )
-            );
+            throw new UnexpectedValueException(sprintf(
+                'Error during Geometry conversion "%s".',
+                $e->getMessage()
+            ), $e->getCode(), $e);
         }
 
     }

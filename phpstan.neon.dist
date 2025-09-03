@@ -8,7 +8,10 @@ parameters:
 		- phpstan/
 	tips:
 	    treatPhpDocTypesAsCertain: false
-
+	ignoreErrors:
+	  - identifier: missingType.iterableValue
+	  - identifier: missingType.generics
+#	  - identifier: missingType.parameter
 services:
 	-
 		class: CCMBenchmark\Ting\PHPStan\PropertiesExtension

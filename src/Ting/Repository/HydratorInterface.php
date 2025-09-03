@@ -25,6 +25,8 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use IteratorAggregate;
+use Countable;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -32,25 +34,13 @@ use CCMBenchmark\Ting\UnitOfWork;
 /**
  * @template T
  *
- * @template-extends \IteratorAggregate<int, T>
+ * @template-extends IteratorAggregate<int, T>
  */
-interface HydratorInterface extends \IteratorAggregate, \Countable
+interface HydratorInterface extends IteratorAggregate, Countable
 {
-    /**
-     * @param MetadataRepository $metadataRepository
-     * @return void
-     */
-    public function setMetadataRepository(MetadataRepository $metadataRepository);
+    public function setMetadataRepository(MetadataRepository $metadataRepository): void;
 
-    /**
-     * @param UnitOfWork $unitOfWork
-     * @return void
-     */
-    public function setUnitOfWork(UnitOfWork $unitOfWork);
+    public function setUnitOfWork(UnitOfWork $unitOfWork): void;
 
-    /**
-     * @param ResultInterface<T> $result
-     * @return $this
-     */
-    public function setResult(ResultInterface $result);
+    public function setResult(ResultInterface $result): static;
 }

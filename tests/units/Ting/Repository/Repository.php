@@ -25,8 +25,12 @@
 
 namespace tests\units\CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Connection;
+use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\Driver\Mysqli\Result;
 use atoum;
+use CCMBenchmark\Ting\Query\PreparedQuery;
+use CCMBenchmark\Ting\Query\Query;
 use tests\fixtures\model\Bouh;
 
 class Repository extends atoum
@@ -311,8 +315,10 @@ class Repository extends atoum
     {
         $services         = new \CCMBenchmark\Ting\Services();
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
-        $this->calling($mockQueryFactory)->get = true;
+        $this->calling($mockQueryFactory)->get = new Query('QUERY', $mockConnection);
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
@@ -339,8 +345,9 @@ class Repository extends atoum
     {
         $services         = new \CCMBenchmark\Ting\Services();
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
-
-        $this->calling($mockQueryFactory)->getPrepared = true;
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $this->calling($mockQueryFactory)->getPrepared = new PreparedQuery('QUERY', $mockConnection);
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
@@ -367,8 +374,9 @@ class Repository extends atoum
     {
         $services         = new \CCMBenchmark\Ting\Services();
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
-
-        $this->calling($mockQueryFactory)->getCached = true;
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $this->calling($mockQueryFactory)->getCached = new \CCMBenchmark\Ting\Query\Cached\Query('QUERY', $mockConnection);
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
@@ -395,8 +403,9 @@ class Repository extends atoum
     {
         $services         = new \CCMBenchmark\Ting\Services();
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
-
-        $this->calling($mockQueryFactory)->getCachedPrepared = true;
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $this->calling($mockQueryFactory)->getCachedPrepared = new \CCMBenchmark\Ting\Query\Cached\PreparedQuery('QUERY', $mockConnection);
 
         $services->get('MetadataRepository')->batchLoadMetadata(
             'tests\fixtures\model',
@@ -672,7 +681,8 @@ class Repository extends atoum
         $mockDriverMaster   = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
         $metadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
         $metadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
-        $this->calling($metadata)->getConnection = null;
+        $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $this->calling($metadata)->getConnection = $mockConnection;
 
         $this->calling($metadataRepository)
             ->findMetadataForRepository = function ($repository, $callback, $error) use ($metadata): void {

@@ -25,6 +25,10 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Driver\Pgsql\Driver;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Query\Query;
+use CCMBenchmark\Ting\Query\PreparedQuery;
 use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 use Aura\SqlQuery\QueryInterface;
 use CCMBenchmark\Ting\Connection;
@@ -32,18 +36,16 @@ use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
 use CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
-use CCMBenchmark\Ting\Driver\Pgsql;
 use CCMBenchmark\Ting\Driver\SphinxQL;
 use CCMBenchmark\Ting\Exceptions\DriverException;
 use CCMBenchmark\Ting\Exceptions\RepositoryException;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
-use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use Doctrine\Common\Cache\Cache;
 
 /**
- * @template T
+ * @template T on \CCMBenchmark\Ting\Entity\NotifyPropertyInterface
  */
 abstract class Repository
 {
@@ -67,37 +69,6 @@ abstract class Repository
     protected $connection;
 
     /**
-     * @var UnitOfWork
-     */
-
-    protected $unitOfWork;
-
-    /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var ConnectionPool
-     */
-    protected $connectionPool;
-
-    /**
-     * @var MetadataRepository
-     */
-    protected $metadataRepository;
-
-    /**
-     * @var QueryFactory
-     */
-    protected $queryFactory;
-
-    /**
-     * @var CollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
      * @param ConnectionPool $connectionPool
      * @param MetadataRepository $metadataRepository
      * @param QueryFactory $queryFactory
@@ -108,20 +79,13 @@ abstract class Repository
      * @internal
      */
     public function __construct(
-        ConnectionPool $connectionPool,
-        MetadataRepository $metadataRepository,
-        QueryFactory $queryFactory,
-        CollectionFactory $collectionFactory,
-        Cache $cache,
-        UnitOfWork $unitOfWork
+        protected ConnectionPool $connectionPool,
+        protected MetadataRepository $metadataRepository,
+        protected \CCMBenchmark\Ting\Query\QueryFactory $queryFactory,
+        protected CollectionFactory $collectionFactory,
+        protected Cache $cache,
+        protected UnitOfWork $unitOfWork
     ) {
-        $this->connectionPool     = $connectionPool;
-        $this->metadataRepository = $metadataRepository;
-        $this->queryFactory       = $queryFactory;
-        $this->collectionFactory  = $collectionFactory;
-        $this->cache              = $cache;
-        $this->unitOfWork         = $unitOfWork;
-
         $class = static::class;
         $this->metadataRepository->findMetadataForRepository(
             $class,
@@ -135,7 +99,7 @@ abstract class Repository
                 );
             }
         );
-        $this->connection = $this->metadata->getConnection($connectionPool);
+        $this->connection = $this->metadata->getConnection($this->connectionPool);
         $this->metadataRepository->addMetadata($class, $this->metadata);
     }
 
@@ -153,7 +117,7 @@ abstract class Repository
 
     /**
      * @param string $sql
-     * @return \CCMBenchmark\Ting\Query\Query
+     * @return Query
      */
     public function getQuery($sql)
     {
@@ -162,7 +126,7 @@ abstract class Repository
 
     /**
      * @param string $sql
-     * @return \CCMBenchmark\Ting\Query\PreparedQuery
+     * @return PreparedQuery
      */
     public function getPreparedQuery($sql)
     {
@@ -209,7 +173,7 @@ abstract class Repository
         $driver = ltrim($driver, '\\');
 
         switch ($driver) {
-            case Pgsql\Driver::class:
+            case Driver::class:
                 $queryFactory = new AuraQueryFactory('pgsql');
                 break;
             case SphinxQL\Driver::class:
@@ -235,10 +199,9 @@ abstract class Repository
      * Retrieve one object from database
      *
      * @param $primariesKeyValue array|int|string column => value or if one primary : just the value
-     * @param bool $forceMaster
      * @return T|null
      */
-    public function get($primariesKeyValue, $forceMaster = false)
+    public function get(mixed $primariesKeyValue, bool $forceMaster = false)
     {
         $query = $this->metadata->getByPrimaries(
             $this->connection,
@@ -318,20 +281,16 @@ abstract class Repository
 
     /**
      * Save an entity in database (update or insert)
-     *
-     * @param T $entity
      */
-    public function save($entity)
+    public function save(NotifyPropertyInterface $entity): void
     {
         $this->unitOfWork->pushSave($entity)->process();
     }
 
     /**
      * Delete an entity from database
-     *
-     * @param T $entity
      */
-    public function delete($entity)
+    public function delete(NotifyPropertyInterface $entity): void
     {
         $this->unitOfWork->pushDelete($entity)->process();
     }
@@ -341,7 +300,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->connection->master()->startTransaction();
     }
@@ -351,7 +310,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function rollback()
+    public function rollback(): void
     {
         $this->connection->master()->rollback();
     }
@@ -361,7 +320,7 @@ abstract class Repository
      *
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
         $this->connection->master()->commit();
     }

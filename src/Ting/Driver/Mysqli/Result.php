@@ -40,7 +40,7 @@ class Result implements ResultInterface
      * @param string $connectionName
      * @return $this
      */
-    public function setConnectionName($connectionName)
+    public function setConnectionName(string $connectionName): static
     {
         $this->connectionName = (string) $connectionName;
         return $this;
@@ -50,7 +50,7 @@ class Result implements ResultInterface
      * @param string $database
      * @return $this
      */
-    public function setDatabase($database)
+    public function setDatabase($database): static
     {
         $this->database = (string) $database;
         return $this;
@@ -60,39 +60,33 @@ class Result implements ResultInterface
      * @param object $result
      * @return $this
      */
-    public function setResult($result)
+    public function setResult($result): static
     {
         $this->result = $result;
         $this->fields = $this->result->fetch_fields();
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->database;
     }
 
     /**
      * Move the internal result pointer to an arbitrary row
-     * @param $offset
      * @return mixed
      */
-    protected function dataSeek($offset)
+    protected function dataSeek(int $offset)
     {
         if ($this->result !== null) {
             return $this->result->data_seek($offset);
         }
+        return null;
     }
 
     /**
@@ -100,9 +94,9 @@ class Result implements ResultInterface
      * @param $data
      * @return array|null
      */
-    protected function format($data)
+    protected function format(array|null|false $data)
     {
-        if ($data === null) {
+        if ($data === null || $data === false) {
             return null;
         }
 
@@ -161,10 +155,7 @@ class Result implements ResultInterface
         return $columns;
     }
 
-    /**
-     * @return int
-     */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return $this->result->num_rows;
     }

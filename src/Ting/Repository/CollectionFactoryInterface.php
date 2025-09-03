@@ -25,9 +25,6 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\MetadataRepository;
-use CCMBenchmark\Ting\UnitOfWork;
-
 /**
  * @template T
  */

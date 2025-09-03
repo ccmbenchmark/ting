@@ -32,17 +32,6 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 class Generator
 {
     /**
-     * @var Connection
-     */
-    protected $connection = null;
-    /**
-     * @var QueryFactoryInterface
-     */
-    protected $queryFactory = null;
-
-    protected $fields = [];
-
-    /**
      * @param Connection            $connection
      * @param QueryFactoryInterface $queryFactory
      * @param string $schemaName
@@ -51,23 +40,15 @@ class Generator
      *
      * @internal
      */
-    public function __construct(
-        Connection $connection,
-        QueryFactoryInterface $queryFactory,
-        protected $schemaName,
-        protected $tableName,
-        array $fields
-    ) {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
-        $this->fields = $fields;
+    public function __construct(protected Connection $connection, protected QueryFactoryInterface $queryFactory, protected $schemaName, protected $tableName, protected array $fields)
+    {
     }
 
     /**
      * @param DriverInterface $driver
      * @return string
      */
-    protected function getTarget(DriverInterface $driver)
+    protected function getTarget(DriverInterface $driver): string
     {
         $schema = '';
         if ($this->schemaName !== '') {
@@ -82,7 +63,7 @@ class Generator
      * @param DriverInterface $driver
      * @return string
      */
-    protected function getSelect(array $fields, DriverInterface $driver)
+    protected function getSelect(array $fields, DriverInterface $driver): string
     {
         return 'SELECT ' . implode(', ', $fields) . ' FROM ' .
             $this->getTarget($driver);
@@ -93,13 +74,9 @@ class Generator
      * @param bool $forceMaster
      * @return DriverInterface
      */
-    protected function getDriver($forceMaster)
+    protected function getDriver($forceMaster): DriverInterface
     {
-        if ($forceMaster === true) {
-            $driver = $this->connection->master();
-        } else {
-            $driver = $this->connection->slave();
-        }
+        $driver = $forceMaster === true ? $this->connection->master() : $this->connection->slave();
 
         return $driver;
     }
@@ -166,7 +143,7 @@ class Generator
      * @param DriverInterface $driver
      * @return array
      */
-    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver)
+    protected function getSqlAndParamsByCriteria(array $criteria, DriverInterface $driver): array
     {
         $fields = $this->escapeFields($this->fields, $driver);
 
@@ -244,7 +221,7 @@ class Generator
 
         $sql = 'UPDATE ' . $this->getTarget($driver) . ' SET ';
         $set = [];
-        foreach ($values as $column => $value) {
+        foreach (array_keys($values) as $column) {
             $set[] = $driver->escapeField($column) . ' = :' . $column;
         }
         $sql .= implode(', ', $set);
@@ -296,7 +273,7 @@ class Generator
      *
      * @return array
      */
-    protected function escapeFields(array $fields, DriverInterface $driver)
+    protected function escapeFields(array $fields, DriverInterface $driver): array
     {
         return array_map(
             fn ($field) => $driver->escapeField($field),
@@ -310,7 +287,7 @@ class Generator
      *
      * @return array
      */
-    protected function generateConditionAndParams($fields, $values)
+    protected function generateConditionAndParams(array $fields, array $values): array
     {
         $conditions = [];
         $i = 0;
@@ -318,7 +295,7 @@ class Generator
         foreach ($values as $field => $value) {
             if ($value === null) {
                 $conditions[] = $fields[$i] . ' IS NULL';
-            } elseif (is_array($value) === true) {
+            } elseif (is_array($value)) {
                 // handle array values...
                 $j = 0;
                 $condition = $fields[$i] . ' IN (';
@@ -368,7 +345,7 @@ class Generator
      * @param DriverInterface   $driver
      * @return string
      */
-    protected function generateOrder(array $orderList, DriverInterface $driver)
+    protected function generateOrder(array $orderList, DriverInterface $driver): string
     {
         $fields = $this->escapeFields(array_keys($orderList), $driver);
 
@@ -377,7 +354,7 @@ class Generator
 
         $i = 0;
         foreach ($orderList as $value) {
-            $value = strtoupper($value);
+            $value = strtoupper((string) $value);
             if (\in_array($value, ['ASC', 'DESC'])) {
                 $orderCriteria[] = $fields[$i] . ' ' . $value;
             }
@@ -385,7 +362,7 @@ class Generator
         }
 
         if (count($orderList) > 0) {
-            $orderClause = ' ORDER BY ' . implode(',', $orderCriteria);
+            return ' ORDER BY ' . implode(',', $orderCriteria);
         }
 
         return $orderClause;
@@ -393,11 +370,8 @@ class Generator
 
     /**
      * Generate Limit params to add to query
-     *
-     * @param $limit
-     * @return string
      */
-    protected function generateLimit($limit)
+    protected function generateLimit(int $limit): string
     {
         return ' LIMIT ' . $limit;
     }

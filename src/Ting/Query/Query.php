@@ -33,16 +33,6 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 class Query implements QueryInterface
 {
     /**
-     * @var Connection|null
-     */
-    protected $connection = null;
-
-    /**
-     * @var CollectionFactoryInterface|null
-     */
-    protected $collectionFactory = null;
-
-    /**
      * @var bool
      */
     protected $selectMaster = false;
@@ -57,10 +47,8 @@ class Query implements QueryInterface
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct(protected $sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
+    public function __construct(protected $sql, protected Connection $connection, protected ?CollectionFactoryInterface $collectionFactory = null)
     {
-        $this->connection        = $connection;
-        $this->collectionFactory = $collectionFactory;
     }
 
     /**
@@ -68,7 +56,7 @@ class Query implements QueryInterface
      * @param bool $value
      * @return void
      */
-    public function selectMaster($value)
+    public function selectMaster($value): void
     {
         $this->selectMaster = (bool) $value;
     }
@@ -77,7 +65,7 @@ class Query implements QueryInterface
      * @param array $params
      * @return $this
      */
-    public function setParams(array $params)
+    public function setParams(array $params): static
     {
         $this->params = $params;
 
@@ -91,17 +79,16 @@ class Query implements QueryInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null): mixed
     {
-        if ($collection === null) {
+        if (!$collection instanceof CollectionInterface) {
             $collection = $this->collectionFactory->get();
         }
 
         if ($this->selectMaster === true) {
             return $this->connection->master()->execute($this->sql, $this->params, $collection);
-        } else {
-            return $this->connection->slave()->execute($this->sql, $this->params, $collection);
         }
+        return $this->connection->slave()->execute($this->sql, $this->params, $collection);
     }
 
     /**
@@ -110,7 +97,7 @@ class Query implements QueryInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function execute()
+    public function execute(): mixed
     {
         return $this->connection->master()->execute($this->sql, $this->params);
     }

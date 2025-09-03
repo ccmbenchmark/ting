@@ -25,6 +25,8 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
+use mysqli_stmt;
+use mysqli_result;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
@@ -40,11 +42,6 @@ class Statement implements StatementInterface
     ];
 
     /**
-     * @var array|null
-     */
-    protected $paramsOrder = null;
-
-    /**
      * @var DriverLoggerInterface|null
      */
     protected $logger = null;
@@ -55,14 +52,13 @@ class Statement implements StatementInterface
     protected $objectHash = '';
 
     /**
-     * @param \mysqli_stmt|Object $driverStatement
+     * @param mysqli_stmt|Object $driverStatement
      * @param array               $paramsOrder
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct(protected $driverStatement, array $paramsOrder, protected $connectionName, protected $database)
+    public function __construct(protected $driverStatement, protected array $paramsOrder, protected $connectionName, protected $database)
     {
-        $this->paramsOrder     = $paramsOrder;
     }
 
     /**
@@ -103,7 +99,7 @@ class Statement implements StatementInterface
 
         $result = $this->driverStatement->get_result();
 
-        if ($collection !== null) {
+        if ($collection instanceof CollectionInterface) {
             return $this->setCollectionWithResult($result, $collection);
         }
 
@@ -114,22 +110,22 @@ class Statement implements StatementInterface
      * @param DriverLoggerInterface $logger
      * @return void
      */
-    public function setLogger(?DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null): void
     {
-        if ($logger !== null) {
+        if ($logger instanceof DriverLoggerInterface) {
             $this->logger = $logger;
             $this->objectHash = spl_object_hash($this->driverStatement);
         }
     }
 
     /**
-     * @param \mysqli_result $resultData
+     * @param mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return bool
      *
      * @internal
      */
-    public function setCollectionWithResult($resultData, CollectionInterface $collection)
+    public function setCollectionWithResult($resultData, CollectionInterface $collection): bool
     {
         $result = new Result();
         $result->setConnectionName($this->connectionName);
@@ -144,7 +140,7 @@ class Statement implements StatementInterface
      *
      * @internal
      */
-    protected function close()
+    protected function close(): void
     {
         $this->driverStatement->close();
     }

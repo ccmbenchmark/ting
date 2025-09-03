@@ -25,6 +25,9 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use JsonSerializable;
+use ArrayIterator;
+use Generator;
 use CCMBenchmark\Ting\Driver\CacheResult;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
@@ -33,17 +36,14 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
  *
  * @template-implements CollectionInterface<T>
  */
-class Collection implements CollectionInterface, \JsonSerializable
+class Collection implements CollectionInterface, JsonSerializable
 {
     /**
      * @var ResultInterface<T>
      */
-    protected $result = null;
+    protected ?ResultInterface $result = null;
 
-    /**
-     * @var HydratorInterface<T>|null
-     */
-    protected $hydrator = null;
+    protected ?HydratorInterface $hydrator;
 
     /**
      * @var bool
@@ -55,14 +55,10 @@ class Collection implements CollectionInterface, \JsonSerializable
      */
     public function __construct(?HydratorInterface $hydrator = null)
     {
-        if ($hydrator === null) {
-            $this->hydrator = new HydratorArray();
-        } else {
-            $this->hydrator = $hydrator;
-        }
+        $this->hydrator = $hydrator ?? new HydratorArray();
     }
 
-    public function set(ResultInterface $result)
+    public function set(ResultInterface $result): void
     {
         $this->result = $result;
         $this->hydrator->setResult($result);
@@ -72,7 +68,7 @@ class Collection implements CollectionInterface, \JsonSerializable
      * @param bool $value
      * @return void
      */
-    public function setFromCache($value)
+    public function setFromCache($value): void
     {
         $this->fromCache = (bool) $value;
     }
@@ -80,7 +76,7 @@ class Collection implements CollectionInterface, \JsonSerializable
     /**
      * @return bool
      */
-    public function isFromCache()
+    public function isFromCache(): bool
     {
         return $this->fromCache;
     }
@@ -88,7 +84,7 @@ class Collection implements CollectionInterface, \JsonSerializable
     /**
      * @return array
      */
-    public function toCache()
+    public function toCache(): array
     {
         $connectionName = null;
         $database = null;
@@ -111,13 +107,13 @@ class Collection implements CollectionInterface, \JsonSerializable
      * @param array $result
      * @return void
      */
-    public function fromCache(array $result)
+    public function fromCache(array $result): void
     {
         $this->setFromCache(true);
         $cacheResult = new CacheResult();
         $cacheResult->setConnectionName($result['connection']);
         $cacheResult->setDatabase($result['database']);
-        $cacheResult->setResult(new \ArrayIterator($result['data']));
+        $cacheResult->setResult(new ArrayIterator($result['data']));
         $this->set($cacheResult);
     }
 
@@ -139,19 +135,14 @@ class Collection implements CollectionInterface, \JsonSerializable
 
 
     /**
-     * @return \Generator<int, T>
+     * @return Generator<int, T>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Generator
     {
         return $this->hydrator->getIterator();
     }
 
-    /**
-     * @return int
-     */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return $this->hydrator->count();
     }

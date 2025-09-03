@@ -25,6 +25,8 @@
 
 namespace CCMBenchmark\Ting;
 
+use Closure;
+use ReflectionClass;
 use CCMBenchmark\Ting\Repository\Metadata;
 use CCMBenchmark\Ting\Repository\MetadataInitializer;
 use CCMBenchmark\Ting\Repository\Repository;
@@ -50,19 +52,13 @@ class MetadataRepository
     /**
      * @var array Fast array access to RepositoryClassName
      */
-    private $tableWithConnectionToMetadata = [];
-
-    /**
-     * @var SerializerFactoryInterface|null
-     */
-    protected $serializerFactory = null;
+    private array $tableWithConnectionToMetadata = [];
 
     /**
      * @param SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(SerializerFactoryInterface $serializerFactory, private ?CacheItemPoolInterface $cacheItemPool = null)
+    public function __construct(protected SerializerFactoryInterface $serializerFactory, private readonly ?CacheItemPoolInterface $cacheItemPool = null)
     {
-        $this->serializerFactory = $serializerFactory;
     }
 
     /**
@@ -70,30 +66,30 @@ class MetadataRepository
      * @param string   $database
      * @param string   $schema
      * @param string   $table
-     * @param \Closure $callbackFound   called with applicable Metadata if applicable
-     * @param \Closure $callbackNotFound called if unknown table - no parameter
+     * @param Closure $callbackFound called with applicable Metadata if applicable
+     * @param Closure $callbackNotFound called if unknown table - no parameter
      *
      * @internal
      */
     public function findMetadataForTable(
-        $connectionName,
-        $database,
-        $schema,
-        $table,
-        \Closure $callbackFound,
-        ?\Closure $callbackNotFound = null
-    ) {
+        string $connectionName,
+        string $database,
+        string $schema,
+        string $table,
+        Closure $callbackFound,
+        ?Closure $callbackNotFound = null
+    ): void {
 
         $connectionKey = $connectionName . '#' . $table;
 
         if (isset($this->tableWithConnectionToMetadata[$connectionKey]) === false) {
-            if ($callbackNotFound !== null) {
+            if ($callbackNotFound instanceof Closure) {
                 $callbackNotFound();
             }
             return;
         }
 
-        if (isset($this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database]) === true) {
+        if (isset($this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database])) {
             $callbackFound(
                 $this->metadataList[$this->tableWithConnectionToMetadata[$connectionKey][$schema . '#' . $database]]
             );
@@ -106,8 +102,8 @@ class MetadataRepository
 
     /**
      * @param class-string<Repository<T>> $repositoryName
-     * @param \Closure(Metadata<T>):void $callbackFound Called with applicable Metadata if applicable
-     * @param \Closure():void $callbackNotFound called if unknown entity - no parameter
+     * @param Closure(Metadata<T>):void $callbackFound Called with applicable Metadata if applicable
+     * @param Closure():void $callbackNotFound called if unknown entity - no parameter
      *
      * @template T of object
      *
@@ -115,26 +111,26 @@ class MetadataRepository
      */
     public function findMetadataForRepository(
         $repositoryName,
-        \Closure $callbackFound,
-        ?\Closure $callbackNotFound = null
-    ) {
-        if (isset($this->metadataList[$repositoryName]) === true) {
+        Closure $callbackFound,
+        ?Closure $callbackNotFound = null
+    ): void {
+        if (isset($this->metadataList[$repositoryName])) {
             $callbackFound($this->metadataList[$repositoryName]);
-        } elseif ($callbackNotFound !== null) {
+        } elseif ($callbackNotFound instanceof Closure) {
             $callbackNotFound();
         }
     }
 
     /**
      * @param T|class-string<T> $entity an instance or the class string of the entity
-     * @param \Closure(Metadata<T>):void $callbackFound Called with applicable Metadata if applicable
-     * @param \Closure():void $callbackNotFound called if unknown entity - no parameter
+     * @param Closure(Metadata<T>):void $callbackFound Called with applicable Metadata if applicable
+     * @param Closure():void $callbackNotFound called if unknown entity - no parameter
      *
      * @template T of object
      *
      * @internal
      */
-    public function findMetadataForEntity($entity, \Closure $callbackFound, ?\Closure $callbackNotFound = null)
+    public function findMetadataForEntity($entity, Closure $callbackFound, ?Closure $callbackNotFound = null): void
     {
         if (is_object($entity)) {
             $entity = $entity::class;
@@ -160,7 +156,7 @@ class MetadataRepository
      *
      * @internal
      */
-    public function addMetadata($repositoryClass, Metadata $metadata)
+    public function addMetadata($repositoryClass, Metadata $metadata): void
     {
         $metadata->propertyAccessor->setCacheItemPool($this->cacheItemPool);
         $this->metadataList[$repositoryClass] = $metadata;
@@ -186,7 +182,7 @@ class MetadataRepository
      * @param array  $options Options you can use to custom initialization of Metadata
      * @return array
      */
-    public function batchLoadMetadata($namespace, $globPattern, array $options = [])
+    public function batchLoadMetadata(string $namespace, $globPattern, array $options = []): array
     {
         $loaded = [];
 
@@ -197,9 +193,14 @@ class MetadataRepository
         foreach (glob($globPattern) as $metadataFile) {
             /** @var class-string<MetadataInitializer> $metadataClass */
             $metadataClass = $namespace . '\\' . basename($metadataFile, '.php');
-            $class = new \ReflectionClass($metadataClass);
-
-            if ($class->isInterface() || $class->isAbstract() || !$class->isSubclassOf(MetadataInitializer::class)) {
+            $class = new ReflectionClass($metadataClass);
+            if ($class->isInterface()) {
+                continue;
+            }
+            if ($class->isAbstract()) {
+                continue;
+            }
+            if (!$class->isSubclassOf(MetadataInitializer::class)) {
                 continue;
             }
 
@@ -209,11 +210,7 @@ class MetadataRepository
                 $this->getOptionForRepository($metadataClass, $options)
             );
 
-            if ($metadata->getRepository() !== null) {
-                $repository = $metadata->getRepository();
-            } else {
-                $repository = $metadataClass;
-            }
+            $repository = $metadata->getRepository() ?? $metadataClass;
 
             $this->addMetadata($repository, $metadata);
             $loaded[$repository] = $metadataClass;
@@ -232,7 +229,7 @@ class MetadataRepository
      * @param array $options Options you can use to custom initialization of Metadata
      * @return array
      */
-    public function batchLoadMetadataFromCache(array $paths, array $options = [])
+    public function batchLoadMetadataFromCache(array $paths, array $options = []): array
     {
         $loaded = [];
         foreach ($paths as $repository => $metadataClass) {
@@ -256,20 +253,19 @@ class MetadataRepository
      */
     protected function getOptionForRepository($repository, array $options)
     {
-        if (isset($options['default']) === true) {
-            $repositoryOptions = $options['default'];
-        } else {
-            $repositoryOptions = [];
-        }
+        $repositoryOptions = isset($options['default']) === true ? $options['default'] : [];
 
-        if (isset($options[$repository]) === true) {
-            $repositoryOptions = array_merge($repositoryOptions, $options[$repository]);
+        if (isset($options[$repository])) {
+            return array_merge($repositoryOptions, $options[$repository]);
         }
 
         return $repositoryOptions;
     }
 
-    public function getAllEntities()
+    /**
+     * @return int[]|string[]
+     */
+    public function getAllEntities(): array
     {
         return array_keys($this->entityToRepository);
     }

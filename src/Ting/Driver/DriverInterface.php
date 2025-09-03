@@ -58,45 +58,37 @@ interface DriverInterface
     public function setCharset($charset);
 
     /**
-     * @param string $sql
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
      * @throws QueryException
      */
-    public function execute($sql, array $params = [], ?CollectionInterface $collection = null);
+    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): mixed;
 
     /**
      * @param string $sql
      * @return StatementInterface
      * @throws QueryException
      */
-    public function prepare($sql);
+    public function prepare(string $sql): StatementInterface;
 
     /**
      * @param string $database
      */
-    public function setDatabase($database);
+    public function setDatabase($database): static;
 
     /**
      * @param callable $callback
      */
-    public function ifIsError(callable $callback);
+    public function ifIsError(callable $callback): static;
 
     /**
      * @param callable $callback
      */
-    public function ifIsNotConnected(callable $callback);
+    public function ifIsNotConnected(callable $callback): static;
 
-    /**
-     * @param $field
-     * @return string
-     */
-    public function escapeField($field);
+    public function escapeField(mixed $field = null): string;
 
-    public function startTransaction();
-    public function rollback();
-    public function commit();
+    public function startTransaction(): void;
+    public function rollback(): void;
+    public function commit(): void;
 
     /**
      * @return int
@@ -108,22 +100,21 @@ interface DriverInterface
      */
     public function getAffectedRows();
 
-    public function setLogger(?DriverLoggerInterface $logger = null);
+    public function setLogger(?DriverLoggerInterface $logger = null): static;
 
     /**
      * @param array $connectionConfig
      * @param string $database
-     * @return string
      */
-    public static function getConnectionKey(array $connectionConfig, $database);
+    public static function getConnectionKey(array $connectionConfig, $database): string;
 
     /**
      * @param $statement
      * @throws Exception
      */
-    public function closeStatement($statement);
+    public function closeStatement(string $statement): void;
 
     public function ping(): bool;
 
-    public function setTimezone($timezone);
+    public function setTimezone(?string $timezone = null): void;
 }

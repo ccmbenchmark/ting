@@ -2,6 +2,10 @@
 
 namespace CCMBenchmark\Ting\Util;
 
+use ReflectionProperty;
+use PropertyHookType;
+use Psr\Cache\InvalidArgumentException;
+use ReflectionException;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -13,7 +17,7 @@ class PropertyAccessor
     private array $reflectionProperties = [];
     private array $writePropertyCache = [];
     private const CACHE_PREFIX_WRITE = 'write_property_';
-    private PropertyAccessorInterface $propertyAccessor;
+    private readonly PropertyAccessorInterface $propertyAccessor;
     private ?CacheItemPoolInterface $cacheItemPool = null;
 
     public function __construct() {
@@ -73,28 +77,28 @@ class PropertyAccessor
      * @param object $object
      * @param string $propertyPath
      * @return array{'public': bool, 'supportsHook': bool, 'hasSetHook': bool}
-     * @throws \Psr\Cache\InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     private function getReflectionData(object $object, string $propertyPath): array
     {
-        $key = \get_class($object).'..'.$propertyPath;
+        $key = $object::class.'..'.$propertyPath;
         if (isset($this->reflectionData[$key])) {
             return $this->reflectionData[$key];
         }
 
-        if ($this->cacheItemPool) {
+        if ($this->cacheItemPool instanceof CacheItemPoolInterface) {
             $item = $this->cacheItemPool->getItem(self::CACHE_PREFIX_WRITE.rawurlencode($key));
             if ($item->isHit()) {
                 return $this->writePropertyCache[$key] = $item->get();
             }
         }
 
-        $reflection = new \ReflectionProperty($object, $propertyPath);
+        $reflection = new ReflectionProperty($object, $propertyPath);
         $data = [
             'public' => $reflection->isPublic(),
             'supportsHook' => \PHP_VERSION_ID >= 80400,
-            'hasSetHook' => \PHP_VERSION_ID >= 80400 && $reflection->getHook(\PropertyHookType::Set) !== null, // @phpstan-ignore method.notFound, class.notFound
+            'hasSetHook' => \PHP_VERSION_ID >= 80400 && $reflection->getHook(PropertyHookType::Set) !== null, // @phpstan-ignore method.notFound, class.notFound
         ];
 
         if (isset($item)) {
@@ -104,13 +108,10 @@ class PropertyAccessor
         return $this->reflectionData[$key] = $data;
     }
     
-    private function getReflectionProperty(object $object, string $propertyPath): \ReflectionProperty
+    private function getReflectionProperty(object $object, string $propertyPath): ReflectionProperty
     {
-        $key = \get_class($object).'..'.$propertyPath;
-        if (isset($this->reflectionProperties[$key])) {
-            return $this->reflectionProperties[$key];
-        }
+        $key = $object::class.'..'.$propertyPath;
         
-        return $this->reflectionProperties[$key] = new \ReflectionProperty($object, $propertyPath);
+        return $this->reflectionProperties[$key] ?? $this->reflectionProperties[$key] = new ReflectionProperty($object, $propertyPath);
     }
 }

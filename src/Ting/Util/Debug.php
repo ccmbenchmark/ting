@@ -25,6 +25,9 @@
 
 namespace CCMBenchmark\Ting\Util;
 
+use ReflectionObject;
+use ReflectionProperty;
+
 class Debug
 {
     /**
@@ -33,42 +36,39 @@ class Debug
      * @param mixed $var
      * @param int $maxDepth
      */
-    public function dump($var, $maxDepth = 10)
+    public function dump($var, $maxDepth = 10): void
     {
         var_dump($this->export($var, $maxDepth));
     }
 
     /**
      * Export Ting object
-     *
-     * @param mixed $var
      * @param int $maxDepth
-     *
-     * @return mixed
      */
-    public function export($var, $maxDepth = 10)
+    public function export(mixed $var, $maxDepth = 10): mixed
     {
         $return = [];
 
         if ($maxDepth === 0) {
-            if (\is_object($var) === true) {
+            if (\is_object($var)) {
                 return $var::class;
-            } elseif (\is_array($var) === true) {
+            }
+            if (\is_array($var)) {
                 return 'Array(' . \count($var) . ')';
             }
         }
 
-        if ($var instanceof \Traversable || \is_array($var) === true) {
+        if (is_iterable($var)) {
             foreach ($var as $key => $subVar) {
-                if ($subVar instanceof \Traversable || \is_array($subVar) === true) {
+                if (is_iterable($subVar)) {
                     $return[$key] = $this->export($subVar, $maxDepth - 1);
-                } elseif (\is_object($subVar) === true) {
+                } elseif (\is_object($subVar)) {
                     $return[$key] = $this->clean($subVar, $maxDepth - 1);
                 } else {
                     $return[$key] = $subVar;
                 }
             }
-        } elseif (is_object($var) === true) {
+        } elseif (is_object($var)) {
             $return = $this->clean($var, $maxDepth - 1);
         } else {
             $return = $var;
@@ -77,29 +77,21 @@ class Debug
         return $return;
     }
 
-    /**
-     * @param Object $object
-     * @param int $maxDepth
-     *
-     * @return mixed
-     */
-    private function clean($object, $maxDepth)
+    private function clean(object $object, int $maxDepth): mixed
     {
         if ($maxDepth === 0) {
             return $object::class;
         }
 
         $objectToBeCleaned = clone $object;
-        $reflectionObject = new \ReflectionObject($objectToBeCleaned);
+        $reflectionObject = new ReflectionObject($objectToBeCleaned);
 
-        if ($reflectionObject->hasProperty('listeners') === true) {
-            $reflectionProperty = new \ReflectionProperty($objectToBeCleaned::class, 'listeners');
-            $reflectionProperty->setAccessible(true);
+        if ($reflectionObject->hasProperty('listeners')) {
+            $reflectionProperty = new ReflectionProperty($objectToBeCleaned::class, 'listeners');
             $reflectionProperty->setValue($objectToBeCleaned, null);
         }
 
         foreach ($reflectionObject->getProperties() as $reflectionProperty) {
-            $reflectionProperty->setAccessible(true);
             $propertyValue = $reflectionProperty->getValue($objectToBeCleaned);
             $reflectionProperty->setValue($objectToBeCleaned, $this->export($propertyValue, $maxDepth - 1));
         }

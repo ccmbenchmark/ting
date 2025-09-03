@@ -25,6 +25,9 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use Generator;
+use stdClass;
+
 /**
  * @template T
  *
@@ -51,7 +54,7 @@ class HydratorAggregator extends Hydrator
      * @param callable $callableForId
      * @return $this
      */
-    public function callableIdIs(callable $callableForId)
+    public function callableIdIs(callable $callableForId): static
     {
         $this->callableForId = $callableForId;
         return $this;
@@ -61,7 +64,7 @@ class HydratorAggregator extends Hydrator
      * @param callable $callableForData
      * @return $this
      */
-    public function callableDataIs(callable $callableForData)
+    public function callableDataIs(callable $callableForData): static
     {
         $this->callableForData = $callableForData;
         return $this;
@@ -71,17 +74,16 @@ class HydratorAggregator extends Hydrator
      * @param callable $callableFinalizeAggregate
      * @return $this
      */
-    public function callableFinalizeAggregate(callable $callableFinalizeAggregate)
+    public function callableFinalizeAggregate(callable $callableFinalizeAggregate): static
     {
         $this->callableFinalizeAggregate = $callableFinalizeAggregate;
         return $this;
     }
 
     /**
-     * @return \Generator<int, T|\stdClass>
+     * @return Generator<int, T|stdClass>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Generator
     {
         $knownIdentifiers = [];
         $callableForId = $this->callableForId;
@@ -104,7 +106,7 @@ class HydratorAggregator extends Hydrator
 
             $currentId = $callableForId($result);
 
-            if (isset($knownIdentifiers[$currentId]) === true) {
+            if (isset($knownIdentifiers[$currentId])) {
                 continue;
             }
 
@@ -137,12 +139,11 @@ class HydratorAggregator extends Hydrator
     }
 
     /**
-     * @param mixed $result
      * @param mixed $aggregate
      *
      * @return mixed
      */
-    private function finalizeAggregate($result, $aggregate)
+    private function finalizeAggregate(?array $result, $aggregate): mixed
     {
         if ($this->callableFinalizeAggregate === null) {
             $result['aggregate'] = $aggregate;

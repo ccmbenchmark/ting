@@ -25,14 +25,17 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use IteratorAggregate;
+use Countable;
+use Iterator;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
 /**
  * @template T
  *
- * @template-extends \IteratorAggregate<int, T>
+ * @template-extends IteratorAggregate<int, T>
  */
-interface CollectionInterface extends \IteratorAggregate, \Countable
+interface CollectionInterface extends IteratorAggregate, Countable
 {
     /**
      * Fill collection from iterator

@@ -35,44 +35,9 @@ use CCMBenchmark\Ting\UnitOfWork;
 class RepositoryFactory
 {
     /**
-     * @var ConnectionPool
-     */
-    protected $connectionPool;
-
-    /**
-     * @var MetadataRepository
-     */
-    protected $metadataRepository;
-
-    /**
      * @var Collection
      */
     protected $collection;
-
-    /**
-     * @var UnitOfWork
-     */
-    protected $unitOfWork;
-
-    /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var QueryFactory
-     */
-    protected $queryFactory;
-
-    /**
-     * @var CollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
-     * @var SerializerFactoryInterface
-     */
-    protected $serializerFactory;
 
     /**
      * @param ConnectionPool $connectionPool
@@ -83,22 +48,8 @@ class RepositoryFactory
      * @param Cache $cache
      * @param SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(
-        ConnectionPool $connectionPool,
-        MetadataRepository $metadataRepository,
-        QueryFactory $queryFactory,
-        CollectionFactory $collectionFactory,
-        UnitOfWork $unitOfWork,
-        Cache $cache,
-        SerializerFactoryInterface $serializerFactory
-    ) {
-        $this->connectionPool     = $connectionPool;
-        $this->metadataRepository = $metadataRepository;
-        $this->queryFactory       = $queryFactory;
-        $this->collectionFactory  = $collectionFactory;
-        $this->unitOfWork         = $unitOfWork;
-        $this->cache              = $cache;
-        $this->serializerFactory  = $serializerFactory;
+    public function __construct(protected ConnectionPool $connectionPool, protected MetadataRepository $metadataRepository, protected QueryFactory $queryFactory, protected CollectionFactory $collectionFactory, protected UnitOfWork $unitOfWork, protected Cache $cache, protected SerializerFactoryInterface $serializerFactory)
+    {
     }
 
     /**

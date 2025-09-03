@@ -138,13 +138,16 @@ class Query extends atoum
         $mockConnection     = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
         $fakeDriver         = new \mock\Fake\Mysqli();
         $mockDriver         = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($fakeDriver);
+        $mockMysqliResult   = new \mock\tests\fixtures\FakeDriver\MysqliResult();
 
         $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
         $this->calling($mockMemcached)->fetch  = false;
         $this->calling($mockMemcached)->save  = true;
         $this->calling($mockConnection)->slave = $mockDriver;
-        $this->calling($mockDriver)->execute = function ($sql, array $params, $collection) {
-            $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult());
+        $this->calling($mockMysqliResult)->getConnectionName = 'main';
+        $this->calling($mockMysqliResult)->getDatabase = 'database';
+        $this->calling($mockDriver)->execute = function ($sql, array $params, $collection) use ($mockMysqliResult) {
+            $collection->set($mockMysqliResult);
             return $collection;
         };
         $collection = new Collection();

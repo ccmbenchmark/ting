@@ -25,32 +25,22 @@
 
 namespace CCMBenchmark\Ting;
 
+use RuntimeException;
+
 class Connection
 {
-    /**
-     * @var ConnectionPoolInterface|null
-     */
-    protected $connectionPool = null;
+    protected string $database;
 
-    /**
-     * @var null|string
-     */
-    protected $database = null;
-
-    /**
-     * @var null|string
-     */
-    protected $name = null;
+    protected string $name;
 
     /**
      * @internal
      */
-    public function __construct(ConnectionPoolInterface $connectionPool, string $name, string $database)
+    public function __construct(protected ConnectionPoolInterface $connectionPool, string $name, string $database)
     {
         if ($name === '' || $database === '') {
-            throw new \RuntimeException('Name and databases cannot be empty on connection');
+            throw new RuntimeException('Name and databases cannot be empty on connection');
         }
-        $this->connectionPool = $connectionPool;
         $this->name           = $name;
         $this->database       = $database;
     }
@@ -82,7 +72,7 @@ class Connection
      */
     public function startTransaction()
     {
-        return $this->master()->startTransaction();
+        $this->master()->startTransaction();
     }
 
     /**
@@ -92,7 +82,7 @@ class Connection
      */
     public function commit()
     {
-        return $this->master()->commit();
+        $this->master()->commit();
     }
 
     /**
@@ -102,6 +92,6 @@ class Connection
      */
     public function rollback()
     {
-        return $this->master()->rollback();
+        $this->master()->rollback();
     }
 }

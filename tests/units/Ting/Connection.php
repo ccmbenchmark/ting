@@ -26,6 +26,7 @@
 namespace tests\units\CCMBenchmark\Ting;
 
 use atoum;
+use CCMBenchmark\Ting\Driver\DriverInterface;
 
 class Connection extends atoum
 {
@@ -40,23 +41,23 @@ class Connection extends atoum
 
     public function testMasterShouldReturnMasterDriver()
     {
-        $this->calling($this->mockConnectionPool)->master = 'master';
+        $this->calling($this->mockConnectionPool)->master = $this->mockDriver;
 
         $this
             ->if($connection = new \CCMBenchmark\Ting\Connection($this->mockConnectionPool, 'main', 'db'))
-            ->string($connection->master())
-                ->isIdenticalTo('master')
+            ->object($connection->master())
+                ->isInstanceOf(DriverInterface::class)
         ;
     }
 
     public function testSlaveShouldReturnSlaveDriver()
     {
-        $this->calling($this->mockConnectionPool)->slave = 'slave';
+        $this->calling($this->mockConnectionPool)->slave = $this->mockDriver;
 
         $this
             ->if($connection = new \CCMBenchmark\Ting\Connection($this->mockConnectionPool, 'main', 'db'))
-            ->string($connection->slave())
-                ->isIdenticalTo('slave')
+            ->object($connection->slave())
+                ->isInstanceOf(DriverInterface::class)
         ;
     }
 

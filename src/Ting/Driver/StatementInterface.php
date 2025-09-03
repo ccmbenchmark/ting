@@ -25,13 +25,14 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use mysqli_stmt;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
 {
     /**
-     * @param \mysqli_stmt|Object $driverStatement
+     * @param mysqli_stmt|Object $driverStatement
      * @param array               $paramsOrder
      * @param string              $connectionName
      * @param string              $database

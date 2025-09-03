@@ -536,6 +536,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setName('foo'))
             ->then($driver->setDatabase('myDatabase'))
             ->then($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
             ->mock($mockCollection)

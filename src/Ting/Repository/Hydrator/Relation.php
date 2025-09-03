@@ -27,32 +27,29 @@ namespace CCMBenchmark\Ting\Repository\Hydrator;
 
 abstract class Relation
 {
-    /**
-     * @var string
-     */
-    private $setter;
+    private readonly string $setter;
 
     /**
      * @param AggregateFrom $from
      * @param AggregateTo   $to
      * @param string        $setter
      */
-    public function __construct(private AggregateFrom $from, private AggregateTo $to, $setter)
+    public function __construct(private readonly AggregateFrom $from, private readonly AggregateTo $to, $setter)
     {
         $this->setter = (string) $setter;
     }
 
-    public function getSource()
+    public function getSource(): string
     {
         return $this->from->getTarget();
     }
 
-    public function getTarget()
+    public function getTarget(): string
     {
         return $this->to->getTarget();
     }
 
-    public function getSetter()
+    public function getSetter(): string
     {
         return $this->setter;
     }

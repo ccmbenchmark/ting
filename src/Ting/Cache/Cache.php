@@ -30,20 +30,14 @@ use CCMBenchmark\Ting\Logger\CacheLoggerInterface;
 
 class Cache implements CacheInterface
 {
-    /**
-     * @var CacheLoggerInterface|null
-     */
-    private $logger = null;
+    private ?CacheLoggerInterface $logger = null;
 
-    /**
-     * @var DoctrineCache
-     */
-    private $cache;
+    private ?DoctrineCache $cache = null;
 
     /**
      * @param DoctrineCache $cache
      */
-    public function setCache(DoctrineCache $cache)
+    public function setCache(DoctrineCache $cache): void
     {
         $this->cache = $cache;
     }
@@ -53,19 +47,15 @@ class Cache implements CacheInterface
      *
      * @param CacheLoggerInterface $logger
      */
-    public function setLogger(CacheLoggerInterface $logger)
+    public function setLogger(CacheLoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
 
     /**
      * Logs an operation with $this->logger if provided
-     *
-     * @param $type
-     * @param $operation
-     * @return void
      */
-    protected function log($type, $operation)
+    protected function log(string $type, array|string $operation): void
     {
         if ($this->logger !== null) {
             $this->logger->startOperation($type, $operation);
@@ -76,9 +66,8 @@ class Cache implements CacheInterface
      * Flag the last operation logged as stopped
      *
      * @param $miss boolean optional : required if last operation was a read
-     * @return void
      */
-    protected function stopLog($miss = false)
+    protected function stopLog(bool $miss = false): void
     {
         if ($this->logger !== null) {
             $this->logger->stopOperation($miss);
@@ -87,10 +76,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return bool
      */
-    public function delete($id)
+    public function delete($id): bool
     {
         $this->log(CacheLoggerInterface::OPERATION_DELETE, $id);
         $result = $this->cache->delete($id);
@@ -101,10 +88,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return mixed
      */
-    public function fetch($id)
+    public function fetch($id): mixed
     {
         $this->log(CacheLoggerInterface::OPERATION_GET, $id);
         $value = $this->cache->fetch($id);
@@ -115,10 +100,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return bool
      */
-    public function contains($id)
+    public function contains($id): bool
     {
         $this->log(CacheLoggerInterface::OPERATION_EXIST, $id);
         $value = $this->cache->contains($id);
@@ -129,10 +112,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return bool
      */
-    public function save($id, $data, $lifeTime = 0)
+    public function save($id, $data, $lifeTime = 0): bool
     {
         $this->log(CacheLoggerInterface::OPERATION_STORE, $id);
         $result = $this->cache->save($id, $data, $lifeTime);
@@ -143,10 +124,8 @@ class Cache implements CacheInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return array|null
      */
-    public function getStats()
+    public function getStats(): ?array
     {
         return $this->cache->getStats();
     }

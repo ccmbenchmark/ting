@@ -25,43 +25,27 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use Iterator;
+
 /**
  * @template T
  *
- * @template-extends \Iterator<int, T>
+ * @template-extends Iterator<int, T>
  */
-interface ResultInterface extends \Iterator
+interface ResultInterface extends Iterator
 {
-    /**
-     * @param string $connectionName
-     * @return $this
-     */
-    public function setConnectionName($connectionName);
+    public function setConnectionName(string $connectionName): static;
 
-    /**
-     * @param string $database
-     * @return $this
-     */
-    public function setDatabase($database);
+    public function setDatabase(string $database): static;
 
     /**
      * @param T $result
-     * @return $this
      */
-    public function setResult($result);
+    public function setResult($result): static;
 
-    /**
-     * @return string|null
-     */
-    public function getConnectionName();
+    public function getConnectionName(): ?string;
 
-    /**
-     * @return string|null
-     */
-    public function getDatabase();
+    public function getDatabase(): ?string;
 
-    /**
-     * @return int
-     */
-    public function getNumRows();
+    public function getNumRows(): int;
 }

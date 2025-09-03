@@ -27,6 +27,6 @@ namespace CCMBenchmark\Ting;
 
 interface ContainerInterface
 {
-    public function get($id);
-    public function has($id);
+    public function get(string $id): mixed;
+    public function has(string $id): bool;
 }

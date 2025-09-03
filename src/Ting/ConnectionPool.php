@@ -52,27 +52,21 @@ class ConnectionPool implements ConnectionPoolInterface
     protected $connections = [];
 
     /**
-     * @var DriverLoggerInterface|null
-     */
-    protected $logger = null;
-
-    /**
      * @param DriverLoggerInterface $logger
      */
-    public function __construct(?DriverLoggerInterface $logger = null)
+    public function __construct(protected ?DriverLoggerInterface $logger = null)
     {
-        $this->logger = $logger;
     }
 
     /**
      * @param array $config
      */
-    public function setConfig($config)
+    public function setConfig($config): void
     {
         $this->connectionConfig = $config;
     }
 
-    public function setDatabaseOptions($options): void
+    public function setDatabaseOptions(array $options): void
     {
         $this->databaseOptions = $options;
     }
@@ -80,12 +74,9 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * Return the master connection
      *
-     * @param $name
-     * @param $database
-     * @return DriverInterface
      * @throws ConnectionException
      */
-    public function master($name, $database)
+    public function master(string $name, string $database): DriverInterface
     {
         if (isset($this->connectionConfig[$name]['master']) === false) {
             throw new ConnectionException('Connection not found: ' . $name);
@@ -95,7 +86,7 @@ class ConnectionPool implements ConnectionPoolInterface
 
         $charset = null;
 
-        if (isset($this->connectionConfig[$name]['charset']) === true) {
+        if (isset($this->connectionConfig[$name]['charset'])) {
             $charset = $this->connectionConfig[$name]['charset'];
         }
 
@@ -110,7 +101,7 @@ class ConnectionPool implements ConnectionPoolInterface
      * @return DriverInterface
      * @throws ConnectionException
      */
-    public function slave($name, $database)
+    public function slave($name, $database): DriverInterface
     {
         if (isset($this->connectionConfig[$name]) === false) {
             throw new ConnectionException('Connection not found: ' . $name);
@@ -137,7 +128,7 @@ class ConnectionPool implements ConnectionPoolInterface
 
         $charset = null;
 
-        if (isset($this->connectionConfig[$name]['charset']) === true) {
+        if (isset($this->connectionConfig[$name]['charset'])) {
             $charset = $this->connectionConfig[$name]['charset'];
         }
 
@@ -195,7 +186,7 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
-            $timezone = isset($this->databaseOptions[$database]['timezone']) !== false ? $this->databaseOptions[$database]['timezone'] : null;
+            $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
             $this->connections[$connectionKey]->setTimezone($timezone);
         }
 
@@ -205,7 +196,7 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * Close all opened connections
      */
-    public function closeAll()
+    public function closeAll(): void
     {
         foreach ($this->connections as $connectionKey => $connection) {
             $connection->close();
@@ -218,7 +209,7 @@ class ConnectionPool implements ConnectionPoolInterface
      * @return string
      * @throws ConnectionException
      */
-    public function getDriverClass($name)
+    public function getDriverClass(string $name): string
     {
         if (isset($this->connectionConfig[$name]) === false) {
             throw new ConnectionException('Connection not found: ' . $name);

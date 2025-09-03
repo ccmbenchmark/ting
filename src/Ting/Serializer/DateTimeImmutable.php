@@ -25,6 +25,9 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
+use DateTimeInterface;
+use Exception;
+
 class DateTimeImmutable implements SerializerInterface
 {
     /**
@@ -33,7 +36,7 @@ class DateTimeImmutable implements SerializerInterface
      * unSerializeUseFormat => if false, any valid datetime format is automatically used
      * @see http://php.net/manual/en/datetime.formats.compound.php
      */
-    private static $defaultOptions = ['format' => \DateTimeInterface::ATOM, 'unSerializeUseFormat' => true];
+    private static array $defaultOptions = ['format' => DateTimeInterface::ATOM, 'unSerializeUseFormat' => true];
 
     /**
      * @param mixed $toSerialize
@@ -78,7 +81,7 @@ class DateTimeImmutable implements SerializerInterface
         } else {
             try {
                 $value = new \DateTimeImmutable($serialized);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new RuntimeException(
                     'Cannot convert ' . $serialized . ' to DateTimeImmutable. Error is : ' . $e->getMessage()
                 );

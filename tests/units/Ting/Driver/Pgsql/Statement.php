@@ -154,7 +154,7 @@ class Statement extends atoum
         $collection = new \mock\CCMBenchmark\Ting\Repository\Collection();
         PGMock::override('pg_execute', false);
         PGMock::override('pg_query', true);
-        PGMock::override('pg_errormessage', 'unknown error');
+        PGMock::override('pg_last_error', 'unknown error');
 
         $this
             ->if($statement = new \CCMBenchmark\Ting\Driver\Pgsql\Statement(

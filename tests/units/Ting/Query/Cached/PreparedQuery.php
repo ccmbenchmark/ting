@@ -108,14 +108,16 @@ class PreparedQuery extends atoum
             'database'
         );
         $mockMemcached = new \mock\Doctrine\Common\Cache\MemcachedCache();
-
+        $mockMysqliResult = new \mock\tests\fixtures\FakeDriver\MysqliResult();
         $this->calling($mockMemcached)->fetch   = false;
         $this->calling($mockMemcached)->save    = true;
         $this->calling($mockConnection)->slave  = $mockDriver;
         $this->calling($mockDriver)->execute    = true;
         $this->calling($mockDriver)->prepare    = $mockStatement;
-        $this->calling($mockStatement)->execute = function (array $params, $collection) {
-            $collection->set(new \mock\tests\fixtures\FakeDriver\MysqliResult());
+        $this->calling($mockMysqliResult)->getConnectionName = 'connectionName';
+        $this->calling($mockMysqliResult)->getDatabase = 'database';
+        $this->calling($mockStatement)->execute = function (array $params, $collection) use ($mockMysqliResult) {
+            $collection->set($mockMysqliResult);
             return true;
         };
 

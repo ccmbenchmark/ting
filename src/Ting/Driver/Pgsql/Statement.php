@@ -33,7 +33,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 class Statement implements StatementInterface
 {
     protected $connection    = null;
-    protected $paramsOrder   = [];
     protected $queryType     = null;
     protected $query         = null;
 
@@ -50,18 +49,17 @@ class Statement implements StatementInterface
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct(protected $statementName, array $paramsOrder, protected $connectionName, protected $database)
+    public function __construct(protected $statementName, protected array $paramsOrder, protected $connectionName, protected $database)
     {
-        $this->paramsOrder    = $paramsOrder;
     }
 
     /**
-     * @param $connection
+     * @param \PgSql\Connection $connection
      * @return $this
      *
      * @internal
      */
-    public function setConnection($connection)
+    public function setConnection($connection): static
     {
         $this->connection = $connection;
 
@@ -69,14 +67,11 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param $query
-     * @return $this
-     *
      * @internal
      */
-    public function setQuery($query)
+    public function setQuery(string $query): static
     {
-        $this->query = (string) $query;
+        $this->query = $query;
 
         return $this;
     }
@@ -85,7 +80,7 @@ class Statement implements StatementInterface
      * @param DriverLoggerInterface $logger
      * @return void
      */
-    public function setLogger(?DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null): void
     {
         $this->logger = $logger;
     }
@@ -114,7 +109,7 @@ class Statement implements StatementInterface
         }
 
         if ($result === false) {
-            throw new QueryException(pg_errormessage($this->connection));
+            throw new QueryException(pg_last_error($this->connection));
         }
 
         if ($collection !== null) {
@@ -125,14 +120,12 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param $resultResource
-     * @param CollectionInterface $collection
-     * @return bool
+     * @param \PgSql\Result $resultResource
      * @throws QueryException
      *
      * @internal
      */
-    public function setCollectionWithResult($resultResource, ?CollectionInterface $collection = null)
+    public function setCollectionWithResult($resultResource, ?CollectionInterface $collection = null): bool
     {
         $result = new Result();
         $result->setConnectionName($this->connectionName);
@@ -147,7 +140,7 @@ class Statement implements StatementInterface
     /**
      * Deallocate the current prepared statement
      */
-    protected function close()
+    protected function close(): void
     {
         pg_query($this->connection, 'DEALLOCATE "' . $this->statementName . '"');
     }

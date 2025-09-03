@@ -25,14 +25,25 @@
 
 namespace CCMBenchmark\Ting;
 
+use CCMBenchmark\Ting\Repository\CollectionFactory;
+use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Serializer\SerializerFactory;
+use CCMBenchmark\Ting\Repository\Hydrator;
+use CCMBenchmark\Ting\Repository\HydratorSingleObject;
+use CCMBenchmark\Ting\Repository\HydratorAggregator;
+use CCMBenchmark\Ting\Repository\HydratorRelational;
+use CCMBenchmark\Ting\Repository\RepositoryFactory;
+use CCMBenchmark\Ting\Cache\Cache;
+use Closure;
+use RuntimeException;
 use CCMBenchmark\Ting\Util\PropertyAccessor;
 use Pimple\Container;
 
 class Services implements ContainerInterface
 {
-    protected $container = null;
+    protected Container $container;
 
-    protected $serviceOptions = null;
+    protected array $serviceOptions = [];
 
     public function __construct()
     {
@@ -42,17 +53,17 @@ class Services implements ContainerInterface
         $this->container = new Container();
         $this->container->offsetSet(
             'ConnectionPool',
-            fn () => new ConnectionPool()
+            fn (): ConnectionPool => new ConnectionPool()
         );
 
         $this->container->offsetSet(
             'MetadataRepository',
-            fn () => new MetadataRepository($this->get('SerializerFactory'))
+            fn (): MetadataRepository => new MetadataRepository($this->get('SerializerFactory'))
         );
 
         $this->container->offsetSet(
             'UnitOfWork',
-            fn () => new UnitOfWork(
+            fn (): UnitOfWork => new UnitOfWork(
                 $this->get('ConnectionPool'),
                 $this->get('MetadataRepository'),
                 $this->get('QueryFactory')
@@ -61,7 +72,7 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'CollectionFactory',
-            $this->container->factory(fn () => new Repository\CollectionFactory(
+            $this->container->factory(fn (): CollectionFactory => new CollectionFactory(
                 $this->get('MetadataRepository'),
                 $this->get('UnitOfWork'),
                 $this->get('Hydrator')
@@ -70,18 +81,18 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'QueryFactory',
-            fn () => new Query\QueryFactory()
+            fn (): QueryFactory => new QueryFactory()
         );
 
         $this->container->offsetSet(
             'SerializerFactory',
-            fn () => new Serializer\SerializerFactory()
+            fn (): SerializerFactory => new SerializerFactory()
         );
 
         $this->container->offsetSet(
             'Hydrator',
-            $this->container->factory(function () {
-                $hydrator = new Repository\Hydrator();
+            $this->container->factory(function (): Hydrator {
+                $hydrator = new Hydrator();
                 $hydrator->setMetadataRepository($this->get('MetadataRepository'));
                 $hydrator->setUnitOfWork($this->get('UnitOfWork'));
                 return $hydrator;
@@ -90,8 +101,8 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'HydratorSingleObject',
-            $this->container->factory(function () {
-                $hydrator = new Repository\HydratorSingleObject();
+            $this->container->factory(function (): HydratorSingleObject {
+                $hydrator = new HydratorSingleObject();
                 $hydrator->setMetadataRepository($this->get('MetadataRepository'));
                 $hydrator->setUnitOfWork($this->get('UnitOfWork'));
                 return $hydrator;
@@ -100,8 +111,8 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'HydratorAggregator',
-            $this->container->factory(function () {
-                $hydrator = new Repository\HydratorAggregator();
+            $this->container->factory(function (): HydratorAggregator {
+                $hydrator = new HydratorAggregator();
                 $hydrator->setMetadataRepository($this->get('MetadataRepository'));
                 $hydrator->setUnitOfWork($this->get('UnitOfWork'));
                 return $hydrator;
@@ -110,8 +121,8 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'HydratorRelational',
-            $this->container->factory(function () {
-                $hydrator = new Repository\HydratorRelational();
+            $this->container->factory(function (): HydratorRelational {
+                $hydrator = new HydratorRelational();
                 $hydrator->setMetadataRepository($this->get('MetadataRepository'));
                 $hydrator->setUnitOfWork($this->get('UnitOfWork'));
                 return $hydrator;
@@ -120,7 +131,7 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'RepositoryFactory',
-            fn () => new Repository\RepositoryFactory(
+            fn (): RepositoryFactory => new RepositoryFactory(
                 $this->get('ConnectionPool'),
                 $this->get('MetadataRepository'),
                 $this->get('QueryFactory'),
@@ -133,18 +144,16 @@ class Services implements ContainerInterface
 
         $this->container->offsetSet(
             'Cache',
-            fn () => new Cache\Cache()
+            fn (): Cache => new Cache()
         );
 
         $this->container->offsetSet(
             'PropertyAccessor',
-            function () {
-                return new PropertyAccessor();
-            }
+            fn(): PropertyAccessor => new PropertyAccessor()
         );
     }
 
-    public function set($id, \Closure $callable, $factory = false)
+    public function set(string $id, Closure $callable, bool $factory = false): static
     {
         if ($factory === true) {
             $callable = $this->container->factory($callable);
@@ -154,11 +163,11 @@ class Services implements ContainerInterface
         return $this;
     }
 
-    public function get($id, ?array $options = null)
+    public function get(string $id, ?array $options = null): mixed
     {
         if ($options !== null) {
             if (isset($this->serviceOptions[$id]) && $this->serviceOptions[$id] !== $options) {
-                throw new \RuntimeException(sprintf('Cannot call service %s with another configuration', $id));
+                throw new RuntimeException(sprintf('Cannot call service %s with another configuration', $id));
             }
             $this->serviceOptions[$id] = $options;
         }
@@ -166,7 +175,7 @@ class Services implements ContainerInterface
         return $this->container->offsetGet($id);
     }
 
-    public function has($id)
+    public function has(string $id): bool
     {
         return $this->container->offsetExists($id);
     }
