@@ -1,9 +1,24 @@
 4.0.0 (unreleased):
-    * BC add ping and setTimezone on DriverInterface
-    * BC deleted Metadata setter & getter
-    * BC deleted deprecated methods on Mysqli and Pgsql drivers
-    * BC deleted CCMBenchmark\Ting\Query\Generator::getByCriteriaWithOrderAndLimit, use CCMBenchmark\Ting\Query\Generator::getByCriteria
+    * BC PHP 8.0 dropped, minimum version is now PHP 8.1
+    * BC All classes now fully typehinted with strict types and return types
+    * BC Pgsql Driver now uses native PHP 8.1+ PgSql\Connection and PgSql\Result classes instead of resources
+    * BC Serialization interfaces typehinted: SerializeInterface::serialize() and UnserializeInterface::unserialize()
+    * BC Added ping() and setTimezone() methods to DriverInterface
+    * BC Added ConnectionPoolInterface::setDatabaseOptions() method
+    * BC Deleted Metadata::getGetter() and Metadata::getSetter() methods
+    * BC Deleted deprecated getInsertId() methods on Mysqli and Pgsql drivers (use getInsertedId() instead)
+    * BC Deleted deprecated getInsertIdForSequence() on Pgsql driver (use getInsertedIdForSequence() instead)
+    * BC Deleted deprecated getInsertId() on QueryInterface and Query class (use getInsertedId() instead)
+    * BC Deleted Generator::getByCriteriaWithOrderAndLimit(), merged into Generator::getByCriteria() with $order and $limit parameters
+    * BC Deleted UnitOfWork::generateUid() and UnitOfWork::generateUUID() methods
     * New feature: HydratorValueObject allows hydrating simple objects without metadata using native fetch_object() methods
+    * New feature: ResultInterface now exposes fetchObject() method for value object hydration
+    * Improvement: UnitOfWork now uses WeakMap exclusively for internal entity storage (enhanced from PHP 8.0 implementation)
+    * Improvement: PHPStan analysis raised to level 7 with baseline significantly reduced (from ~2200 to <50 errors)
+    * Improvement: Type coverage tool added (tomasvotruba/type-coverage) with minimum thresholds: 97% return types, 85% param types, 83% property types
+    * Improvement: Rector configuration added for automated refactoring and code quality improvements (targeting PHP 8.0+)
+    * Improvement: PHPStan custom extension for properties (CCMBenchmark\Ting\PHPStan\PropertiesExtension)
+
 
 3.12.0 (2025-04-17):
     * add __debuginfo() in NotifyInterface to reduce context when dumping an entity
