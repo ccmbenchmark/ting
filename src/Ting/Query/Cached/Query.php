@@ -141,7 +141,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
 
     /**
      * Check if a key is available in cache and fill collection if it's available
-     * @param string $key
+     * @param string|null $key
      * @param CollectionInterface $collection
      * @return bool
      * @throws QueryException

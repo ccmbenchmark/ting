@@ -45,7 +45,7 @@ class Statement implements StatementInterface
     /**
      * Statement constructor.
      *
-     * @param \mysqli_stmt|Object $statementName
+     * @param string              $statementName
      * @param array               $paramsOrder
      * @param string              $connectionName
      * @param string              $database

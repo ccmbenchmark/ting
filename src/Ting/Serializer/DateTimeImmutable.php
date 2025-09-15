@@ -34,15 +34,14 @@ class DateTimeImmutable implements SerializerInterface
      * @see http://php.net/manual/en/datetime.formats.compound.php
      */
     private static $defaultOptions = ['format' => \DateTimeInterface::ATOM, 'unSerializeUseFormat' => true];
-    private static $deserialisationFormat = 'Y-m-d\TH:i:sO';
 
     /**
-     * @param \DateTime $toSerialize
+     * @param mixed $toSerialize
      * @param array $options
      * @return string|null
      * @throws RuntimeException
      */
-    public function serialize($toSerialize, array $options = []): ?string
+    public function serialize(mixed $toSerialize, array $options = []): ?string
     {
         if ($toSerialize === null) {
             return null;
@@ -59,7 +58,7 @@ class DateTimeImmutable implements SerializerInterface
     }
 
     /**
-     * @param string $serialized
+     * @param string|null $serialized
      * @param array  $options
      * @return \DateTimeImmutable|null
      * @throws RuntimeException
@@ -70,7 +69,6 @@ class DateTimeImmutable implements SerializerInterface
             return null;
         }
 
-        //$this->parseSerialized($serialized);
         $options = array_merge(self::$defaultOptions, $options);
         if ($options['unSerializeUseFormat'] === true) {
             $value = \DateTimeImmutable::createFromFormat($options['format'], $serialized);

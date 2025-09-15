@@ -42,7 +42,9 @@ class UnitOfWork implements PropertyListenerInterface
     protected $connectionPool            = null;
     protected $metadataRepository        = null;
     protected $queryFactory              = null;
+    /** @var WeakMap<NotifyPropertyInterface, NotifyPropertyInterface|bool> */
     protected WeakMap $entities;
+    /** @var WeakMap<NotifyPropertyInterface, array<string, array<mixed, mixed>>>  */
     protected WeakMap $entitiesChanged;
     protected array $entitiesShouldBePersisted;
     protected $statements = [];
@@ -316,7 +318,7 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Insert all applicable entities in database
-     * @param  string $hash
+     * @param  NotifyPropertyInterface $entity
      * @throws Exception
      * @throws QueryException
      */

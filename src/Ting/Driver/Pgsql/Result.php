@@ -62,7 +62,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * @param object $result
+     * @param resource $result
      * @return $this
      */
     public function setResult($result)
@@ -221,7 +221,7 @@ class Result implements ResultInterface
                     continue;
                 }
 
-                if ($scope === 'column' || $scope === 'string' || $scope === 'condition') {
+                if (in_array($scope, ['column', 'string', 'condition'], true) === true) {
                     $column .= $tokensWithCase[$index];
                 }
 

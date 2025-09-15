@@ -47,7 +47,7 @@ class Boolean implements SerializerInterface
     }
 
     /**
-     * @param string $serialized
+     * @param int|string $serialized
      * @param array  $options
      * @return bool|null
      */

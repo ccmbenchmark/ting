@@ -44,7 +44,7 @@ interface QueryInterface
      *
      * @return CollectionInterface<T>
      *
-     * @template T of object
+     * @template T
      */
     public function query(?CollectionInterface $collection = null);
 
