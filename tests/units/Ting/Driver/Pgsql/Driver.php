@@ -748,8 +748,11 @@ class Driver extends atoum
 
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
     {
+        PGMock::override('pg_connect', null);
+        $mockDriver = new \mock\Fake\Pgsql();
         $this
-            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver($mockDriver))
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->exception(function () use ($driver): void {
                 $driver->ping();
             })

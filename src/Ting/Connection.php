@@ -43,16 +43,12 @@ class Connection
     protected $name = null;
 
     /**
-     * @param ConnectionPoolInterface $connectionPool
-     * @param string $name
-     * @param string $database
-     *
      * @internal
      */
-    public function __construct(ConnectionPoolInterface $connectionPool, ?string $name, ?string $database)
+    public function __construct(ConnectionPoolInterface $connectionPool, string $name, string $database)
     {
-        if ($name === null || $database === null) {
-            throw new \RuntimeException('Name and databases cannot be null on connection');
+        if ($name === '' || $database === '') {
+            throw new \RuntimeException('Name and databases cannot be empty on connection');
         }
         $this->connectionPool = $connectionPool;
         $this->name           = $name;

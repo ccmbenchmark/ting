@@ -208,9 +208,7 @@ class Driver implements DriverInterface
     {
         [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
 
-        if ($this->connection === null) {
-            throw new QueryException('No active connection.');
-        }
+        $this->validateConnection();
 
         $values = [];
         foreach (array_keys($paramsOrder) as $key) {
@@ -293,9 +291,7 @@ class Driver implements DriverInterface
             $this->logger->startPrepare($originalSQL, $this->objectHash, $this->database);
             $statement->setLogger($this->logger);
         }
-        if ($this->connection === null) {
-            throw new QueryException('No active connection.');
-        }
+        $this->validateConnection();
         $result = pg_prepare($this->connection, $statementName, $sql);
         if ($this->logger !== null) {
             $this->logger->stopPrepare($statementName);
@@ -394,9 +390,7 @@ class Driver implements DriverInterface
         if ($this->transactionOpened === true) {
             throw new TransactionException('Cannot start another transaction');
         }
-        if ($this->connection === null) {
-            throw new DriverException('No active connection.');
-        }
+        $this->validateConnection();
         pg_query($this->connection, 'BEGIN');
         $this->transactionOpened = true;
     }
@@ -410,9 +404,7 @@ class Driver implements DriverInterface
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot commit no transaction');
         }
-        if ($this->connection === null) {
-            throw new DriverException('No active connection.');
-        }
+        $this->validateConnection();
         pg_query($this->connection, 'COMMIT');
         $this->transactionOpened = false;
     }
@@ -426,9 +418,7 @@ class Driver implements DriverInterface
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot rollback no transaction');
         }
-        if ($this->connection === null) {
-            throw new DriverException('No active connection.');
-        }
+        $this->validateConnection();
         pg_query($this->connection, 'ROLLBACK');
         $this->transactionOpened = false;
     }
@@ -439,9 +429,7 @@ class Driver implements DriverInterface
      */
     public function getInsertedId()
     {
-        if ($this->connection === null) {
-            throw new DriverException('No active connection.');
-        }
+        $this->validateConnection();
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
         if ($resultResource === false) {
             throw new DriverException('Could not fetch last inserted id.');
@@ -460,9 +448,7 @@ class Driver implements DriverInterface
      */
     public function getInsertedIdForSequence($sequenceName)
     {
-        if ($this->connection === null) {
-            throw new QueryException('No active connection.');
-        }
+        $this->validateConnection();
         $sql = "SELECT currval('$sequenceName')";
         $resultResource = @pg_query($this->connection, $sql);
 
@@ -508,9 +494,7 @@ class Driver implements DriverInterface
      */
     public function ping(): bool
     {
-        if ($this->connection === null) {
-            throw new NeverConnectedException('Please connect to your database before trying to ping it.');
-        }
+        $this->validateConnection();
 
         $result = pg_ping($this->connection);
 
@@ -538,10 +522,18 @@ class Driver implements DriverInterface
             $value = 'DEFAULT';
             $query = str_replace('"', '', $query);
         }
-        if ($this->connection === null) {
-            throw new QueryException('No active connection.');
-        }
+        $this->validateConnection();
         pg_query($this->connection, sprintf($query, $value));
         $this->currentTimezone = $timezone;
+    }
+
+    /**
+     * @throws NeverConnectedException
+     */
+    private function validateConnection(): void
+    {
+        if ($this->connection === null) {
+            throw new NeverConnectedException('Please connect to your database before trying to ping it.');
+        }
     }
 }
