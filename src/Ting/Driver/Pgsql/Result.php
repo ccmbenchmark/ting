@@ -62,7 +62,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * @param resource $result
+     * @param \PgSql\Result $result
      * @return $this
      */
     public function setResult($result)
