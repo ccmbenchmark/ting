@@ -2,6 +2,7 @@
     * BC add ping and setTimezone on DriverInterface
     * BC deleted Metadata setter & getter
     * BC deleted deprecated methods on Mysqli and Pgsql drivers
+    * BC deleted CCMBenchmark\Ting\Query\Generator::getByCriteriaWithOrderAndLimit, use CCMBenchmark\Ting\Query\Generator::getByCriteria
 
 3.10.4 (2025-01-17):
     * Fix HydratorRelational on null join where primary keys are public properties without default value

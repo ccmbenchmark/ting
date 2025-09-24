@@ -179,53 +179,16 @@ class Generator
     }
 
     /**
-     * Returns a Query, allowing to fetch an object by criteria (associative array).
-     *
-     * @param array                      $criteria
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $forceMaster
-     *
-     * @return Query
-     *
-     * @internal
-     * @todo merge with getSqlAndParamsByCriteria in v4.0
+     * @param array<string, mixed>       $criteria
+     * @param array<string, string>      $order
      */
     public function getByCriteria(
         array $criteria,
         CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false
-    ) {
-        $driver = $this->getDriver($forceMaster);
-
-        [$sql, $params] = $this->getSqlAndParamsByCriteria($criteria, $driver);
-
-        $query = $this->queryFactory->get($sql, $this->connection, $collectionFactory);
-        $query->setParams($params);
-
-        if ($forceMaster === true) {
-            $query->selectMaster(true);
-        }
-
-        return $query;
-    }
-
-    /**
-     * @todo merge with getByCriteria in v4.0
-     *
-     * @param array                      $criteria
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param                            $forceMaster
-     * @param array                      $order
-     * @param                            $limit
-     * @return Query
-     */
-    public function getByCriteriaWithOrderAndLimit(
-        array $criteria,
-        CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false,
+        bool $forceMaster = false,
         array $order = [],
-        $limit = 0
-    ) {
+        int $limit = 0
+    ): QueryInterface {
         $driver = $this->getDriver($forceMaster);
 
         [$sql, $params] = $this->getSqlAndParamsByCriteria($criteria, $driver);

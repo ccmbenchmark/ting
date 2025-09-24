@@ -604,7 +604,7 @@ class Metadata
         );
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
 
-        return $queryGenerator->getByCriteriaWithOrderAndLimit($criteriaColumn, $collectionFactory, $forceMaster, $orderBy, $limit);
+        return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $forceMaster, $orderBy, $limit);
     }
 
     /**
