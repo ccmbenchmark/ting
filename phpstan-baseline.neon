@@ -1,14 +1,2324 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\Cache\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Cache/Cache.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\Cache\:\:log\(\) has parameter \$operation with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Cache/Cache.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\Cache\:\:log\(\) has parameter \$type with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Cache/Cache.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\Cache\:\:setCache\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Cache/Cache.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\Cache\:\:setLogger\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Cache/Cache.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\Cache\:\:stopLog\(\) has parameter \$miss with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Cache/Cache.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Cache\\CacheInterface\:\:setLogger\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Cache/CacheInterface.php
+
+		-
+			message: '#^Call to an undefined method object\:\:connect\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Call to an undefined method object\:\:setLogger\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Cannot call method setTimezone\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPool\:\:closeAll\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPool\:\:connect\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPool\:\:setConfig\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPool\:\:setConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPool\:\:setDatabaseOptions\(\) has parameter \$options with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\ConnectionPool\:\:\$connectionConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\ConnectionPool\:\:\$connectionSlaves type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\ConnectionPool\:\:\$connections type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\ConnectionPool\:\:\$databaseOptions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPool.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPoolInterface\:\:closeAll\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/ConnectionPoolInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPoolInterface\:\:setConfig\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/ConnectionPoolInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPoolInterface\:\:setConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/ConnectionPoolInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ConnectionPoolInterface\:\:setDatabaseOptions\(\) has parameter \$options with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/ConnectionPoolInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ContainerInterface\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/ContainerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ContainerInterface\:\:get\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/ContainerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ContainerInterface\:\:has\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/ContainerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\ContainerInterface\:\:has\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/ContainerInterface.php
+
+		-
+			message: '#^Class CCMBenchmark\\Ting\\Driver\\CacheResult implements generic interface CCMBenchmark\\Ting\\Driver\\ResultInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/CacheResult.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:closeStatement\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:closeStatement\(\) has parameter \$statement with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:commit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:escapeField\(\) has parameter \$field with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:execute\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:getConnectionKey\(\) has parameter \$connectionConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:ifIsError\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:ifIsNotConnected\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:rollback\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:setDatabase\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:setLogger\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:setTimezone\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:setTimezone\(\) has parameter \$timezone with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\DriverInterface\:\:startTransaction\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/DriverInterface.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$report_mode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:closeStatement\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:closeStatement\(\) has parameter \$statement with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:commit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:escapeField\(\) has parameter \$field with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:execute\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:getAffectedRows\(\) should return int but returns int\<0, max\>\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:getConnectionKey\(\) has parameter \$connectionConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:rollback\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setCollectionWithResult\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setCollectionWithResult\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setLogger\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setTimezone\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setTimezone\(\) has parameter \$timezone with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:startTransaction\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Parameter \#1 \$driverStatement of class CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement constructor expects object, mysqli_stmt\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Parameter \#1 \$object of function spl_object_hash expects object, mysqli_stmt\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Parameter \#1 \$resultData of method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setCollectionWithResult\(\) expects object, mysqli_result\|true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connection \(mysqli\|null\) does not accept mysqli\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connection \(mysqli\|null\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connectionConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$preparedQueries type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Driver.php
+
+		-
+			message: '#^Call to an undefined method object\:\:fetch_fields\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Class CCMBenchmark\\Ting\\Driver\\Mysqli\\Result implements generic interface CCMBenchmark\\Ting\\Driver\\ResultInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:dataSeek\(\) has parameter \$offset with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:format\(\) has parameter \$data with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:format\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$connectionName has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$database has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$fields has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$iteratorCurrent has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$iteratorOffset has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$result has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Mysqli/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Serializer\\Boolean\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Serializer/Boolean.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Serializer\\Boolean\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Serializer/Boolean.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$errno\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Call to an undefined method object\:\:bind_param\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Call to an undefined method object\:\:close\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Call to an undefined method object\:\:execute\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Call to an undefined method object\:\:get_result\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:__construct\(\) has parameter \$paramsOrder with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:close\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:execute\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:execute\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:setCollectionWithResult\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement\:\:\$paramsOrder type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Mysqli/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:closeStatement\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:closeStatement\(\) has parameter \$statement with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:commit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:convertParameters\(\) has parameter \$sql with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:convertParameters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:escapeField\(\) has parameter \$field with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:execute\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:getConnectionKey\(\) has parameter \$connectionConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:getInsertedIdForSequence\(\) has parameter \$sequenceName with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:ifIsError\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:ifIsNotConnected\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:rollback\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:setCollectionWithResult\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:setCollectionWithResult\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:setLogger\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:setTimezone\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:setTimezone\(\) has parameter \$timezone with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:startTransaction\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:\$preparedQueries type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Driver.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Cannot access offset int\<0, max\> on list\<non\-empty\-string\>\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Class CCMBenchmark\\Ting\\Driver\\Pgsql\\Result implements generic interface CCMBenchmark\\Ting\\Driver\\ResultInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:format\(\) has parameter \$data with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:format\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:setQuery\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:setQuery\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:unescapeField\(\) has parameter \$field with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Offset ''table'' might not exist on array\{complex\: bool, column\: string, table\?\: string, alias\?\: non\-falsy\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strtolower expects string, int\|string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, list\<string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$connectionName has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$database has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$fields has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$iteratorCurrent has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$iteratorOffset has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$result has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Result.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Serializer\\Boolean\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Serializer/Boolean.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Serializer\\Boolean\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Serializer/Boolean.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:__construct\(\) has parameter \$paramsOrder with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:close\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:execute\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:setCollectionWithResult\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:setCollectionWithResult\(\) has parameter \$resultResource with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:setConnection\(\) has parameter \$connection with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:setQuery\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$connection has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$paramsOrder has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$query has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$queryType has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Driver/Pgsql/Statement.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\SphinxQL\\Driver\:\:escapeField\(\) has parameter \$field with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Driver/SphinxQL/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\SphinxQL\\Driver\:\:quoteValue\(\) should return string but returns float\|int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ting/Driver/SphinxQL/Driver.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\StatementInterface\:\:__construct\(\) has parameter \$paramsOrder with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/StatementInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\StatementInterface\:\:execute\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Driver/StatementInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\StatementInterface\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Driver/StatementInterface.php
+
+		-
 			message: '#^Trait CCMBenchmark\\Ting\\Entity\\NotifyProperty is used zero times and is not analysed\.$#'
 			identifier: trait.unused
 			count: 1
 			path: src/Ting/Entity/NotifyProperty.php
 
 		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\CacheLoggerInterface\:\:startOperation\(\) has parameter \$keys with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/CacheLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\CacheLoggerInterface\:\:startOperation\(\) has parameter \$operation with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/CacheLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\CacheLoggerInterface\:\:stopOperation\(\) has parameter \$miss with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/CacheLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:addConnection\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:addConnection\(\) has parameter \$connection with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:addConnection\(\) has parameter \$connectionConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:addConnection\(\) has parameter \$name with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startPrepare\(\) has parameter \$connection with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startPrepare\(\) has parameter \$database with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startPrepare\(\) has parameter \$sql with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startQuery\(\) has parameter \$connection with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startQuery\(\) has parameter \$database with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startQuery\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startQuery\(\) has parameter \$sql with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startStatementExecute\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:startStatementExecute\(\) has parameter \$statement with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:stopPrepare\(\) has parameter \$statement with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Logger\\DriverLoggerInterface\:\:stopStatementExecute\(\) has parameter \$statement with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Logger/DriverLoggerInterface.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:addMetadata\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:batchLoadMetadata\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:batchLoadMetadata\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:batchLoadMetadataFromCache\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:batchLoadMetadataFromCache\(\) has parameter \$paths with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:batchLoadMetadataFromCache\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:findMetadataForEntity\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:findMetadataForRepository\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:findMetadataForTable\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:getAllEntities\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:getOptionForRepository\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\MetadataRepository\:\:getOptionForRepository\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$metadata contains generic class CCMBenchmark\\Ting\\Repository\\Metadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Parameter \#1 \$repositoryClass of method CCMBenchmark\\Ting\\MetadataRepository\:\:addMetadata\(\) expects class\-string\<CCMBenchmark\\Ting\\Repository\\Repository\<object\>\>, \(int\|string\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Parameter \#1 \$repositoryClass of method CCMBenchmark\\Ting\\MetadataRepository\:\:addMetadata\(\) expects class\-string\<CCMBenchmark\\Ting\\Repository\\Repository\<object\>\>, class\-string\<CCMBenchmark\\Ting\\Repository\\MetadataInitializer\>\|class\-string\<CCMBenchmark\\Ting\\Repository\\Repository\<mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\MetadataRepository\:\:\$entityToRepository type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\MetadataRepository\:\:\$metadataList with generic class CCMBenchmark\\Ting\\Repository\\Metadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\MetadataRepository\:\:\$tableWithConnectionToMetadata type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/MetadataRepository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\PreparedQuery\:\:query\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Cached/PreparedQuery.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\PreparedQuery\:\:query\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Cached/PreparedQuery.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\Query\:\:checkCache\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Cached/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\Query\:\:checkTtl\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Query/Cached/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\Query\:\:query\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Cached/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\Query\:\:query\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Cached/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Cached\\Query\:\:setCacheKey\(\) has parameter \$cacheKey with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Query/Cached/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:__construct\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:delete\(\) has parameter \$primariesKeyValue with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:escapeFields\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:escapeFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:generateConditionAndParams\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:generateConditionAndParams\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:generateConditionAndParams\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:generateLimit\(\) has parameter \$limit with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:generateOrder\(\) has parameter \$orderList with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getAll\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteria\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$forceMaster with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$limit with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$order with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getOneByCriteria\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getOneByCriteria\(\) has parameter \$primariesValue with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getSelect\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getSqlAndParamsByCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getSqlAndParamsByCriteria\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:insert\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:update\(\) has parameter \$primariesValue with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:update\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:updateSQLWithOrderAndLimit\(\) has parameter \$order with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Query\\Generator\:\:\$fields has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Query/Generator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\PreparedQuery\:\:getStatementName\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Query/PreparedQuery.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\PreparedQuery\:\:query\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/PreparedQuery.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\PreparedQuery\:\:query\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/PreparedQuery.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Query\:\:__construct\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Query\:\:query\(\) has parameter \$collection with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Query\:\:query\(\) return type with generic interface CCMBenchmark\\Ting\\Repository\\CollectionInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\Query\:\:setParams\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Query.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Query\\Query\:\:\$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/Query.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Query\\Query\:\:\$params type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/Query.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactory\:\:get\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactory.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactory\:\:getCached\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactory.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactory\:\:getCachedPrepared\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactory.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactory\:\:getPrepared\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactory.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactoryInterface\:\:get\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactoryInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactoryInterface\:\:getCached\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactoryInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactoryInterface\:\:getCachedPrepared\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactoryInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryFactoryInterface\:\:getPrepared\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryFactoryInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryInterface\:\:__construct\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Query/QueryInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Query\\QueryInterface\:\:setParams\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Query/QueryInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:first\(\) should return T but returns null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ting/Repository/Collection.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:fromCache\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Collection.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:getIterator\(\) should return Generator\<int, T, mixed, mixed\> but returns Traversable\<int, T\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ting/Repository/Collection.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Collection.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:toCache\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Collection.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\CollectionInterface\:\:fromCache\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/CollectionInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\CollectionInterface\:\:toCache\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/CollectionInterface.php
+
+		-
+			message: '#^Generator expects value type stdClass\|T, array\<int, stdClass\|T\> given\.$#'
+			identifier: generator.valueType
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\:\:extractSchemaFromColumn\(\) has parameter \$column with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\:\:hasVirtualObject\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\:\:hydrateColumns\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\:\:manageIfYouCan\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\:\:unserializeAliasWith\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$mapAliases has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$mapObjects has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$metadataList with generic class CCMBenchmark\\Ting\\Repository\\Metadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$objectDatabase has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$objectSchema has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$references has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$unserializeAliases has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\\Aggregate\:\:\$target has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Hydrator/Aggregate.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\\Relation\:\:getSetter\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Hydrator/Relation.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\\Relation\:\:getSource\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Hydrator/Relation.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\\Relation\:\:getTarget\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Hydrator/Relation.php
+
+		-
+			message: '#^Generator expects value type T, array given\.$#'
+			identifier: generator.valueType
+			count: 1
+			path: src/Ting/Repository/HydratorArray.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorArray\:\:\$metadataRepository has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/HydratorArray.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorArray\:\:\$result with generic interface CCMBenchmark\\Ting\\Driver\\ResultInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/HydratorArray.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorArray\:\:\$unitOfWork has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/HydratorArray.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:addRelation\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:assignResourcesToReferences\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:resolveDependencies\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:saveResourceFor\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:saveResourceFor\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:saveSourceReference\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:saveSourceReference\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:saveTargetReference\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:saveTargetReference\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:\$config with generic class SplDoublyLinkedList does not specify its types\: TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:\$referencesRelation type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorRelational\:\:\$resources type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/HydratorRelational.php
+
+		-
+			message: '#^Generator expects value type T, stdClass\|T\|false given\.$#'
+			identifier: generator.valueType
+			count: 1
+			path: src/Ting/Repository/HydratorSingleObject.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:addField\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:generateQueryForDelete\(\) has parameter \$entity with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:generateQueryForDelete\(\) has parameter \$properties with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:generateQueryForInsert\(\) has parameter \$entity with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:generateQueryForUpdate\(\) has parameter \$entity with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:generateQueryForUpdate\(\) has parameter \$properties with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getAll\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByCriteria\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByCriteriaWithOrderAndLimit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByPrimaries\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByPrimaries\(\) has parameter \$forceMaster with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getByPrimaries\(\) has parameter \$primariesKeyValue with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getColumnsFromCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getColumnsFromCriteria\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getEntityProperty\(\) has parameter \$field with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getEntityPropertyByFieldName\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getEntityPropertyByFieldName\(\) has parameter \$entity with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getEntityPropertyByFieldName\(\) has parameter \$fieldName with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getOneByCriteria\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getOneByCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getOneByCriteria\(\) has parameter \$forceMaster with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getPrimaries\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getPrimariesKeyValuesAsArray\(\) has parameter \$originalValue with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getPrimariesKeyValuesAsArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getPrimariesKeyValuesByProperties\(\) has parameter \$entity with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getPrimariesKeyValuesByProperties\(\) has parameter \$properties with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:getPrimariesKeyValuesByProperties\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:hasColumn\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:setEntityProperty\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:setEntityProperty\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:setEntityProperty\(\) has parameter \$entity with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Metadata\:\:setEntityProperty\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$autoincrement has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$connectionName has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$databaseName has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$defaultSerializers has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$primaries has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$schemaName has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$table has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\<T\>\:\:\$fields \(array\<string, array\{fieldName\: string, columnName\: string, type\: string, primary\?\: bool, autoincrement\?\: bool, serializer\?\: class\-string\<CCMBenchmark\\Ting\\Serializer\\SerializerInterface\>, serializer_options\?\: array\{serialize\?\: array\<mixed\>, unserialize\?\: array\<mixed\>\}, setter\?\: string, \.\.\.\}\>\) does not accept non\-empty\-array\<non\-empty\-array\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\<T\>\:\:\$fieldsByProperty \(array\<string, array\{fieldName\: string, columnName\: string, type\: string, primary\?\: bool, autoincrement\?\: bool, serializer\?\: class\-string\<CCMBenchmark\\Ting\\Serializer\\SerializerInterface\>, serializer_options\?\: array\{serialize\?\: array\<mixed\>, unserialize\?\: array\<mixed\>\}, setter\?\: string, \.\.\.\}\>\) does not accept non\-empty\-array\<non\-empty\-array\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Ting/Repository/Metadata.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\MetadataCacheGenerator\:\:createCache\(\) has parameter \$repositories with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/MetadataCacheGenerator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\MetadataCacheGenerator\:\:getFileName\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/MetadataCacheGenerator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\MetadataCacheGenerator\:\:\$filename has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/MetadataCacheGenerator.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\MetadataCacheGenerator\:\:\$template has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Repository/MetadataCacheGenerator.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\MetadataInitializer\:\:initMetadata\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/MetadataInitializer.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\MetadataInitializer\:\:initMetadata\(\) return type with generic class CCMBenchmark\\Ting\\Repository\\Metadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/MetadataInitializer.php
+
+		-
 			message: '#^Call to an undefined method Traversable\<int, mixed\>\:\:current\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:__construct\(\) has parameter \$collectionFactory with generic class CCMBenchmark\\Ting\\Repository\\CollectionFactory but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:delete\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:get\(\) has parameter \$primariesKeyValue with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:getBy\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:getBy\(\) has parameter \$order with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:getOneBy\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\Repository\:\:save\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Repository\:\:\$collectionFactory with generic class CCMBenchmark\\Ting\\Repository\\CollectionFactory does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\Repository\:\:\$metadata with generic class CCMBenchmark\\Ting\\Repository\\Metadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/Repository.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Repository\\RepositoryFactory\:\:__construct\(\) has parameter \$collectionFactory with generic class CCMBenchmark\\Ting\\Repository\\CollectionFactory but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/RepositoryFactory.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\RepositoryFactory\:\:\$collection with generic class CCMBenchmark\\Ting\\Repository\\Collection does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/RepositoryFactory.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Repository\\RepositoryFactory\:\:\$collectionFactory with generic class CCMBenchmark\\Ting\\Repository\\CollectionFactory does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Ting/Repository/RepositoryFactory.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\DateTime\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTime.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\DateTime\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTime.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Serializer\\DateTime\:\:\$defaultOptions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTime.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\DateTimeImmutable\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTimeImmutable.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\DateTimeImmutable\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTimeImmutable.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Serializer\\DateTimeImmutable\:\:\$defaultOptions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTimeImmutable.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\DateTimeZone\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTimeZone.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\DateTimeZone\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/DateTimeZone.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strlen expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ting/Serializer/Geometry.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Ip\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/Ip.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Ip\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/Ip.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Json\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/Json.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Json\:\:serialize\(\) should return string\|null but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ting/Serializer/Json.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Json\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/Json.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\SerializeInterface\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/SerializeInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\SerializerFactory\:\:get\(\) should return CCMBenchmark\\Ting\\Serializer\\SerializerInterface but returns object\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ting/Serializer/SerializerFactory.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Serializer\\SerializerFactory\:\:\$serializers \(array\<CCMBenchmark\\Ting\\Serializer\\SerializerInterface\>\) does not accept array\<object\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Ting/Serializer/SerializerFactory.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\UnserializeInterface\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/UnserializeInterface.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Uuid\:\:serialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/Uuid.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Uuid\:\:unserialize\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Serializer/Uuid.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:get\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:get\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:has\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:has\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:set\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:set\(\) has parameter \$factory with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Services\:\:set\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Services\:\:\$container has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Services\:\:\$serviceOptions has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/Services.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\UnitOfWork\:\:addStatementToClose\(\) has parameter \$statementName with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Ting/UnitOfWork.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\UnitOfWork\:\:\$connectionPool has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/UnitOfWork.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\UnitOfWork\:\:\$entitiesShouldBePersisted type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/UnitOfWork.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\UnitOfWork\:\:\$metadataRepository has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/UnitOfWork.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\UnitOfWork\:\:\$queryFactory has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/UnitOfWork.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\UnitOfWork\:\:\$statements has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Ting/UnitOfWork.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Util\\Debug\:\:dump\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Ting/Util/Debug.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Util\\PropertyAccessor\:\:isReadable\(\) has parameter \$objectOrArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Util/PropertyAccessor.php
+
+		-
+			message: '#^Method CCMBenchmark\\Ting\\Util\\PropertyAccessor\:\:isWritable\(\) has parameter \$objectOrArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Util/PropertyAccessor.php
+
+		-
+			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, array\|object given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Ting/Util/PropertyAccessor.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Util\\PropertyAccessor\:\:\$reflectionData type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Util/PropertyAccessor.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Util\\PropertyAccessor\:\:\$reflectionProperties type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Util/PropertyAccessor.php
+
+		-
+			message: '#^Property CCMBenchmark\\Ting\\Util\\PropertyAccessor\:\:\$writePropertyCache type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Ting/Util/PropertyAccessor.php
 
