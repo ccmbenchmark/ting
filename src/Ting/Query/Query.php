@@ -108,6 +108,7 @@ class Query implements QueryInterface
     }
 
     /**
+     * @return int<0, max>|string
      * @throws Exception
      */
     public function getAffectedRows(): int|string

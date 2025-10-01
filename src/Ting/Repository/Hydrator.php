@@ -120,9 +120,9 @@ class Hydrator implements HydratorInterface
     }
 
     /**
-     * @return int<0, max>
+     * @return int<0, max>|string
      */
-    public function count(): int
+    public function count(): int|string
     {
         if ($this->result === null) {
             return 0;

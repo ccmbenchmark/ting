@@ -449,7 +449,6 @@ class Driver implements DriverInterface
 
     /**
      * Give the number of affected rows
-     * @return int
      */
     public function getAffectedRows(): int
     {
