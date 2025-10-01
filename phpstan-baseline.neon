@@ -67,12 +67,6 @@ parameters:
 			path: src/Ting/MetadataRepository.php
 
 		-
-			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:getIterator\(\) should return Generator\<int, T, mixed, mixed\> but returns Traversable\<int, mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Repository/Collection.php
-
-		-
 			message: '#^Generator expects value type stdClass\|T, array\<int, stdClass\|T\> given\.$#'
 			identifier: generator.valueType
 			count: 1

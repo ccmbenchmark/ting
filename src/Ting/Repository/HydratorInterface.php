@@ -29,6 +29,7 @@ use IteratorAggregate;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
+use stdClass;
 
 /**
  * @template T
@@ -47,4 +48,9 @@ interface HydratorInterface extends IteratorAggregate
      * @return int<0, max>|string
      */
     public function count(): int|string;
+
+    /**
+     * @return \Generator<mixed, T|stdClass>
+     */
+    public function getIterator(): \Generator;
 }
