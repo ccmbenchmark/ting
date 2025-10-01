@@ -29,6 +29,9 @@ use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
+/**
+ * @template T
+ */
 interface QueryInterface
 {
     /**
@@ -44,7 +47,6 @@ interface QueryInterface
      *
      * @return CollectionInterface<T>
      *
-     * @template T
      */
     public function query(?CollectionInterface $collection = null);
 

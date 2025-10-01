@@ -70,4 +70,9 @@ interface CollectionInterface extends IteratorAggregate, Countable
      * @return void
      */
     public function fromCache(array $result);
+
+    /**
+     * @return \Generator<int, T>
+     */
+    public function getIterator(): \Generator;
 }

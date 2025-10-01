@@ -122,7 +122,7 @@ class Generator
         array $primariesValue,
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false
-    ) {
+    ): QueryInterface {
         $driver = $this->getDriver($forceMaster);
 
         [$sql, $params] = $this->getSqlAndParamsByCriteria($primariesValue, $driver);

@@ -467,6 +467,8 @@ class Metadata
     /**
      * Return a Query to get one object by an associative array of criterias
      *
+     * @return QueryInterface<T>
+     *
      * @internal
      */
     public function getOneByCriteria(
