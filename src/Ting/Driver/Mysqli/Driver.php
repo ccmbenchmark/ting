@@ -346,9 +346,6 @@ class Driver implements DriverInterface
 
         if ($driverStatement === false) {
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
-//            $this->ifIsError(function () use ($sql): void {
-//
-//            });
         }
 
         if ($this->logger !== null) {

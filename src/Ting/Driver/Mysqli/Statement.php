@@ -49,7 +49,7 @@ class Statement implements StatementInterface
     protected string $objectHash = '';
 
     /**
-     * @param mysqli_stmt|Object $driverStatement
+     * @param mysqli_stmt $driverStatement
      * @param array               $paramsOrder
      * @param string              $connectionName
      * @param string              $database
@@ -96,6 +96,9 @@ class Statement implements StatementInterface
         }
 
         $result = $this->driverStatement->get_result();
+        if ($result === false) {
+            return false;
+        }
 
         if ($collection instanceof CollectionInterface) {
             return $this->setCollectionWithResult($result, $collection);
