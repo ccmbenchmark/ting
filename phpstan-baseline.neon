@@ -49,12 +49,6 @@ parameters:
 			path: src/Ting/Entity/NotifyProperty.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Ting/MetadataRepository.php
-
-		-
 			message: '#^Parameter \#1 \$repositoryClass of method CCMBenchmark\\Ting\\MetadataRepository\:\:addMetadata\(\) expects class\-string\<CCMBenchmark\\Ting\\Repository\\Repository\<object\>\>, \(int\|string\) given\.$#'
 			identifier: argument.type
 			count: 1

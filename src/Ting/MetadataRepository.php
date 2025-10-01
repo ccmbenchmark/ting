@@ -189,7 +189,12 @@ class MetadataRepository
             return $loaded;
         }
 
-        foreach (glob($globPattern) as $metadataFile) {
+        $files = glob($globPattern);
+        if ($files === false) {
+            return $loaded;
+        }
+
+        foreach ($files as $metadataFile) {
             /** @var class-string<MetadataInitializer> $metadataClass */
             $metadataClass = $namespace . '\\' . basename($metadataFile, '.php');
             $class = new ReflectionClass($metadataClass);
