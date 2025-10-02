@@ -182,7 +182,7 @@ class MetadataRepository
      * @param array  $options Options you can use to custom initialization of Metadata
      * @return array
      */
-    public function batchLoadMetadata(string $namespace, $globPattern, array $options = []): array
+    public function batchLoadMetadata(string $namespace, string $globPattern, array $options = []): array
     {
         $loaded = [];
 
@@ -251,7 +251,7 @@ class MetadataRepository
      * @param array  $options
      * @return array
      */
-    protected function getOptionForRepository($repository, array $options)
+    protected function getOptionForRepository(string $repository, array $options)
     {
         $repositoryOptions = isset($options['default']) === true ? $options['default'] : [];
 

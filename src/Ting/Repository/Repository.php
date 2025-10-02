@@ -119,7 +119,7 @@ abstract class Repository
      * @param string $sql
      * @return Query
      */
-    public function getQuery($sql)
+    public function getQuery($sql): Query
     {
         return $this->queryFactory->get($sql, $this->connection, $this->collectionFactory);
     }
@@ -128,7 +128,7 @@ abstract class Repository
      * @param string $sql
      * @return PreparedQuery
      */
-    public function getPreparedQuery($sql)
+    public function getPreparedQuery($sql): PreparedQuery
     {
         return $this->queryFactory->getPrepared($sql, $this->connection, $this->collectionFactory);
     }

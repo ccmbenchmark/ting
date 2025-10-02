@@ -81,7 +81,7 @@ class Result implements ResultInterface
      * Move the internal result pointer to an arbitrary row
      * @return mixed
      */
-    protected function dataSeek(int $offset)
+    protected function dataSeek(int $offset): bool|null
     {
         if ($this->result !== null) {
             return $this->result->data_seek($offset);
@@ -94,7 +94,7 @@ class Result implements ResultInterface
      * @param $data
      * @return array|null
      */
-    protected function format(array|null|false $data)
+    protected function format(array|null|false $data): ?array
     {
         if ($data === null || $data === false) {
             return null;

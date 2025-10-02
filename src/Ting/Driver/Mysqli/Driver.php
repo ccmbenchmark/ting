@@ -271,7 +271,7 @@ class Driver implements DriverInterface
      * @return mixed|CollectionInterface
      * @throws QueryException
      */
-    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): mixed
+    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): true|CollectionInterface|array
     {
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
@@ -315,7 +315,7 @@ class Driver implements DriverInterface
      * @param mixed $value
      * @return mixed
      */
-    protected function quoteValue($value): mixed
+    protected function quoteValue($value): string | int | float
     {
         return match (\gettype($value)) {
             "boolean" => (int) $value,

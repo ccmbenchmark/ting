@@ -37,7 +37,7 @@ class CacheResult implements ResultInterface
     /**
      * @var string|null
      */
-    protected $database = null;
+    protected ?string $database = null;
 
     /**
      * @var Iterator|null
@@ -59,9 +59,9 @@ class CacheResult implements ResultInterface
      * @param string $database
      * @return $this
      */
-    public function setDatabase($database): static
+    public function setDatabase(string $database): static
     {
-        $this->database = (string) $database;
+        $this->database = $database;
         return $this;
     }
 

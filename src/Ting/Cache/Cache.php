@@ -32,7 +32,7 @@ class Cache implements CacheInterface
 {
     private ?CacheLoggerInterface $logger = null;
 
-    private ?DoctrineCache $cache = null;
+    private DoctrineCache $cache;
 
     /**
      * @param DoctrineCache $cache

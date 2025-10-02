@@ -40,7 +40,7 @@ class Generator
      *
      * @internal
      */
-    public function __construct(protected Connection $connection, protected QueryFactoryInterface $queryFactory, protected $schemaName, protected $tableName, protected array $fields)
+    public function __construct(protected Connection $connection, protected QueryFactoryInterface $queryFactory, protected string $schemaName, protected string $tableName, protected array $fields)
     {
     }
 
@@ -365,7 +365,7 @@ class Generator
             return ' ORDER BY ' . implode(',', $orderCriteria);
         }
 
-        return $orderClause;
+        return '';
     }
 
     /**

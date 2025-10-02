@@ -43,7 +43,7 @@ class Collection implements CollectionInterface, JsonSerializable
      */
     protected ?ResultInterface $result = null;
 
-    protected ?HydratorInterface $hydrator;
+    protected HydratorInterface $hydrator;
 
     /**
      * @var bool

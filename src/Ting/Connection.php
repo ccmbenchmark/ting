@@ -36,7 +36,7 @@ class Connection
     /**
      * @internal
      */
-    public function __construct(protected ConnectionPoolInterface $connectionPool, string $name, string $database)
+    public function __construct(protected ConnectionPoolInterface $connectionPool, protected string $name, protected string $database)
     {
         if ($name === '' || $database === '') {
             throw new RuntimeException('Name and databases cannot be empty on connection');
@@ -70,7 +70,7 @@ class Connection
      * @return mixed
      * @throws Exception
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->master()->startTransaction();
     }
@@ -80,7 +80,7 @@ class Connection
      * @return mixed
      * @throws Exception
      */
-    public function commit()
+    public function commit(): void
     {
         $this->master()->commit();
     }
@@ -90,7 +90,7 @@ class Connection
      * @return mixed
      * @throws Exception
      */
-    public function rollback()
+    public function rollback(): void
     {
         $this->master()->rollback();
     }

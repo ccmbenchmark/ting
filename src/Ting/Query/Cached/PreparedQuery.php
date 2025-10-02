@@ -83,7 +83,7 @@ class PreparedQuery extends Query
      * @return CollectionInterface
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null): mixed
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
         $this->checkTtl();
 
