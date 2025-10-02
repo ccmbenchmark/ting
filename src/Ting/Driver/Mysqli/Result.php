@@ -79,7 +79,6 @@ class Result implements ResultInterface
 
     /**
      * Move the internal result pointer to an arbitrary row
-     * @return mixed
      */
     protected function dataSeek(int $offset): bool|null
     {

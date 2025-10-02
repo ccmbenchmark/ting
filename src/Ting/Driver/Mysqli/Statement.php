@@ -57,8 +57,12 @@ class Statement implements StatementInterface
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct(protected $driverStatement, protected array $paramsOrder, protected string $connectionName, protected string $database)
-    {
+    public function __construct(
+        protected $driverStatement,
+        protected array $paramsOrder,
+        protected string $connectionName,
+        protected string $database
+    ) {
     }
 
     /**

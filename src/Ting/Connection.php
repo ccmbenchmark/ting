@@ -29,20 +29,17 @@ use RuntimeException;
 
 class Connection
 {
-    protected string $database;
-
-    protected string $name;
-
     /**
      * @internal
      */
-    public function __construct(protected ConnectionPoolInterface $connectionPool, protected string $name, protected string $database)
-    {
+    public function __construct(
+        protected ConnectionPoolInterface $connectionPool,
+        protected string $name,
+        protected string $database
+    ) {
         if ($name === '' || $database === '') {
             throw new RuntimeException('Name and databases cannot be empty on connection');
         }
-        $this->name           = $name;
-        $this->database       = $database;
     }
 
     /**
@@ -67,7 +64,6 @@ class Connection
 
     /**
      * Start a transaction against the master connection
-     * @return mixed
      * @throws Exception
      */
     public function startTransaction(): void
@@ -77,7 +73,6 @@ class Connection
 
     /**
      * Commit the opened transaction on the master connection
-     * @return mixed
      * @throws Exception
      */
     public function commit(): void
@@ -87,7 +82,6 @@ class Connection
 
     /**
      * Rollback the opened transaction on the master connection
-     * @return mixed
      * @throws Exception
      */
     public function rollback(): void

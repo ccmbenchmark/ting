@@ -268,10 +268,9 @@ class Driver implements DriverInterface
      * @param string $sql
      * @param array $params
      * @param CollectionInterface $collection
-     * @return mixed|CollectionInterface
      * @throws QueryException
      */
-    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): true|CollectionInterface|array
+    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): bool|CollectionInterface|array
     {
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
@@ -280,7 +279,7 @@ class Driver implements DriverInterface
                     throw new QueryException('Value has not been set for param ' . $match[1]);
                 }
 
-                return $this->quoteValue($params[$match[1]]);
+                return (string) $this->quoteValue($params[$match[1]]);
             },
             $sql
         );
@@ -313,7 +312,6 @@ class Driver implements DriverInterface
     /**
      * Quote value according to the type of variable
      * @param mixed $value
-     * @return mixed
      */
     protected function quoteValue($value): string | int | float
     {

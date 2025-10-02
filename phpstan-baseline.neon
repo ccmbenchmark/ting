@@ -223,12 +223,6 @@ parameters:
 			path: src/Ting/Driver/Pgsql/Statement.php
 
 		-
-			message: '#^Method CCMBenchmark\\Ting\\Driver\\SphinxQL\\Driver\:\:quoteValue\(\) should return string but returns float\|int\|string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Driver/SphinxQL/Driver.php
-
-		-
 			message: '#^Trait CCMBenchmark\\Ting\\Entity\\NotifyProperty is used zero times and is not analysed\.$#'
 			identifier: trait.unused
 			count: 1

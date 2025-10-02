@@ -37,7 +37,7 @@ interface StatementInterface
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct($driverStatement, array $paramsOrder, $connectionName, $database);
+    public function __construct($driverStatement, array $paramsOrder, string $connectionName, string $database);
 
     /**
      * @param array $params
