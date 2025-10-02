@@ -48,8 +48,15 @@ class RepositoryFactory
      * @param Cache $cache
      * @param SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(protected ConnectionPool $connectionPool, protected MetadataRepository $metadataRepository, protected QueryFactory $queryFactory, protected CollectionFactory $collectionFactory, protected UnitOfWork $unitOfWork, protected Cache $cache, protected SerializerFactoryInterface $serializerFactory)
-    {
+    public function __construct(
+        protected ConnectionPool $connectionPool,
+        protected MetadataRepository $metadataRepository,
+        protected QueryFactory $queryFactory,
+        protected CollectionFactory $collectionFactory,
+        protected UnitOfWork $unitOfWork,
+        protected Cache $cache,
+        protected SerializerFactoryInterface $serializerFactory
+    ) {
     }
 
     /**
