@@ -27,16 +27,13 @@ namespace CCMBenchmark\Ting\Repository\Hydrator;
 
 abstract class Aggregate
 {
-    private readonly string $target;
-
     /**
      * Aggregate constructor.
      *
      * @param string $target
      */
-    public function __construct($target)
+    public function __construct(private readonly string $target)
     {
-        $this->target = (string) $target;
     }
 
     /**

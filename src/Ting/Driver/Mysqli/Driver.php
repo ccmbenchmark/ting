@@ -298,7 +298,7 @@ class Driver implements DriverInterface
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
         }
 
-        if (!$collection instanceof CollectionInterface) {
+        if ($collection === null) {
             if ($result === true) {
                 return true;
             }

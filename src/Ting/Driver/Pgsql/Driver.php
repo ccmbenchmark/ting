@@ -222,7 +222,7 @@ class Driver implements DriverInterface
         }
 
 
-        if (!$collection instanceof CollectionInterface) {
+        if ($collection === null) {
             $resultStatus = pg_result_status($this->result);
             if ($resultStatus === \PGSQL_TUPLES_OK) {
                 return pg_fetch_assoc($this->result);

@@ -103,20 +103,16 @@ class Statement implements StatementInterface
 
         $result = $this->driverStatement->get_result();
 
-        if ($collection instanceof CollectionInterface) {
+        if ($collection !== null) {
             return $this->setCollectionWithResult($result, $collection);
         }
 
         return true;
     }
 
-    /**
-     * @param DriverLoggerInterface $logger
-     * @return void
-     */
     public function setLogger(?DriverLoggerInterface $logger = null): void
     {
-        if ($logger instanceof DriverLoggerInterface) {
+        if ($logger !== null) {
             $this->logger = $logger;
             $this->objectHash = spl_object_hash($this->driverStatement);
         }
