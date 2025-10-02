@@ -487,6 +487,7 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->exception(
                 function () use ($metadata, $mockConnection, $services): void {
                     $metadata->getByPrimaries(
@@ -520,6 +521,7 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->object(
                 $metadata->getByPrimaries(
                     $mockConnection,
@@ -551,6 +553,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
+            ->and($metadata->setTable('bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -601,6 +604,7 @@ class Metadata extends atoum
                     'type'       => 'string'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->exception(
                 function () use ($metadata, $mockConnection, $services): void {
                     $metadata->getOneByCriteria(
@@ -633,6 +637,7 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->object(
                 $metadata->getAll(
                     $mockConnection,
@@ -668,6 +673,7 @@ class Metadata extends atoum
                     'type'       => 'string'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->object(
                 $metadata->getByCriteria(
                     ['name' => 'Xavier'],
@@ -770,6 +776,7 @@ class Metadata extends atoum
                     'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerParams['boo_roles'])
                 ->isIdenticalTo(json_encode(['USER', 'ADMIN']));
@@ -834,6 +841,7 @@ class Metadata extends atoum
                         'type'       => 'string',
                     ])
             )
+            ->and($metadata->setTable('public_properties_entity'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->array($outerParams)
                 ->isIdenticalTo(['property_with_default_value' => 'default', 'property_with_getter' => 'with getter']);
@@ -882,6 +890,7 @@ class Metadata extends atoum
                     ]
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerParams['boo_roles'])
             ->isIdenticalTo(json_encode(['USER', '"BOUH"'], JSON_HEX_QUOT));
@@ -939,9 +948,10 @@ class Metadata extends atoum
                     'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
+            ->and($query = $metadata->setTable('bouh'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerSql)
-            ->isIdenticalTo('INSERT INTO  (boo_roles) VALUES (:boo_roles)');
+            ->isIdenticalTo('INSERT INTO bouh (boo_roles) VALUES (:boo_roles)');
     }
 
     public function testGenerateQueryForUpdateShouldReturnAPreparedQuery()
@@ -1101,6 +1111,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
                 ->and($metadata->setEntity('mock\tests\fixtures\model\BouhCustomGetter'))
+                ->and($metadata->setTable('bouh'))
                 ->and(
                     $metadata->addField([
                         'primary'    => true,

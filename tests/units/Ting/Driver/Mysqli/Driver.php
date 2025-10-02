@@ -529,6 +529,7 @@ class Driver extends atoum
     public function testPrepareShouldNotTransformEscapedColon()
     {
         $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
         $driverStatement = new \mock\Fake\DriverStatement();
         $this->calling($driverStatement)->close = true;
@@ -541,6 +542,8 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
+            ->then($driver->setName('foo'))
+            ->then($driver->setDatabase('T_BOUH_BOO'))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
@@ -552,6 +555,7 @@ class Driver extends atoum
     public function testPrepareCalledTwiceShouldReturnTheSameObject()
     {
         $mockDriver = new \mock\Fake\Mysqli();
+        $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
         $driverStatement = new \mock\Fake\DriverStatement();
         $this->calling($driverStatement)->close = true;
@@ -565,6 +569,8 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setName('foo'))
+            ->then($driver->setDatabase('T_BOUH_BOO'))
             ->then($statement = $driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
             ))
@@ -730,6 +736,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->and($driver->setDatabase('db'))
+            ->and($driver->setName('foo'))
             ->and($driver->setLogger($mockLogger))
             ->then($driver->prepare('Empty query'))
             ->mock($mockLogger)
