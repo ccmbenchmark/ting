@@ -74,7 +74,7 @@ class HydratorArray extends atoum
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorArray())
             ->then($hydrator->setResult($result))
-            ->integer(count($hydrator))
+            ->integer($hydrator->count())
                 ->isIdenticalTo(2);
     }
 
@@ -82,7 +82,7 @@ class HydratorArray extends atoum
     {
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorArray())
-            ->integer(count($hydrator))
+            ->integer($hydrator->count())
                 ->isIdenticalTo(0);
     }
 }

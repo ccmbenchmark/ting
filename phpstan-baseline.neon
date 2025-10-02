@@ -1,40 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method object\:\:connect\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/ConnectionPool.php
-
-		-
-			message: '#^Call to an undefined method object\:\:setLogger\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/ConnectionPool.php
-
-		-
-			message: '#^Cannot call method setTimezone\(\) on class\-string\|object\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Ting/ConnectionPool.php
-
-		-
-			message: '#^Parameter \#1 \$resultData of method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setCollectionWithResult\(\) expects object, mysqli_result\|true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
 			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connection \(mysqli\|null\) does not accept mysqli\|false\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Call to an undefined method object\:\:fetch_fields\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
 
 		-
 			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$connectionName has no type specified\.$#'

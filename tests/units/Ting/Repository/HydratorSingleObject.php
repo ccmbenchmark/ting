@@ -103,7 +103,7 @@ class HydratorSingleObject extends atoum
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\HydratorSingleObject())
             ->then($hydrator->setResult($result))
-            ->integer(count($hydrator))
+            ->integer($hydrator->count())
             ->isIdenticalTo(2);
     }
 }

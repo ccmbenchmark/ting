@@ -136,7 +136,7 @@ class ConnectionPool implements ConnectionPoolInterface
     }
 
     /**
-     * @param array $config
+     * @param array{host: string, port: int, user?: string, password?: string} $config
      * @param class-string<DriverInterface> $driverClass
      * @param string $database
      * @param string $name connection name
@@ -186,10 +186,8 @@ class ConnectionPool implements ConnectionPoolInterface
             $this->connections[$connectionKey]->setCharset($charset);
         }
 
-        if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
-            $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
-            $this->connections[$connectionKey]->setTimezone($timezone);
-        }
+        $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
+        $this->connections[$connectionKey]->setTimezone($timezone);
 
         return $this->connections[$connectionKey];
     }

@@ -282,7 +282,9 @@ class Driver implements DriverInterface
 
             return $result->fetch_assoc();
         }
-
+        if ($result === true) {
+            return true;
+        }
         return $this->setCollectionWithResult($result, $collection);
     }
 
@@ -301,7 +303,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param mysqli_result|Object $resultData
+     * @param mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
