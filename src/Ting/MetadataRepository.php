@@ -54,11 +54,10 @@ class MetadataRepository
      */
     private array $tableWithConnectionToMetadata = [];
 
-    /**
-     * @param SerializerFactoryInterface $serializerFactory
-     */
-    public function __construct(protected SerializerFactoryInterface $serializerFactory, private readonly ?CacheItemPoolInterface $cacheItemPool = null)
-    {
+    public function __construct(
+        protected SerializerFactoryInterface $serializerFactory,
+        private ?CacheItemPoolInterface $cacheItemPool = null
+    ) {
     }
 
     /**

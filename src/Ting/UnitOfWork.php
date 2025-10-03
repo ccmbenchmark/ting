@@ -95,11 +95,8 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Flag the entity to be persisted (insert or update) on next process
-     *
-     * @param NotifyPropertyInterface $entity
-     * @return $this
      */
-    public function pushSave(NotifyPropertyInterface $entity): self
+    public function pushSave(NotifyPropertyInterface $entity): static
     {
         $state = self::STATE_MANAGED;
 
@@ -184,11 +181,8 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Flag the entity to be deleted on next process
-     *
-     * @param NotifyPropertyInterface $entity
-     * @return $this
      */
-    public function pushDelete(NotifyPropertyInterface $entity): self
+    public function pushDelete(NotifyPropertyInterface $entity): static
     {
         $hash = spl_object_hash($entity);
         $this->entitiesShouldBePersisted[$hash] = ['state' => self::STATE_DELETE, 'entity' => $entity];
