@@ -177,8 +177,7 @@ class Result implements ResultInterface
      *  select * from city c inner join country co on (c.cou_code = co.cou_code)
      *  the second column "cou_code" is missing, cause current() use an associative array
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->result !== null) {
             $this->result->data_seek(0);
@@ -189,20 +188,16 @@ class Result implements ResultInterface
 
     /**
      * Return current row
-     * @return mixed|null
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->iteratorCurrent;
     }
 
     /**
      * Return the key of the actual row
-     * @return int|mixed
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->iteratorOffset;
     }
@@ -210,8 +205,7 @@ class Result implements ResultInterface
     /**
      * Move to the next row in result set
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         if ($this->result !== null) {
             $this->iteratorCurrent = $this->format($this->result->fetch_array(MYSQLI_NUM));
@@ -224,8 +218,7 @@ class Result implements ResultInterface
      * Is the actual row valid
      * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return $this->iteratorCurrent !== null;
     }

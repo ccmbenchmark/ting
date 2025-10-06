@@ -55,4 +55,20 @@ trait NotifyProperty
             $listener->propertyChanged($this, $propertyName, $oldValue, $newValue);
         }
     }
+
+    public function __debugInfo(): ?array
+    {
+        $properties = get_object_vars($this);
+        unset($properties['listeners']);
+
+        return $properties;
+    }
+
+    public function __serialize(): array
+    {
+        $properties = get_object_vars($this);
+        unset($properties['listeners']);
+
+        return $properties;
+    }
 }

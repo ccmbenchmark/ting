@@ -527,6 +527,26 @@ class Driver implements DriverInterface
         $this->currentTimezone = $timezone;
     }
 
+    public function reconnect(): bool
+    {
+        $this->connection = null;
+        try {
+            $this->setDatabase($this->database);
+            if ($this->currentTimezone !== null) {
+                $tz = $this->currentTimezone;
+                $this->currentTimezone = null;
+                $this->setTimezone($tz);
+            }
+            if ($this->currentCharset !== null) {
+                $charset = $this->currentCharset;
+                $this->currentCharset = null;
+                $this->setCharset($charset);
+            }
+        } catch (DriverException) {
+            return false;
+        }
+    }
+
     /**
      * @throws NeverConnectedException
      */

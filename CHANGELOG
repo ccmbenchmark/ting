@@ -3,6 +3,24 @@
     * BC deleted Metadata setter & getter
     * BC deleted deprecated methods on Mysqli and Pgsql drivers
 
+3.12.0 (2025-04-17):
+    * add __debuginfo() in NotifyInterface to reduce context when dumping an entity
+    * Driver now supports reconnect, useful in forked processes
+    * Prevent entity listeners serialization
+    * bump aura/sqlquery to 3.0.0
+    * Fix generics for phpstan on MetadataInitializer interface
+    * fix notice on \iterator implementations
+
+3.11.0 (2025-03.14):
+    * Fix Driver Mysqli: mysqli_ping has no effect since PHP 8.2, fix that.
+    * Serializer: Added BackedEnumSerializer
+
+3.10.6 (2025-03-12):
+    * Fix Driver Mysqli: you can now repeat a same parameter in your query
+
+3.10.5 (2025-01-29):
+    * Fix throws exception if Pimple is missing when using CCMBenchmark\Ting\Services
+
 3.10.4 (2025-01-17):
     * Fix HydratorRelational on null join where primary keys are public properties without default value
 

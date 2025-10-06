@@ -22,7 +22,7 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=8.1",
-        "aura/sqlquery": "^2.6",
+        "aura/sqlquery": "^2.6 || ^3.0",
         "doctrine/cache": "^1.6",
         "symfony/property-access": "^6.0 || ^7.0"
     },

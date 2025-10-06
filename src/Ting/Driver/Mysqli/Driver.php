@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
+use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Exceptions\ConnectionException;
 use CCMBenchmark\Ting\Exceptions\DatabaseException;
 use CCMBenchmark\Ting\Exceptions\DriverException;
@@ -36,7 +37,7 @@ use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
-use function is_null;
+use mysqli_sql_exception;
 
 class Driver implements DriverInterface
 {
@@ -91,9 +92,14 @@ class Driver implements DriverInterface
     protected $objectHash = '';
 
     /**
-     * @var array List of already prepared queries
+     * @var array<string,StatementInterface> List of already prepared queries
      */
     protected $preparedQueries = [];
+
+    /**
+     * @var array<string,StatementInterface> Old list of prepared queries, filled after a reconnect
+     */
+    protected $oldPreparedQueries = [];
 
     /**
      * @var string Match parameter in SQL
@@ -119,10 +125,7 @@ class Driver implements DriverInterface
     public function __construct($connection = null, $driver = null)
     {
         if ($connection === null) {
-            $this->connection = \mysqli_init();
-            if ($this->connection instanceof \mysqli) {
-                $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
-            }
+            $this->createConnection();
         } else {
             $this->connection = $connection;
         }
@@ -348,7 +351,6 @@ class Driver implements DriverInterface
      */
     public function prepare($sql)
     {
-
         $statementName = sha1($sql);
         if (isset($this->preparedQueries[$statementName])) {
             return $this->preparedQueries[$statementName];
@@ -357,7 +359,7 @@ class Driver implements DriverInterface
         $sql = preg_replace_callback(
             '/' . $this->parameterMatching . '/',
             function ($match) use (&$paramsOrder) {
-                $paramsOrder[$match[1]] = null;
+                $paramsOrder[] = $match[1];
                 return '?';
             },
             $sql
@@ -384,7 +386,6 @@ class Driver implements DriverInterface
         $statement->setLogger($this->logger);
 
         $this->preparedQueries[$statementName] = $statement;
-
 
         return $statement;
     }
@@ -473,10 +474,10 @@ class Driver implements DriverInterface
      */
     public function closeStatement($statement)
     {
-        if (isset($this->preparedQueries[$statement]) === false) {
+        if (!isset($this->preparedQueries[$statement]) && !isset($this->oldPreparedQueries[$statement])) {
             throw new StatementException('Cannot close non prepared statement');
         }
-        unset($this->preparedQueries[$statement]);
+        unset($this->preparedQueries[$statement], $this->oldPreparedQueries[$statement]);
     }
 
     /**
@@ -492,40 +493,18 @@ class Driver implements DriverInterface
             throw new NeverConnectedException('Please connect to your database before trying to ping it.');
         }
 
-        $pingResult = false;
+        // mysqli.reconnect has been removed in PHP 8.2 and mysqli_ping has been deprecated in PHP 8.4 as it has no effect, so we cannot rely on ping
+        // We need to reimplement the logic here.
 
+        // First try a simple query, if it works we don't need to do anything
         try {
-            $pingResult = $this->connection->ping();
-        } catch (\Exception) {
-            // mysqli::ping() throws an exception if the connection has gone down ("MySQL server has gone away").
-            // We catch it as a ping failure (returns false) in order to try to reconnect.
-        }
-
-        if ($pingResult === true) {
-            return true;
-        }
-
-        try {
-            $this->connection->real_connect(
-                $this->connectionConfig['hostname'],
-                $this->connectionConfig['username'],
-                $this->connectionConfig['password'],
-                $this->currentDatabase,
-                $this->connectionConfig['port']
-            );
-
-            if ($this->currentCharset !== null) {
-                $this->connection->set_charset($this->currentCharset);
+            $result = $this->connection->query('SELECT 1');
+            if ($result !== false) {
+                return true;
             }
+        } catch (mysqli_sql_exception) { }
 
-            if ($this->currentTimezone !== null) {
-                $this->connection->query(sprintf('SET time_zone = "%s";', $this->currentTimezone));
-            }
-
-            return true;
-        } catch (\Exception) {
-            return false;
-        }
+        return $this->reconnect();
     }
 
     /**
@@ -545,5 +524,34 @@ class Driver implements DriverInterface
         }
         $this->connection->query(sprintf($query, $value));
         $this->currentTimezone = $timezone;
+    }
+
+    private function createConnection(): void
+    {
+        $this->connection = mysqli_init();
+        if ($this->connection instanceof \mysqli) {
+            $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
+        }
+    }
+
+    public function reconnect(): bool
+    {
+        try {
+            $this->createConnection();
+            $this->connected = $this->connection->real_connect($this->connectionConfig['hostname'], $this->connectionConfig['username'], $this->connectionConfig['password'], $this->currentDatabase, $this->connectionConfig['port']);
+
+            if ($this->currentCharset !== null) {
+                $this->connection->set_charset($this->currentCharset);
+            }
+
+            if ($this->currentTimezone !== null) {
+                $this->connection->query(sprintf('SET time_zone = "%s";', $this->currentTimezone));
+            }
+            $this->oldPreparedQueries = array_merge($this->preparedQueries, $this->oldPreparedQueries);
+            $this->preparedQueries = [];
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

@@ -342,35 +342,30 @@ class Result implements ResultInterface
     /**
      * Iterator
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->dataSeek(0);
         $this->iteratorOffset = -1;
         $this->next();
     }
 
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->iteratorCurrent;
     }
 
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->iteratorOffset;
     }
 
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, \PGSQL_NUM));
         $this->iteratorOffset++;
     }
 
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return $this->iteratorCurrent !== null;
     }

@@ -64,14 +64,7 @@ class Driver extends atoum
     {
 
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect =
-            function ($hostname, $username, $password, $database, $port): void {
-                $this->hostname = $hostname;
-                $this->username = $username;
-                $this->password = $password;
-                $this->database = $database;
-                $this->port     = $port;
-            };
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -83,28 +76,15 @@ class Driver extends atoum
     {
 
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect =
-            function ($hostname, $username, $password, $database, $port): void {
-                $this->hostname = $hostname;
-                $this->username = $username;
-                $this->password = $password;
-                $this->database = $database;
-                $this->port     = $port;
-            };
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
-            ->variable($mockDriver->hostname)
-                ->isIdenticalTo('hostname.test')
-            ->variable($mockDriver->username)
-                ->isIdenticalTo('user.test')
-            ->variable($mockDriver->password)
-                ->isIdenticalTo('password.test')
-            ->variable($mockDriver->database)
-                ->isIdenticalTo(null)
-            ->variable($mockDriver->port)
-                ->isIdenticalTo(1234);
+            ->mock($mockDriver)
+                ->call('real_connect')
+                    ->withArguments('hostname.test', 'user.test', 'password.test', null, 1234)
+                        ->once();
     }
 
     public function testConnectWithWrongAuthOrPortShouldRaiseDriverException()
@@ -162,23 +142,21 @@ class Driver extends atoum
     public function testSetCharset()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->set_charset = function ($charset): void {
-            $this->charset = $charset;
-        };
+        $this->calling($mockDriver)->set_charset = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->setCharset('utf8'))
-            ->variable($mockDriver->charset)
-            ->isIdenticalTo('utf8');
+            ->mock($mockDriver)
+                ->call('set_charset')
+                    ->withArguments('utf8')
+                        ->once();
     }
 
     public function testSetCharsetCallingTwiceShouldCallMysqliSetCharsetOnce()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->set_charset = function ($charset): void {
-            $this->charset = $charset;
-        };
+        $this->calling($mockDriver)->set_charset = true;
 
         $this
             ->if($driver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -208,16 +186,17 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->select_db = function ($database): void {
-            $this->database = $database;
-        };
+        $this->calling($mockDriver)->select_db = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('bouh'))
-            ->variable($mockDriver->database)
-                ->isIdenticalTo('bouh');
+            ->mock($mockDriver)
+                ->call('select_db')
+                    ->withArguments('bouh')
+                        ->once()
+        ;
     }
 
     public function testsetDatabaseWithDatabaseAlreadySetShouldDoNothing()
@@ -225,9 +204,7 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->select_db = function ($database): void {
-            $this->database = $database;
-        };
+        $this->calling($mockDriver)->select_db = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -244,15 +221,16 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
         $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->select_db = function ($database): void {
-            $this->database = $database;
-        };
+        $this->calling($mockDriver)->select_db = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->object($driver->setDatabase('bouh'))
-                ->isIdenticalTo($driver);
+            ->mock($mockDriver)
+                ->call('select_db')
+                    ->withArguments('bouh')
+                        ->once();
     }
 
     public function testsetDatabaseShouldRaiseDriverException()
@@ -261,9 +239,7 @@ class Driver extends atoum
         $mockDriver->errno = 123;
         $mockDriver->error = 'unknown database';
         $this->calling($mockDriver)->real_connect = $mockDriver;
-        $this->calling($mockDriver)->select_db = function ($database): void {
-            $this->database = $database;
-        };
+        $this->calling($mockDriver)->select_db = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -771,7 +747,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $this->calling($mockDriver)->real_connect = true;
-        $this->calling($mockDriver)->ping = true;
+        $this->calling($mockDriver)->query = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -779,7 +755,7 @@ class Driver extends atoum
             ->boolean($driver->ping())
                 ->isTrue()
             ->mock($mockDriver)
-                ->call('ping')
+                ->call('query')
                     ->once()
         ;
     }
@@ -787,8 +763,9 @@ class Driver extends atoum
     public function testPingShouldReconnect()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->query = false;
         $this->calling($mockDriver)->real_connect = true;
+        $this->function->mysqli_init = $mockDriver;
         $this->calling($mockDriver)->select_db = function ($database): void {
             $this->database = $database;
         };
@@ -820,8 +797,9 @@ class Driver extends atoum
     public function testPingShouldSetTimezone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->query = false;
         $this->calling($mockDriver)->real_connect = true;
+        $this->function->mysqli_init = $mockDriver;
         $this->calling($mockDriver)->select_db = function ($database): void {
             $this->database = $database;
         };
@@ -856,8 +834,9 @@ class Driver extends atoum
     public function testPingShouldNotSetTimezone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->query = false;
         $this->calling($mockDriver)->real_connect = true;
+        $this->function->mysqli_init = $mockDriver;
         $this->calling($mockDriver)->select_db = function ($database): void {
             $this->database = $database;
         };
@@ -875,27 +854,28 @@ class Driver extends atoum
             ->and($driver->setDatabase($database))
             ->and($driver->setTimezone(null))
             ->boolean($driver->ping())
-            ->isTrue()
+                ->isTrue()
             ->mock($mockDriver)
-            ->call('real_connect')
-            ->withArguments($hostName, $userName, $password, null, $port)
-            // 1 call for connect()
-            ->once()
-            ->call('real_connect')
-            ->withArguments($hostName, $userName, $password, $database, $port)
-            // 1 call for ping()
-            ->once()
-            ->call('query')->never();
+                ->call('real_connect')
+                    ->withArguments($hostName, $userName, $password, null, $port)
+                        // 1 call for connect()
+                        ->once()
+                ->call('real_connect')
+                    ->withArguments($hostName, $userName, $password, $database, $port)
+                        // 1 call for ping()
+                        ->once()
+            ->call('query')
+                ->withArguments('SELECT 1')
+                    ->once();
     }
 
     public function testPingShouldReconnectWithCharset()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->query = false;
         $this->calling($mockDriver)->real_connect = true;
-        $this->calling($mockDriver)->select_db = function ($database): void {
-            $this->database = $database;
-        };
+        $this->calling($mockDriver)->select_db = true;
+        $this->function->mysqli_init = $mockDriver;
         $mockDriver->error = '';
 
         $hostName = 'hostname.test';
@@ -911,19 +891,19 @@ class Driver extends atoum
             ->and($driver->setDatabase($database))
             ->and($driver->setCharset($charset))
             ->boolean($driver->ping())
-            ->isTrue()
+                ->isTrue()
             ->mock($mockDriver)
-            ->call('real_connect')
-            ->withArguments($hostName, $userName, $password, null, $port)
-            // 1 call for connect()
-            ->once()
-            ->call('real_connect')
-            ->withArguments($hostName, $userName, $password, $database, $port)
-            // 1 call for ping()
-            ->once()
+                ->call('real_connect')
+                    ->withArguments($hostName, $userName, $password, null, $port)
+                    // 1 call for connect()
+                    ->once()
+                ->call('real_connect')
+                    ->withArguments($hostName, $userName, $password, $database, $port)
+                    // 1 call for ping()
+                    ->once()
             ->call('set_charset')
-            ->withArguments($charset)
-            ->twice(); // 1 call for setChartset & 1 call for ping
+                ->withArguments($charset)
+                    ->twice(); // 1 call for setChartset & 1 call for ping
     }
 
     public function testPingShouldCallRaiseAnExceptionWhenNotConnected()
@@ -942,9 +922,12 @@ class Driver extends atoum
     public function testPingShouldReconnectIfConnectionHasGone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = function (): void {
-            throw new \Exception("MySQL server has gone away");
+        $this->calling($mockDriver)->query[1] = function ($query): bool {
+            throw new \mysqli_sql_exception("MySQL server has gone away");
         };
+        $this->calling($mockDriver)->query[2] = true;
+        $this->calling($mockDriver)->real_connect = true;
+        $this->function->mysqli_init = $mockDriver;
         $mockDriver->error = '';
 
         $hostName = 'hostname.test';
@@ -960,7 +943,7 @@ class Driver extends atoum
             ->boolean($driver->ping())
                 ->isTrue()
             ->mock($mockDriver)
-                ->call('ping')
+                ->call('query')
                 ->once()
             ->call('real_connect')
                 ->withArguments($hostName, $userName, $password, null, $port)
@@ -971,9 +954,10 @@ class Driver extends atoum
     public function testPingException()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->ping = false;
+        $this->calling($mockDriver)->query[1] = false;
+        $this->function->mysqli_init = $mockDriver;
         $this->calling($mockDriver)->real_connect[1] = true;
-        $this->calling($mockDriver)->real_connect[2]->throw = new \Exception();
+        $this->calling($mockDriver)->real_connect[2]->throw = new \mysqli_sql_exception("MySQL server has gone away");
 
         $hostName = 'hostname.test';
         $userName = 'user.test';
@@ -984,13 +968,13 @@ class Driver extends atoum
         $this
             ->given($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->and($driver->connect($hostName, $userName, $password, $port))
-            ->boolean($driver->ping())
-            ->isFalse()
+                ->boolean($driver->ping())
+                    ->isFalse()
             ->mock($mockDriver)
-            ->call('real_connect')
-            ->withArguments($hostName, $userName, $password, null, $port)
-            // 1 call for connect()
-            ->twice()
+                ->call('real_connect')
+                    ->withArguments($hostName, $userName, $password, null, $port)
+                    // 1 call for connect()
+                    ->twice()
         ;
     }
 

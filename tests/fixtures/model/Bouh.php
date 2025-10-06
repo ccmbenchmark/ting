@@ -28,6 +28,7 @@ namespace tests\fixtures\model;
 use CCMBenchmark\Ting\Entity\NotifyProperty;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
 
+#[\AllowDynamicProperties]
 class Bouh implements NotifyPropertyInterface
 {
     use NotifyProperty;
