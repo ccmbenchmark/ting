@@ -32,16 +32,15 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 class Generator
 {
     /**
-     * @param Connection            $connection
-     * @param QueryFactoryInterface $queryFactory
-     * @param string $schemaName
-     * @param string $tableName
-     * @param array                 $fields
-     *
      * @internal
      */
-    public function __construct(protected Connection $connection, protected QueryFactoryInterface $queryFactory, protected string $schemaName, protected string $tableName, protected array $fields)
-    {
+    public function __construct(
+        protected Connection $connection,
+        protected QueryFactoryInterface $queryFactory,
+        protected string $schemaName,
+        protected string $tableName,
+        protected array $fields
+    ) {
     }
 
     /**

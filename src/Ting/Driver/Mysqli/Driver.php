@@ -40,6 +40,7 @@ use CCMBenchmark\Ting\Exceptions\StatementException;
 use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
+use mysqli_sql_exception;
 
 class Driver implements DriverInterface
 {
@@ -49,7 +50,7 @@ class Driver implements DriverInterface
     protected $name;
 
     /**
-     * @var mysqli_driver|Object|null driver
+     * @var mysqli_driver|null $driver
      */
     protected $driver;
 
@@ -119,8 +120,8 @@ class Driver implements DriverInterface
     private array $connectionConfig = [];
 
     /**
-     * @param mysqli|Object|null $connection
-     * @param mysqli_driver|Object|null $driver
+     * @param mysqli|null $connection
+     * @param mysqli_driver|null $driver
      */
     public function __construct($connection = null, $driver = null)
     {
@@ -298,11 +299,11 @@ class Driver implements DriverInterface
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
         }
 
-        if ($collection === null) {
-            if ($result === true) {
-                return true;
-            }
+        if ($result === true) {
+            return true;
+        }
 
+        if ($collection === null) {
             return $result->fetch_assoc();
         }
 
@@ -324,7 +325,7 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param mysqli_result|Object $resultData
+     * @param mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return CollectionInterface
      */
@@ -368,9 +369,10 @@ class Driver implements DriverInterface
         $driverStatement = $this->connection->prepare($sql);
 
         if ($driverStatement === false) {
-            $this->ifIsError(function () use ($sql): void {
-                throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
-            });
+            throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
+//            $this->ifIsError(function () use ($sql): void {
+//
+//            });
         }
 
         if ($this->logger !== null) {
@@ -439,18 +441,12 @@ class Driver implements DriverInterface
         $this->transactionOpened = false;
     }
 
-    /**
-     * @return int
-     */
     public function getInsertedId(): int
     {
         return (int) $this->connection->insert_id;
     }
 
-    /**
-     * @return int
-     */
-    public function getAffectedRows(): int
+    public function getAffectedRows(): int|string
     {
         if ($this->connection->affected_rows < 0) {
             return 0;
@@ -516,8 +512,9 @@ class Driver implements DriverInterface
 
     private function createConnection(): void
     {
-        $this->connection = mysqli_init();
-        if ($this->connection instanceof \mysqli) {
+        $connection = mysqli_init();
+        if ($connection instanceof \mysqli) {
+            $this->connection = $connection;
             $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
         }
     }

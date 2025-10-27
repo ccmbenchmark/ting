@@ -94,10 +94,9 @@ class Statement implements StatementInterface
      * Execute the actual statement with the given parameters
      * @param array               $params
      * @param CollectionInterface $collection
-     * @return bool|mixed
      * @throws QueryException
      */
-    public function execute(array $params, ?CollectionInterface $collection = null)
+    public function execute(array $params, ?CollectionInterface $collection = null): bool|CollectionInterface
     {
         $values = [];
         foreach (array_keys($this->paramsOrder) as $key) {

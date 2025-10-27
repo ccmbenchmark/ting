@@ -39,7 +39,7 @@ interface ResultInterface extends Iterator
     public function setDatabase(string $database): static;
 
     /**
-     * @param T $result
+     * @param T|null $result
      */
     public function setResult($result): static;
 

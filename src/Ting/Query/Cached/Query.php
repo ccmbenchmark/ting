@@ -104,7 +104,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @throws Exception
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null): mixed
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
         $this->checkTtl();
 

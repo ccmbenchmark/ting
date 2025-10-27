@@ -75,8 +75,6 @@ class NotifyProperty extends atoum
         $entity->addPropertyListener($mockListener);
         $entity->addPropertyListener($mockListener2);
 
-        var_dump($entity);
-
         $expected = [
             'id' => 20,
             'firstname' => null,

@@ -1,102 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method object\:\:connect\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/ConnectionPool.php
-
-		-
-			message: '#^Call to an undefined method object\:\:setLogger\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/ConnectionPool.php
-
-		-
-			message: '#^Cannot call method setTimezone\(\) on class\-string\|object\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Ting/ConnectionPool.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$report_mode\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:getAffectedRows\(\) should return int but returns int\<0, max\>\|string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Parameter \#1 \$driverStatement of class CCMBenchmark\\Ting\\Driver\\Mysqli\\Statement constructor expects object, mysqli_stmt\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Parameter \#1 \$object of function spl_object_hash expects object, mysqli_stmt\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Parameter \#1 \$resultData of method CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:setCollectionWithResult\(\) expects object, mysqli_result\|true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connection \(mysqli\|null\) does not accept mysqli\|false\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connection \(mysqli\|null\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Call to an undefined method object\:\:fetch_fields\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$connectionName has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$database has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$fields has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$iteratorCurrent has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$iteratorOffset has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
 			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$result has no type specified\.$#'
 			identifier: missingType.property
 			count: 1
@@ -247,12 +151,6 @@ parameters:
 			path: src/Ting/MetadataRepository.php
 
 		-
-			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:first\(\) should return T but returns null\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Repository/Collection.php
-
-		-
 			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:getIterator\(\) should return Generator\<int, T, mixed, mixed\> but returns Traversable\<int, mixed\>\.$#'
 			identifier: return.type
 			count: 1
@@ -395,24 +293,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Ting/Serializer/Geometry.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Serializer\\Json\:\:serialize\(\) should return string\|null but returns string\|false\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Serializer/Json.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Serializer\\SerializerFactory\:\:get\(\) should return CCMBenchmark\\Ting\\Serializer\\SerializerInterface but returns object\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Serializer/SerializerFactory.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Serializer\\SerializerFactory\:\:\$serializers \(array\<CCMBenchmark\\Ting\\Serializer\\SerializerInterface\>\) does not accept array\<object\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Ting/Serializer/SerializerFactory.php
 
 		-
 			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, array\|object given\.$#'

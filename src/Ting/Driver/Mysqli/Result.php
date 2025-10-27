@@ -29,36 +29,30 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-    protected $connectionName  = null;
-    protected $database        = null;
-    protected $result          = null;
-    protected $fields          = [];
-    protected $iteratorOffset  = 0;
+    protected ?string $connectionName = null;
+    protected ?string $database = null;
+    protected $result = null;
+    /** @var array<int, object{name: string, orgname: string, table: string, orgtable: string, def: string, db: string, catalog: string, max_length: int, length: int, charsetnr: string, flags: int, type: int, decimals: int}> $fields  */
+    protected $fields = [];
+    protected int $iteratorOffset = 0;
+    /** @var array|null */
     protected $iteratorCurrent = null;
 
-    /**
-     * @param string $connectionName
-     * @return $this
-     */
     public function setConnectionName(string $connectionName): static
     {
-        $this->connectionName = (string) $connectionName;
+        $this->connectionName = $connectionName;
         return $this;
     }
 
-    /**
-     * @param string $database
-     * @return $this
-     */
-    public function setDatabase($database): static
+    public function setDatabase(string $database): static
     {
-        $this->database = (string) $database;
+        $this->database = $database;
         return $this;
     }
 
     /**
-     * @param object $result
-     * @return $this
+     * @param \mysqli_result $result
+     * Typehinting $result would need rewriting all related unit tests
      */
     public function setResult($result): static
     {

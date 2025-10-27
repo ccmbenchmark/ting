@@ -58,6 +58,7 @@ interface DriverInterface
     public function setCharset($charset);
 
     /**
+     * @return ($collection is CollectionInterface ? CollectionInterface : bool|array|int|string)
      * @throws QueryException
      */
     public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): mixed;
@@ -90,15 +91,9 @@ interface DriverInterface
     public function rollback(): void;
     public function commit(): void;
 
-    /**
-     * @return int
-     */
-    public function getInsertedId();
+    public function getInsertedId(): int;
 
-    /**
-     * @return int
-     */
-    public function getAffectedRows();
+    public function getAffectedRows(): int|string;
 
     public function setLogger(?DriverLoggerInterface $logger = null): static;
 

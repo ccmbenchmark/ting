@@ -79,7 +79,7 @@ class Query implements QueryInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null): mixed
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
         if (!$collection instanceof CollectionInterface) {
             $collection = $this->collectionFactory->get();
@@ -103,19 +103,17 @@ class Query implements QueryInterface
     }
 
     /**
-     * @return int
      * @throws Exception
      */
-    public function getInsertedId()
+    public function getInsertedId(): int
     {
         return $this->connection->master()->getInsertedId();
     }
 
     /**
-     * @return int
      * @throws Exception
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int|string
     {
         return $this->connection->master()->getAffectedRows();
     }

@@ -49,7 +49,7 @@ class Json implements SerializerInterface
 
         $json = json_encode($toSerialize, $jsonOptions, $jsonDepth);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if ($json === false || json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException('Could not convert value to json. Error was : ' . json_last_error_msg());
         }
 

@@ -29,20 +29,11 @@ use Iterator;
 
 class CacheResult implements ResultInterface
 {
-    /**
-     * @var string|null
-     */
-    protected $connectionName = null;
+    protected ?string $connectionName = null;
 
-    /**
-     * @var string|null
-     */
     protected ?string $database = null;
 
-    /**
-     * @var Iterator|null
-     */
-    protected $result = null;
+    protected ?Iterator $result = null;
 
 
     /**
@@ -113,7 +104,7 @@ class CacheResult implements ResultInterface
     public function key(): mixed
     {
         if ($this->result === null) {
-            return null;
+            return 0;
         }
 
         return $this->result->key();

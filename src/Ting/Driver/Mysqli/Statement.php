@@ -66,12 +66,9 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return bool|CollectionInterface
      * @throws QueryException
      */
-    public function execute(array $params, ?CollectionInterface $collection = null)
+    public function execute(array $params, ?CollectionInterface $collection = null): bool|CollectionInterface
     {
         $types = '';
         $values = [];

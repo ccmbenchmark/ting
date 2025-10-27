@@ -188,7 +188,7 @@ class Driver implements DriverInterface
      * Execute the given query on the actual connection
      * @throws QueryException
      */
-    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): mixed
+    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): string|int|bool|array|CollectionInterface|null
     {
         [$sql, $paramsOrder] = $this->convertParameters($sql);
 
@@ -526,6 +526,8 @@ class Driver implements DriverInterface
         } catch (DriverException) {
             return false;
         }
+
+        return true;
     }
 
     /**

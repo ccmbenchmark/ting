@@ -101,10 +101,7 @@ class Driver implements DriverInterface
         return (string) $field;
     }
 
-    /**
-     * @return int
-     */
-    public function getInsertedId()
+    public function getInsertedId(): int
     {
 
     }
@@ -112,7 +109,7 @@ class Driver implements DriverInterface
     /**
      * @return int
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int
     {
 
     }

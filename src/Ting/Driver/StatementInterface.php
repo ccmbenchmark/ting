@@ -41,11 +41,9 @@ interface StatementInterface
 
     /**
      * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
      * @throws QueryException
      */
-    public function execute(array $params, ?CollectionInterface $collection = null);
+    public function execute(array $params, ?CollectionInterface $collection = null): bool|CollectionInterface;
 
     /**
      * @param DriverLoggerInterface $logger

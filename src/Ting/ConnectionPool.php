@@ -26,6 +26,7 @@
 namespace CCMBenchmark\Ting;
 
 use CCMBenchmark\Ting\Driver\DriverInterface;
+use CCMBenchmark\Ting\Driver\Pgsql\Driver;
 use CCMBenchmark\Ting\Exceptions\ConnectionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
@@ -47,13 +48,10 @@ class ConnectionPool implements ConnectionPoolInterface
     protected $connectionSlaves = [];
 
     /**
-     * @var array
+     * @var array<string, DriverInterface>
      */
     protected $connections = [];
 
-    /**
-     * @param DriverLoggerInterface $logger
-     */
     public function __construct(protected ?DriverLoggerInterface $logger = null)
     {
     }
@@ -82,6 +80,7 @@ class ConnectionPool implements ConnectionPoolInterface
             throw new ConnectionException('Connection not found: ' . $name);
         }
         $config = $this->connectionConfig[$name]['master'];
+        /** @var class-string<DriverInterface> $driverClass */
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
         $charset = null;
@@ -106,6 +105,7 @@ class ConnectionPool implements ConnectionPoolInterface
         if (isset($this->connectionConfig[$name]) === false) {
             throw new ConnectionException('Connection not found: ' . $name);
         }
+        /** @var class-string<DriverInterface> $driverClass */
         $driverClass = $this->connectionConfig[$name]['namespace'] . '\\Driver';
 
         if (isset($this->connectionConfig[$name]['slaves']) === false
@@ -137,7 +137,7 @@ class ConnectionPool implements ConnectionPoolInterface
 
     /**
      * @param array $config
-     * @param string $driverClass
+     * @param class-string<DriverInterface> $driverClass
      * @param string $database
      * @param string $name connection name
      * @param string $charset
@@ -158,6 +158,7 @@ class ConnectionPool implements ConnectionPoolInterface
         $connectionKey = $driverClass::getConnectionKey($config, $database);
 
         if (isset($this->connections[$connectionKey]) === false) {
+            /** @var DriverInterface $driver */
             $driver = new $driverClass();
 
             if ($this->logger !== null) {
@@ -185,10 +186,8 @@ class ConnectionPool implements ConnectionPoolInterface
             $this->connections[$connectionKey]->setCharset($charset);
         }
 
-        if (method_exists($this->connections[$connectionKey], 'setTimezone')) {
-            $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
-            $this->connections[$connectionKey]->setTimezone($timezone);
-        }
+        $timezone = $this->databaseOptions[$database]['timezone'] ?? null;
+        $this->connections[$connectionKey]->setTimezone($timezone);
 
         return $this->connections[$connectionKey];
     }

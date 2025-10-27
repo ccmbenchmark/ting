@@ -83,11 +83,9 @@ class PreparedQuery extends Query
 
     /**
      * Prepare then execute a reading query
-     * @param CollectionInterface $collection
-     * @return CollectionInterface
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null): mixed
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
         if (!$collection instanceof CollectionInterface) {
             $collection = $this->collectionFactory->get();

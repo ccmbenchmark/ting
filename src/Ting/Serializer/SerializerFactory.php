@@ -33,7 +33,7 @@ class SerializerFactory implements SerializerFactoryInterface
     protected $serializers = [];
 
     /**
-     * @param string $serializerName
+     * @param class-string<SerializerInterface> $serializerName
      * @return SerializerInterface
      */
     public function get($serializerName)

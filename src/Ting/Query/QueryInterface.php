@@ -44,11 +44,9 @@ interface QueryInterface
     /**
      * Execute a reading query (SELECT, SHOW, etc.)
      * @param CollectionInterface<T>|null $collection
-     *
      * @return CollectionInterface<T>
-     *
      */
-    public function query(?CollectionInterface $collection = null);
+    public function query(?CollectionInterface $collection = null): CollectionInterface;
 
     /**
      * Execute a writing query (UPDATE, INSERT, etc.)
@@ -62,13 +60,7 @@ interface QueryInterface
      */
     public function setParams(array $params);
 
-    /**
-     * @return int
-     */
-    public function getInsertedId();
+    public function getInsertedId(): int;
 
-    /**
-     * @return int
-     */
-    public function getAffectedRows();
+    public function getAffectedRows(): int|string;
 }
