@@ -27,7 +27,7 @@ class BackedEnum implements SerializerInterface
     /**
      * @template T of \BackedEnum
      * @param string $serialized
-     * @param array{'enum': class-string<T>} $options
+     * @param array{'enum'?: class-string<T>} $options
      * @return T
      */
     public function unserialize($serialized, array $options = [])

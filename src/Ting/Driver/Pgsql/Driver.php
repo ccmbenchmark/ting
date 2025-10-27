@@ -545,6 +545,8 @@ class Driver implements DriverInterface
         } catch (DriverException) {
             return false;
         }
+
+        return true;
     }
 
     /**
