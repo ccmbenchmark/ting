@@ -1225,42 +1225,6 @@ parameters:
 			path: src/Ting/Query/Generator.php
 
 		-
-			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Ting/Query/Generator.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Ting/Query/Generator.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Ting/Query/Generator.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$forceMaster with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Ting/Query/Generator.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$limit with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Ting/Query/Generator.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getByCriteriaWithOrderAndLimit\(\) has parameter \$order with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Ting/Query/Generator.php
-
-		-
 			message: '#^Method CCMBenchmark\\Ting\\Query\\Generator\:\:getOneByCriteria\(\) has parameter \$collectionFactory with generic interface CCMBenchmark\\Ting\\Repository\\CollectionFactoryInterface but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1

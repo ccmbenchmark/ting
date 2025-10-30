@@ -2,6 +2,7 @@
     * BC add ping and setTimezone on DriverInterface
     * BC deleted Metadata setter & getter
     * BC deleted deprecated methods on Mysqli and Pgsql drivers
+    * BC deleted CCMBenchmark\Ting\Query\Generator::getByCriteriaWithOrderAndLimit, use CCMBenchmark\Ting\Query\Generator::getByCriteria
 
 3.12.0 (2025-04-17):
     * add __debuginfo() in NotifyInterface to reduce context when dumping an entity

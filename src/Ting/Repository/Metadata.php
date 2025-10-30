@@ -35,6 +35,7 @@ use CCMBenchmark\Ting\Exceptions\ValueException;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
+use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\Serializer;
 use CCMBenchmark\Ting\Util\PropertyAccessor;
 
@@ -555,13 +556,6 @@ class Metadata
     /**
      * Retrieve matching lines from the table, according to the criteria
      *
-     * @param array                      $criteria
-     * @param Connection                 $connection
-     * @param QueryFactoryInterface      $queryFactory
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $forceMaster
-     * @return \CCMBenchmark\Ting\Query\Query
-     *
      * @internal
      */
     public function getByCriteria(
@@ -569,8 +563,8 @@ class Metadata
         Connection $connection,
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false
-    ) {
+        bool $forceMaster = false
+    ): QueryInterface {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
             $connection,
@@ -604,7 +598,7 @@ class Metadata
         );
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
 
-        return $queryGenerator->getByCriteriaWithOrderAndLimit($criteriaColumn, $collectionFactory, $forceMaster, $orderBy, $limit);
+        return $queryGenerator->getByCriteria($criteriaColumn, $collectionFactory, $forceMaster, $orderBy, $limit);
     }
 
     /**
