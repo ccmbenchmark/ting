@@ -27,12 +27,10 @@ namespace CCMBenchmark\Ting\Entity;
 
 trait NotifyProperty
 {
-    protected $listeners = [];
+    protected array $listeners = [];
 
     /**
      * Add an observer to the current object
-     * @param PropertyListenerInterface $listener
-     * @return void
      */
     public function addPropertyListener(PropertyListenerInterface $listener): void
     {

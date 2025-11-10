@@ -39,7 +39,7 @@ class CitySecondMetadataRepository implements MetadataInitializer
      *
      * @return Metadata
      */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []): Metadata
     {
         self::$options = $options;
 

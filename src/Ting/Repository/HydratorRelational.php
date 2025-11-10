@@ -55,17 +55,11 @@ final class HydratorRelational extends Hydrator
 
     private SplDoublyLinkedList $config;
 
-    /**
-     * @var array
-     */
-    protected $referencesRelation = [];
+    protected array $referencesRelation = [];
 
     private array $resources = [];
 
-    /**
-     * @var bool
-     */
-    protected $identityMap = true;
+    protected bool $identityMap = true;
 
     public function __construct()
     {

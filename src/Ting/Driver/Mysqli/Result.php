@@ -31,12 +31,12 @@ class Result implements ResultInterface
 {
     protected ?string $connectionName = null;
     protected ?string $database = null;
+    /** @var \mysqli_result|null */
     protected $result = null;
     /** @var array<int, object{name: string, orgname: string, table: string, orgtable: string, def: string, db: string, catalog: string, max_length: int, length: int, charsetnr: string, flags: int, type: int, decimals: int}> $fields  */
-    protected $fields = [];
+    protected array $fields = [];
     protected int $iteratorOffset = 0;
-    /** @var array|null */
-    protected $iteratorCurrent = null;
+    protected ?array $iteratorCurrent = null;
 
     public function setConnectionName(string $connectionName): static
     {
@@ -148,7 +148,8 @@ class Result implements ResultInterface
         return $columns;
     }
 
-    public function getNumRows(): int
+
+    public function getNumRows(): int|string
     {
         return $this->result->num_rows;
     }

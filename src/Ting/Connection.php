@@ -47,7 +47,7 @@ class Connection
      * @throws Exception
      * @return Driver\DriverInterface
      */
-    public function master()
+    public function master(): Driver\DriverInterface
     {
         return $this->connectionPool->master($this->name, $this->database);
     }
@@ -57,7 +57,7 @@ class Connection
      * @return Driver\DriverInterface
      * @throws Exception
      */
-    public function slave()
+    public function slave(): Driver\DriverInterface
     {
         return $this->connectionPool->slave($this->name, $this->database);
     }

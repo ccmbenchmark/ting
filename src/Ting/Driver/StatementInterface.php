@@ -45,9 +45,5 @@ interface StatementInterface
      */
     public function execute(array $params, ?CollectionInterface $collection = null): bool|CollectionInterface;
 
-    /**
-     * @param DriverLoggerInterface $logger
-     * @return void
-     */
-    public function setLogger(?DriverLoggerInterface $logger = null);
+    public function setLogger(?DriverLoggerInterface $logger = null): void;
 }

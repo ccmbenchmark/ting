@@ -250,7 +250,7 @@ class MetadataRepository
      * @param array  $options
      * @return array
      */
-    protected function getOptionForRepository(string $repository, array $options)
+    protected function getOptionForRepository(string $repository, array $options): array
     {
         $repositoryOptions = isset($options['default']) === true ? $options['default'] : [];
 

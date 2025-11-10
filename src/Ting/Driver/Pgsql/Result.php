@@ -35,12 +35,13 @@ class Result implements ResultInterface
     public const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
     public const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/i';
 
-    protected $connectionName  = null;
-    protected $database        = null;
-    protected $result          = null;
-    protected $fields          = [];
-    protected $iteratorOffset  = 0;
-    protected $iteratorCurrent = null;
+    protected ?string $connectionName = null;
+    protected ?string $database = null;
+    /** @var \PgSql\Result|null */
+    protected $result = null;
+    protected array $fields = [];
+    protected int $iteratorOffset = 0;
+    protected ?array $iteratorCurrent = null;
 
     /**
      * @param string $connectionName
@@ -115,6 +116,10 @@ class Result implements ResultInterface
 
         $tokens = preg_split('/(\W)/', strtolower((string) $query), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $tokensWithCase = preg_split('/(\W)/', (string) $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+        if ($tokens === false) {
+            return;
+        }
 
         $startCapture = false;
         $columnsMatches = [];
@@ -207,7 +212,7 @@ class Result implements ResultInterface
                     continue;
                 }
 
-                if (in_array($scope, ['column', 'string', 'condition'], true)) {
+                if (in_array($scope, ['column', 'string', 'condition'], true) && isset($tokensWithCase[$index])) {
                     $column .= $tokensWithCase[$index];
                 }
 
@@ -235,7 +240,11 @@ class Result implements ResultInterface
 
             $stdClass->name = isset($match['alias']) === true ? $match['alias'] : $stdClass->orgname;
 
-            $stdClass->orgtable = $match['complex'] === false ? strtolower(pg_field_table($this->result, count($fields))) : '';
+            $table = pg_field_table($this->result, count($fields));
+            if ($table === false) {
+                $table = '';
+            }
+            $stdClass->orgtable = $match['complex'] === false ? strtolower((string) $table) : '';
 
             if ($match['table'] !== '') {
                 $stdClass->table = strtolower($match['table']);

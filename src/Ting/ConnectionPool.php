@@ -144,7 +144,7 @@ class ConnectionPool implements ConnectionPoolInterface
      * @return DriverInterface
      * @throws Exception
      */
-    protected function connect($config, $driverClass, $database, $name, $charset = null)
+    protected function connect($config, $driverClass, $database, $name, $charset = null): DriverInterface
     {
 
         if (isset($config['user']) === false) {

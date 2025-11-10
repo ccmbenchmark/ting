@@ -45,19 +45,20 @@ class Driver implements DriverInterface
         );
     }
 
-    public function connect($hostname, $username, $password, $port)
+    public function connect($hostname, $username, $password, $port): static
     {
-
+        return $this;
     }
 
-    public function close()
+    public function close(): static
     {
-
+        return $this;
     }
 
-    public function setName($name)
+    public function setName($name): static
     {
         $this->name = (string) $name;
+        return $this;
     }
 
     public function getName()
@@ -65,7 +66,7 @@ class Driver implements DriverInterface
         return $this->name;
     }
 
-    public function setCharset($charset)
+    public function setCharset($charset): void
     {
 
     }
@@ -137,7 +138,7 @@ class Driver implements DriverInterface
      */
     public function ifIsError(callable $callback): static
     {
-
+        return $this;
     }
 
     /**
@@ -145,7 +146,7 @@ class Driver implements DriverInterface
      */
     public function ifIsNotConnected(callable $callback): static
     {
-
+        return $this;
     }
 
     public function startTransaction(): void

@@ -44,7 +44,9 @@ class Statement extends atoum
         ];
         $paramsOrder = ['firstname', 'id', 'description', 'old', 'date', 'is_banned'];
 
-        $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $result = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+        $this->calling($result)->fetch_fields = [];
+        $this->calling($driverStatement)->get_result = $result;
         $driverStatement->errno = 0;
 
         $this
@@ -74,7 +76,9 @@ class Statement extends atoum
         $this->calling($driverStatement)->close = true;
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
 
-        $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $result = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+        $this->calling($result)->fetch_fields = [];
+        $this->calling($driverStatement)->get_result = $result;
         $driverStatement->errno = 0;
 
         $this
@@ -204,7 +208,9 @@ class Statement extends atoum
         $collection      = new \mock\CCMBenchmark\Ting\Repository\Collection();
         $mockLogger      = new \mock\tests\fixtures\FakeLogger\FakeDriverLogger();
 
-        $this->calling($driverStatement)->get_result = new \mock\Iterator();
+        $result = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+        $this->calling($result)->fetch_fields = [];
+        $this->calling($driverStatement)->get_result = $result;
         $driverStatement->errno = 0;
 
         $this

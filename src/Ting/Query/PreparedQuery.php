@@ -31,15 +31,9 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class PreparedQuery extends Query
 {
-    /**
-     * @var bool
-     */
-    protected $prepared = false;
+    protected bool $prepared = false;
 
-    /**
-     * @var StatementInterface
-     */
-    protected $statement = null;
+    protected ?StatementInterface $statement = null;
 
     /**
      * Prepare a reading query (SELECT, SHOW, ...)

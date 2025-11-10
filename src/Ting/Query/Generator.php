@@ -81,16 +81,12 @@ class Generator
     }
 
     /**
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $forceMaster
-     * @return QueryInterface
-     *
      * @internal
      */
     public function getAll(
         CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false
-    ) {
+        bool $forceMaster = false
+    ): QueryInterface {
         $driver = $this->getDriver($forceMaster);
 
         $fields = $this->escapeFields($this->fields, $driver);
@@ -109,18 +105,12 @@ class Generator
     /**
      * Returns a Query, allowing to fetch an object by an associative array (column => value).
      *
-     * @param array                      $primariesValue
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param bool                       $forceMaster
-     *
-     * @return Query
-     *
      * @internal
      */
     public function getOneByCriteria(
         array $primariesValue,
         CollectionFactoryInterface $collectionFactory,
-        $forceMaster = false
+        bool $forceMaster = false
     ): QueryInterface {
         $driver = $this->getDriver($forceMaster);
 
@@ -185,11 +175,9 @@ class Generator
      *
      * @param array $values associative array : columnName => value
      *
-     * @return PreparedQuery
-     *
      * @internal
      */
-    public function insert(array $values)
+    public function insert(array $values): PreparedQuery
     {
         $driver = $this->getDriver(true);
         $fields = $this->escapeFields(array_keys($values), $driver);
@@ -210,11 +198,9 @@ class Generator
      * @param array $values         associative array : columnName => value
      * @param array $primariesValue
      *
-     * @return PreparedQuery
-     *
      * @internal
      */
-    public function update(array $values, array $primariesValue)
+    public function update(array $values, array $primariesValue): PreparedQuery
     {
         $driver = $this->getDriver(true);
 
@@ -242,11 +228,9 @@ class Generator
     /**
      * @param array $primariesKeyValue
      *
-     * @return PreparedQuery
-     *
      * @internal
      */
-    public function delete(array $primariesKeyValue)
+    public function delete(array $primariesKeyValue): PreparedQuery
     {
         $driver = $this->getDriver(true);
 
@@ -326,7 +310,7 @@ class Generator
      * @param int             $limit
      * @return void
      */
-    protected function updateSQLWithOrderAndLimit(string &$sql, DriverInterface $driver, array $order = [], int $limit = 0)
+    protected function updateSQLWithOrderAndLimit(string &$sql, DriverInterface $driver, array $order = [], int $limit = 0): void
     {
         if (count($order) > 0) {
             $sql .= $this->generateOrder($order, $driver);

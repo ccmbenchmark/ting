@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$result has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
 			message: '#^Access to an undefined property object\:\:\$errno\.$#'
 			identifier: property.notFound
 			count: 1
@@ -43,88 +37,10 @@ parameters:
 			path: src/Ting/Driver/Mysqli/Statement.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Cannot access offset int\<0, max\> on list\<non\-empty\-string\>\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
 			message: '#^Offset ''table'' might not exist on array\{complex\: bool, column\: string, table\?\: string, alias\?\: non\-falsy\-string\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Parameter \#1 \$string of function strtolower expects string, int\|string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, list\<string\>\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$connectionName has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$database has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$fields has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$iteratorCurrent has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$iteratorOffset has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Result\:\:\$result has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$connection has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Statement.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$query has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Statement.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Pgsql\\Statement\:\:\$queryType has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Pgsql/Statement.php
 
 		-
 			message: '#^Trait CCMBenchmark\\Ting\\Entity\\NotifyProperty is used zero times and is not analysed\.$#'
@@ -163,120 +79,6 @@ parameters:
 			path: src/Ting/Repository/Hydrator.php
 
 		-
-			message: '#^Method CCMBenchmark\\Ting\\Repository\\Hydrator\:\:count\(\) should return int\<0, max\> but returns int\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$mapAliases has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$mapObjects has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$objectDatabase has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$objectSchema has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$references has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Hydrator\:\:\$unserializeAliases has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Hydrator.php
-
-		-
-			message: '#^Generator expects value type T, array given\.$#'
-			identifier: generator.valueType
-			count: 1
-			path: src/Ting/Repository/HydratorArray.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Repository\\HydratorArray\:\:count\(\) should return int\<0, max\> but returns int\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Repository/HydratorArray.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorArray\:\:\$metadataRepository has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/HydratorArray.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\HydratorArray\:\:\$unitOfWork has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/HydratorArray.php
-
-		-
-			message: '#^Generator expects value type T, stdClass\|T\|false given\.$#'
-			identifier: generator.valueType
-			count: 1
-			path: src/Ting/Repository/HydratorSingleObject.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$autoincrement has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$connectionName has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$databaseName has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$defaultSerializers has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$primaries has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$schemaName has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\:\:\$table has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Repository/Metadata.php
-
-		-
 			message: '#^Property CCMBenchmark\\Ting\\Repository\\Metadata\<T\>\:\:\$fields \(array\<string, array\{fieldName\: string, columnName\: string, type\: string, primary\?\: bool, autoincrement\?\: bool, serializer\?\: class\-string\<CCMBenchmark\\Ting\\Serializer\\SerializerInterface\>, serializer_options\?\: array\{serialize\?\: array\<mixed\>, unserialize\?\: array\<mixed\>\}, setter\?\: string, \.\.\.\}\>\) does not accept non\-empty\-array\<non\-empty\-array\>\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -287,12 +89,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: src/Ting/Repository/Metadata.php
-
-		-
-			message: '#^Parameter \#1 \$string of function strlen expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ting/Serializer/Geometry.php
 
 		-
 			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, array\|object given\.$#'

@@ -45,10 +45,7 @@ class Collection implements CollectionInterface, JsonSerializable
 
     protected HydratorInterface $hydrator;
 
-    /**
-     * @var bool
-     */
-    protected $fromCache = false;
+    protected bool $fromCache = false;
 
     /**
      * @param HydratorInterface<T>|null $hydrator

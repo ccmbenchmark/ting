@@ -32,14 +32,13 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Statement implements StatementInterface
 {
-    protected $connection    = null;
-    protected $queryType     = null;
-    protected $query         = null;
-
     /**
-     * @var DriverLoggerInterface|null
+     * @var \PgSql\Connection|null
      */
-    protected $logger = null;
+    protected $connection = null;
+    protected ?string $query = null;
+
+    protected ?DriverLoggerInterface $logger = null;
 
     /**
      * Statement constructor.

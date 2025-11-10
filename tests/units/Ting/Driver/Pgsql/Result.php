@@ -103,6 +103,7 @@ class Result extends atoum
     public function testSetQueryShouldNotRaiseExceptionWhenThereIsNoFromInTheQuery()
     {
         PGMock::override('pg_num_fields', 0);
+        PGMock::override('pg_field_table', 'table');
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Pgsql\Result())

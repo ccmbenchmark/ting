@@ -42,7 +42,7 @@ interface CollectionInterface extends IteratorAggregate, Countable
      * @param ResultInterface<T> $result
      * @return void
      */
-    public function set(ResultInterface $result);
+    public function set(ResultInterface $result): void;
 
     /**
      * @return T|null
@@ -53,23 +53,16 @@ interface CollectionInterface extends IteratorAggregate, Countable
      * @param bool $value
      * @return void
      */
-    public function setFromCache($value);
+    public function setFromCache($value): void;
+
+    public function isFromCache(): bool;
 
     /**
-     * @return bool
+     * @return array{connection: ?string, database: ?string, data: array}
      */
-    public function isFromCache();
+    public function toCache(): array;
 
-    /**
-     * @return array
-     */
-    public function toCache();
-
-    /**
-     * @param array $result
-     * @return void
-     */
-    public function fromCache(array $result);
+    public function fromCache(array $result): void;
 
     /**
      * @return \Generator<int, T>

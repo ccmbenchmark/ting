@@ -32,33 +32,30 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 class Query implements QueryInterface
 {
-    /**
-     * @var bool
-     */
-    protected $selectMaster = false;
+    protected bool $selectMaster = false;
 
-    /**
-     * @var array
-     */
-    protected $params = [];
+    protected array $params = [];
 
     /**
      * @param string $sql
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct(protected $sql, protected Connection $connection, protected ?CollectionFactoryInterface $collectionFactory = null)
-    {
+    public function __construct(
+        protected $sql,
+        protected Connection $connection,
+        protected ?CollectionFactoryInterface $collectionFactory = null
+    ) {
     }
 
     /**
      * Force the query to be executed on the master connection. Applicable only on a reading query.
-     * @param bool $value
-     * @return void
      */
-    public function selectMaster($value): void
+    public function selectMaster(bool $useMaster): static
     {
-        $this->selectMaster = (bool) $value;
+        $this->selectMaster = $useMaster;
+
+        return $this;
     }
 
     /**

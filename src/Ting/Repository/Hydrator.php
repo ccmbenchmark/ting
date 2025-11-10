@@ -42,39 +42,30 @@ use WeakMap;
  */
 class Hydrator implements HydratorInterface
 {
-    protected $mapAliases         = [];
-    protected $mapObjects         = [];
-    protected $objectDatabase     = [];
-    protected $objectSchema       = [];
-    protected $unserializeAliases = [];
+    protected array $mapAliases         = [];
+    protected array $mapObjects         = [];
+    protected array $objectDatabase     = [];
+    protected array $objectSchema       = [];
+    protected array $unserializeAliases = [];
     /** @var WeakMap<NotifyPropertyInterface, bool> */
     protected WeakMap $alreadyManaged;
-    protected $references         = [];
+    protected array $references         = [];
 
     /**
      * @var Metadata[]
      */
-    protected $metadataList       = [];
+    protected array $metadataList       = [];
 
     /**
      * @var ResultInterface<T>
      */
-    protected $result = null;
+    protected ?ResultInterface $result = null;
 
-    /**
-     * @var MetadataRepository
-     */
-    protected $metadataRepository = null;
+    protected ?MetadataRepository $metadataRepository = null;
 
-    /**
-     * @var UnitOfWork
-     */
-    protected $unitOfWork = null;
+    protected ?UnitOfWork $unitOfWork = null;
 
-    /**
-     * @var bool
-     */
-    protected $identityMap = false;
+    protected bool $identityMap = false;
 
     public function __construct()
     {

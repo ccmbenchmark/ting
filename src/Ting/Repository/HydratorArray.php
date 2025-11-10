@@ -37,13 +37,7 @@ use CCMBenchmark\Ting\UnitOfWork;
  */
 class HydratorArray implements HydratorInterface
 {
-    protected $metadataRepository = null;
-    protected $unitOfWork         = null;
-
-    /**
-     * @var ResultInterface
-     */
-    protected $result = null;
+    protected ?ResultInterface $result = null;
 
     /**
      * @param MetadataRepository $metadataRepository
@@ -70,7 +64,7 @@ class HydratorArray implements HydratorInterface
     }
 
     /**
-     * @return Generator<int, T>
+     * @return Generator<int, array>
      */
     public function getIterator(): Generator
     {

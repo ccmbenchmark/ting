@@ -31,7 +31,7 @@ class BackedEnum implements SerializerInterface
      * @param array{'enum'?: class-string<T>} $options
      * @return null|T
      */
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): ?\BackedEnum
     {
         if ($serialized === null) {
             return null;

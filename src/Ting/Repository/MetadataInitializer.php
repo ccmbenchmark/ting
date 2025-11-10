@@ -29,10 +29,5 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 interface MetadataInitializer
 {
-    /**
-     * @param  SerializerFactoryInterface $serializerFactory
-     * @param  array                      $options
-     * @return Metadata
-     */
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []);
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []): Metadata;
 }

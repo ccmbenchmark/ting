@@ -25,22 +25,22 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
-use CCMBenchmark\Ting\Driver\Pgsql\Driver;
-use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-use CCMBenchmark\Ting\Query\Query;
-use CCMBenchmark\Ting\Query\PreparedQuery;
 use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 use Aura\SqlQuery\QueryInterface;
+use CCMBenchmark\Ting\Driver\Pgsql\Driver;
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPool;
 use CCMBenchmark\Ting\ContainerInterface;
-use CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
+use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
+use CCMBenchmark\Ting\Driver\Mysqli;
 use CCMBenchmark\Ting\Driver\SphinxQL;
 use CCMBenchmark\Ting\Exceptions\DriverException;
 use CCMBenchmark\Ting\Exceptions\RepositoryException;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\Query\Query;
+use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\UnitOfWork;
 use Doctrine\Common\Cache\Cache;
 
@@ -110,14 +110,13 @@ abstract class Repository
      *
      * @template U
      */
-    public function getCollection(?HydratorInterface $hydrator = null)
+    public function getCollection(?HydratorInterface $hydrator = null): CollectionInterface
     {
         return $this->collectionFactory->get($hydrator);
     }
 
     /**
      * @param string $sql
-     * @return Query
      */
     public function getQuery($sql): Query
     {
@@ -126,7 +125,6 @@ abstract class Repository
 
     /**
      * @param string $sql
-     * @return PreparedQuery
      */
     public function getPreparedQuery($sql): PreparedQuery
     {
@@ -135,9 +133,8 @@ abstract class Repository
 
     /**
      * @param string $sql
-     * @return \CCMBenchmark\Ting\Query\Cached\Query
      */
-    public function getCachedQuery($sql)
+    public function getCachedQuery($sql): \CCMBenchmark\Ting\Query\Cached\Query
     {
         return $this->queryFactory->getCached(
             $sql,
@@ -149,9 +146,8 @@ abstract class Repository
 
     /**
      * @param string $sql
-     * @return \CCMBenchmark\Ting\Query\Cached\PreparedQuery
      */
-    public function getCachedPreparedQuery($sql)
+    public function getCachedPreparedQuery($sql): \CCMBenchmark\Ting\Query\Cached\PreparedQuery
     {
         return $this->queryFactory->getCachedPrepared(
             $sql,
@@ -164,10 +160,9 @@ abstract class Repository
 
     /**
      * @param string $type One of the QUERY_ constant
-     * @return QueryInterface
      * @throws DriverException
      */
-    public function getQueryBuilder($type)
+    public function getQueryBuilder(string $type): QueryInterface
     {
         $driver = $this->connectionPool->getDriverClass($this->metadata->getConnectionName());
         $driver = ltrim($driver, '\\');
@@ -224,7 +219,7 @@ abstract class Repository
      * @param bool $forceMaster
      * @return CollectionInterface<T>
      */
-    public function getAll($forceMaster = false)
+    public function getAll($forceMaster = false): CollectionInterface
     {
         $query = $this->metadata->getAll(
             $this->connection,
@@ -238,10 +233,9 @@ abstract class Repository
 
     /**
      * @param array $criteria
-     * @param bool  $forceMaster
      * @return CollectionInterface<T>
      */
-    public function getBy(array $criteria, $forceMaster = false, array $order = [], int $limit = 0)
+    public function getBy(array $criteria, bool $forceMaster = false, array $order = [], int $limit = 0): CollectionInterface
     {
         $query = $this->metadata->getByCriteriaWithOrderAndLimit(
             $criteria,
@@ -257,11 +251,9 @@ abstract class Repository
     }
 
     /**
-     * @param array $criteria
-     * @param bool  $forceMaster
      * @return T|null
      */
-    public function getOneBy(array $criteria, $forceMaster = false)
+    public function getOneBy(array $criteria, bool $forceMaster = false)
     {
         $query = $this->metadata->getOneByCriteria(
             $this->connection,
@@ -327,7 +319,6 @@ abstract class Repository
 
     /**
      * @throws NeverConnectedException when you have not been connected to your database before trying to ping it.
-     * @return bool
      */
     public function ping(): bool
     {
@@ -348,7 +339,7 @@ abstract class Repository
      *
      * @return Metadata<T>
      */
-    public function getMetadata()
+    public function getMetadata(): Metadata
     {
         return $this->metadata;
     }

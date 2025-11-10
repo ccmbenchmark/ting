@@ -26,6 +26,8 @@
 namespace CCMBenchmark\Ting\Repository;
 
 use Generator;
+use stdClass;
+
 use function reset;
 
 /**
@@ -36,7 +38,7 @@ use function reset;
 class HydratorSingleObject extends Hydrator
 {
     /**
-     * @return Generator<int, T>
+     * @return Generator<int, T|stdClass|false>
      */
     public function getIterator(): Generator
     {

@@ -50,15 +50,15 @@ interface QueryInterface
 
     /**
      * Execute a writing query (UPDATE, INSERT, etc.)
-     * @return mixed
      */
-    public function execute();
+    public function execute(): mixed;
 
     /**
      * @param array $params
-     * @return void
      */
-    public function setParams(array $params);
+    public function setParams(array $params): static;
+
+    public function selectMaster(bool $useMaster): static;
 
     public function getInsertedId(): int;
 

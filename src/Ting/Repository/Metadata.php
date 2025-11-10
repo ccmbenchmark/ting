@@ -33,8 +33,6 @@ use CCMBenchmark\Ting\Serializer\Ip;
 use CCMBenchmark\Ting\Serializer\Geometry;
 use CCMBenchmark\Ting\Serializer\Uuid;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
-use Closure;
-use CCMBenchmark\Ting\Query\Query;
 use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
@@ -46,9 +44,9 @@ use CCMBenchmark\Ting\Exceptions\ValueException;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\Serializer;
 use CCMBenchmark\Ting\Util\PropertyAccessor;
+use Closure;
 
 /**
  * @template T
@@ -66,21 +64,21 @@ use CCMBenchmark\Ting\Util\PropertyAccessor;
  */
 class Metadata
 {
-    protected $connectionName     = null;
-    protected $databaseName       = null;
+    protected ?string $connectionName     = null;
+    protected ?string $databaseName = null;
     /** @var class-string<Repository<T>>|null */
-    protected $repository         = null;
+    protected $repository = null;
     /** @var class-string<T>|null */
-    protected $entity             = null;
-    protected $table              = null;
-    protected $schemaName         = '';
+    protected ?string $entity = null;
+    protected ?string $table = null;
+    protected string $schemaName = '';
     /** @phpstan-var array<string, Field> */
-    protected $fields             = [];
+    protected array $fields = [];
     /** @phpstan-var array<string, Field> */
-    protected $fieldsByProperty   = [];
-    protected $primaries          = [];
-    protected $autoincrement      = null;
-    protected $defaultSerializers = [
+    protected array $fieldsByProperty = [];
+    protected array $primaries = [];
+    protected array|null $autoincrement = null;
+    protected array $defaultSerializers = [
         'datetime' => DateTime::class,
         'datetime_immutable' => DateTimeImmutable::class,
         'datetimezone' => DateTimeZone::class,
@@ -127,7 +125,7 @@ class Metadata
      * Retrieve the connection name
      * @return string
      */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
@@ -148,7 +146,7 @@ class Metadata
      * @return string
      *
      */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->databaseName;
     }
@@ -223,7 +221,7 @@ class Metadata
      * Get table name
      * @return string
      */
-    public function getTable()
+    public function getTable(): ?string
     {
         return $this->table;
     }
@@ -244,7 +242,7 @@ class Metadata
      * Get schema name
      * @return string
      */
-    public function getSchema()
+    public function getSchema(): ?string
     {
         return $this->schemaName;
     }
@@ -297,7 +295,7 @@ class Metadata
      *
      * @return array
      */
-    public function getPrimaries()
+    public function getPrimaries(): array
     {
         return $this->primaries;
     }
@@ -307,7 +305,7 @@ class Metadata
      *
      * @return list<Field>
      */
-    public function getFields()
+    public function getFields(): array
     {
         return array_values($this->fields);
     }
@@ -527,7 +525,7 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false
-    ) {
+    ): QueryInterface {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
             $connection,
@@ -621,7 +619,7 @@ class Metadata
         Connection $connection,
         QueryFactoryInterface $queryFactory,
         object $entity
-    ) {
+    ): PreparedQuery {
         $values = [];
 
         foreach ($this->fields as $column => $field) {
@@ -702,7 +700,7 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         array $properties,
         object $entity
-    ) {
+    ): PreparedQuery {
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,

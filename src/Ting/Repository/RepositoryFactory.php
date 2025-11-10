@@ -34,10 +34,6 @@ use CCMBenchmark\Ting\UnitOfWork;
 
 class RepositoryFactory
 {
-    /**
-     * @var Collection
-     */
-    protected $collection;
 
     /**
      * @param ConnectionPool $connectionPool
@@ -65,7 +61,7 @@ class RepositoryFactory
      * @template T of object
      * @template R of Repository<T>
      */
-    public function get($repositoryName)
+    public function get($repositoryName): object
     {
         return new $repositoryName(
             $this->connectionPool,

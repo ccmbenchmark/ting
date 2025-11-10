@@ -35,27 +35,24 @@ interface DriverInterface
      * @param string $username
      * @param string $password
      * @param int $port
-     * @return $this
      */
-    public function connect($hostname, $username, $password, $port);
+    public function connect($hostname, $username, $password, $port): static;
 
     /**
      * Close the connection to the database
-     * @return $this
      */
-    public function close();
+    public function close(): static;
 
     /**
      * @param string $name
-     * @return $this
      */
-    public function setName($name);
+    public function setName($name): static;
 
     /**
      * @param string $charset
      * @return void
      */
-    public function setCharset($charset);
+    public function setCharset($charset): void;
 
     /**
      * @return ($collection is CollectionInterface ? CollectionInterface : bool|array|int|string)

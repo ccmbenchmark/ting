@@ -113,6 +113,7 @@ class Driver extends atoum
     public function testCloseShouldReturnSelf()
     {
         $mockDriver = new \mock\Fake\Mysqli();
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -185,7 +186,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $this->calling($mockDriver)->select_db = true;
 
         $this
@@ -203,7 +204,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $this->calling($mockDriver)->select_db = true;
 
         $this
@@ -220,7 +221,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $this->calling($mockDriver)->select_db = true;
 
         $this
@@ -238,7 +239,7 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->errno = 123;
         $mockDriver->error = 'unknown database';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $this->calling($mockDriver)->select_db = true;
 
         $this
@@ -275,7 +276,7 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->errno = 123;
         $mockDriver->error = 'unknown error';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -292,7 +293,7 @@ class Driver extends atoum
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->errno = 123;
         $mockDriver->error = 'unknown error';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $this->calling($mockDriver)->prepare = false;
 
         $this
@@ -310,7 +311,7 @@ class Driver extends atoum
     {
         $driverFake          = new \mock\Fake\Mysqli();
         $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
-
+        $this->calling($driverFake)->real_connect = true;
         $this->calling($driverFake)->query = $mockMysqliResult;
 
         $this
@@ -361,6 +362,8 @@ class Driver extends atoum
         $driverFake          = new \mock\Fake\Mysqli();
         $driverFake->error   = '';
         $mockMysqliResult    = new \mock\tests\fixtures\FakeDriver\MysqliResult([]);
+        $this->calling($mockMysqliResult)->fetch_fields = [];
+        $this->calling($driverFake)->real_connect = true;
         $this->calling($driverFake)->select_db = true;
         $collection = new Collection();
         $this
@@ -530,7 +533,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $driverStatement = new \mock\Fake\DriverStatement();
         $this->calling($driverStatement)->close = true;
 
@@ -556,7 +559,7 @@ class Driver extends atoum
     {
         $mockDriver = new \mock\Fake\Mysqli();
         $mockDriver->error = '';
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $driverStatement = new \mock\Fake\DriverStatement();
         $this->calling($driverStatement)->close = true;
 
@@ -660,7 +663,7 @@ class Driver extends atoum
     public function testGetInsertedIdShouldReturnInsertedId()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $mockDriver->insert_id = 3;
 
         $this
@@ -674,7 +677,7 @@ class Driver extends atoum
     public function testGetAffectedRowsShouldReturnAffectedRows()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $mockDriver->affected_rows = 12;
 
         $this
@@ -688,7 +691,7 @@ class Driver extends atoum
     public function testGetAffectedRowsShouldReturn0OnError()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
         $mockDriver->affected_rows = -1;
 
         $this
@@ -997,7 +1000,7 @@ class Driver extends atoum
     public function testTimezone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -1012,7 +1015,7 @@ class Driver extends atoum
     public function testDefaultTimezone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
@@ -1027,7 +1030,7 @@ class Driver extends atoum
     public function testSetTimezoneThenDefaultTimezone()
     {
         $mockDriver = new \mock\Fake\Mysqli();
-        $this->calling($mockDriver)->real_connect = $mockDriver;
+        $this->calling($mockDriver)->real_connect = true;
 
 
         $this

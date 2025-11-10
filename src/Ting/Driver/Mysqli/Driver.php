@@ -44,10 +44,7 @@ use mysqli_sql_exception;
 
 class Driver implements DriverInterface
 {
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
     /**
      * @var mysqli_driver|null $driver
@@ -59,53 +56,35 @@ class Driver implements DriverInterface
      */
     protected $connection = null;
 
-    /**
-     * @var string|null
-     */
-    protected $currentDatabase = null;
+    protected ?string $currentDatabase = null;
+
+    protected ?string $currentCharset = null;
+
+    protected ?string $currentTimezone = null;
+
+    protected bool $connected = false;
+
+    protected bool $transactionOpened = false;
+
+    protected ?DriverLoggerInterface $logger = null;
 
     /**
-     * @var string|null
+     * hash of current object
      */
-    protected $currentCharset = null;
-
-    /**
-     * @var string|null
-     */
-    protected $currentTimezone = null;
-
-    /**
-     * @var bool
-     */
-    protected $connected = false;
-
-    /**
-     * @var bool
-     */
-    protected $transactionOpened = false;
-
-    /**
-     * @var DriverLoggerInterface|null
-     */
-    protected $logger = null;
-
-    /**
-     * @var string hash of current object
-     */
-    protected $objectHash = '';
+    protected string $objectHash = '';
 
     /**
      * @var array<string,StatementInterface> List of already prepared queries
      */
-    protected $preparedQueries = [];
+    protected array $preparedQueries = [];
 
     /**
      * @var array<string,StatementInterface> Old list of prepared queries, filled after a reconnect
      */
-    protected $oldPreparedQueries = [];
+    protected array $oldPreparedQueries = [];
 
     /**
-     * @var string Match parameter in SQL
+     * Match parameter in SQL
      *
      * Match : values (:name)
      * Don't match : values (\:name)
@@ -153,8 +132,6 @@ class Driver implements DriverInterface
      * @param string $password
      * @param int $port
      *
-     * @return $this
-     *
      * @throws ConnectionException
      */
     public function connect($hostname, $username, $password, $port = 3306): static
@@ -179,7 +156,6 @@ class Driver implements DriverInterface
 
     /**
      * Close the connection to the database
-     * @return $this
      */
     public function close(): static
     {

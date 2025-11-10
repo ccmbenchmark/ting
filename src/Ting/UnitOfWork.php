@@ -121,13 +121,7 @@ class UnitOfWork implements PropertyListenerInterface
         return isset($this->entitiesShouldBePersisted[$hash]);
     }
 
-    /**
-     * @param NotifyPropertyInterface $entity
-     * @param string $propertyName
-     * @param mixed $oldValue
-     * @param mixed $newValue
-     */
-    public function propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue): void
+    public function propertyChanged(NotifyPropertyInterface $entity, string $propertyName, mixed $oldValue, mixed $newValue): void
     {
         if ($oldValue === $newValue) {
             return;

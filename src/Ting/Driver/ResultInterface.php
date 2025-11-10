@@ -47,5 +47,8 @@ interface ResultInterface extends Iterator
 
     public function getDatabase(): ?string;
 
-    public function getNumRows(): int;
+    /**
+     * PgSQL will return int and Mysqli will return int or string when value is higher than PHP_INT_MAX
+     */
+    public function getNumRows(): mixed;
 }

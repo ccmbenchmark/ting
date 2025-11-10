@@ -41,15 +41,12 @@ class Statement implements StatementInterface
         'double' => 'd',
     ];
 
-    /**
-     * @var DriverLoggerInterface|null
-     */
-    protected $logger = null;
+    protected ?DriverLoggerInterface $logger = null;
 
     /**
-     * @var string spl_object_hash of current object
+     * spl_object_hash of current object
      */
-    protected $objectHash = '';
+    protected string $objectHash = '';
 
     /**
      * @param mysqli_stmt|Object $driverStatement

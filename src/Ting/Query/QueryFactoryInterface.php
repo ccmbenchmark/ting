@@ -35,9 +35,8 @@ interface QueryFactoryInterface
      * @param string $sql
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
-     * @return Query
      */
-    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null): Query;
+    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null): QueryInterface;
 
     /**
      * @param string $sql
