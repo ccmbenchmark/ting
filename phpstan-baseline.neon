@@ -1,52 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Driver\:\:\$connection \(mysqli\|null\) does not accept mysqli\|false\.$#'
-			identifier: assign.propertyType
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:getAffectedRows\(\) should return int\<0, max\> but returns int\.$#'
+			identifier: return.type
 			count: 1
-			path: src/Ting/Driver/Mysqli/Driver.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$connectionName has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$database has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$fields has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$iteratorCurrent has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$iteratorOffset has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Property CCMBenchmark\\Ting\\Driver\\Mysqli\\Result\:\:\$result has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Ting/Driver/Mysqli/Result.php
-
-		-
-			message: '#^Cannot access offset int\<0, max\> on list\<non\-empty\-string\>\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Ting/Driver/Pgsql/Result.php
+			path: src/Ting/Driver/Pgsql/Driver.php
 
 		-
 			message: '#^Offset ''table'' might not exist on array\{complex\: bool, column\: string, table\?\: string, alias\?\: non\-falsy\-string\}\.$#'

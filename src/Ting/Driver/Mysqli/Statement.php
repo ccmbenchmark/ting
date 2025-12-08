@@ -50,9 +50,6 @@ class Statement implements StatementInterface
 
     /**
      * @param mysqli_stmt $driverStatement
-     * @param array               $paramsOrder
-     * @param string              $connectionName
-     * @param string              $database
      */
     public function __construct(
         protected $driverStatement,

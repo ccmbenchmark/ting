@@ -120,10 +120,6 @@ class Result implements ResultInterface
         }
         $tokensWithCase = preg_split('/(\W)/', (string) $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
-        if ($tokens === false) {
-            return;
-        }
-
         $startCapture = false;
         $columnsMatches = [];
         $column = '';

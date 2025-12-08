@@ -149,7 +149,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * @Return int<0, max>|string the number of rows in the result set
+     * @return int<0, max>|string the number of rows in the result set
      */
     public function getNumRows(): int|string
     {
