@@ -25,6 +25,9 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use Generator;
+use stdClass;
+
 use function reset;
 
 /**
@@ -35,10 +38,9 @@ use function reset;
 class HydratorSingleObject extends Hydrator
 {
     /**
-     * @return \Generator<int, T>
+     * @return Generator<int, T|stdClass|false>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Generator
     {
         foreach ($this->result as $key => $row) {
             $data = $this->hydrateColumns($this->result->getConnectionName(), $this->result->getDatabase(), $row);

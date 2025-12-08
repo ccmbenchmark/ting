@@ -72,6 +72,7 @@ class Result extends atoum
     {
         $mockMysqliResult = new \mock\CCMBenchmark\Ting\Driver\ResultInterface();
         $mockMysqliResult->num_rows = 10;
+        $this->calling($mockMysqliResult)->fetch_fields = [];
 
         $this
             ->if($result = new \CCMBenchmark\Ting\Driver\Mysqli\Result())

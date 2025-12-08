@@ -27,14 +27,12 @@ namespace CCMBenchmark\Ting\Entity;
 
 trait NotifyProperty
 {
-    protected $listeners = [];
+    protected array $listeners = [];
 
     /**
      * Add an observer to the current object
-     * @param PropertyListenerInterface $listener
-     * @return void
      */
-    public function addPropertyListener(PropertyListenerInterface $listener)
+    public function addPropertyListener(PropertyListenerInterface $listener): void
     {
         $this->listeners[] = $listener;
     }
@@ -45,7 +43,7 @@ trait NotifyProperty
      * @param $oldValue
      * @param $newValue
      */
-    public function propertyChanged($propertyName, $oldValue, $newValue)
+    public function propertyChanged($propertyName, $oldValue, $newValue): void
     {
         if ($oldValue === $newValue) {
             return;

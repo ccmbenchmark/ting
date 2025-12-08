@@ -9,7 +9,7 @@ class BackedEnum implements SerializerInterface
     /**
      * @inheritDoc
      */
-    public function serialize($toSerialize, array $options = []): ?string
+    public function serialize($toSerialize, array $options = []): mixed
     {
         if ($toSerialize === null) {
             return null;
@@ -21,16 +21,17 @@ class BackedEnum implements SerializerInterface
             throw new RuntimeException('BackedEnumSerializer can only serialize enums');
         }
 
+        /** @var T $toSerialize */
         return $toSerialize->value;
     }
 
     /**
      * @template T of \BackedEnum
-     * @param string $serialized
-     * @param array{'enum': class-string<T>} $options
-     * @return T
+     * @param string|null $serialized
+     * @param array{'enum'?: class-string<T>} $options
+     * @return null|T
      */
-    public function unserialize($serialized, array $options = [])
+    public function unserialize($serialized, array $options = []): ?\BackedEnum
     {
         if ($serialized === null) {
             return null;

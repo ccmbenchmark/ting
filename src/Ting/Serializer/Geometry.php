@@ -92,21 +92,21 @@ final class Geometry implements SerializerInterface
         }
 
         try {
+            $bin = hex2bin(self::SRID);
+            if ($bin === false) {
+                throw new UnexpectedValueException('Cannot convert SRID to binary');
+            }
             return (new WKBReader())->read(
                 substr(
                     $serialized,
-                    strlen(
-                        hex2bin(self::SRID)
-                    )
+                    strlen($bin)
                 )
             );
         } catch (Exception $e) {
-            throw new UnexpectedValueException(
-                sprintf(
-                    'Error during Geometry conversion "%s".',
-                    $e->getMessage()
-                )
-            );
+            throw new UnexpectedValueException(sprintf(
+                'Error during Geometry conversion "%s".',
+                $e->getMessage()
+            ), $e->getCode(), $e);
         }
 
     }

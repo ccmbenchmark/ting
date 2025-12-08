@@ -35,9 +35,8 @@ interface QueryFactoryInterface
      * @param string $sql
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
-     * @return Query
      */
-    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null);
+    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null): QueryInterface;
 
     /**
      * @param string $sql
@@ -45,7 +44,7 @@ interface QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return PreparedQuery
      */
-    public function getPrepared($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null);
+    public function getPrepared($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null): PreparedQuery;
 
     /**
      * @param string $sql
@@ -59,7 +58,7 @@ interface QueryFactoryInterface
         Connection $connection,
         Cache $cache,
         ?CollectionFactoryInterface $collectionFactory = null
-    );
+    ): \CCMBenchmark\Ting\Query\Cached\Query;
 
     /**
      * @param string $sql
@@ -73,5 +72,5 @@ interface QueryFactoryInterface
         Connection $connection,
         Cache $cache,
         ?CollectionFactoryInterface $collectionFactory = null
-    );
+    ): \CCMBenchmark\Ting\Query\Cached\PreparedQuery;
 }

@@ -33,10 +33,9 @@ class SerializerFactory implements SerializerFactoryInterface
     protected $serializers = [];
 
     /**
-     * @param string $serializerName
-     * @return SerializerInterface
+     * @param class-string<SerializerInterface> $serializerName
      */
-    public function get($serializerName)
+    public function get(string $serializerName): SerializerInterface
     {
         if (isset($this->serializers[$serializerName]) === false) {
             $this->serializers[$serializerName] = new $serializerName();

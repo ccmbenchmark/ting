@@ -25,9 +25,9 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use stdClass;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\Entity\NotifyPropertyInterface;
-use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Serializer\UnserializeInterface;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -42,39 +42,30 @@ use WeakMap;
  */
 class Hydrator implements HydratorInterface
 {
-    protected $mapAliases         = [];
-    protected $mapObjects         = [];
-    protected $objectDatabase     = [];
-    protected $objectSchema       = [];
-    protected $unserializeAliases = [];
+    protected array $mapAliases         = [];
+    protected array $mapObjects         = [];
+    protected array $objectDatabase     = [];
+    protected array $objectSchema       = [];
+    protected array $unserializeAliases = [];
     /** @var WeakMap<NotifyPropertyInterface, bool> */
     protected WeakMap $alreadyManaged;
-    protected $references         = [];
+    protected array $references         = [];
 
     /**
      * @var Metadata[]
      */
-    protected $metadataList       = [];
+    protected array $metadataList       = [];
 
     /**
      * @var ResultInterface<T>
      */
-    protected $result = null;
+    protected ?ResultInterface $result = null;
 
-    /**
-     * @var MetadataRepository
-     */
-    protected $metadataRepository = null;
+    protected ?MetadataRepository $metadataRepository = null;
 
-    /**
-     * @var UnitOfWork
-     */
-    protected $unitOfWork = null;
+    protected ?UnitOfWork $unitOfWork = null;
 
-    /**
-     * @var bool
-     */
-    protected $identityMap = false;
+    protected bool $identityMap = false;
 
     public function __construct()
     {
@@ -85,7 +76,7 @@ class Hydrator implements HydratorInterface
      * @param bool $enable
      * @return void
      */
-    public function identityMap($enable)
+    public function identityMap($enable): void
     {
         $this->identityMap = (bool) $enable;
     }
@@ -94,7 +85,7 @@ class Hydrator implements HydratorInterface
      * @param MetadataRepository $metadataRepository
      * @return void
      */
-    public function setMetadataRepository(MetadataRepository $metadataRepository)
+    public function setMetadataRepository(MetadataRepository $metadataRepository): void
     {
         $this->metadataRepository = $metadataRepository;
     }
@@ -103,22 +94,21 @@ class Hydrator implements HydratorInterface
      * @param UnitOfWork $unitOfWork
      * @return void
      */
-    public function setUnitOfWork(UnitOfWork $unitOfWork)
+    public function setUnitOfWork(UnitOfWork $unitOfWork): void
     {
         $this->unitOfWork = $unitOfWork;
     }
 
-    public function setResult(ResultInterface $result)
+    public function setResult(ResultInterface $result): static
     {
         $this->result = $result;
         return $this;
     }
 
     /**
-     * @return \Generator<int, T|\stdClass>
+     * @return Generator<int, T|stdClass>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Generator
     {
         foreach ($this->result as $key => $columns) {
             yield $key => $this->hydrateColumns(
@@ -130,10 +120,9 @@ class Hydrator implements HydratorInterface
     }
 
     /**
-     * @return int
+     * @return int<0, max>
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         if ($this->result === null) {
             return 0;
@@ -148,7 +137,7 @@ class Hydrator implements HydratorInterface
      * @param array $options
      * @return $this
      */
-    public function unserializeAliasWith($alias, UnserializeInterface $unserialize, array $options = [])
+    public function unserializeAliasWith($alias, UnserializeInterface $unserialize, array $options = []): static
     {
         if (isset($this->unserializeAliases[$alias]) === false) {
             $this->unserializeAliases[$alias] = [];
@@ -166,7 +155,7 @@ class Hydrator implements HydratorInterface
      *
      * @return $this
      */
-    public function mapAliasTo($from, $to, $column)
+    public function mapAliasTo($from, $to, $column): static
     {
         if (isset($this->mapAliases[$to]) === false) {
             $this->mapAliases[$to] = [];
@@ -183,7 +172,7 @@ class Hydrator implements HydratorInterface
      *
      * @return $this
      */
-    public function mapObjectTo($from, $to, $column)
+    public function mapObjectTo($from, $to, $column): static
     {
         if (isset($this->mapObjects[$to]) === false) {
             $this->mapObjects[$to] = [];
@@ -199,7 +188,7 @@ class Hydrator implements HydratorInterface
      *
      * @return $this
      */
-    public function objectDatabaseIs($object, $database)
+    public function objectDatabaseIs($object, $database): static
     {
         $this->objectDatabase[$object] = (string) $database;
 
@@ -212,7 +201,7 @@ class Hydrator implements HydratorInterface
      *
      * @return $this
      */
-    public function objectSchemaIs($object, $schema)
+    public function objectSchemaIs($object, $schema): static
     {
         $this->objectSchema[$object] = (string) $schema;
 
@@ -224,17 +213,9 @@ class Hydrator implements HydratorInterface
      *
      * @return string
      */
-    private function extractSchemaFromColumn(array $column)
+    private function extractSchemaFromColumn(array $column): string
     {
-        $schema = '';
-        if (isset($column['schema']) === true) {
-            $schema = $column['schema'];
-        }
-
-        if (isset($this->objectSchema[$column['table']]) === true) {
-            $schema = $this->objectSchema[$column['table']];
-        }
-        return $schema;
+        return $column['schema'] ?? $this->objectSchema[$column['table']] ?? '';
     }
 
     /**
@@ -242,20 +223,20 @@ class Hydrator implements HydratorInterface
      *
      * @return bool
      */
-    private function hasVirtualObject(array $result)
+    private function hasVirtualObject(array $result): bool
     {
         return isset($result[0]);
     }
 
     /**
-     * @param \stdClass $virtualObject
+     * @param stdClass $virtualObject
      *
-     * @return \stdClass
+     * @return stdClass
      */
-    private function unserializeVirtualObjectProperty(\stdClass $virtualObject)
+    private function unserializeVirtualObjectProperty(stdClass $virtualObject): stdClass
     {
         foreach ($this->unserializeAliases as $aliasName => [$unserialize, $options]) {
-            if (isset($virtualObject->$aliasName) === true) {
+            if (isset($virtualObject->$aliasName)) {
                 $virtualObject->$aliasName = $unserialize->unserialize($virtualObject->$aliasName, $options);
             }
         }
@@ -274,9 +255,9 @@ class Hydrator implements HydratorInterface
      * @param string $database
      * @param array  $columns
      *
-     * @return array<int, T|\stdClass>
+     * @return array<int, T|stdClass>
      */
-    protected function hydrateColumns($connectionName, $database, array $columns)
+    protected function hydrateColumns(string $connectionName, $database, array $columns): array
     {
         $result        = [];
         $tmpEntities   = []; // Temporary entity when all properties are null for the moment (LEFT/RIGHT JOIN)
@@ -287,39 +268,35 @@ class Hydrator implements HydratorInterface
 
             // Bypass if an entity has already been hydrated with this column
             if (
-                \array_key_exists($column['table'], $fromReferences) === true
-                && \array_key_exists($column['table'], $this->metadataList) === true
+                \array_key_exists($column['table'], $fromReferences)
+                && \array_key_exists($column['table'], $this->metadataList)
                 && $this->metadataList[$column['table']]->hasColumn($column['orgName'])
             ) {
                 continue;
             }
 
             // We have the information table, it's not a virtual column like COUNT(*)
-            if (isset($result[$column['table']]) === false) {
-                if (isset($this->metadataList[$column['table']]) === false) {
-
-                    if (isset($this->objectDatabase[$column['table']]) === true) {
-                        $database = $this->objectDatabase[$column['table']];
-                    }
-                    
-                    $schema = $this->extractSchemaFromColumn($column);
-                    $this->metadataRepository->findMetadataForTable(
-                        $connectionName,
-                        $database,
-                        $schema,
-                        $column['orgTable'],
-
-                        // Callback if table metadata found
-                        function (Metadata $metadata) use ($column, &$result): void {
-                            $this->metadataList[$column['table']] = $metadata;
-                            $result[$column['table']]             = $metadata->createEntity();
-                            $tmpEntities[$column['table']]        = [];
-                        }
-                    );
+            if (isset($result[$column['table']]) === false && isset($this->metadataList[$column['table']]) === false) {
+                if (isset($this->objectDatabase[$column['table']])) {
+                    $database = $this->objectDatabase[$column['table']];
                 }
+                $schema = $this->extractSchemaFromColumn($column);
+                $this->metadataRepository->findMetadataForTable(
+                    $connectionName,
+                    $database,
+                    $schema,
+                    $column['orgTable'],
+
+                    // Callback if table metadata found
+                    function (Metadata $metadata) use ($column, &$result): void {
+                        $this->metadataList[$column['table']] = $metadata;
+                        $result[$column['table']]             = $metadata->createEntity();
+                        $tmpEntities[$column['table']]        = [];
+                    }
+                );
             }
 
-            if (isset($this->metadataList[$column['table']]) === true) {
+            if (isset($this->metadataList[$column['table']])) {
 
                 $id = '';
                 foreach ($this->metadataList[$column['table']]->getPrimaries() as $columnName => $primary) {
@@ -330,7 +307,7 @@ class Hydrator implements HydratorInterface
                 
                 if ($id !== '') {
                     $ref = $column['table'] . '-' . $id;
-                    if (isset($this->references[$ref]) === true) {
+                    if (isset($this->references[$ref])) {
 
                         // This entity was already created and stored into references
                         if ($this->identityMap === false) {
@@ -353,7 +330,7 @@ class Hydrator implements HydratorInterface
             }
 
             // We have a metadata defined for the column
-            if (isset($this->metadataList[$column['table']]) === true &&
+            if (isset($this->metadataList[$column['table']]) &&
                 $this->metadataList[$column['table']]->hasColumn($column['orgName']) === true
             ) {
                 // Column value is null or entity is still not marked as valid
@@ -361,7 +338,7 @@ class Hydrator implements HydratorInterface
                     $tmpEntities[$column['table']][$column['orgName']] = $result[$column['table']];
                 } else {
                     // Entity was previously marked as a temporary entity, we set all previous columns retrieved
-                    if (isset($tmpEntities[$column['table']]) === true && $tmpEntities[$column['table']] !== []) {
+                    if (isset($tmpEntities[$column['table']]) && $tmpEntities[$column['table']] !== []) {
                         foreach ($tmpEntities[$column['table']] as $entityColumn => $entity) {
                             $this->metadataList[$column['table']]->setEntityProperty(
                                 $entity,
@@ -385,7 +362,7 @@ class Hydrator implements HydratorInterface
             } else {
                 $validEntities[0] = true;
                 if (isset($result[0]) === false) {
-                    $result[0] = new \stdClass();
+                    $result[0] = new stdClass();
                 }
 
                 $result[0]->{$column['name']} = $column['value'];
@@ -420,7 +397,7 @@ class Hydrator implements HydratorInterface
                 }
             }
 
-            if (isset($this->mapAliases[$table]) === true) {
+            if (isset($this->mapAliases[$table])) {
                 foreach ($this->mapAliases[$table] as $fromAndColumn) {
                     $this->manageIfYouCan($result[0]->{$fromAndColumn[0]});
                     $entity->{$fromAndColumn[1]}($result[0]->{$fromAndColumn[0]});
@@ -428,9 +405,9 @@ class Hydrator implements HydratorInterface
                 }
             }
 
-            if (isset($this->mapObjects[$table]) === true) {
+            if (isset($this->mapObjects[$table])) {
                 foreach ($this->mapObjects[$table] as $fromAndColumn) {
-                    if (isset($result[$fromAndColumn[0]]) === true) {
+                    if (isset($result[$fromAndColumn[0]])) {
                         $this->manageIfYouCan($result[$fromAndColumn[0]]);
                         $entity->{$fromAndColumn[1]}($result[$fromAndColumn[0]]);
                         unset($result[$fromAndColumn[0]]);
@@ -441,7 +418,7 @@ class Hydrator implements HydratorInterface
             $this->manageIfYouCan($entity);
         }
 
-        if (isset($result[0]) === true && get_object_vars($result[0]) === []) {
+        if (isset($result[0]) && get_object_vars($result[0]) === []) {
             unset($result[0]);
         }
 
@@ -451,9 +428,9 @@ class Hydrator implements HydratorInterface
     /**
      * @param mixed $entity
      */
-    private function manageIfYouCan($entity)
+    private function manageIfYouCan($entity): void
     {
-        if (\is_object($entity) === true && ($entity instanceof NotifyPropertyInterface) === true && $this->alreadyManaged->offsetExists($entity) === false) {
+        if ($entity instanceof NotifyPropertyInterface && $this->alreadyManaged->offsetExists($entity) === false) {
             $this->unitOfWork->manage($entity);
             $this->alreadyManaged[$entity] = true;
         }

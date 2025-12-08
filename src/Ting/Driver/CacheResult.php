@@ -25,29 +25,22 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use Iterator;
+
 class CacheResult implements ResultInterface
 {
-    /**
-     * @var string|null
-     */
-    protected $connectionName = null;
+    protected ?string $connectionName = null;
 
-    /**
-     * @var string|null
-     */
-    protected $database = null;
+    protected ?string $database = null;
 
-    /**
-     * @var \Iterator|null
-     */
-    protected $result = null;
+    protected ?Iterator $result = null;
 
 
     /**
      * @param string $connectionName
      * @return $this
      */
-    public function setConnectionName($connectionName)
+    public function setConnectionName(string $connectionName): static
     {
         $this->connectionName = (string) $connectionName;
         return $this;
@@ -57,34 +50,28 @@ class CacheResult implements ResultInterface
      * @param string $database
      * @return $this
      */
-    public function setDatabase($database)
+    public function setDatabase(string $database): static
     {
-        $this->database = (string) $database;
+        $this->database = $database;
         return $this;
     }
 
     /**
-     * @param \Iterator $result
+     * @param Iterator $result
      * @return $this
      */
-    public function setResult($result)
+    public function setResult($result): static
     {
         $this->result = $result;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->database;
     }
@@ -117,7 +104,7 @@ class CacheResult implements ResultInterface
     public function key(): mixed
     {
         if ($this->result === null) {
-            return null;
+            return 0;
         }
 
         return $this->result->key();
@@ -145,10 +132,7 @@ class CacheResult implements ResultInterface
         return $this->result->valid();
     }
 
-    /**
-     * @return int
-     */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return $this->result !== null ? iterator_count($this->result) : 0;
     }

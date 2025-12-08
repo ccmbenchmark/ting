@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting\Driver\Pgsql;
 
+use stdClass;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
@@ -34,18 +35,19 @@ class Result implements ResultInterface
     public const PARSE_RAW_COLUMN = '/^\s*(?:"?(?P<table>[a-z_][a-z0-9_$]*)"?\.)?"?(?P<column>[a-z_][a-z0-9_$]*)"?(?:\s+as\s+"?(?P<alias>["a-z_]["a-z0-9_$]*))?"?\s*$/i';
     public const PARSE_DYNAMIC_COLUMN = '/(?<prefix>\s+(as\s+))?"?(?P<alias>[a-z_][a-z0-9_$]*)?"?\s*$/i';
 
-    protected $connectionName  = null;
-    protected $database        = null;
-    protected $result          = null;
-    protected $fields          = [];
-    protected $iteratorOffset  = 0;
-    protected $iteratorCurrent = null;
+    protected ?string $connectionName = null;
+    protected ?string $database = null;
+    /** @var \PgSql\Result|null */
+    protected $result = null;
+    protected array $fields = [];
+    protected int $iteratorOffset = 0;
+    protected ?array $iteratorCurrent = null;
 
     /**
      * @param string $connectionName
      * @return $this
      */
-    public function setConnectionName($connectionName)
+    public function setConnectionName(string $connectionName): static
     {
         $this->connectionName = (string) $connectionName;
         return $this;
@@ -55,7 +57,7 @@ class Result implements ResultInterface
      * @param string $database
      * @return $this
      */
-    public function setDatabase($database)
+    public function setDatabase($database): static
     {
         $this->database = (string) $database;
         return $this;
@@ -65,36 +67,29 @@ class Result implements ResultInterface
      * @param \PgSql\Result $result
      * @return $this
      */
-    public function setResult($result)
+    public function setResult($result): static
     {
         $this->result = $result;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->database;
     }
 
     /**
      * Analyze the given query
-     * @param $query
      * @throws QueryException
      *
      * @internal
      */
-    public function setQuery($query)
+    public function setQuery(string $query): void
     {
         $tableToAlias = [];
         $aliasToSchema = [];
@@ -103,7 +98,7 @@ class Result implements ResultInterface
         preg_match_all(
             '/(?:join|from)\s+(?:"?(?<schema>[a-z_][a-z0-9_$]+)"?.)*?"?(?<table>[a-z_][a-z0-9_$]+)"?\s*(?:as)?\s*"?(?!\b('
             . self::SQL_TABLE_SEPARATOR . ')\b)(?<alias>[a-z_][a-z0-9_$]*)?"?(\s|$)/is',
-            $query,
+            (string) $query,
             $matches,
             PREG_SET_ORDER
         );
@@ -119,8 +114,12 @@ class Result implements ResultInterface
             }
         }
 
-        $tokens = preg_split('/(\W)/', strtolower($query), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-        $tokensWithCase = preg_split('/(\W)/', $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $tokens = preg_split('/(\W)/', strtolower((string) $query), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $tokensWithCase = preg_split('/(\W)/', (string) $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+        if ($tokens === false) {
+            return;
+        }
 
         $startCapture = false;
         $columnsMatches = [];
@@ -132,11 +131,7 @@ class Result implements ResultInterface
 
         foreach ($tokens as $index => $token) {
             if ($token === '\'') {
-                if ($scope === 'string') {
-                    $scope = 'column';
-                } else {
-                    $scope = 'string';
-                }
+                $scope = $scope === 'string' ? 'column' : 'string';
             } elseif ($token === 'case' && $scope === 'column') {
                 $scope = 'condition';
                 $noAlias = true;
@@ -152,7 +147,7 @@ class Result implements ResultInterface
                 $brackets--;
             }
 
-            if ($startCapture === true) {
+            if ($startCapture) {
                 if ($brackets === 0 && ($token === ',' || $token === 'from' || $index === $totalTokens - 1)) {
                     $scope = 'column';
 
@@ -175,11 +170,11 @@ class Result implements ResultInterface
                             'column' => $matches['column']
                         ];
 
-                        if (isset($matches['table']) === true) {
+                        if (isset($matches['table'])) {
                             $columnComponent['table'] = $matches['table'];
                         }
 
-                        if (isset($matches['alias']) === true) {
+                        if (isset($matches['alias'])) {
                             $columnComponent['alias'] = $matches['alias'];
                         }
                     } else { // Match dynamic column, ie : max(table.column), table.column || table.id, ...
@@ -189,26 +184,22 @@ class Result implements ResultInterface
                         $cut = 0;
 
                         if ($noAlias === false) {
-                            if (isset($matches['prefix']) === true) {
+                            if (isset($matches['prefix'])) {
                                 $cut += \strlen($matches['prefix']);
                             }
-                            if (isset($matches['alias']) === true) {
+                            if (isset($matches['alias'])) {
                                 $cut += \strlen($matches['alias']);
                             }
                         }
 
-                        if ($cut > 0) {
-                            $matches['column'] = trim(substr($column, 0, - $cut));
-                        } else {
-                            $matches['column'] = $column;
-                        }
+                        $matches['column'] = $cut > 0 ? trim(substr($column, 0, - $cut)) : $column;
 
                         $columnComponent = [
                             'complex' => true,
                             'table' => '',
                             'column' => $matches['column']
                         ];
-                        if ($noAlias === false && isset($matches['alias']) === true) {
+                        if ($noAlias === false && isset($matches['alias'])) {
                             $columnComponent['alias'] = $matches['alias'];
                         }
                     }
@@ -221,7 +212,7 @@ class Result implements ResultInterface
                     continue;
                 }
 
-                if (in_array($scope, ['column', 'string', 'condition'], true) === true) {
+                if (in_array($scope, ['column', 'string', 'condition'], true) && isset($tokensWithCase[$index])) {
                     $column .= $tokensWithCase[$index];
                 }
 
@@ -244,20 +235,16 @@ class Result implements ResultInterface
         }
 
         foreach ($columnsMatches as $match) {
-            $stdClass = new \stdClass();
+            $stdClass = new stdClass();
             $stdClass->orgname = $match['column'];
 
-            if (isset($match['alias']) === true) {
-                $stdClass->name = $match['alias'];
-            } else {
-                $stdClass->name = $stdClass->orgname;
-            }
+            $stdClass->name = isset($match['alias']) === true ? $match['alias'] : $stdClass->orgname;
 
-            if ($match['complex'] === false) {
-                $stdClass->orgtable = strtolower(pg_field_table($this->result, count($fields)));
-            } else {
-                $stdClass->orgtable = '';
+            $table = pg_field_table($this->result, count($fields));
+            if ($table === false) {
+                $table = '';
             }
+            $stdClass->orgtable = $match['complex'] === false ? strtolower((string) $table) : '';
 
             if ($match['table'] !== '') {
                 $stdClass->table = strtolower($match['table']);
@@ -267,11 +254,7 @@ class Result implements ResultInterface
                 $stdClass->table = $stdClass->orgtable;
             }
 
-            if (isset($aliasToSchema[$stdClass->table]) === true) {
-                $stdClass->schema = $aliasToSchema[$stdClass->table];
-            } else {
-                $stdClass->schema = '';
-            }
+            $stdClass->schema = isset($aliasToSchema[$stdClass->table]) === true ? $aliasToSchema[$stdClass->table] : '';
 
             $stdClass->name     = $this->unescapeField($stdClass->name);
             $stdClass->orgname  = $this->unescapeField($stdClass->orgname);
@@ -287,20 +270,16 @@ class Result implements ResultInterface
 
     /**
      * Move the internal pointer to an arbitrary row in the result set
-     * @param int $offset
-     * @return bool
      */
-    protected function dataSeek($offset)
+    protected function dataSeek(int $offset): bool
     {
         return pg_result_seek($this->result, $offset);
     }
 
     /**
      * Format data
-     * @param $data
-     * @return array|null
      */
-    protected function format($data)
+    protected function format(array|false $data): ?array
     {
         if ($data === false) {
             return null;
@@ -321,22 +300,17 @@ class Result implements ResultInterface
         return $columns;
     }
 
-    /**
-     * @return int
-     */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return pg_num_rows($this->result);
     }
 
     /**
      * Unescape the given field name according to PGSQL Standards
-     * @param $field
-     * @return string
      */
-    protected function unescapeField($field)
+    protected function unescapeField(string $field): string
     {
-        return trim($field, '"');
+        return trim( $field, '"');
     }
 
     /**

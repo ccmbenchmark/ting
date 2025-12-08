@@ -29,70 +29,57 @@ use CCMBenchmark\Ting\Driver\ResultInterface;
 
 class Result implements ResultInterface
 {
-    protected $connectionName  = null;
-    protected $database        = null;
-    protected $result          = null;
-    protected $fields          = [];
-    protected $iteratorOffset  = 0;
-    protected $iteratorCurrent = null;
+    protected ?string $connectionName = null;
+    protected ?string $database = null;
+    /** @var \mysqli_result|null */
+    protected $result = null;
+    /** @var array<int, object{name: string, orgname: string, table: string, orgtable: string, def: string, db: string, catalog: string, max_length: int, length: int, charsetnr: string, flags: int, type: int, decimals: int}> $fields  */
+    protected array $fields = [];
+    protected int $iteratorOffset = 0;
+    protected ?array $iteratorCurrent = null;
 
-    /**
-     * @param string $connectionName
-     * @return $this
-     */
-    public function setConnectionName($connectionName)
+    public function setConnectionName(string $connectionName): static
     {
-        $this->connectionName = (string) $connectionName;
+        $this->connectionName = $connectionName;
+        return $this;
+    }
+
+    public function setDatabase(string $database): static
+    {
+        $this->database = $database;
         return $this;
     }
 
     /**
-     * @param string $database
-     * @return $this
+     * @param \mysqli_result $result
+     * Typehinting $result would need rewriting all related unit tests
      */
-    public function setDatabase($database)
-    {
-        $this->database = (string) $database;
-        return $this;
-    }
-
-    /**
-     * @param object $result
-     * @return $this
-     */
-    public function setResult($result)
+    public function setResult($result): static
     {
         $this->result = $result;
         $this->fields = $this->result->fetch_fields();
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->database;
     }
 
     /**
      * Move the internal result pointer to an arbitrary row
-     * @param $offset
-     * @return mixed
      */
-    protected function dataSeek($offset)
+    protected function dataSeek(int $offset): bool|null
     {
         if ($this->result !== null) {
             return $this->result->data_seek($offset);
         }
+        return null;
     }
 
     /**
@@ -100,9 +87,9 @@ class Result implements ResultInterface
      * @param $data
      * @return array|null
      */
-    protected function format($data)
+    protected function format(array|null|false $data): ?array
     {
-        if ($data === null) {
+        if ($data === null || $data === false) {
             return null;
         }
 
@@ -161,10 +148,8 @@ class Result implements ResultInterface
         return $columns;
     }
 
-    /**
-     * @return int
-     */
-    public function getNumRows()
+
+    public function getNumRows(): int|string
     {
         return $this->result->num_rows;
     }

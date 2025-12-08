@@ -74,9 +74,11 @@ class Query extends atoum
             $services->get('Hydrator')
         );
 
+        $collection = new Collection($services->get('Hydrator'));
+
         $this->calling($mockConnection)->slave = $mockDriver;
-        $this->calling($mockDriver)->execute = true;
-        $this->calling($mockCollectionFactory)->get = new Collection($services->get('Hydrator'));
+        $this->calling($mockDriver)->execute = $collection;
+        $this->calling($mockCollectionFactory)->get = $collection;
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\Query('SELECT', $mockConnection, $mockCollectionFactory))
@@ -106,7 +108,7 @@ class Query extends atoum
         );
 
         $this->calling($mockConnection)->master = $mockDriver;
-        $this->calling($mockDriver)->execute = true;
+        $this->calling($mockDriver)->execute = new Collection();
         $this->calling($mockCollectionFactory)->get = new Collection();
 
         $this

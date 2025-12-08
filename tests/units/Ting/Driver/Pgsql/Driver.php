@@ -236,6 +236,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setName('foo'))
             ->then($driver->setDatabase('database.test'))
             ->exception(function () use ($driver): void {
                 $driver->prepare(
@@ -256,6 +257,7 @@ class Driver extends atoum
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setName('foo'))
             ->then($driver->setDatabase('myDatabase'))
             ->then($driver->prepare(
                 'SELECT * FROM T_BOUH_BOO WHERE name = "\:bim"'
@@ -274,6 +276,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setName('foo'))
             ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
             ->then($driver->setDatabase('myDatabase'))
             ->then($driver->prepare(
@@ -536,6 +539,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setName('foo'))
             ->then($driver->setDatabase('myDatabase'))
             ->then($driver->execute('SELECT 1 FROM myTable WHERE id = :id', ['id' => 12], $mockCollection))
             ->mock($mockCollection)
@@ -646,6 +650,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setName('foo'))
             ->then($driver->setDatabase('myDatabase'))
             ->and($driver->setLogger($mockLogger))
             ->then($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
@@ -664,6 +669,7 @@ class Driver extends atoum
 
         $this
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->setName('foo'))
             ->then($driver->setDatabase('myDatabase'))
             ->then($statement = $driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))
             ->object($driver->prepare('SELECT 1 FROM myTable WHERE id = :id'))

@@ -28,8 +28,8 @@ namespace CCMBenchmark\Ting\Serializer;
 interface SerializerFactoryInterface
 {
     /**
-     * @param string $serializerName
+     * @param class-string<SerializerInterface> $serializerName
      * @return SerializerInterface
      */
-    public function get($serializerName);
+    public function get(string $serializerName): SerializerInterface;
 }

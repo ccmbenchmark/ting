@@ -35,9 +35,15 @@ class PreparedQuery extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-
+        $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(
+            $mockMysqliStatement,
+            [],
+            'connectionName',
+            'database'
+        );
         $this->calling($mockConnection)->slave = $mockDriver;
-        $this->calling($mockDriver)->prepare = true;
+        $this->calling($mockDriver)->prepare = $mockStatement;
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
@@ -57,9 +63,15 @@ class PreparedQuery extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
-
+        $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(
+            $mockMysqliStatement,
+            [],
+            'connectionName',
+            'database'
+        );
         $this->calling($mockConnection)->master = $mockDriver;
-        $this->calling($mockDriver)->prepare = true;
+        $this->calling($mockDriver)->prepare = $mockStatement;
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))
@@ -82,9 +94,17 @@ class PreparedQuery extends atoum
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'database');
+        //$mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(new \mock\mysqli_stmt($mockDriver, 'SELECT'), [], 'connectionName', 'database');
+        $mockMysqliStatement = new \mock\Fake\mysqli_stmt();
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Statement(
+            $mockMysqliStatement,
+            [],
+            'connectionName',
+            'database'
+        );
 
         $this->calling($mockConnection)->master = $mockDriver;
-        $this->calling($mockDriver)->prepare = true;
+        $this->calling($mockDriver)->prepare = $mockStatement;
 
         $this
             ->if($query = new \CCMBenchmark\Ting\Query\PreparedQuery('SELECT', $mockConnection))

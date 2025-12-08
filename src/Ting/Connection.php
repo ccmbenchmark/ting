@@ -25,34 +25,21 @@
 
 namespace CCMBenchmark\Ting;
 
+use RuntimeException;
+
 class Connection
 {
     /**
-     * @var ConnectionPoolInterface|null
-     */
-    protected $connectionPool = null;
-
-    /**
-     * @var null|string
-     */
-    protected $database = null;
-
-    /**
-     * @var null|string
-     */
-    protected $name = null;
-
-    /**
      * @internal
      */
-    public function __construct(ConnectionPoolInterface $connectionPool, string $name, string $database)
-    {
+    public function __construct(
+        protected ConnectionPoolInterface $connectionPool,
+        protected string $name,
+        protected string $database
+    ) {
         if ($name === '' || $database === '') {
-            throw new \RuntimeException('Name and databases cannot be empty on connection');
+            throw new RuntimeException('Name and databases cannot be empty on connection');
         }
-        $this->connectionPool = $connectionPool;
-        $this->name           = $name;
-        $this->database       = $database;
     }
 
     /**
@@ -60,7 +47,7 @@ class Connection
      * @throws Exception
      * @return Driver\DriverInterface
      */
-    public function master()
+    public function master(): Driver\DriverInterface
     {
         return $this->connectionPool->master($this->name, $this->database);
     }
@@ -70,38 +57,35 @@ class Connection
      * @return Driver\DriverInterface
      * @throws Exception
      */
-    public function slave()
+    public function slave(): Driver\DriverInterface
     {
         return $this->connectionPool->slave($this->name, $this->database);
     }
 
     /**
      * Start a transaction against the master connection
-     * @return mixed
      * @throws Exception
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
-        return $this->master()->startTransaction();
+        $this->master()->startTransaction();
     }
 
     /**
      * Commit the opened transaction on the master connection
-     * @return mixed
      * @throws Exception
      */
-    public function commit()
+    public function commit(): void
     {
-        return $this->master()->commit();
+        $this->master()->commit();
     }
 
     /**
      * Rollback the opened transaction on the master connection
-     * @return mixed
      * @throws Exception
      */
-    public function rollback()
+    public function rollback(): void
     {
-        return $this->master()->rollback();
+        $this->master()->rollback();
     }
 }

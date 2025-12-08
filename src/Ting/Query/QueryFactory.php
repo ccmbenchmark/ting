@@ -37,7 +37,7 @@ class QueryFactory implements QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return Query
      */
-    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
+    public function get($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null): Query
     {
         return new Query($sql, $connection, $collectionFactory);
     }
@@ -48,7 +48,7 @@ class QueryFactory implements QueryFactoryInterface
      * @param CollectionFactoryInterface $collectionFactory
      * @return PreparedQuery
      */
-    public function getPrepared($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
+    public function getPrepared($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null): PreparedQuery
     {
         return new PreparedQuery($sql, $connection, $collectionFactory);
     }
@@ -65,7 +65,7 @@ class QueryFactory implements QueryFactoryInterface
         Connection $connection,
         Cache $cache,
         ?CollectionFactoryInterface $collectionFactory = null
-    ) {
+    ): \CCMBenchmark\Ting\Query\Cached\Query {
         $cachedQuery = new Cached\Query($sql, $connection, $collectionFactory);
         $cachedQuery->setCache($cache);
         return $cachedQuery;
@@ -83,7 +83,7 @@ class QueryFactory implements QueryFactoryInterface
         Connection $connection,
         Cache $cache,
         ?CollectionFactoryInterface $collectionFactory = null
-    ) {
+    ): \CCMBenchmark\Ting\Query\Cached\PreparedQuery {
         $cachedPreparedQuery = new Cached\PreparedQuery($sql, $connection, $collectionFactory);
         $cachedPreparedQuery->setCache($cache);
         return $cachedPreparedQuery;

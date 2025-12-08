@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use Generator;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\UnitOfWork;
@@ -36,19 +37,13 @@ use CCMBenchmark\Ting\UnitOfWork;
  */
 class HydratorArray implements HydratorInterface
 {
-    protected $metadataRepository = null;
-    protected $unitOfWork         = null;
-
-    /**
-     * @var ResultInterface
-     */
-    protected $result = null;
+    protected ?ResultInterface $result = null;
 
     /**
      * @param MetadataRepository $metadataRepository
      * @return void
      */
-    public function setMetadataRepository(MetadataRepository $metadataRepository)
+    public function setMetadataRepository(MetadataRepository $metadataRepository): void
     {
         // Useless for this hydrator
     }
@@ -57,22 +52,21 @@ class HydratorArray implements HydratorInterface
      * @param UnitOfWork $unitOfWork
      * @return void
      */
-    public function setUnitOfWork(UnitOfWork $unitOfWork)
+    public function setUnitOfWork(UnitOfWork $unitOfWork): void
     {
         // Useless for this hydrator
     }
 
-    public function setResult(ResultInterface $result)
+    public function setResult(ResultInterface $result): static
     {
         $this->result = $result;
         return $this;
     }
 
     /**
-     * @return \Generator<int, T>
+     * @return Generator<int, array>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Generator
     {
         foreach ($this->result as $key => $row) {
             $data = [];
@@ -85,10 +79,9 @@ class HydratorArray implements HydratorInterface
     }
 
     /**
-     * @return int
+     * @return int<0, max>
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         if ($this->result === null) {
             return 0;

@@ -25,30 +25,25 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use mysqli_stmt;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface StatementInterface
 {
     /**
-     * @param \mysqli_stmt|Object $driverStatement
+     * @param mysqli_stmt|Object $driverStatement
      * @param array               $paramsOrder
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct($driverStatement, array $paramsOrder, $connectionName, $database);
+    public function __construct($driverStatement, array $paramsOrder, string $connectionName, string $database);
 
     /**
      * @param array $params
-     * @param CollectionInterface $collection
-     * @return mixed
      * @throws QueryException
      */
-    public function execute(array $params, ?CollectionInterface $collection = null);
+    public function execute(array $params, ?CollectionInterface $collection = null): bool|CollectionInterface;
 
-    /**
-     * @param DriverLoggerInterface $logger
-     * @return void
-     */
-    public function setLogger(?DriverLoggerInterface $logger = null);
+    public function setLogger(?DriverLoggerInterface $logger = null): void;
 }

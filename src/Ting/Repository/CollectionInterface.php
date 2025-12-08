@@ -25,21 +25,24 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use IteratorAggregate;
+use Countable;
+use Iterator;
 use CCMBenchmark\Ting\Driver\ResultInterface;
 
 /**
  * @template T
  *
- * @template-extends \IteratorAggregate<int, T>
+ * @template-extends IteratorAggregate<int, T>
  */
-interface CollectionInterface extends \IteratorAggregate, \Countable
+interface CollectionInterface extends IteratorAggregate, Countable
 {
     /**
      * Fill collection from iterator
      * @param ResultInterface<T> $result
      * @return void
      */
-    public function set(ResultInterface $result);
+    public function set(ResultInterface $result): void;
 
     /**
      * @return T|null
@@ -50,21 +53,19 @@ interface CollectionInterface extends \IteratorAggregate, \Countable
      * @param bool $value
      * @return void
      */
-    public function setFromCache($value);
+    public function setFromCache($value): void;
+
+    public function isFromCache(): bool;
 
     /**
-     * @return bool
+     * @return array{connection: ?string, database: ?string, data: array}
      */
-    public function isFromCache();
+    public function toCache(): array;
+
+    public function fromCache(array $result): void;
 
     /**
-     * @return array
+     * @return \Generator<int, T>
      */
-    public function toCache();
-
-    /**
-     * @param array $result
-     * @return void
-     */
-    public function fromCache(array $result);
+    public function getIterator(): \Generator;
 }

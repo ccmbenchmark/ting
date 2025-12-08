@@ -39,7 +39,7 @@ interface CacheLoggerInterface
      * @param $keys array|string impacted keys by the operation
      * @return void
      */
-    public function startOperation($operation, $keys);
+    public function startOperation(string $operation, array|string $keys): void;
 
     /**
      * Flag the previously operation as stopped. Useful for time logging.
@@ -47,5 +47,5 @@ interface CacheLoggerInterface
      * @param $miss boolean tells if the last get was a miss if it was a read operation
      * @return void
      */
-    public function stopOperation($miss = false);
+    public function stopOperation(bool $miss = false): void;
 }

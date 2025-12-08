@@ -8,7 +8,7 @@ use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 
 class CityWithPublicPropertiesRepository implements MetadataInitializer
 {
-    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = [])
+    public static function initMetadata(SerializerFactoryInterface $serializerFactory, array $options = []): Metadata
     {
         $metadata = new Metadata($serializerFactory);
         $metadata->setTable('T_CITY_PUB');

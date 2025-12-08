@@ -25,10 +25,12 @@
 
 namespace CCMBenchmark\Ting\Driver\Pgsql;
 
+use PgSql\Connection;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\NeverConnectedException;
 use CCMBenchmark\Ting\Driver\QueryException;
+use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Exceptions\DriverException;
 use CCMBenchmark\Ting\Exceptions\StatementException;
 use CCMBenchmark\Ting\Exceptions\TransactionException;
@@ -42,40 +44,25 @@ class Driver implements DriverInterface
      */
     protected $name;
 
-    /**
-     * @var string current database name
-     */
-    protected $database  = '';
+    protected string $database  = '';
+
+    protected ?string $currentCharset = null;
+
+    protected ?string $currentTimezone = null;
 
     /**
-     * @var string|null
-     */
-    protected $currentCharset = null;
-
-    /**
-     * @var string|null
-     */
-    protected $currentTimezone = null;
-
-    /**
-     * @var \PgSql\Connection|null
+     * @var Connection|null
      */
     protected $connection = null;
 
-    /**
-     * @var bool
-     */
-    protected $transactionOpened = false;
+    protected bool $transactionOpened = false;
+
+    protected ?DriverLoggerInterface $logger = null;
 
     /**
-     * @var DriverLoggerInterface|null
+     * spl_object_hash of current object
      */
-    protected $logger = null;
-
-    /**
-     * @var string spl_object_hash of current object
-     */
-    protected $objectHash = '';
+    protected string $objectHash = '';
 
     /**
      * @var \PgSql\Result|null
@@ -83,9 +70,9 @@ class Driver implements DriverInterface
     protected $result = null;
 
     /**
-     * @var array List of already prepared queries
+     * @var array<string, StatementInterface>
      */
-    protected $preparedQueries = [];
+    protected array $preparedQueries = [];
 
     /**
      * @var string
@@ -96,9 +83,8 @@ class Driver implements DriverInterface
      * Return a unique connection key identifier
      * @param array  $connectionConfig
      * @param string $database
-     * @return string
      */
-    public static function getConnectionKey(array $connectionConfig, $database)
+    public static function getConnectionKey(array $connectionConfig, $database): string
     {
         return
             $connectionConfig['host'] . '|' .
@@ -116,7 +102,7 @@ class Driver implements DriverInterface
      * @param int    $port
      * @return $this
      */
-    public function connect($hostname, $username, $password, $port)
+    public function connect($hostname, $username, $password, $port): static
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
         return $this;
@@ -126,7 +112,7 @@ class Driver implements DriverInterface
      * Close the connection to the database
      * @return $this
      */
-    public function close()
+    public function close(): static
     {
         if ($this->connection !== null) {
             pg_close($this->connection);
@@ -141,7 +127,7 @@ class Driver implements DriverInterface
      * @return void
      * @throws DriverException
      */
-    public function setCharset($charset)
+    public function setCharset($charset): void
     {
         if ($this->currentCharset === $charset) {
             return;
@@ -158,7 +144,7 @@ class Driver implements DriverInterface
      * @param string $name
      * @return $this
      */
-    public function setName($name)
+    public function setName($name): static
     {
         $this->name = $name;
 
@@ -171,7 +157,7 @@ class Driver implements DriverInterface
      * @return $this
      * @throws DriverException
      */
-    public function setDatabase($database)
+    public function setDatabase($database): static
     {
         if ($this->connection !== null) {
             return $this;
@@ -189,24 +175,22 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function setLogger(?DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null): static
     {
         $this->logger = $logger;
         $this->objectHash = spl_object_hash($this);
+
+        return $this;
     }
 
 
     /**
      * Execute the given query on the actual connection
-     * @param string              $originalSQL
-     * @param array               $params
-     * @param CollectionInterface $collection
-     * @return CollectionInterface|mixed|resource
      * @throws QueryException
      */
-    public function execute($originalSQL, array $params = [], ?CollectionInterface $collection = null)
+    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): string|int|bool|array|CollectionInterface|null
     {
-        [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
+        [$sql, $paramsOrder] = $this->convertParameters($sql);
 
         $this->validateConnection();
 
@@ -216,7 +200,7 @@ class Driver implements DriverInterface
         }
 
         if ($this->logger !== null) {
-            $this->logger->startQuery($originalSQL, $params, $this->objectHash, $this->database);
+            $this->logger->startQuery($sql, $params, $this->objectHash, $this->database);
         }
 
         if ($values === []) {
@@ -257,7 +241,7 @@ class Driver implements DriverInterface
      *
      * @internal
      */
-    protected function setCollectionWithResult($sql, CollectionInterface $collection)
+    protected function setCollectionWithResult($sql, CollectionInterface $collection): CollectionInterface
     {
         $result = new Result();
         $result->setConnectionName($this->name);
@@ -272,16 +256,16 @@ class Driver implements DriverInterface
     /**
      * Prepare the given query against the current connection
      * @param string $originalSQL
-     * @return Statement|\CCMBenchmark\Ting\Driver\StatementInterface
+     * @return Statement|StatementInterface
      * @throws QueryException
      */
-    public function prepare($originalSQL)
+    public function prepare(string $originalSQL): StatementInterface
     {
         [$sql, $paramsOrder] = $this->convertParameters($originalSQL);
 
         $statementName = sha1($originalSQL);
 
-        if (isset($this->preparedQueries[$statementName]) === true) {
+        if (isset($this->preparedQueries[$statementName])) {
             return $this->preparedQueries[$statementName];
         }
 
@@ -313,10 +297,9 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param $sql
      * @return array
      */
-    private function convertParameters($sql)
+    private function convertParameters(string $sql): array
     {
         $i           = 1;
         $paramsOrder = [];
@@ -329,14 +312,14 @@ class Driver implements DriverInterface
          */
         $sql = preg_replace_callback(
             '/(?<!\b)(?<![:\\\]):(#?[a-zA-Z0-9_-]+)/',
-            function ($match) use (&$i, &$paramsOrder) {
+            function (array $match) use (&$i, &$paramsOrder): string {
                 if (isset($paramsOrder[$match[1]]) === false) {
                     $paramsOrder[$match[1]] = $i++;
                 }
 
                 return '$' . $paramsOrder[$match[1]];
             },
-            $sql
+            (string) $sql
         );
 
         $sql = str_replace('\:', ':', $sql);
@@ -348,7 +331,7 @@ class Driver implements DriverInterface
      * Execute callback if an error has been encountered
      * @param callable $callback
      */
-    public function ifIsError(callable $callback)
+    public function ifIsError(callable $callback): static
     {
         $error = '';
         if ($this->connection !== null) {
@@ -358,25 +341,27 @@ class Driver implements DriverInterface
         if ($error !== '') {
             $callback();
         }
+
+        return $this;
     }
 
     /**
      * Execute the callback if the driver is not connected
      * @param callable $callback
      */
-    public function ifIsNotConnected(callable $callback)
+    public function ifIsNotConnected(callable $callback): static
     {
         if ($this->connection === null) {
             $callback();
         }
+
+        return $this;
     }
 
     /**
      * Escape the given field name according to PGSQL Standards
-     * @param $field
-     * @return string
      */
-    public function escapeField($field)
+    public function escapeField(mixed $field = null): string
     {
         return '"' . $field . '"';
     }
@@ -385,7 +370,7 @@ class Driver implements DriverInterface
      * Start a transaction against the current connection
      * @throws TransactionException
      */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         if ($this->transactionOpened === true) {
             throw new TransactionException('Cannot start another transaction');
@@ -399,7 +384,7 @@ class Driver implements DriverInterface
      * Commit the transaction against the current connection
      * @throws TransactionException
      */
-    public function commit()
+    public function commit(): void
     {
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot commit no transaction');
@@ -413,7 +398,7 @@ class Driver implements DriverInterface
      * Rollback the actual opened transaction
      * @throws TransactionException
      */
-    public function rollback()
+    public function rollback(): void
     {
         if ($this->transactionOpened === false) {
             throw new TransactionException('Cannot rollback no transaction');
@@ -427,7 +412,7 @@ class Driver implements DriverInterface
      * Return the last inserted id
      * @return int
      */
-    public function getInsertedId()
+    public function getInsertedId(): int
     {
         $this->validateConnection();
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
@@ -443,10 +428,9 @@ class Driver implements DriverInterface
 
     /**
      * Return the last inserted id for a sequence
-     * @return int
      * @throws Exception
      */
-    public function getInsertedIdForSequence($sequenceName)
+    public function getInsertedIdForSequence(string $sequenceName): int
     {
         $this->validateConnection();
         $sql = "SELECT currval('$sequenceName')";
@@ -467,7 +451,7 @@ class Driver implements DriverInterface
      * Give the number of affected rows
      * @return int
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int
     {
         if ($this->result === null) {
             return 0;
@@ -480,7 +464,7 @@ class Driver implements DriverInterface
      * @param $statement
      * @throws StatementException
      */
-    public function closeStatement($statement)
+    public function closeStatement(string $statement): void
     {
         if (isset($this->preparedQueries[$statement]) === false) {
             throw new StatementException('Cannot close non prepared statement');
@@ -498,20 +482,17 @@ class Driver implements DriverInterface
 
         $result = pg_ping($this->connection);
 
-        if ($result === true && $this->currentCharset !== null) {
+        if ($result && $this->currentCharset !== null) {
             pg_set_client_encoding($this->connection, $this->currentCharset);
         }
-        if ($result === true && $this->currentTimezone !== null) {
+        if ($result && $this->currentTimezone !== null) {
             pg_query($this->connection, sprintf('SET timezone = "%s";', $this->currentTimezone));
         }
 
         return $result;
     }
 
-    /**
-     * @param $timezone
-     */
-    public function setTimezone($timezone)
+    public function setTimezone(?string $timezone = null): void
     {
         if ($this->currentTimezone === $timezone) {
             return;
@@ -545,6 +526,8 @@ class Driver implements DriverInterface
         } catch (DriverException) {
             return false;
         }
+
+        return true;
     }
 
     /**

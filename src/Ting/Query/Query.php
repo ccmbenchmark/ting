@@ -32,52 +32,37 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 
 class Query implements QueryInterface
 {
-    /**
-     * @var Connection|null
-     */
-    protected $connection = null;
+    protected bool $selectMaster = false;
 
-    /**
-     * @var CollectionFactoryInterface|null
-     */
-    protected $collectionFactory = null;
-
-    /**
-     * @var bool
-     */
-    protected $selectMaster = false;
-
-    /**
-     * @var array
-     */
-    protected $params = [];
+    protected array $params = [];
 
     /**
      * @param string $sql
      * @param Connection $connection
      * @param CollectionFactoryInterface $collectionFactory
      */
-    public function __construct(protected $sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null)
-    {
-        $this->connection        = $connection;
-        $this->collectionFactory = $collectionFactory;
+    public function __construct(
+        protected $sql,
+        protected Connection $connection,
+        protected ?CollectionFactoryInterface $collectionFactory = null
+    ) {
     }
 
     /**
      * Force the query to be executed on the master connection. Applicable only on a reading query.
-     * @param bool $value
-     * @return void
      */
-    public function selectMaster($value)
+    public function selectMaster(bool $useMaster): static
     {
-        $this->selectMaster = (bool) $value;
+        $this->selectMaster = $useMaster;
+
+        return $this;
     }
 
     /**
      * @param array $params
      * @return $this
      */
-    public function setParams(array $params)
+    public function setParams(array $params): static
     {
         $this->params = $params;
 
@@ -91,17 +76,16 @@ class Query implements QueryInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
-        if ($collection === null) {
+        if (!$collection instanceof CollectionInterface) {
             $collection = $this->collectionFactory->get();
         }
 
         if ($this->selectMaster === true) {
             return $this->connection->master()->execute($this->sql, $this->params, $collection);
-        } else {
-            return $this->connection->slave()->execute($this->sql, $this->params, $collection);
         }
+        return $this->connection->slave()->execute($this->sql, $this->params, $collection);
     }
 
     /**
@@ -110,25 +94,23 @@ class Query implements QueryInterface
      * @throws Exception
      * @throws QueryException
      */
-    public function execute()
+    public function execute(): mixed
     {
         return $this->connection->master()->execute($this->sql, $this->params);
     }
 
     /**
-     * @return int
      * @throws Exception
      */
-    public function getInsertedId()
+    public function getInsertedId(): int
     {
         return $this->connection->master()->getInsertedId();
     }
 
     /**
-     * @return int
      * @throws Exception
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int|string
     {
         return $this->connection->master()->getAffectedRows();
     }

@@ -45,19 +45,20 @@ class Driver implements DriverInterface
         );
     }
 
-    public function connect($hostname, $username, $password, $port)
+    public function connect($hostname, $username, $password, $port): static
     {
-
+        return $this;
     }
 
-    public function close()
+    public function close(): static
     {
-
+        return $this;
     }
 
-    public function setName($name)
+    public function setName($name): static
     {
         $this->name = (string) $name;
+        return $this;
     }
 
     public function getName()
@@ -65,14 +66,14 @@ class Driver implements DriverInterface
         return $this->name;
     }
 
-    public function setCharset($charset)
+    public function setCharset($charset): void
     {
 
     }
 
-    public function setLogger(?DriverLoggerInterface $logger = null)
+    public function setLogger(DriverLoggerInterface $logger = null): static
     {
-
+        return $this;
     }
 
 
@@ -82,7 +83,7 @@ class Driver implements DriverInterface
      * @param CollectionInterface $collection
      * @return mixed
      */
-    public function execute($sql, array $params = [], ?CollectionInterface $collection = null)
+    public function execute(string $sql, array $params = [], ?CollectionInterface $collection = null): mixed
     {
 
     }
@@ -91,24 +92,17 @@ class Driver implements DriverInterface
      * @param string $sql
      * @return StatementInterface
      */
-    public function prepare($sql)
+    public function prepare($sql): StatementInterface
     {
 
     }
 
-    /**
-     * @param $field
-     * @return string
-     */
-    public function escapeField($field)
+    public function escapeField(mixed $field = null): string
     {
-        return $field;
+        return (string) $field;
     }
 
-    /**
-     * @return int
-     */
-    public function getInsertedId()
+    public function getInsertedId(): int
     {
 
     }
@@ -116,7 +110,7 @@ class Driver implements DriverInterface
     /**
      * @return int
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int
     {
 
     }
@@ -126,7 +120,7 @@ class Driver implements DriverInterface
      * @param string $database
      * @return string
      */
-    public static function getConnectionKey(array $connectionConfig, $database)
+    public static function getConnectionKey(array $connectionConfig, $database): string
     {
         return md5(var_export($connectionConfig, true) . $database);
     }
@@ -134,38 +128,38 @@ class Driver implements DriverInterface
     /**
      * @param string $database
      */
-    public function setDatabase($database)
+    public function setDatabase($database): static
     {
-
+        return $this;
     }
 
     /**
      * @param callable $callback
      */
-    public function ifIsError(callable $callback)
+    public function ifIsError(callable $callback): static
     {
-
+        return $this;
     }
 
     /**
      * @param callable $callback
      */
-    public function ifIsNotConnected(callable $callback)
+    public function ifIsNotConnected(callable $callback): static
+    {
+        return $this;
+    }
+
+    public function startTransaction(): void
     {
 
     }
 
-    public function startTransaction()
+    public function rollback(): void
     {
 
     }
 
-    public function rollback()
-    {
-
-    }
-
-    public function commit()
+    public function commit(): void
     {
     }
 
@@ -173,12 +167,12 @@ class Driver implements DriverInterface
      * @param $statement
      * @throws Exception
      */
-    public function closeStatement($statement)
+    public function closeStatement(string $statement): void
     {
 
     }
 
-    public function setTimezone($timezone)
+    public function setTimezone(?string $timezone = null): void
     {
     }
 

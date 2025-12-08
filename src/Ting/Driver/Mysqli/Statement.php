@@ -25,6 +25,8 @@
 
 namespace CCMBenchmark\Ting\Driver\Mysqli;
 
+use mysqli_stmt;
+use mysqli_result;
 use CCMBenchmark\Ting\Driver\Exception;
 use CCMBenchmark\Ting\Driver\QueryException;
 use CCMBenchmark\Ting\Driver\StatementInterface;
@@ -39,39 +41,31 @@ class Statement implements StatementInterface
         'double' => 'd',
     ];
 
-    /**
-     * @var array|null
-     */
-    protected $paramsOrder = null;
+    protected ?DriverLoggerInterface $logger = null;
 
     /**
-     * @var DriverLoggerInterface|null
+     * spl_object_hash of current object
      */
-    protected $logger = null;
+    protected string $objectHash = '';
 
     /**
-     * @var string spl_object_hash of current object
-     */
-    protected $objectHash = '';
-
-    /**
-     * @param \mysqli_stmt|Object $driverStatement
+     * @param mysqli_stmt|Object $driverStatement
      * @param array               $paramsOrder
      * @param string              $connectionName
      * @param string              $database
      */
-    public function __construct(protected $driverStatement, array $paramsOrder, protected $connectionName, protected $database)
-    {
-        $this->paramsOrder     = $paramsOrder;
+    public function __construct(
+        protected $driverStatement,
+        protected array $paramsOrder,
+        protected string $connectionName,
+        protected string $database
+    ) {
     }
 
     /**
-     * @param array $params
-     * @param CollectionInterface $collection
-     * @return bool|CollectionInterface
      * @throws QueryException
      */
-    public function execute(array $params, ?CollectionInterface $collection = null)
+    public function execute(array $params, ?CollectionInterface $collection = null): bool|CollectionInterface
     {
         $types = '';
         $values = [];
@@ -110,11 +104,7 @@ class Statement implements StatementInterface
         return true;
     }
 
-    /**
-     * @param DriverLoggerInterface $logger
-     * @return void
-     */
-    public function setLogger(?DriverLoggerInterface $logger = null)
+    public function setLogger(?DriverLoggerInterface $logger = null): void
     {
         if ($logger !== null) {
             $this->logger = $logger;
@@ -123,13 +113,13 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param \mysqli_result $resultData
+     * @param mysqli_result $resultData
      * @param CollectionInterface $collection
      * @return bool
      *
      * @internal
      */
-    public function setCollectionWithResult($resultData, CollectionInterface $collection)
+    public function setCollectionWithResult($resultData, CollectionInterface $collection): bool
     {
         $result = new Result();
         $result->setConnectionName($this->connectionName);
@@ -144,7 +134,7 @@ class Statement implements StatementInterface
      *
      * @internal
      */
-    protected function close()
+    protected function close(): void
     {
         $this->driverStatement->close();
     }

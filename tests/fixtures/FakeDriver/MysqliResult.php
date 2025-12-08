@@ -38,7 +38,7 @@ class MysqliResult implements ResultInterface
 
     }
 
-    public function setResult($iterator)
+    public function setResult($iterator): static
     {
         $this->data = iterator_to_array($iterator);
         return $this;
@@ -68,14 +68,12 @@ class MysqliResult implements ResultInterface
     }
     // @codingStandardsIgnoreEnd
 
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->offset = 0;
     }
 
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         if (isset($this->data[$this->offset]) === false) {
             return null;
@@ -84,45 +82,42 @@ class MysqliResult implements ResultInterface
         return $this->data[$this->offset];
     }
 
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->offset;
     }
 
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         ++$this->offset;
     }
 
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->data[$this->offset]);
     }
 
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return count($this->data);
     }
 
-    public function setConnectionName($connectionName)
+    public function setConnectionName($connectionName): static
+    {
+        return $this;
+    }
+
+    public function setDatabase($database): static
+    {
+        return $this;
+    }
+
+    public function getConnectionName(): ?string
     {
 
     }
 
-    public function setDatabase($database)
-    {
-
-    }
-
-    public function getConnectionName()
-    {
-
-    }
-
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
 
     }

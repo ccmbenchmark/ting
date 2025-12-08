@@ -25,6 +25,15 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use CCMBenchmark\Ting\Serializer\DateTime;
+use CCMBenchmark\Ting\Serializer\DateTimeImmutable;
+use CCMBenchmark\Ting\Serializer\DateTimeZone;
+use CCMBenchmark\Ting\Serializer\Json;
+use CCMBenchmark\Ting\Serializer\Ip;
+use CCMBenchmark\Ting\Serializer\Geometry;
+use CCMBenchmark\Ting\Serializer\Uuid;
+use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
+use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\Connection;
 use CCMBenchmark\Ting\ConnectionPoolInterface;
 use CCMBenchmark\Ting\Driver\DriverInterface;
@@ -35,9 +44,9 @@ use CCMBenchmark\Ting\Exceptions\ValueException;
 use CCMBenchmark\Ting\Query\Generator;
 use CCMBenchmark\Ting\Query\PreparedQuery;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
-use CCMBenchmark\Ting\Query\QueryInterface;
 use CCMBenchmark\Ting\Serializer;
 use CCMBenchmark\Ting\Util\PropertyAccessor;
+use Closure;
 
 /**
  * @template T
@@ -55,35 +64,35 @@ use CCMBenchmark\Ting\Util\PropertyAccessor;
  */
 class Metadata
 {
-    protected $connectionName     = null;
-    protected $databaseName       = null;
+    protected ?string $connectionName     = null;
+    protected ?string $databaseName = null;
     /** @var class-string<Repository<T>>|null */
-    protected $repository         = null;
+    protected $repository = null;
     /** @var class-string<T>|null */
-    protected $entity             = null;
-    protected $table              = null;
-    protected $schemaName         = '';
+    protected ?string $entity = null;
+    protected ?string $table = null;
+    protected string $schemaName = '';
     /** @phpstan-var array<string, Field> */
-    protected $fields             = [];
+    protected array $fields = [];
     /** @phpstan-var array<string, Field> */
-    protected $fieldsByProperty   = [];
-    protected $primaries          = [];
-    protected $autoincrement      = null;
-    protected $defaultSerializers = [
-        'datetime' => Serializer\DateTime::class,
-        'datetime_immutable' => Serializer\DateTimeImmutable::class,
-        'datetimezone' => Serializer\DateTimeZone::class,
-        'json'     => Serializer\Json::class,
-        'ip'       => Serializer\Ip::class,
-        'geometry' => Serializer\Geometry::class,
-        'uuid'     => Serializer\Uuid::class,
+    protected array $fieldsByProperty = [];
+    protected array $primaries = [];
+    protected array|null $autoincrement = null;
+    protected array $defaultSerializers = [
+        'datetime' => DateTime::class,
+        'datetime_immutable' => DateTimeImmutable::class,
+        'datetimezone' => DateTimeZone::class,
+        'json'     => Json::class,
+        'ip'       => Ip::class,
+        'geometry' => Geometry::class,
+        'uuid'     => Uuid::class,
     ];
     public PropertyAccessor $propertyAccessor;
 
     /**
      * @param Serializer\SerializerFactoryInterface $serializerFactory
      */
-    public function __construct(private Serializer\SerializerFactoryInterface $serializerFactory)
+    public function __construct(private readonly SerializerFactoryInterface $serializerFactory)
     {
         $this->propertyAccessor = new PropertyAccessor();
     }
@@ -95,7 +104,7 @@ class Metadata
      *
      * @internal
      */
-    public function getConnection(ConnectionPoolInterface $connectionPool)
+    public function getConnection(ConnectionPoolInterface $connectionPool): Connection
     {
         return new Connection($connectionPool, $this->connectionName, $this->databaseName);
     }
@@ -105,7 +114,7 @@ class Metadata
      * @param string $connectionName
      * @return $this
      */
-    public function setConnectionName($connectionName)
+    public function setConnectionName($connectionName): static
     {
         $this->connectionName = (string) $connectionName;
 
@@ -116,7 +125,7 @@ class Metadata
      * Retrieve the connection name
      * @return string
      */
-    public function getConnectionName()
+    public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
@@ -126,7 +135,7 @@ class Metadata
      * @return $this
      *
      */
-    public function setDatabase($databaseName)
+    public function setDatabase($databaseName): static
     {
         $this->databaseName = (string) $databaseName;
 
@@ -137,7 +146,7 @@ class Metadata
      * @return string
      *
      */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->databaseName;
     }
@@ -148,7 +157,7 @@ class Metadata
      * @return $this
      * @throws SyntaxException
      */
-    public function setRepository($className)
+    public function setRepository($className): static
     {
         if (($className[0] ?? '') === '\\') {
             throw new SyntaxException('Class must not start with a \\');
@@ -175,7 +184,7 @@ class Metadata
      * @return $this
      * @throws SyntaxException
      */
-    public function setEntity($className)
+    public function setEntity($className): static
     {
         if (($className[0] ?? '') === '\\') {
             throw new SyntaxException('Class must not start with a \\');
@@ -201,7 +210,7 @@ class Metadata
      * @param string $tableName
      * @return $this
      */
-    public function setTable($tableName)
+    public function setTable($tableName): static
     {
         $this->table = (string) $tableName;
 
@@ -212,7 +221,7 @@ class Metadata
      * Get table name
      * @return string
      */
-    public function getTable()
+    public function getTable(): ?string
     {
         return $this->table;
     }
@@ -222,7 +231,7 @@ class Metadata
      * @return $this
      *
      */
-    public function setSchema($schemaName)
+    public function setSchema($schemaName): static
     {
         $this->schemaName = (string) $schemaName;
 
@@ -233,7 +242,7 @@ class Metadata
      * Get schema name
      * @return string
      */
-    public function getSchema()
+    public function getSchema(): ?string
     {
         return $this->schemaName;
     }
@@ -249,7 +258,7 @@ class Metadata
      * @throws ConfigException
      * @return $this
      */
-    public function addField(array $params)
+    public function addField(array $params): static
     {
         if (isset($params['fieldName']) === false) {
             throw new ConfigException('Field configuration must have "fieldName" property');
@@ -263,18 +272,16 @@ class Metadata
             throw new ConfigException('Field configuration must have "type" property');
         }
 
-        if (isset($params['primary']) === true && $params['primary'] === true) {
+        if (isset($params['primary']) && $params['primary'] === true) {
             $this->primaries[$params['columnName']] = $params;
 
-            if (isset($params['autoincrement']) === true && $params['autoincrement'] === true) {
+            if (isset($params['autoincrement']) && $params['autoincrement'] === true) {
                 $this->autoincrement = $params;
             }
         }
 
-        if (isset($params['serializer']) === false) {
-            if (isset($this->defaultSerializers[$params['type']]) === true) {
-                $params['serializer'] = $this->defaultSerializers[$params['type']];
-            }
+        if (isset($params['serializer']) === false && isset($this->defaultSerializers[$params['type']])) {
+            $params['serializer'] = $this->defaultSerializers[$params['type']];
         }
 
         $this->fieldsByProperty[$params['fieldName']] = $params;
@@ -288,7 +295,7 @@ class Metadata
      *
      * @return array
      */
-    public function getPrimaries()
+    public function getPrimaries(): array
     {
         return $this->primaries;
     }
@@ -298,7 +305,7 @@ class Metadata
      *
      * @return list<Field>
      */
-    public function getFields()
+    public function getFields(): array
     {
         return array_values($this->fields);
     }
@@ -308,12 +315,12 @@ class Metadata
      * @param string   $connectionName
      * @param string   $database
      * @param string   $table
-     * @param \Closure $callback
+     * @param Closure $callback
      * @return bool
      *
      * @internal
      */
-    public function ifTableKnown($connectionName, $database, $table, \Closure $callback)
+    public function ifTableKnown($connectionName, $database, $table, Closure $callback): bool
     {
         if ($this->table === $table
             && $this->connectionName === $connectionName && $this->databaseName === $database
@@ -327,12 +334,10 @@ class Metadata
 
     /**
      * Returns true if the column is present in this metadata
-     * @param $column
-     * @return bool
      *
      * @internal
      */
-    public function hasColumn($column)
+    public function hasColumn(string $column): bool
     {
         return isset($this->fields[$column]);
     }
@@ -350,20 +355,16 @@ class Metadata
 
     /**
      * Set the provided value to autoincrement if applicable
-     * @param object          $entity
-     * @param DriverInterface $driver
-     * @return $this|bool
-     *
      * @internal
      */
-    public function setEntityPropertyForAutoIncrement($entity, DriverInterface $driver)
+    public function setEntityPropertyForAutoIncrement(object $entity, DriverInterface $driver): Metadata|false
     {
         if ($this->autoincrement === null) {
             return false;
         }
 
-        if (method_exists($driver, 'getInsertedIdForSequence') === true
-            && isset($this->autoincrement['sequenceName']) === true
+        if (method_exists($driver, 'getInsertedIdForSequence')
+            && isset($this->autoincrement['sequenceName'])
         ) {
             $insertId = $driver->getInsertedIdForSequence($this->autoincrement['sequenceName']);
         } else {
@@ -376,18 +377,15 @@ class Metadata
 
     /**
      * Set a property to the provided value
-     * @param $entity
-     * @param $column
-     * @param $value
      *
      * @internal
      */
-    public function setEntityProperty($entity, $column, $value)
+    public function setEntityProperty(object $entity, string $column, mixed $value): void
     {
-        if (isset($this->fields[$column]['serializer']) === true) {
+        if (isset($this->fields[$column]['serializer'])) {
             $options = [];
 
-            if (isset($this->fields[$column]['serializer_options']['unserialize']) === true) {
+            if (isset($this->fields[$column]['serializer_options']['unserialize'])) {
                 $options = $this->fields[$column]['serializer_options']['unserialize'];
             }
             $value = $this->serializerFactory->get($this->fields[$column]['serializer'])->unserialize($value, $options);
@@ -415,14 +413,14 @@ class Metadata
      * @return mixed
      *
      */
-    protected function getEntityProperty($entity, $field)
+    protected function getEntityProperty(object $entity, $field): mixed
     {
         $value = $this->propertyAccessor->getValue($entity, $field['fieldName'], $field['getter'] ?? null);
 
-        if (isset($field['serializer']) === true) {
+        if (isset($field['serializer'])) {
             $options = [];
 
-            if (isset($field['serializer_options']['serialize']) === true) {
+            if (isset($field['serializer_options']['serialize'])) {
                 $options = $field['serializer_options']['serialize'];
             }
             $value = $this->serializerFactory->get($field['serializer'])->serialize($value, $options);
@@ -431,7 +429,7 @@ class Metadata
         return $value;
     }
     
-    public function getEntityPropertyByFieldName($entity, $fieldName)
+    public function getEntityPropertyByFieldName(object $entity, string $fieldName): mixed
     {
         $field = $this->fieldsByProperty[$fieldName];
         return $this->getEntityProperty($entity, $field);
@@ -440,22 +438,15 @@ class Metadata
     /**
      * Return a Query to get one object by it's primaries
      *
-     * @param Connection $connection
-     * @param QueryFactoryInterface $queryFactory
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param $primariesKeyValue
-     * @param $forceMaster boolean
-     * @return \CCMBenchmark\Ting\Query\Query
-     *
      * @internal
      */
     public function getByPrimaries(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
-        $primariesKeyValue,
-        $forceMaster = false
-    ) {
+        mixed $primariesKeyValue,
+        bool $forceMaster = false
+    ): QueryInterface {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
             $connection,
@@ -474,13 +465,7 @@ class Metadata
     /**
      * Return a Query to get one object by an associative array of criterias
      *
-     * @param Connection $connection
-     * @param QueryFactoryInterface $queryFactory
-     * @param CollectionFactoryInterface $collectionFactory
-     * @param $criteria array
-     * @param $forceMaster boolean
-     * @return \CCMBenchmark\Ting\Query\Query
-     * @throws Exception
+     * @return QueryInterface<T>
      *
      * @internal
      */
@@ -489,8 +474,8 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
         array $criteria,
-        $forceMaster = false
-    ) {
+        bool $forceMaster = false
+    ): QueryInterface {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
             $connection,
@@ -510,7 +495,7 @@ class Metadata
      * @return array
      * @throws ValueException
      */
-    protected function getColumnsFromCriteria(array $criteria)
+    protected function getColumnsFromCriteria(array $criteria): array
     {
         $criteriaColumn = [];
         foreach ($criteria as $property => $value) {
@@ -531,7 +516,7 @@ class Metadata
      * @param QueryFactoryInterface      $queryFactory
      * @param CollectionFactoryInterface $collectionFactory
      * @param bool                       $forceMaster
-     * @return \CCMBenchmark\Ting\Query\QueryInterface
+     * @return QueryInterface
      *
      * @internal
      */
@@ -540,7 +525,7 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
         $forceMaster = false
-    ) {
+    ): QueryInterface {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
             $connection,
@@ -587,7 +572,7 @@ class Metadata
         QueryFactoryInterface $queryFactory,
         CollectionFactoryInterface $collectionFactory,
         bool $forceMaster = false
-    ) {
+    ): QueryInterface {
         $fields = array_keys($this->fields);
         $queryGenerator = new Generator(
             $connection,
@@ -606,7 +591,7 @@ class Metadata
      * @return array
      * @throws Exception
      */
-    protected function getPrimariesKeyValuesAsArray($originalValue)
+    protected function getPrimariesKeyValuesAsArray(mixed $originalValue): array
     {
         if (is_array($originalValue) === false) {
             $primariesKeyValue = [];
@@ -614,12 +599,10 @@ class Metadata
                 $columnName = array_key_first($this->primaries);
                 $primariesKeyValue[$columnName] = $originalValue;
                 return $primariesKeyValue;
-            } else {
-                throw new \CCMBenchmark\Ting\Exception('Incorrect format for primaries');
             }
-        } else {
-            return $originalValue;
+            throw new Exception('Incorrect format for primaries');
         }
+        return $originalValue;
     }
 
     /**
@@ -635,8 +618,8 @@ class Metadata
     public function generateQueryForInsert(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
-        $entity
-    ) {
+        object $entity
+    ): PreparedQuery {
         $values = [];
 
         foreach ($this->fields as $column => $field) {
@@ -666,20 +649,16 @@ class Metadata
     /**
      * Return a query to update a row in database
      *
-     * @param Connection            $connection
-     * @param QueryFactoryInterface $queryFactory
-     * @param                       $entity
-     * @param                       $properties
-     * @return PreparedQuery
+     * @param $array<string, mixed> $properties
      *
      * @internal
      */
     public function generateQueryForUpdate(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
-        $entity,
-        $properties
-    ) {
+        object $entity,
+        array $properties
+    ): PreparedQuery {
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
@@ -719,9 +698,9 @@ class Metadata
     public function generateQueryForDelete(
         Connection $connection,
         QueryFactoryInterface $queryFactory,
-        $properties,
-        $entity
-    ) {
+        array $properties,
+        object $entity
+    ): PreparedQuery {
         $queryGenerator = new Generator(
             $connection,
             $queryFactory,
@@ -736,17 +715,16 @@ class Metadata
     }
 
     /**
-     * @param $properties
-     * @param $entity
+     * @param array<string, mixed> $properties
      * @return array
      */
-    protected function getPrimariesKeyValuesByProperties($properties, $entity)
+    protected function getPrimariesKeyValuesByProperties(array $properties, object $entity): array
     {
         $primariesKeyValue = [];
         foreach ($this->primaries as $key => $primary) {
             $fieldName = $this->fields[$key]['fieldName'];
             // Key value has been updated : we need the old one
-            if (isset($properties[$fieldName]) === true) {
+            if (isset($properties[$fieldName])) {
                 $primariesKeyValue[$key] = $properties[$fieldName];
             } else {
                 // No update, get the actual

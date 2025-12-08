@@ -2,6 +2,8 @@
 
 namespace CCMBenchmark\Ting\Serializer;
 
+use InvalidArgumentException;
+
 class Uuid implements SerializerInterface
 {
     public function serialize(mixed $toSerialize, array $options = []): ?string
@@ -28,7 +30,7 @@ class Uuid implements SerializerInterface
         }
         try {
             return \Symfony\Component\Uid\Uuid::fromString($serialized);
-        } catch (\InvalidArgumentException) {
+        } catch (InvalidArgumentException) {
             throw new RuntimeException('Cannot convert ' . $serialized . ' to UUID.');
         }
     }

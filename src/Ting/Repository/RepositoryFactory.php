@@ -34,45 +34,6 @@ use CCMBenchmark\Ting\UnitOfWork;
 
 class RepositoryFactory
 {
-    /**
-     * @var ConnectionPool
-     */
-    protected $connectionPool;
-
-    /**
-     * @var MetadataRepository
-     */
-    protected $metadataRepository;
-
-    /**
-     * @var Collection
-     */
-    protected $collection;
-
-    /**
-     * @var UnitOfWork
-     */
-    protected $unitOfWork;
-
-    /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var QueryFactory
-     */
-    protected $queryFactory;
-
-    /**
-     * @var CollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
-     * @var SerializerFactoryInterface
-     */
-    protected $serializerFactory;
 
     /**
      * @param ConnectionPool $connectionPool
@@ -84,21 +45,14 @@ class RepositoryFactory
      * @param SerializerFactoryInterface $serializerFactory
      */
     public function __construct(
-        ConnectionPool $connectionPool,
-        MetadataRepository $metadataRepository,
-        QueryFactory $queryFactory,
-        CollectionFactory $collectionFactory,
-        UnitOfWork $unitOfWork,
-        Cache $cache,
-        SerializerFactoryInterface $serializerFactory
+        protected ConnectionPool $connectionPool,
+        protected MetadataRepository $metadataRepository,
+        protected QueryFactory $queryFactory,
+        protected CollectionFactory $collectionFactory,
+        protected UnitOfWork $unitOfWork,
+        protected Cache $cache,
+        protected SerializerFactoryInterface $serializerFactory
     ) {
-        $this->connectionPool     = $connectionPool;
-        $this->metadataRepository = $metadataRepository;
-        $this->queryFactory       = $queryFactory;
-        $this->collectionFactory  = $collectionFactory;
-        $this->unitOfWork         = $unitOfWork;
-        $this->cache              = $cache;
-        $this->serializerFactory  = $serializerFactory;
     }
 
     /**
@@ -107,7 +61,7 @@ class RepositoryFactory
      * @template T of object
      * @template R of Repository<T>
      */
-    public function get($repositoryName)
+    public function get($repositoryName): object
     {
         return new $repositoryName(
             $this->connectionPool,

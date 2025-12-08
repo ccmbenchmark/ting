@@ -25,43 +25,30 @@
 
 namespace CCMBenchmark\Ting\Driver;
 
+use Iterator;
+
 /**
  * @template T
  *
- * @template-extends \Iterator<int, T>
+ * @template-extends Iterator<int, T>
  */
-interface ResultInterface extends \Iterator
+interface ResultInterface extends Iterator
 {
-    /**
-     * @param string $connectionName
-     * @return $this
-     */
-    public function setConnectionName($connectionName);
+    public function setConnectionName(string $connectionName): static;
+
+    public function setDatabase(string $database): static;
 
     /**
-     * @param string $database
-     * @return $this
+     * @param T|null $result
      */
-    public function setDatabase($database);
+    public function setResult($result): static;
+
+    public function getConnectionName(): ?string;
+
+    public function getDatabase(): ?string;
 
     /**
-     * @param T $result
-     * @return $this
+     * PgSQL will return int and Mysqli will return int or string when value is higher than PHP_INT_MAX
      */
-    public function setResult($result);
-
-    /**
-     * @return string|null
-     */
-    public function getConnectionName();
-
-    /**
-     * @return string|null
-     */
-    public function getDatabase();
-
-    /**
-     * @return int
-     */
-    public function getNumRows();
+    public function getNumRows(): mixed;
 }

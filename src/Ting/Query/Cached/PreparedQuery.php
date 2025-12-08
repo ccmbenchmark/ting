@@ -25,6 +25,7 @@
 
 namespace CCMBenchmark\Ting\Query\Cached;
 
+use CCMBenchmark\Ting\Driver\StatementInterface;
 use CCMBenchmark\Ting\Exception;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 use CCMBenchmark\Ting\Query\QueryException;
@@ -34,19 +35,16 @@ class PreparedQuery extends Query
     /**
      * @var bool
      */
-    protected $prepared = false;
+    protected bool $prepared = false;
 
-    /**
-     * @var \CCMBenchmark\Ting\Driver\StatementInterface
-     */
-    protected $statement = null;
+    protected ?StatementInterface $statement = null;
 
     /**
      * Prepare the query. Only for reading query (SELECT, SHOW, etc.)
      * @return $this
      * @throws Exception
      */
-    public function prepareQuery()
+    public function prepareQuery(): static
     {
         if ($this->prepared === true) {
             return $this;
@@ -64,7 +62,7 @@ class PreparedQuery extends Query
      * @throws Exception
      * @throws QueryException
      */
-    public function prepareExecute()
+    public function prepareExecute(): static
     {
         if ($this->prepared === true) {
             return $this;
@@ -82,11 +80,11 @@ class PreparedQuery extends Query
      * @return CollectionInterface
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
         $this->checkTtl();
 
-        if ($collection === null) {
+        if (!$collection instanceof CollectionInterface) {
             $collection = $this->collectionFactory->get();
         }
 
@@ -109,7 +107,7 @@ class PreparedQuery extends Query
      * @return mixed
      * @throws QueryException
      */
-    public function execute()
+    public function execute(): mixed
     {
         $this->prepareExecute();
 

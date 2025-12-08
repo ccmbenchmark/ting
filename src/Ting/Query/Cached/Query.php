@@ -32,37 +32,22 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 class Query extends \CCMBenchmark\Ting\Query\Query
 {
-    /**
-     * @var Cache|null
-     */
-    protected $cache = null;
+    protected ?Cache $cache = null;
 
-    /**
-     * @var int|null
-     */
-    protected $ttl = null;
+    protected ?int $ttl = null;
 
-    /**
-     * @var string|null
-     */
-    protected $cacheKey = null;
+    protected ?string $cacheKey = null;
 
-    /**
-     * @var int
-     */
-    protected $version = 1;
+    protected int $version = 1;
 
-    /**
-     * @var bool
-     */
-    protected $force = false;
+    protected bool $force = false;
 
     /**
      * Set the cache interface to the actual query
      * @param Cache $cache
      * @return void
      */
-    public function setCache(Cache $cache)
+    public function setCache(Cache $cache): void
     {
         $this->cache = $cache;
     }
@@ -72,7 +57,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @param int $ttl
      * @return $this
      */
-    public function setTtl($ttl)
+    public function setTtl($ttl): static
     {
         $this->ttl = (int) $ttl;
         return $this;
@@ -81,10 +66,9 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     /**
      * Define the cache key for the current query
      *
-     * @param $cacheKey
      * @return $this
      */
-    public function setCacheKey($cacheKey)
+    public function setCacheKey(string $cacheKey): static
     {
         $this->cacheKey = $cacheKey;
 
@@ -96,7 +80,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @param int $version
      * @return $this
      */
-    public function setVersion($version)
+    public function setVersion($version): static
     {
         $this->version = $version;
         return $this;
@@ -107,7 +91,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @param bool $value
      * @return $this
      */
-    public function setForce($value)
+    public function setForce($value): static
     {
         $this->force = (bool) $value;
         return $this;
@@ -120,11 +104,11 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @throws Exception
      * @throws QueryException
      */
-    public function query(?CollectionInterface $collection = null)
+    public function query(?CollectionInterface $collection = null): CollectionInterface
     {
         $this->checkTtl();
 
-        if ($collection === null) {
+        if (!$collection instanceof CollectionInterface) {
             $collection = $this->collectionFactory->get();
         }
 
@@ -146,7 +130,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
      * @return bool
      * @throws QueryException
      */
-    protected function checkCache($key, CollectionInterface $collection)
+    protected function checkCache($key, CollectionInterface $collection): bool
     {
         if ($key === null) {
             throw new QueryException('You must call setCacheKey to use query method');
@@ -172,7 +156,7 @@ class Query extends \CCMBenchmark\Ting\Query\Query
     /**
      * @throws QueryException
      */
-    protected function checkTtl()
+    protected function checkTtl(): void
     {
         if ($this->ttl === null) {
             throw new QueryException("You should call setTtl to use query method");

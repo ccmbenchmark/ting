@@ -36,31 +36,13 @@ use CCMBenchmark\Ting\UnitOfWork;
 class CollectionFactory implements CollectionFactoryInterface
 {
     /**
-     * @var MetadataRepository|null
-     */
-    protected $metadataRepository = null;
-
-    /**
-     * @var UnitOfWork|null
-     */
-    protected $unitOfWork = null;
-
-    /**
-     * @var HydratorInterface<T>|null
-     */
-    protected $hydrator = null;
-
-    /**
      * @param HydratorInterface<T> $hydrator
      */
     public function __construct(
-        MetadataRepository $metadataRepository,
-        UnitOfWork $unitOfWork,
-        HydratorInterface $hydrator
+        protected MetadataRepository $metadataRepository,
+        protected UnitOfWork $unitOfWork,
+        protected HydratorInterface $hydrator
     ) {
-        $this->metadataRepository = $metadataRepository;
-        $this->unitOfWork = $unitOfWork;
-        $this->hydrator = $hydrator;
         $this->hydrator->setMetadataRepository($this->metadataRepository);
         $this->hydrator->setUnitOfWork($this->unitOfWork);
     }
@@ -69,9 +51,9 @@ class CollectionFactory implements CollectionFactoryInterface
      * @param HydratorInterface<T>|null $hydrator
      * @return Collection<T>
      */
-    public function get(?HydratorInterface $hydrator = null)
+    public function get(?HydratorInterface $hydrator = null): Collection
     {
-        if ($hydrator === null) {
+        if (!$hydrator instanceof HydratorInterface) {
             $hydrator = clone $this->hydrator;
         } else {
             $hydrator->setMetadataRepository($this->metadataRepository);

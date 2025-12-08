@@ -487,6 +487,7 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->exception(
                 function () use ($metadata, $mockConnection, $services): void {
                     $metadata->getByPrimaries(
@@ -520,6 +521,7 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->object(
                 $metadata->getByPrimaries(
                     $mockConnection,
@@ -551,6 +553,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
             ->and($metadata->setEntity('mock\tests\fixtures\model\Bouh'))
+            ->and($metadata->setTable('bouh'))
             ->and(
                 $metadata->addField([
                     'primary'    => true,
@@ -601,6 +604,7 @@ class Metadata extends atoum
                     'type'       => 'string'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->exception(
                 function () use ($metadata, $mockConnection, $services): void {
                     $metadata->getOneByCriteria(
@@ -633,6 +637,7 @@ class Metadata extends atoum
                     'type'       => 'int'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->object(
                 $metadata->getAll(
                     $mockConnection,
@@ -668,6 +673,7 @@ class Metadata extends atoum
                     'type'       => 'string'
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->object(
                 $metadata->getByCriteria(
                     ['name' => 'Xavier'],
@@ -689,6 +695,8 @@ class Metadata extends atoum
         $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
         $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
         $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockDriver)->execute = true;
+        $this->calling($mockStatement)->execute = true;
         $this->calling($mockConnectionPool)->master = $mockDriver;
 
         $entity = new Bouh();
@@ -735,7 +743,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -747,8 +755,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -769,6 +778,7 @@ class Metadata extends atoum
                     'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerParams['boo_roles'])
                 ->isIdenticalTo(json_encode(['USER', 'ADMIN']));
@@ -780,7 +790,7 @@ class Metadata extends atoum
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
         $this->calling($mockDriver)->escapeField = function ($field) {
-            return $field;
+            return (string) $field;
         };
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
@@ -793,8 +803,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams) {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -832,6 +843,7 @@ class Metadata extends atoum
                         'type'       => 'string',
                     ])
             )
+            ->and($metadata->setTable('public_properties_entity'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->array($outerParams)
                 ->isIdenticalTo(['property_with_default_value' => 'default', 'property_with_getter' => 'with getter']);
@@ -842,7 +854,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -854,8 +866,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -879,6 +892,7 @@ class Metadata extends atoum
                     ]
                 ])
             )
+            ->and($metadata->setTable('bouh'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerParams['boo_roles'])
             ->isIdenticalTo(json_encode(['USER', '"BOUH"'], JSON_HEX_QUOT));
@@ -889,7 +903,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -901,8 +915,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -935,9 +950,10 @@ class Metadata extends atoum
                     'serializer' => \CCMBenchmark\Ting\Serializer\Json::class
                 ])
             )
+            ->and($query = $metadata->setTable('bouh'))
             ->and($query = $metadata->generateQueryForInsert($mockConnection, $mockQueryFactory, $entity))
             ->string($outerSql)
-            ->isIdenticalTo('INSERT INTO  (boo_roles) VALUES (:boo_roles)');
+            ->isIdenticalTo('INSERT INTO bouh (boo_roles) VALUES (:boo_roles)');
     }
 
     public function testGenerateQueryForUpdateShouldReturnAPreparedQuery()
@@ -946,6 +962,8 @@ class Metadata extends atoum
         $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
         $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
         $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockDriver)->execute = true;
+        $this->calling($mockStatement)->execute = true;
         $this->calling($mockConnectionPool)->master = $mockDriver;
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
@@ -1002,6 +1020,8 @@ class Metadata extends atoum
         $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
         $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
         $this->calling($mockDriver)->prepare = $mockStatement;
+        $this->calling($mockDriver)->execute = true;
+        $this->calling($mockStatement)->execute = true;
         $this->calling($mockConnectionPool)->master = $mockDriver;
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
@@ -1071,7 +1091,7 @@ class Metadata extends atoum
         $services = new \CCMBenchmark\Ting\Services();
 
         $mockDriver = new \mock\CCMBenchmark\Ting\Driver\Mysqli\Driver();
-        $this->calling($mockDriver)->escapeField = (fn ($field) => $field);
+        $this->calling($mockDriver)->escapeField = (fn ($field) => (string) $field);
 
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $this->calling($mockConnectionPool)->master = $mockDriver;
@@ -1083,8 +1103,9 @@ class Metadata extends atoum
             $mockConnection,
             $services->get('CollectionFactory')
         );
-        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams): void {
+        $this->calling($mockPreparedQuery)->setParams = function ($params) use (&$outerParams, $mockPreparedQuery) {
             $outerParams = $params;
+            return $mockPreparedQuery;
         };
 
         $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
@@ -1096,6 +1117,7 @@ class Metadata extends atoum
         $this
             ->if($metadata = new \CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory')))
                 ->and($metadata->setEntity('mock\tests\fixtures\model\BouhCustomGetter'))
+                ->and($metadata->setTable('bouh'))
                 ->and(
                     $metadata->addField([
                         'primary'    => true,

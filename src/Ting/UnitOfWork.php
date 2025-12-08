@@ -38,16 +38,12 @@ class UnitOfWork implements PropertyListenerInterface
     public const STATE_NEW     = 1;
     public const STATE_MANAGED = 2;
     public const STATE_DELETE  = 3;
-
-    protected $connectionPool            = null;
-    protected $metadataRepository        = null;
-    protected $queryFactory              = null;
     /** @var WeakMap<NotifyPropertyInterface, NotifyPropertyInterface|bool> */
     protected WeakMap $entities;
     /** @var WeakMap<NotifyPropertyInterface, array<string, array<mixed, mixed>>>  */
     protected WeakMap $entitiesChanged;
-    protected array $entitiesShouldBePersisted;
-    protected $statements = [];
+    protected array $entitiesShouldBePersisted = [];
+    protected array $statements = [];
 
     /**
      * @param ConnectionPool        $connectionPool
@@ -55,16 +51,12 @@ class UnitOfWork implements PropertyListenerInterface
      * @param QueryFactoryInterface $queryFactory
      */
     public function __construct(
-        ConnectionPool $connectionPool,
-        MetadataRepository $metadataRepository,
-        QueryFactoryInterface $queryFactory
+        protected ConnectionPool $connectionPool,
+        protected MetadataRepository $metadataRepository,
+        protected QueryFactoryInterface $queryFactory
     ) {
-        $this->connectionPool     = $connectionPool;
-        $this->metadataRepository = $metadataRepository;
-        $this->queryFactory       = $queryFactory;
         $this->entities = new WeakMap();
         $this->entitiesChanged = new WeakMap();
-        $this->entitiesShouldBePersisted = [];
     }
 
     /**
@@ -97,21 +89,14 @@ class UnitOfWork implements PropertyListenerInterface
     public function isNew(NotifyPropertyInterface $entity): bool
     {
         $hash = spl_object_hash($entity);
-        if (isset($this->entitiesShouldBePersisted[$hash]) === true
-            && $this->entitiesShouldBePersisted[$hash]['state'] === self::STATE_NEW
-        ) {
-            return true;
-        }
-        return false;
+        return isset($this->entitiesShouldBePersisted[$hash])
+            && $this->entitiesShouldBePersisted[$hash]['state'] === self::STATE_NEW;
     }
 
     /**
      * Flag the entity to be persisted (insert or update) on next process
-     *
-     * @param NotifyPropertyInterface $entity
-     * @return $this
      */
-    public function pushSave(NotifyPropertyInterface $entity): self
+    public function pushSave(NotifyPropertyInterface $entity): static
     {
         $state = self::STATE_MANAGED;
 
@@ -133,20 +118,10 @@ class UnitOfWork implements PropertyListenerInterface
     public function shouldBePersisted(NotifyPropertyInterface $entity): bool
     {
         $hash = spl_object_hash($entity);
-        if (isset($this->entitiesShouldBePersisted[$hash]) === true) {
-            return true;
-        }
-
-        return false;
+        return isset($this->entitiesShouldBePersisted[$hash]);
     }
 
-    /**
-     * @param NotifyPropertyInterface $entity
-     * @param string $propertyName
-     * @param mixed $oldValue
-     * @param mixed $newValue
-     */
-    public function propertyChanged(NotifyPropertyInterface $entity, $propertyName, $oldValue, $newValue): void
+    public function propertyChanged(NotifyPropertyInterface $entity, string $propertyName, mixed $oldValue, mixed $newValue): void
     {
         if ($oldValue === $newValue) {
             return;
@@ -170,11 +145,7 @@ class UnitOfWork implements PropertyListenerInterface
      */
     public function isPropertyChanged(NotifyPropertyInterface $entity, string $propertyName): bool
     {
-        if (isset($this->entitiesChanged[$entity][$propertyName]) === true) {
-            return true;
-        }
-
-        return false;
+        return isset($this->entitiesChanged[$entity][$propertyName]);
     }
 
     /**
@@ -204,11 +175,8 @@ class UnitOfWork implements PropertyListenerInterface
 
     /**
      * Flag the entity to be deleted on next process
-     *
-     * @param NotifyPropertyInterface $entity
-     * @return $this
      */
-    public function pushDelete(NotifyPropertyInterface $entity): self
+    public function pushDelete(NotifyPropertyInterface $entity): static
     {
         $hash = spl_object_hash($entity);
         $this->entitiesShouldBePersisted[$hash] = ['state' => self::STATE_DELETE, 'entity' => $entity];
@@ -226,13 +194,8 @@ class UnitOfWork implements PropertyListenerInterface
     public function shouldBeRemoved(NotifyPropertyInterface $entity): bool
     {
         $hash = spl_object_hash($entity);
-        if (isset($this->entitiesShouldBePersisted[$hash]) === true
-            && $this->entitiesShouldBePersisted[$hash]['state'] === self::STATE_DELETE
-        ) {
-            return true;
-        }
-
-        return false;
+        return isset($this->entitiesShouldBePersisted[$hash])
+            && $this->entitiesShouldBePersisted[$hash]['state'] === self::STATE_DELETE;
     }
 
     /**
@@ -387,7 +350,7 @@ class UnitOfWork implements PropertyListenerInterface
         );
     }
 
-    protected function addStatementToClose($statementName, DriverInterface $connection): void
+    protected function addStatementToClose(string $statementName, DriverInterface $connection): void
     {
         if (isset($this->statements[$statementName]) === false) {
             $this->statements[$statementName] = [];
