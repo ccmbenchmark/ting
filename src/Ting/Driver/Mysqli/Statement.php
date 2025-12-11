@@ -49,10 +49,7 @@ class Statement implements StatementInterface
     protected string $objectHash = '';
 
     /**
-     * @param mysqli_stmt|Object $driverStatement
-     * @param array               $paramsOrder
-     * @param string              $connectionName
-     * @param string              $database
+     * @param mysqli_stmt $driverStatement
      */
     public function __construct(
         protected $driverStatement,
@@ -80,7 +77,7 @@ class Statement implements StatementInterface
 
             $values[] = $value;
         }
-        
+
         $this->driverStatement->bind_param($types, ...$values);
 
         if ($this->logger !== null) {
@@ -96,8 +93,11 @@ class Statement implements StatementInterface
         }
 
         $result = $this->driverStatement->get_result();
+        if ($result === false) {
+            return false;
+        }
 
-        if ($collection !== null) {
+        if ($collection instanceof CollectionInterface) {
             return $this->setCollectionWithResult($result, $collection);
         }
 
@@ -106,7 +106,7 @@ class Statement implements StatementInterface
 
     public function setLogger(?DriverLoggerInterface $logger = null): void
     {
-        if ($logger !== null) {
+        if ($logger instanceof DriverLoggerInterface) {
             $this->logger = $logger;
             $this->objectHash = spl_object_hash($this->driverStatement);
         }

@@ -136,7 +136,7 @@ class ConnectionPool implements ConnectionPoolInterface
     }
 
     /**
-     * @param array $config
+     * @param array{host: string, port: int, user?: string, password?: string} $config
      * @param class-string<DriverInterface> $driverClass
      * @param string $database
      * @param string $name connection name

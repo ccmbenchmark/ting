@@ -115,11 +115,10 @@ class Result implements ResultInterface
         }
 
         $tokens = preg_split('/(\W)/', strtolower((string) $query), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-        $tokensWithCase = preg_split('/(\W)/', (string) $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-
         if ($tokens === false) {
-            return;
+            $tokens = [];
         }
+        $tokensWithCase = preg_split('/(\W)/', (string) $query, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         $startCapture = false;
         $columnsMatches = [];

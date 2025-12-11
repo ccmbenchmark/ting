@@ -222,7 +222,7 @@ class Driver implements DriverInterface
         }
 
 
-        if ($collection === null) {
+        if (!$collection instanceof CollectionInterface) {
             $resultStatus = pg_result_status($this->result);
             if ($resultStatus === \PGSQL_TUPLES_OK) {
                 return pg_fetch_assoc($this->result);
@@ -449,7 +449,6 @@ class Driver implements DriverInterface
 
     /**
      * Give the number of affected rows
-     * @return int
      */
     public function getAffectedRows(): int
     {

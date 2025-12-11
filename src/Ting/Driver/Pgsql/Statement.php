@@ -41,12 +41,7 @@ class Statement implements StatementInterface
     protected ?DriverLoggerInterface $logger = null;
 
     /**
-     * Statement constructor.
-     *
      * @param string              $statementName
-     * @param array               $paramsOrder
-     * @param string              $connectionName
-     * @param string              $database
      */
     public function __construct(
         protected $statementName,

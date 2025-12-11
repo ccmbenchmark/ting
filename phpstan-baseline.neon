@@ -1,40 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Access to an undefined property object\:\:\$errno\.$#'
-			identifier: property.notFound
+			message: '#^Method CCMBenchmark\\Ting\\Driver\\Pgsql\\Driver\:\:getAffectedRows\(\) should return int\<0, max\> but returns int\.$#'
+			identifier: return.type
 			count: 1
-			path: src/Ting/Driver/Mysqli/Statement.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$error\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Statement.php
-
-		-
-			message: '#^Call to an undefined method object\:\:bind_param\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Statement.php
-
-		-
-			message: '#^Call to an undefined method object\:\:close\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Statement.php
-
-		-
-			message: '#^Call to an undefined method object\:\:execute\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Statement.php
-
-		-
-			message: '#^Call to an undefined method object\:\:get_result\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Ting/Driver/Mysqli/Statement.php
+			path: src/Ting/Driver/Pgsql/Driver.php
 
 		-
 			message: '#^Offset ''table'' might not exist on array\{complex\: bool, column\: string, table\?\: string, alias\?\: non\-falsy\-string\}\.$#'
@@ -49,12 +19,6 @@ parameters:
 			path: src/Ting/Entity/NotifyProperty.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Ting/MetadataRepository.php
-
-		-
 			message: '#^Parameter \#1 \$repositoryClass of method CCMBenchmark\\Ting\\MetadataRepository\:\:addMetadata\(\) expects class\-string\<CCMBenchmark\\Ting\\Repository\\Repository\<object\>\>, \(int\|string\) given\.$#'
 			identifier: argument.type
 			count: 1
@@ -65,12 +29,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Ting/MetadataRepository.php
-
-		-
-			message: '#^Method CCMBenchmark\\Ting\\Repository\\Collection\:\:getIterator\(\) should return Generator\<int, T, mixed, mixed\> but returns Traversable\<int, mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ting/Repository/Collection.php
 
 		-
 			message: '#^Generator expects value type stdClass\|T, array\<int, stdClass\|T\> given\.$#'

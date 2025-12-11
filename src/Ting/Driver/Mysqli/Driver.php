@@ -275,14 +275,16 @@ class Driver implements DriverInterface
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
         }
 
+        if (!$collection instanceof CollectionInterface) {
+            if ($result === true) {
+                return true;
+            }
+
+            return $result->fetch_assoc();
+        }
         if ($result === true) {
             return true;
         }
-
-        if ($collection === null) {
-            return $result->fetch_assoc();
-        }
-
         return $this->setCollectionWithResult($result, $collection);
     }
 
@@ -346,9 +348,6 @@ class Driver implements DriverInterface
 
         if ($driverStatement === false) {
             throw new QueryException($this->connection->error . ' (Query: ' . $sql . ')', $this->connection->errno);
-//            $this->ifIsError(function () use ($sql): void {
-//
-//            });
         }
 
         if ($this->logger !== null) {

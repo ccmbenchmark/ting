@@ -526,7 +526,7 @@ class Hydrator extends atoum
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
             ->then($hydrator->setResult($result))
-            ->integer(count($hydrator))
+            ->integer($hydrator->count())
                 ->isIdenticalTo(3);
     }
 
@@ -534,7 +534,7 @@ class Hydrator extends atoum
     {
         $this
             ->if($hydrator = new \CCMBenchmark\Ting\Repository\Hydrator())
-            ->integer(count($hydrator))
+            ->integer($hydrator->count())
                 ->isIdenticalTo(0);
     }
 

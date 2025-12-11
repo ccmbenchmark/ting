@@ -148,7 +148,9 @@ class Result implements ResultInterface
         return $columns;
     }
 
-
+    /**
+     * @return int<0, max>|string the number of rows in the result set
+     */
     public function getNumRows(): int|string
     {
         return $this->result->num_rows;
