@@ -31,11 +31,10 @@ class Driver extends Mysqli\Driver
 {
     /**
      * Quote value according to the type of variable
-     * @param mixed $value
      *
      * @internal
      */
-    protected function quoteValue($value): int|float|string
+    protected function quoteValue(mixed $value): int|float|string
     {
         return match (\gettype($value)) {
             "integer", "double" => $value,

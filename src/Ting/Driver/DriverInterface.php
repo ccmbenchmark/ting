@@ -30,29 +30,16 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 interface DriverInterface
 {
-    /**
-     * @param string $hostname
-     * @param string $username
-     * @param string $password
-     * @param int $port
-     */
-    public function connect($hostname, $username, $password, $port): static;
+    public function connect(string $hostname, string $username, string $password, int $port): static;
 
     /**
      * Close the connection to the database
      */
     public function close(): static;
 
-    /**
-     * @param string $name
-     */
-    public function setName($name): static;
+    public function setName(string $name): static;
 
-    /**
-     * @param string $charset
-     * @return void
-     */
-    public function setCharset($charset): void;
+    public function setCharset(string $charset): void;
 
     /**
      * @return ($collection is CollectionInterface ? CollectionInterface : bool|array|int|string)
@@ -67,10 +54,7 @@ interface DriverInterface
      */
     public function prepare(string $sql): StatementInterface;
 
-    /**
-     * @param string $database
-     */
-    public function setDatabase($database): static;
+    public function setDatabase(string $database): static;
 
     /**
      * @param callable $callback
@@ -97,11 +81,7 @@ interface DriverInterface
 
     public function setLogger(?DriverLoggerInterface $logger = null): static;
 
-    /**
-     * @param array $connectionConfig
-     * @param string $database
-     */
-    public static function getConnectionKey(array $connectionConfig, $database): string;
+    public static function getConnectionKey(array $connectionConfig, string $database): string;
 
     /**
      * @param $statement

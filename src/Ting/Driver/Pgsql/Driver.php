@@ -79,12 +79,7 @@ class Driver implements DriverInterface
      */
     protected $dsn;
 
-    /**
-     * Return a unique connection key identifier
-     * @param array  $connectionConfig
-     * @param string $database
-     */
-    public static function getConnectionKey(array $connectionConfig, $database): string
+    public static function getConnectionKey(array $connectionConfig, string $database): string
     {
         return
             $connectionConfig['host'] . '|' .
@@ -96,13 +91,8 @@ class Driver implements DriverInterface
 
     /**
      * Construct connection information
-     * @param string $hostname
-     * @param string $username
-     * @param string $password
-     * @param int    $port
-     * @return $this
      */
-    public function connect($hostname, $username, $password, $port): static
+    public function connect(string $hostname, string $username, string $password, int $port): static
     {
         $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
         return $this;
@@ -123,11 +113,9 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param string $charset
-     * @return void
      * @throws DriverException
      */
-    public function setCharset($charset): void
+    public function setCharset(string $charset): void
     {
         if ($this->currentCharset === $charset) {
             return;
@@ -140,11 +128,7 @@ class Driver implements DriverInterface
         $this->currentCharset = $charset;
     }
 
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function setName($name): static
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -153,11 +137,9 @@ class Driver implements DriverInterface
 
     /**
      * Connect the driver to the given database
-     * @param string $database
-     * @return $this
      * @throws DriverException
      */
-    public function setDatabase($database): static
+    public function setDatabase(string $database): static
     {
         if ($this->connection !== null) {
             return $this;

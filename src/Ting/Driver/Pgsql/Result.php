@@ -39,6 +39,7 @@ class Result implements ResultInterface
     protected ?string $database = null;
     /** @var \PgSql\Result|null */
     protected $result = null;
+    /** @var array<int, stdClass> $fields  */
     protected array $fields = [];
     protected int $iteratorOffset = 0;
     /** @var array|object|false|null  */
@@ -46,23 +47,15 @@ class Result implements ResultInterface
     /** @var class-string|null  */
     protected ?string $objectToFetch = null;
 
-    /**
-     * @param string $connectionName
-     * @return $this
-     */
     public function setConnectionName(string $connectionName): static
     {
-        $this->connectionName = (string) $connectionName;
+        $this->connectionName = $connectionName;
         return $this;
     }
 
-    /**
-     * @param string $database
-     * @return $this
-     */
-    public function setDatabase($database): static
+    public function setDatabase(string $database): static
     {
-        $this->database = (string) $database;
+        $this->database = $database;
         return $this;
     }
 

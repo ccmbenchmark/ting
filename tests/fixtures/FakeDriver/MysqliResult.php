@@ -102,7 +102,7 @@ class MysqliResult implements ResultInterface
         return count($this->data);
     }
 
-    public function setConnectionName($connectionName): static
+    public function setConnectionName(string $connectionName): static
     {
         return $this;
     }

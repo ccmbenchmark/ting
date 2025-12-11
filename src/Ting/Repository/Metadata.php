@@ -31,6 +31,7 @@ use CCMBenchmark\Ting\Serializer\DateTimeZone;
 use CCMBenchmark\Ting\Serializer\Json;
 use CCMBenchmark\Ting\Serializer\Ip;
 use CCMBenchmark\Ting\Serializer\Geometry;
+use CCMBenchmark\Ting\Serializer\SerializerInterface;
 use CCMBenchmark\Ting\Serializer\Uuid;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\Query\QueryInterface;
@@ -111,33 +112,25 @@ class Metadata
 
     /**
      * Set connection name related to configuration
-     * @param string $connectionName
-     * @return $this
      */
-    public function setConnectionName($connectionName): static
+    public function setConnectionName(string $connectionName): static
     {
-        $this->connectionName = (string) $connectionName;
+        $this->connectionName = $connectionName;
 
         return $this;
     }
 
     /**
      * Retrieve the connection name
-     * @return string
      */
     public function getConnectionName(): ?string
     {
         return $this->connectionName;
     }
 
-    /**
-     * @param string $databaseName
-     * @return $this
-     *
-     */
-    public function setDatabase($databaseName): static
+    public function setDatabase(string $databaseName): static
     {
-        $this->databaseName = (string) $databaseName;
+        $this->databaseName = $databaseName;
 
         return $this;
     }
@@ -154,10 +147,9 @@ class Metadata
     /**
      * Set repository name
      * @param class-string<Repository<T>> $className
-     * @return $this
      * @throws SyntaxException
      */
-    public function setRepository($className): static
+    public function setRepository(string $className): static
     {
         if (($className[0] ?? '') === '\\') {
             throw new SyntaxException('Class must not start with a \\');
@@ -181,10 +173,9 @@ class Metadata
     /**
      * Set entity name
      * @param class-string<T> $className
-     * @return $this
      * @throws SyntaxException
      */
-    public function setEntity($className): static
+    public function setEntity(string $className): static
     {
         if (($className[0] ?? '') === '\\') {
             throw new SyntaxException('Class must not start with a \\');
@@ -205,14 +196,9 @@ class Metadata
         return $this->entity;
     }
 
-    /**
-     * Set table name
-     * @param string $tableName
-     * @return $this
-     */
-    public function setTable($tableName): static
+    public function setTable(string $tableName): static
     {
-        $this->table = (string) $tableName;
+        $this->table = $tableName;
 
         return $this;
     }
@@ -226,14 +212,9 @@ class Metadata
         return $this->table;
     }
 
-    /**
-     * @param string $schemaName
-     * @return $this
-     *
-     */
-    public function setSchema($schemaName): static
+    public function setSchema(string $schemaName): static
     {
-        $this->schemaName = (string) $schemaName;
+        $this->schemaName = $schemaName;
 
         return $this;
     }
@@ -312,15 +293,10 @@ class Metadata
 
     /**
      * Execute callback if the provided table is the actual
-     * @param string   $connectionName
-     * @param string   $database
-     * @param string   $table
-     * @param Closure $callback
-     * @return bool
      *
      * @internal
      */
-    public function ifTableKnown($connectionName, $database, $table, Closure $callback): bool
+    public function ifTableKnown(string $connectionName, string $database, string $table, Closure $callback): bool
     {
         if ($this->table === $table
             && $this->connectionName === $connectionName && $this->databaseName === $database
@@ -408,12 +384,9 @@ class Metadata
 
     /**
      * Retrieve property of entity according to the field (unserialize if needed)
-     * @param object $entity
-     * @param array $field
-     * @return mixed
-     *
+     * @param array{fieldName: string, getter?: string, serializer?: class-string<SerializerInterface>, serializer_options?: array{serialize?: array, unserialize?: array}} $field
      */
-    protected function getEntityProperty(object $entity, $field): mixed
+    protected function getEntityProperty(object $entity, array $field): mixed
     {
         $value = $this->propertyAccessor->getValue($entity, $field['fieldName'], $field['getter'] ?? null);
 

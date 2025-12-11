@@ -56,10 +56,7 @@ class ConnectionPool implements ConnectionPoolInterface
     {
     }
 
-    /**
-     * @param array $config
-     */
-    public function setConfig($config): void
+    public function setConfig(array $config): void
     {
         $this->connectionConfig = $config;
     }
@@ -95,12 +92,9 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * Return always the same slave connection
      *
-     * @param string $name
-     * @param string $database
-     * @return DriverInterface
      * @throws ConnectionException
      */
-    public function slave($name, $database): DriverInterface
+    public function slave(string $name, string $database): DriverInterface
     {
         if (isset($this->connectionConfig[$name]) === false) {
             throw new ConnectionException('Connection not found: ' . $name);
@@ -138,13 +132,9 @@ class ConnectionPool implements ConnectionPoolInterface
     /**
      * @param array{host: string, port: int, user?: string, password?: string} $config
      * @param class-string<DriverInterface> $driverClass
-     * @param string $database
-     * @param string $name connection name
-     * @param string $charset
-     * @return DriverInterface
      * @throws Exception
      */
-    protected function connect($config, $driverClass, $database, $name, $charset = null): DriverInterface
+    protected function connect(array $config, string $driverClass, string $database, string $name, ?string $charset = null): DriverInterface
     {
 
         if (isset($config['user']) === false) {

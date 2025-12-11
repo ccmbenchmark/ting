@@ -61,7 +61,7 @@ class RepositoryFactory
      * @template T of object
      * @template R of Repository<T>
      */
-    public function get($repositoryName): object
+    public function get(string $repositoryName): object
     {
         return new $repositoryName(
             $this->connectionPool,

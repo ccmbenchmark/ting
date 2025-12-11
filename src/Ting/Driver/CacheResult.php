@@ -40,13 +40,9 @@ class CacheResult implements ResultInterface
      */
     protected ?string $objectToFetch = null;
 
-    /**
-     * @param string $connectionName
-     * @return $this
-     */
     public function setConnectionName(string $connectionName): static
     {
-        $this->connectionName = (string) $connectionName;
+        $this->connectionName = $connectionName;
         return $this;
     }
 

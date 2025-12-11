@@ -43,6 +43,7 @@ class UnitOfWork implements PropertyListenerInterface
     /** @var WeakMap<NotifyPropertyInterface, array<string, array<mixed, mixed>>>  */
     protected WeakMap $entitiesChanged;
     protected array $entitiesShouldBePersisted = [];
+    /** @var array<string, array<string, DriverInterface>>  */
     protected array $statements = [];
 
     /**

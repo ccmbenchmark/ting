@@ -28,9 +28,9 @@ namespace CCMBenchmark\Ting\Serializer;
 class SerializerFactory implements SerializerFactoryInterface
 {
     /**
-     * @var SerializerInterface[]
+     * @var array<string, SerializerInterface> $serializers
      */
-    protected $serializers = [];
+    protected array $serializers = [];
 
     /**
      * @param class-string<SerializerInterface> $serializerName
