@@ -41,7 +41,10 @@ class Result implements ResultInterface
     protected $result = null;
     protected array $fields = [];
     protected int $iteratorOffset = 0;
-    protected ?array $iteratorCurrent = null;
+    /** @var array|object|false|null  */
+    protected $iteratorCurrent = null;
+    /** @var class-string|null  */
+    protected ?string $objectToFetch = null;
 
     /**
      * @param string $connectionName
@@ -70,6 +73,15 @@ class Result implements ResultInterface
     public function setResult($result): static
     {
         $this->result = $result;
+        return $this;
+    }
+
+    /**
+     * @param class-string $objectToFetch
+     */
+    public function setObjectToFetch(string $objectToFetch): static
+    {
+        $this->objectToFetch = $objectToFetch;
         return $this;
     }
 
@@ -334,7 +346,12 @@ class Result implements ResultInterface
 
     public function next(): void
     {
-        $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, \PGSQL_NUM));
+        if ($this->objectToFetch !== null) {
+            $this->iteratorCurrent = pg_fetch_object($this->result, null, $this->objectToFetch);
+        } else {
+            $this->iteratorCurrent = $this->format(pg_fetch_array($this->result, null, \PGSQL_NUM));
+        }
+
         $this->iteratorOffset++;
     }
 

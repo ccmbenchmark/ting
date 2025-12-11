@@ -43,6 +43,11 @@ interface ResultInterface extends Iterator
      */
     public function setResult($result): static;
 
+    /**
+     * @param class-string<T> $objectToFetch
+     */
+    public function setObjectToFetch(string $objectToFetch): static;
+
     public function getConnectionName(): ?string;
 
     public function getDatabase(): ?string;

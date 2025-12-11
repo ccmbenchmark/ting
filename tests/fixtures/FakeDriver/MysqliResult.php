@@ -119,6 +119,13 @@ class MysqliResult implements ResultInterface
 
     public function getDatabase(): ?string
     {
+    }
 
+    public function setObjectToFetch(string $objectToFetch): static
+    {
+    }
+
+    public function fetch_object($class_name = null)
+    {
     }
 }
