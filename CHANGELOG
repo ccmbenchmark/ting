@@ -1,4 +1,4 @@
-4.0.0 (unreleased):
+4.0.0-rc.1 (2025-12-15):
     * BC PHP 8.0 dropped, minimum version is now PHP 8.1
     * BC All classes now fully typehinted with strict types and return types
     * BC Pgsql Driver now uses native PHP 8.1+ PgSql\Connection and PgSql\Result classes instead of resources
