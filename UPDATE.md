@@ -1,6 +1,43 @@
 # Update file
 This file will track changes to public interfaces between 2 major versions.
 
+## 4.0:
+* PHP required version is now 8.1
+* All classes are now fully typehinted with strict types
+* PHPStan level raised to 7
+* Rector configuration added for automated code quality improvements
+* Serialization interfaces now have proper type hints:
+    * ```SerializeInterface::serialize()``` now returns ```mixed``` explicitly
+    * ```UnserializeInterface::unserialize()``` parameter is now typed ```mixed```
+* Pgsql Driver now uses native PHP 8.1+ PgSql classes:
+    * Internal ```$connection``` property type changed from ```resource``` to ```\PgSql\Connection```
+    * Internal ```$result``` property type changed from ```resource``` to ```\PgSql\Result```
+* ConnectionPoolInterface:
+    * Added method ```setDatabaseOptions(array $options): void```
+* DriverInterface:
+    * Added method ```ping(): bool```
+    * Added method ```setTimezone(string $timezone): static```
+    * Removed deprecated method ```getInsertId()``` (use ```getInsertedId()``` instead)
+* Mysqli Driver:
+    * Removed deprecated method ```getInsertId()``` (use ```getInsertedId()``` instead)
+* Pgsql Driver:
+    * Removed deprecated method ```getInsertId()``` (use ```getInsertedId()``` instead)
+    * Removed deprecated method ```getInsertIdForSequence()``` (use ```getInsertedIdForSequence()``` instead)
+* QueryInterface:
+    * Removed deprecated method ```getInsertId()``` (use ```getInsertedId()``` instead)
+* Query class:
+    * Removed deprecated method ```getInsertId()``` (use ```getInsertedId()``` instead)
+* Generator class:
+    * Removed method ```getByCriteriaWithOrderAndLimit()```
+    * Method ```getByCriteria()``` now accepts ```$order``` and ```$limit``` parameters (merged functionality)
+    * All methods now have strict return type hints
+* Metadata class:
+    * Removed method ```getGetter()```
+    * Removed method ```getSetter()```
+* UnitOfWork:
+    * Removed deprecated method ```generateUid()```
+    * Removed deprecated method ```generateUUID()```
+
 ## 3.0:
 * PHP required version is now 5.5
 * Cache data are incompatibles with previous major version, you should clean your cache data
