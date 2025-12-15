@@ -406,8 +406,9 @@ class Driver extends atoum
 
     public function testgetInsertedIdForSequenceShouldReturnInsertedIdForSequence()
     {
-        PGMock::override('pg_query', function ($connection, $query) use (&$outerQuery): void {
+        PGMock::override('pg_query_params', function ($connection, $query, $params) use (&$outerQuery, &$outerParams): void {
             $outerQuery = $query;
+            $outerParams = $params;
         });
 
         PGMock::override('pg_fetch_row', [4]);
@@ -417,13 +418,15 @@ class Driver extends atoum
             ->integer($driver->getInsertedIdForSequence('sequenceName'))
                 ->isIdenticalTo(4)
             ->string($outerQuery)
-                ->isIdenticalTo("SELECT currval('sequenceName')")
+                ->isIdenticalTo("SELECT currval($1)")
+            ->array($outerParams)
+                ->isIdenticalTo(['sequenceName'])
         ;
     }
 
     public function testgetInsertedIdForSequenceWithWrongSequenceShouldThrowAnException()
     {
-        PGMock::override('pg_query', false);
+        PGMock::override('pg_query_params', false);
         PGMock::override('pg_last_error', 'A PGSQL error');
 
         $this
@@ -432,7 +435,7 @@ class Driver extends atoum
                 $driver->getInsertedIdForSequence('sequenceName');
             })
                 ->isInstanceOf(\CCMBenchmark\Ting\Driver\QueryException::class)
-                ->hasMessage("A PGSQL error (Query: SELECT currval('sequenceName'))");
+                ->hasMessage("A PGSQL error (Query: SELECT currval($1))");
         ;
     }
 
