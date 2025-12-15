@@ -39,7 +39,7 @@ class MetadataRepository
     /**
      * This array matches a repository (class name) and the corresponding metadata object
      *
-     * @var Metadata[]
+     * @var array<string, Metadata>
      */
     protected $metadataList = [];
 
@@ -109,7 +109,7 @@ class MetadataRepository
      * @internal
      */
     public function findMetadataForRepository(
-        $repositoryName,
+        string $repositoryName,
         Closure $callbackFound,
         ?Closure $callbackNotFound = null
     ): void {

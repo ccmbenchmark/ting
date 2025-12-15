@@ -35,10 +35,7 @@ interface ConnectionPoolInterface
      */
     public function __construct(DriverLoggerInterface $logger);
 
-    /**
-     * @param array $config
-     */
-    public function setConfig($config): void;
+    public function setConfig(array $config): void;
 
     /**
      * @throws Exception

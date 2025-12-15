@@ -40,11 +40,11 @@ class HydratorValueObject implements HydratorInterface
     /**
      * @var class-string<T>
      */
-    protected $objectToHydrate;
+    protected string $objectToHydrate;
     /**
      * @var ResultInterface<T>
      */
-    protected $result = null;
+    protected ?ResultInterface $result = null;
 
 
     /**

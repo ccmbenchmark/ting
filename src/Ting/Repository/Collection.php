@@ -114,7 +114,7 @@ class Collection implements CollectionInterface, JsonSerializable
         $this->set($cacheResult);
     }
 
-    public function first()
+    public function first(): mixed
     {
         if ($this->result === null) {
             return null;

@@ -32,20 +32,16 @@ class Debug
 {
     /**
      * Dump Ting object
-     *
-     * @param mixed $var
-     * @param int $maxDepth
      */
-    public function dump($var, $maxDepth = 10): void
+    public function dump(mixed $var, int $maxDepth = 10): void
     {
         var_dump($this->export($var, $maxDepth));
     }
 
     /**
      * Export Ting object
-     * @param int $maxDepth
      */
-    public function export(mixed $var, $maxDepth = 10): mixed
+    public function export(mixed $var, int $maxDepth = 10): mixed
     {
         $return = [];
 

@@ -45,7 +45,7 @@ class Driver implements DriverInterface
         );
     }
 
-    public function connect($hostname, $username, $password, $port): static
+    public function connect(string $hostname, string $username, string $password, int $port): static
     {
         return $this;
     }
@@ -55,9 +55,9 @@ class Driver implements DriverInterface
         return $this;
     }
 
-    public function setName($name): static
+    public function setName(string $name): static
     {
-        $this->name = (string) $name;
+        $this->name = $name;
         return $this;
     }
 
@@ -66,7 +66,7 @@ class Driver implements DriverInterface
         return $this->name;
     }
 
-    public function setCharset($charset): void
+    public function setCharset(string $charset): void
     {
 
     }
@@ -115,20 +115,12 @@ class Driver implements DriverInterface
 
     }
 
-    /**
-     * @param array $connectionConfig
-     * @param string $database
-     * @return string
-     */
-    public static function getConnectionKey(array $connectionConfig, $database): string
+    public static function getConnectionKey(array $connectionConfig, string $database): string
     {
         return md5(var_export($connectionConfig, true) . $database);
     }
 
-    /**
-     * @param string $database
-     */
-    public function setDatabase($database): static
+    public function setDatabase(string $database): static
     {
         return $this;
     }

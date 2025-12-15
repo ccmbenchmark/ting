@@ -89,7 +89,7 @@ abstract class Repository
         $class = static::class;
         $this->metadataRepository->findMetadataForRepository(
             $class,
-            function ($metadata): void {
+            function (Metadata $metadata): void {
                 $this->metadata = $metadata;
             },
             function () use ($class): void {
@@ -110,31 +110,22 @@ abstract class Repository
      *
      * @template U
      */
-    public function getCollection(?HydratorInterface $hydrator = null): CollectionInterface
+    public function getCollection(?HydratorInterface $hydrator = null): Collection
     {
         return $this->collectionFactory->get($hydrator);
     }
 
-    /**
-     * @param string $sql
-     */
-    public function getQuery($sql): Query
+    public function getQuery(string $sql): Query
     {
         return $this->queryFactory->get($sql, $this->connection, $this->collectionFactory);
     }
 
-    /**
-     * @param string $sql
-     */
-    public function getPreparedQuery($sql): PreparedQuery
+    public function getPreparedQuery(string $sql): PreparedQuery
     {
         return $this->queryFactory->getPrepared($sql, $this->connection, $this->collectionFactory);
     }
 
-    /**
-     * @param string $sql
-     */
-    public function getCachedQuery($sql): \CCMBenchmark\Ting\Query\Cached\Query
+    public function getCachedQuery(string $sql): \CCMBenchmark\Ting\Query\Cached\Query
     {
         return $this->queryFactory->getCached(
             $sql,
@@ -144,10 +135,7 @@ abstract class Repository
         );
     }
 
-    /**
-     * @param string $sql
-     */
-    public function getCachedPreparedQuery($sql): \CCMBenchmark\Ting\Query\Cached\PreparedQuery
+    public function getCachedPreparedQuery(string $sql): \CCMBenchmark\Ting\Query\Cached\PreparedQuery
     {
         return $this->queryFactory->getCachedPrepared(
             $sql,
