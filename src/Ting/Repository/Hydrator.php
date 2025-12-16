@@ -329,22 +329,13 @@ class Hydrator implements HydratorInterface
                     }
                 }
                 
-                if ($id !== '') {
-                    $ref = $column['table'] . '-' . $id;
-                    if (isset($this->references[$ref]) === true) {
-
-                        // This entity was already created and stored into references
-                        if ($this->identityMap === false) {
-                            // If identityMap is disabled, it clones the object and reset UUID
-                            $result[$column['table']] = clone $this->references[$ref];
-                        } else {
-                            // If identityMap is enabled, it uses the same object
-                            $result[$column['table']] = $this->references[$ref];
-                        }
-                        $validEntities[$column['table']]  = true;
-                        $fromReferences[$column['table']] = true;
-                        continue;
-                    }
+                if ($id !== '' && $this->identityMap && isset($this->references[$ref = $column['table'] . '-' . $id]) === true) {
+                    // This entity was already created and stored into references
+                    // If identityMap is enabled, reuse the same object
+                    $result[$column['table']] = $this->references[$ref];
+                    $validEntities[$column['table']]  = true;
+                    $fromReferences[$column['table']] = true;
+                    continue;
                 }
 
                 if (isset($result[$column['table']]) === false) {
@@ -416,7 +407,7 @@ class Hydrator implements HydratorInterface
                     }
                 }
 
-                if (isset($this->references[$ref]) === false) {
+                if (isset($this->references[$ref]) === false && $this->identityMap) {
                     $this->references[$ref] = $entity;
                 }
             }
