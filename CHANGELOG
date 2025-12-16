@@ -20,6 +20,9 @@
     * Improvement: PHPStan custom extension for properties (CCMBenchmark\Ting\PHPStan\PropertiesExtension)
 
 
+3.12.1 (2025-12-16):
+    * Fix Hydrator: disable identity map now prevent storing entities
+
 3.12.0 (2025-04-17):
     * add __debuginfo() in NotifyInterface to reduce context when dumping an entity
     * Driver now supports reconnect, useful in forked processes
