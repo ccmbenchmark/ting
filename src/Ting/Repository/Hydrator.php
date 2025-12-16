@@ -416,7 +416,7 @@ class Hydrator implements HydratorInterface
                     }
                 }
 
-                if (isset($this->references[$ref]) === false) {
+                if (isset($this->references[$ref]) === false && $this->identityMap) {
                     $this->references[$ref] = $entity;
                 }
             }
