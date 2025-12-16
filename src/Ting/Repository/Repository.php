@@ -25,6 +25,10 @@
 
 namespace CCMBenchmark\Ting\Repository;
 
+use Aura\SqlQuery\Common\DeleteInterface;
+use Aura\SqlQuery\Common\InsertInterface;
+use Aura\SqlQuery\Common\SelectInterface;
+use Aura\SqlQuery\Common\UpdateInterface;
 use Aura\SqlQuery\QueryFactory as AuraQueryFactory;
 use Aura\SqlQuery\QueryInterface;
 use CCMBenchmark\Ting\Connection;
@@ -201,14 +205,14 @@ abstract class Repository
 
 
     /**
+     * @deprecated Use get{Select,Update,Delete,Insert}QueryBuilder instead
      * @param string $type One of the QUERY_ constant
      * @return QueryInterface
      * @throws DriverException
      */
     public function getQueryBuilder($type)
     {
-        $driver = $this->connectionPool->getDriverClass($this->metadata->getConnectionName());
-        $driver = ltrim($driver, '\\');
+        $driver = $this->getDriverForConnection();
 
         switch ($driver) {
             case Pgsql\Driver::class:
@@ -231,6 +235,39 @@ abstract class Repository
         };
 
         return $queryBuilder;
+    }
+
+    public function getSelectQueryBuilder(): SelectInterface
+    {
+        $driver = $this->getDriverForConnection();
+        $queryFactory = $this->getQueryFactoryForDriver($driver);
+
+        return $queryFactory->newSelect();
+    }
+
+
+    public function getUpdateQueryBuilder(): UpdateInterface
+    {
+        $driver = $this->getDriverForConnection();
+        $queryFactory = $this->getQueryFactoryForDriver($driver);
+
+        return $queryFactory->newUpdate();
+    }
+
+    public function getDeleteQueryBuilder(): DeleteInterface
+    {
+        $driver = $this->getDriverForConnection();
+        $queryFactory = $this->getQueryFactoryForDriver($driver);
+
+        return $queryFactory->newDelete();
+    }
+
+    public function getInsertQueryBuilder(): InsertInterface
+    {
+        $driver = $this->getDriverForConnection();
+        $queryFactory = $this->getQueryFactoryForDriver($driver);
+
+        return $queryFactory->newInsert();
     }
 
     /**
@@ -402,5 +439,29 @@ abstract class Repository
     public function getMetadata()
     {
         return $this->metadata;
+    }
+
+    private function getDriverForConnection(): string
+    {
+        $driver = $this->connectionPool->getDriverClass($this->metadata->getConnectionName());
+        return ltrim($driver, '\\');
+    }
+
+    private function getQueryFactoryForDriver(string $driver): AuraQueryFactory
+    {
+        switch ($driver) {
+            case Pgsql\Driver::class:
+                $queryFactory = new AuraQueryFactory('pgsql');
+                break;
+            case SphinxQL\Driver::class:
+                // SphinxQL and Mysqli are sharing the same driver
+            case Mysqli\Driver::class:
+                $queryFactory = new AuraQueryFactory('mysql');
+                break;
+            default:
+                throw new DriverException('Driver ' . $driver . ' is unknown to build QueryBuilder');
+        }
+
+        return $queryFactory;
     }
 }
