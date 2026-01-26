@@ -35,9 +35,10 @@ use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
+use Symfony\Contracts\Service\ResetInterface;
 use function is_null;
 
-class Driver implements DriverInterface
+class Driver implements DriverInterface, ResetInterface
 {
 
     /**
@@ -559,5 +560,32 @@ class Driver implements DriverInterface
         }
         $this->connection->query(sprintf($query, $value));
         $this->currentTimezone = $timezone;
+    }
+
+    /**
+     * Reset state between requests (worker mode: FrankenPHP, Swoole, RoadRunner, etc.)
+     */
+    public function reset(): void
+    {
+        // Rollback any open transaction to prevent state leaks
+        if ($this->transactionOpened === true && $this->connected === true) {
+            @$this->connection->rollback();
+            $this->transactionOpened = false;
+        }
+
+        // Close the connection to avoid server-side timeouts
+        $this->close();
+
+        // Reinitialize connection object for next request
+        $this->connection = \mysqli_init();
+        $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
+
+        // Clear prepared queries as they are connection-scoped
+        $this->preparedQueries = [];
+
+        // Reset connection state
+        $this->currentDatabase = null;
+        $this->currentCharset = null;
+        $this->currentTimezone = null;
     }
 }
