@@ -33,9 +33,8 @@ use CCMBenchmark\Ting\Exceptions\StatementException;
 use CCMBenchmark\Ting\Exceptions\TransactionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
-use Symfony\Contracts\Service\ResetInterface;
 
-class Driver implements DriverInterface, ResetInterface
+class Driver implements DriverInterface
 {
 
     /**
@@ -525,26 +524,5 @@ class Driver implements DriverInterface, ResetInterface
         }
         pg_query($this->connection, sprintf($query, $value));
         $this->currentTimezone = $timezone;
-    }
-
-    /**
-     * Reset state between requests (worker mode: FrankenPHP, Swoole, RoadRunner, etc.)
-     */
-    public function reset(): void
-    {
-        // Rollback any open transaction to prevent state leaks
-        if ($this->transactionOpened === true && $this->connection !== null) {
-            @pg_query($this->connection, 'ROLLBACK');
-            $this->transactionOpened = false;
-        }
-
-        // Clear last result reference
-        $this->result = null;
-
-        // Close the connection to avoid server-side timeouts
-        $this->close();
-
-        // Clear prepared queries as they are connection-scoped
-        $this->preparedQueries = [];
     }
 }

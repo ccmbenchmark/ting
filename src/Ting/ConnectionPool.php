@@ -27,7 +27,6 @@ namespace CCMBenchmark\Ting;
 use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exceptions\ConnectionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
-use Symfony\Contracts\Service\ResetInterface;
 
 class ConnectionPool implements ConnectionPoolInterface, ResetInterface
 {

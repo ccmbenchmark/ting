@@ -37,6 +37,7 @@ use CCMBenchmark\Ting\Exceptions\DriverException;
 use CCMBenchmark\Ting\Exceptions\RepositoryException;
 use CCMBenchmark\Ting\MetadataRepository;
 use CCMBenchmark\Ting\Query\QueryFactory;
+use CCMBenchmark\Ting\ResetInterface;
 use CCMBenchmark\Ting\Serializer\SerializerFactoryInterface;
 use CCMBenchmark\Ting\UnitOfWork;
 use Doctrine\Common\Cache\Cache;
@@ -44,7 +45,7 @@ use Doctrine\Common\Cache\Cache;
 /**
  * @template T
  */
-abstract class Repository
+abstract class Repository implements ResetInterface
 {
 
     const QUERY_SELECT = 'select';
@@ -411,5 +412,11 @@ abstract class Repository
     public function getMetadata()
     {
         return $this->metadata;
+    }
+
+    public function reset(): void
+    {
+        $this->unitOfWork->reset();
+        $this->connection = $this->metadata->getConnection($this->connectionPool);
     }
 }
