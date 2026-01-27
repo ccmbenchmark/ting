@@ -38,9 +38,8 @@ use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 use CCMBenchmark\Ting\Repository\CollectionInterface;
 
 use mysqli_sql_exception;
-use Symfony\Contracts\Service\ResetInterface;
 
-class Driver implements DriverInterface, ResetInterface
+class Driver implements DriverInterface
 {
     /**
      * @var string
@@ -562,32 +561,5 @@ class Driver implements DriverInterface, ResetInterface
         } catch (\Exception $e) {
             return false;
         }
-    }
-
-    /**
-     * Reset state between requests (worker mode: FrankenPHP, Swoole, RoadRunner, etc.)
-     */
-    public function reset(): void
-    {
-        // Rollback any open transaction to prevent state leaks
-        if ($this->transactionOpened === true && $this->connected === true) {
-            @$this->connection->rollback();
-            $this->transactionOpened = false;
-        }
-
-        // Close the connection to avoid server-side timeouts
-        $this->close();
-
-        // Reinitialize connection object for next request
-        $this->connection = \mysqli_init();
-        $this->connection->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
-
-        // Clear prepared queries as they are connection-scoped
-        $this->preparedQueries = [];
-
-        // Reset connection state
-        $this->currentDatabase = null;
-        $this->currentCharset = null;
-        $this->currentTimezone = null;
     }
 }

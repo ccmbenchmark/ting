@@ -32,7 +32,6 @@ use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Repository\Metadata;
 use WeakMap;
-use Symfony\Contracts\Service\ResetInterface;
 
 class UnitOfWork implements PropertyListenerInterface, ResetInterface
 {
