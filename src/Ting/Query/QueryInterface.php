@@ -35,13 +35,6 @@ use CCMBenchmark\Ting\Repository\CollectionFactoryInterface;
 interface QueryInterface
 {
     /**
-     * @param string $sql
-     * @param Connection $connection
-     * @param CollectionFactoryInterface $collectionFactory
-     */
-    public function __construct($sql, Connection $connection, ?CollectionFactoryInterface $collectionFactory = null);
-
-    /**
      * Execute a reading query (SELECT, SHOW, etc.)
      * @param CollectionInterface<T>|null $collection
      * @return CollectionInterface<T>

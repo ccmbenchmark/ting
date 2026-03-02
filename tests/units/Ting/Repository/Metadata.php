@@ -693,7 +693,7 @@ class Metadata extends atoum
         $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
 
         $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
-        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface();
         $this->calling($mockDriver)->prepare = $mockStatement;
         $this->calling($mockDriver)->execute = true;
         $this->calling($mockStatement)->execute = true;
@@ -960,7 +960,7 @@ class Metadata extends atoum
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
-        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface();
         $this->calling($mockDriver)->prepare = $mockStatement;
         $this->calling($mockDriver)->execute = true;
         $this->calling($mockStatement)->execute = true;
@@ -1018,7 +1018,7 @@ class Metadata extends atoum
     {
         $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
         $mockDriver = new \mock\tests\fixtures\FakeDriver\Driver();
-        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface(new \stdClass(), [], '', '');
+        $mockStatement = new \mock\CCMBenchmark\Ting\Driver\StatementInterface();
         $this->calling($mockDriver)->prepare = $mockStatement;
         $this->calling($mockDriver)->execute = true;
         $this->calling($mockStatement)->execute = true;

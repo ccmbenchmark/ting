@@ -32,14 +32,6 @@ use CCMBenchmark\Ting\Repository\CollectionInterface;
 interface StatementInterface
 {
     /**
-     * @param mysqli_stmt|Object $driverStatement
-     * @param array               $paramsOrder
-     * @param string              $connectionName
-     * @param string              $database
-     */
-    public function __construct($driverStatement, array $paramsOrder, string $connectionName, string $database);
-
-    /**
      * @param array $params
      * @throws QueryException
      */
