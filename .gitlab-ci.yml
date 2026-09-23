@@ -1,0 +1,32 @@
+include:
+  - project: 'core/ci'
+    ref: master
+    file: '/templates/update-satis.yml'
+
+stages:
+  - tests
+  - satis
+
+.unit_tests-latest:
+  stage: tests
+  image: registry.ccmbg.com:5005/sysadmin/docker-php:${PHP_VERSION}-composer2
+  variables:
+    https_proxy: "http://172.16.2.10:80"
+    http_proxy: "http://172.16.2.10:80"
+  parallel:
+    matrix:
+      - PHP_VERSION: ['8.0', '8.1', '8.2', '8.3', '8.4']
+  script:
+    - echo "Run tests with latest deps"
+    - composer install --prefer-source --no-interaction
+    - vendor/bin/atoum
+
+unit_tests_latest:
+  extends: .unit_tests-latest
+
+unit_tests-lowest:
+  extends: .unit_tests-latest
+  script:
+    - echo "Run tests with lowest deps"
+    - composer update --prefer-lowest --prefer-source --no-interaction
+    - vendor/bin/atoum
