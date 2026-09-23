@@ -27,7 +27,7 @@
     "require-dev": {
         "ext-pgsql": "*",
         "ext-mysqli": "*",
-        "atoum/atoum": "^4.0",
+        "atoum/atoum": "^4.2",
         "atoum/stubs": "^2.0",
         "brick/geo": "^0.5.1",
 	    "pimple/pimple": "^3.0",
