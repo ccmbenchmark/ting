@@ -33,7 +33,7 @@ use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Repository\Metadata;
 use WeakMap;
 
-class UnitOfWork implements PropertyListenerInterface
+class UnitOfWork implements PropertyListenerInterface, ResetInterface
 {
     public const STATE_NEW     = 1;
     public const STATE_MANAGED = 2;
@@ -217,6 +217,15 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entitiesChanged = new WeakMap();
         $this->entitiesShouldBePersisted = [];
         $this->entities = new WeakMap();
+    }
+
+    /**
+     * Reset state between requests (worker mode: FrankenPHP, Swoole, RoadRunner, etc.)
+     */
+    public function reset(): void
+    {
+        $this->detachAll();
+        $this->statements = [];
     }
 
     /**

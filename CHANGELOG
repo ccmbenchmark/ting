@@ -1,3 +1,7 @@
+Unreleased:
+    * Drop PHP 8.0 support, PHP >= 8.1 is now required
+    * Add ResetInterface on ConnectionPool, UnitOfWork and Repository to reset state between requests (worker mode)
+
 3.12.1 (2025-12-16):
     * Fix Hydrator: disable identity map now prevent storing entities
 
