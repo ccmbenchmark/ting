@@ -1,7 +1,6 @@
 {
     "name": "ccmbenchmark/ting",
     "description": "Ting : a lightweight datamapper",
-    "homepage": "http://tech.ccmbg.com/ting/",
     "keywords": [
         "datamapper",
         "database",
@@ -14,9 +13,8 @@
         "pgsql"
     ],
     "support": {
-        "issues": "https://bitbucket.org/ccmbenchmark/ting/issues",
-        "source": "https://bitbucket.org/ccmbenchmark/ting",
-        "docs": "http://tech.ccmbg.com/ting/doc/en/"
+        "issues": "https://gitlab.ccmbg.com/core/ting/-/issues",
+        "source": "https://gitlab.ccmbg.com/core/ting"
     },
     "type": "library",
     "license": "Apache-2.0",
@@ -29,7 +27,7 @@
     "require-dev": {
         "ext-pgsql": "*",
         "ext-mysqli": "*",
-        "atoum/atoum": "^4.0",
+        "atoum/atoum": "^4.2",
         "atoum/stubs": "^2.0",
         "brick/geo": "^0.5.1",
 	    "pimple/pimple": "^3.0",
