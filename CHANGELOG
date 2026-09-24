@@ -1,4 +1,4 @@
-Unreleased:
+3.13.0 (2026-09-24):
     * Drop PHP 8.0 support, PHP >= 8.1 is now required
     * Add ResetInterface on ConnectionPool, UnitOfWork and Repository to reset state between requests (worker mode)
 
