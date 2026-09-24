@@ -27,6 +27,7 @@ namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use atoum;
 use tests\fixtures\model\Bouh;
+use tests\fixtures\model\Tree;
 
 class NotifyProperty extends atoum
 {
@@ -92,6 +93,48 @@ class NotifyProperty extends atoum
         $this
             ->array($serialized = $entity->__serialize())
             ->isIdenticalTo($expected)
+        ;
+    }
+
+    public function testUnserializeShouldRestorePrivateProperties()
+    {
+        $this
+            ->given($entity = unserialize(serialize(new Tree(5, 3))))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
+    /**
+     * @extensions igbinary
+     */
+    public function testIgbinaryUnserializeShouldRestorePrivateProperties()
+    {
+        $this
+            ->given($entity = igbinary_unserialize(igbinary_serialize(new Tree(5, 3))))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
+    public function testSerializeShouldKeepOnlyThePropertiesListedBySleep()
+    {
+        $this
+            ->given($entity = new Tree(5, 3, new Tree(3)))
+            ->array($entity->__serialize())
+            ->isIdenticalTo(['id' => 5, 'parent' => 3])
+            ->variable(unserialize(serialize($entity))->getHydratedParent())
+            ->isNull()
+        ;
+    }
+
+    public function testUnserializeShouldNotRestoreListeners()
+    {
+        $this
+            ->given($entity = new Tree(5))
+            ->and($entity->addPropertyListener(new \mock\CCMBenchmark\Ting\Entity\PropertyListenerInterface()))
+            ->array((fn () => $this->listeners)->call(unserialize(serialize($entity))))
+            ->isEmpty()
         ;
     }
 }

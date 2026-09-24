@@ -64,11 +64,32 @@ trait NotifyProperty
         return $properties;
     }
 
+    /**
+     * Serializes the entity without its listeners.
+     * When the entity defines __sleep(), only the properties it lists are kept,
+     * as PHP ignores __sleep() once __serialize() exists.
+     */
     public function __serialize(): array
     {
         $properties = get_object_vars($this);
         unset($properties['listeners']);
 
+        if (method_exists($this, '__sleep')) {
+            $properties = array_intersect_key($properties, array_flip($this->__sleep()));
+        }
+
         return $properties;
+    }
+
+    /**
+     * Restores the properties written by __serialize().
+     * Without it, igbinary restores the data as public properties and the
+     * private properties of the entity stay null.
+     */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $property => $value) {
+            $this->$property = $value;
+        }
     }
 }
