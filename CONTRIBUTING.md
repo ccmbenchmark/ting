@@ -1,28 +1,26 @@
-Contributing
+Contribuer
 ------------
 
-Ting is an internal CCMBenchmark project, hosted on GitLab.
+Ting est un projet interne CCMBenchmark, hébergé sur GitLab.
 
-If you'd like to contribute, please respect the following standards :
+Si vous souhaitez contribuer, merci de respecter les standards suivants :
 
-* [**Code formating**][1]: Ting completely follows the PSR-2 standard.
-Be sure that your code does so.
-* **Unit tests**: Ting has a good code coverage for every feature, using [atoum][2].
-Please add relevant tests to cover your new feature.
-* **Backward Compatibility**: Ting follows the [semver][3] standard. The main principle is that a minor version can not bring any BC Break. Please be sure that you chose the correct target version for your patch.
-If your feature needs a BC Break, we strongly encourage you to discuss it through the [issues][4] before to write any code. We'll discuss about the release of the next major version.
-* **Merge Request Template**: The description of your merge request must contains the following header (after the explaination):
+* [**Formatage du code**][1] : Ting suit intégralement le standard PSR-2. Assurez-vous que votre code fait de même.
+* **Tests unitaires** : Ting a une bonne couverture de code pour chaque fonctionnalité, en utilisant [atoum][2]. Merci d'ajouter les tests pertinents pour couvrir votre nouvelle fonctionnalité.
+* **Compatibilité ascendante (BC)** : Ting suit le standard [semver][3]. Le principe principal est qu'une version mineure ne doit apporter aucun BC Break. Assurez-vous de choisir la bonne version cible pour votre patch.
+Si votre fonctionnalité nécessite un BC Break, nous vous encourageons fortement à en discuter via les [issues][4] avant d'écrire du code. Nous discuterons alors de la sortie de la prochaine version majeure.
+* **Template de Merge Request** : la description de votre merge request doit contenir l'en-tête suivant (après l'explication) :
 
 ```markdown
-| Q             | A
-| ------------- | ---
-| Bug fix?      | yes/no
-| New feature?  | yes/no
-| BC breaks?    | yes/no
-| Deprecations? | yes/no
-| Tests pass?   | yes
-| Licence       | Apache-2.0
-| Fixed tickets | #1234
+| Q                    | A
+| -------------------- | ---
+| Correction de bug ?  | oui/non
+| Nouvelle fonctionnalité ? | oui/non
+| BC break ?           | oui/non
+| Dépréciations ?      | oui/non
+| Tests passants ?     | oui
+| Licence              | Apache-2.0
+| Tickets corrigés     | #1234
 ```
 [1]: http://www.php-fig.org/psr/psr-2/
 [2]: http://docs.atoum.org/fr/latest/

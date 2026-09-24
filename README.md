@@ -1,62 +1,61 @@
-# Ting - PHP Datamapper
+# Ting - DataMapper PHP
 
-Ting is a simple DataMapper implementation for PHP. It runs with MySQL and PostgreSQL and is
-under Apache-2.0 licence.
+Ting est une implémentation simple du pattern DataMapper pour PHP. Il fonctionne avec MySQL et PostgreSQL, sous licence Apache-2.0.
 
-It has some distinctive features and design choices :
+Il a quelques particularités et choix de conception distinctifs :
 
-* Pure PHP implementation (no PDO, no XML)
-* No abstraction layer : you speak the language of your RDBMS
-* Fast, low memory consumption
-* Simple to use, simple to extend
+* Implémentation 100% PHP (pas de PDO, pas de XML)
+* Pas de couche d'abstraction : vous parlez directement le langage de votre SGBD
+* Rapide, faible consommation mémoire
+* Simple à utiliser, simple à étendre
 
-You can read this few examples, or see more [samples](sample/).
+Vous pouvez lire ces quelques exemples, ou consulter plus d'[exemples](sample/).
 
-If you use Symfony, see [ting_bundle](https://gitlab.ccmbg.com/core/ting_bundle) for the integration layer (YAML/attributes configuration, Value Resolver, User Provider, etc.).
+Si vous utilisez Symfony, voir [ting_bundle](https://gitlab.ccmbg.com/core/ting_bundle) pour la couche d'intégration (configuration YAML/attributs, Value Resolver, User Provider, etc.).
 
-## Table of contents
+## Sommaire
 - [Bootstrap](#bootstrap)
-- [Declaring an entity](#declaring-an-entity)
-- [Retrieve object by ID](#retrieve-object-by-id)
-- [Simple query](#simple-query)
-- [Prepared Statement](#prepared-statement)
-- [QueryBuilder](#querybuilder-provided-by-aurasqlquery)
-- [Writing: the UnitOfWork](#writing--the-unitofwork)
+- [Déclarer une entité](#déclarer-une-entité)
+- [Récupérer un objet par ID](#récupérer-un-objet-par-id)
+- [Requête simple](#requête-simple)
+- [Requête préparée](#requête-préparée)
+- [QueryBuilder](#querybuilder-fourni-par-aurasqlquery)
+- [Écriture : l'UnitOfWork](#écriture--lunitofwork)
 - [Hydrators](#hydrators)
 - [Serializers](#serializers)
 - [Drivers](#drivers)
 
 ## Bootstrap
 
-Everything starts with `CCMBenchmark\Ting\Services`, a small [Pimple](https://github.com/silex/Pimple) container that wires together the `ConnectionPool`, `MetadataRepository`, `UnitOfWork`, `RepositoryFactory`, etc.
+Tout part de `CCMBenchmark\Ting\Services`, un petit conteneur [Pimple](https://github.com/silex/Pimple) qui assemble `ConnectionPool`, `MetadataRepository`, `UnitOfWork`, `RepositoryFactory`, etc.
 
 ```php
 <?php
 $services = new \CCMBenchmark\Ting\Services();
 
-// Load every *Repository.php file matching the pattern and register their Metadata
+// Charge tous les fichiers *Repository.php correspondant au motif et enregistre leur Metadata
 $services
     ->get('MetadataRepository')
     ->batchLoadMetadata('sample\src\model', __DIR__ . '/model/*Repository.php');
 
-// Configure your connections
+// Configuration des connexions
 $connections = [
     'main' => [
-        'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli', // or \CCMBenchmark\Ting\Driver\Pgsql
+        'namespace' => '\CCMBenchmark\Ting\Driver\Mysqli', // ou \CCMBenchmark\Ting\Driver\Pgsql
         'master' => [
             'host'     => '127.0.0.1',
             'user'     => 'root',
             'password' => 'p455w0rd',
             'port'     => 3306,
         ],
-        'slaves' => [ // optional, a random slave is picked and reused for the pool's lifetime
+        'slaves' => [ // optionnel, un slave est choisi au hasard et réutilisé pour la durée de vie du pool
             ['host' => '127.0.0.1', 'user' => 'root', 'password' => 'p455w0rd', 'port' => 3306],
         ],
     ],
 ];
 $services->get('ConnectionPool')->setConfig($connections);
 
-// Optional: per-database options (e.g. timezone)
+// Optionnel : options par base de données (ex: timezone)
 $services->get('ConnectionPool')->setDatabaseOptions([
     'world' => ['timezone' => 'UTC+1'],
 ]);
@@ -64,11 +63,11 @@ $services->get('ConnectionPool')->setDatabaseOptions([
 $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 ```
 
-`pimple/pimple` is required for `Services` (`composer require pimple/pimple`), it's only suggested by `ting` to keep it optional if you wire the components yourself.
+`pimple/pimple` est requis pour `Services` (`composer require pimple/pimple`) ; `ting` ne fait que le suggérer, pour rester optionnel si vous assemblez les composants vous-même.
 
-## Declaring an entity
+## Déclarer une entité
 
-An entity is a plain PHP class. Every settable/gettable property that must be tracked for the `UnitOfWork` (see below) needs to implement `NotifyPropertyInterface`, usually via the `NotifyProperty` trait, and call `propertyChanged()` in every setter:
+Une entité est une simple classe PHP. Chaque propriété accessible en lecture/écriture qui doit être suivie par l'`UnitOfWork` (voir plus bas) doit implémenter `NotifyPropertyInterface`, généralement via le trait `NotifyProperty`, et appeler `propertyChanged()` dans chaque setter :
 
 ```php
 <?php
@@ -108,7 +107,7 @@ class City implements NotifyPropertyInterface
 }
 ```
 
-The mapping between an entity and its table lives in the **Repository**, which must implement `MetadataInitializer::initMetadata()` and return a `Metadata` describing the table and its fields:
+Le mapping entre une entité et sa table vit dans le **Repository**, qui doit implémenter `MetadataInitializer::initMetadata()` et retourner un `Metadata` décrivant la table et ses champs :
 
 ```php
 <?php
@@ -125,7 +124,7 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
         $metadata = new Metadata($serializerFactory);
 
         $metadata->setEntity('sample\src\model\City');
-        $metadata->setConnectionName('main'); // must match a key in the connections config
+        $metadata->setConnectionName('main'); // doit correspondre à une clé de la config des connexions
         $metadata->setDatabase('world');
         $metadata->setTable('t_city_cit');
 
@@ -148,22 +147,22 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
 }
 ```
 
-`MetadataRepository::batchLoadMetadata()` scans matching files, requires them, and calls `initMetadata()` on every class implementing `MetadataInitializer` to register their `Metadata`.
+`MetadataRepository::batchLoadMetadata()` scanne les fichiers correspondants, les charge (`require`), et appelle `initMetadata()` sur chaque classe implémentant `MetadataInitializer` pour enregistrer son `Metadata`.
 
-> If you're on Symfony, `ting_bundle` lets you declare this mapping with `#[Schema\Table]` / `#[Schema\Column]` attributes directly on the entity instead of writing `initMetadata()` by hand.
+> Sous Symfony, `ting_bundle` permet de déclarer ce mapping avec les attributs `#[Schema\Table]` / `#[Schema\Column]` directement sur l'entité, plutôt que d'écrire `initMetadata()` à la main.
 
-## Retrieve object by ID
+## Récupérer un objet par ID
 
     <?php
     $cityRepository = $services->get('RepositoryFactory')->get('\sample\src\model\CityRepository');
 
-    ## Retrieve city by id :
+    ## Récupérer une ville par son id :
     $city = $cityRepository->get(3);
 
-## Simple query
+## Requête simple
 
     <?php
-    # This query supports the same syntax as prepared statements, but it'll be a regular query
+    # Cette requête accepte la même syntaxe qu'une requête préparée, mais reste une requête classique
     $query = $cityRepository->getQuery(
         "select cit_id, cit_name, c.cou_code, cit_district, cit_population, last_modified,
             co.cou_code, cou_name, cou_continent, cou_region, cou_head_of_state
@@ -179,15 +178,15 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
         echo str_repeat("-", 40) . "\n";
     }
 
-## Prepared Statement
+## Requête préparée
 
     <?php
-    // Simple query :
+    // Requête simple :
     $query = $cityRepository->getQuery('SQL Statement');
-    // Prepared statement :
+    // Requête préparée :
     $query = $cityRepository->getPreparedQuery('SQL Statement');
 
-## QueryBuilder provided by [aura/sqlquery](https://github.com/auraphp/Aura.SqlQuery)
+## QueryBuilder fourni par [aura/sqlquery](https://github.com/auraphp/Aura.SqlQuery)
 
     <?php
     $queryBuilder = $cityRepository->getQueryBuilder($cityRepository::QUERY_SELECT);
@@ -196,9 +195,9 @@ class CityRepository extends \CCMBenchmark\Ting\Repository\Repository implements
         ->from('t_city_cit');
     $query = $cityRepository->getQuery($queryBuilder->getStatement());
 
-## Writing : the UnitOfWork
+## Écriture : l'UnitOfWork
 
-Ting tracks changes on managed entities and batches writes through `UnitOfWork`, retrieved from `$services->get('UnitOfWork')`.
+Ting suit les changements sur les entités gérées et regroupe les écritures via `UnitOfWork`, récupéré via `$services->get('UnitOfWork')`.
 
 ```php
 <?php
@@ -206,29 +205,29 @@ $unitOfWork = $services->get('UnitOfWork');
 
 $city = $cityRepository->get(3);
 $city->setName('Boum');
-$unitOfWork->pushSave($city); // flags an update (entity already known/managed)
+$unitOfWork->pushSave($city); // marque une mise à jour (entité déjà connue/gérée)
 
 $newCity = new \sample\src\model\City();
 $newCity->setName('Bouh');
-$unitOfWork->pushSave($newCity); // flags an insert (entity is new)
+$unitOfWork->pushSave($newCity); // marque une insertion (entité nouvelle)
 
-$unitOfWork->process(); // executes all flagged inserts/updates against the database
+$unitOfWork->process(); // exécute tous les insert/update en attente sur la base
 
 $unitOfWork->pushDelete($newCity);
-$unitOfWork->process(); // executes the delete
+$unitOfWork->process(); // exécute la suppression
 ```
 
-Other useful methods: `isManaged()`, `isNew()`, `shouldBePersisted()`, `shouldBeRemoved()`, `detach()`/`detachAll()` (stop tracking an entity). Transactions are handled at the repository level: `$repository->startTransaction()` / `$repository->rollback()`.
+Autres méthodes utiles : `isManaged()`, `isNew()`, `shouldBePersisted()`, `shouldBeRemoved()`, `detach()`/`detachAll()` (arrêter de suivre une entité). Les transactions se gèrent au niveau du repository : `$repository->startTransaction()` / `$repository->rollback()`.
 
 ## Hydrators
 
-A `Query` hydrates its result set through a hydrator (`$query->query(new Collection($hydrator))`). Several hydrators are available from `$services`, depending on the shape of data you need:
+Une `Query` hydrate son jeu de résultats via un hydrator (`$query->query(new Collection($hydrator))`). Plusieurs hydrators sont disponibles via `$services`, selon la forme de données souhaitée :
 
-* `Hydrator` (default) : hydrates a `Collection` of entities.
-* `HydratorSingleObject` : hydrates one row into one aggregate object, useful with `mapAliasTo()` (map a virtual/aliased column like `COUNT(*)` or `NOW()` to a setter) and `mapObjectTo()` (map a joined table's columns to a related object).
-* `HydratorAggregator` : aggregates several rows into groups (e.g. a parent with a list of children), driven by `callableIdIs()` / `callableDataIs()`.
-* `HydratorRelational` : declarative version of the above, using `CCMBenchmark\Ting\Repository\Hydrator\RelationOne` / `RelationMany` (with `AggregateFrom`/`AggregateTo`) to describe one-to-one and one-to-many relations between the joined tables.
-* `HydratorArray` : hydrates rows as plain arrays instead of entities.
+* `Hydrator` (par défaut) : hydrate une `Collection` d'entités.
+* `HydratorSingleObject` : hydrate une ligne en un seul objet agrégat, utile avec `mapAliasTo()` (mapper une colonne virtuelle/aliasée comme `COUNT(*)` ou `NOW()` vers un setter) et `mapObjectTo()` (mapper les colonnes d'une table jointe vers un objet lié).
+* `HydratorAggregator` : agrège plusieurs lignes en groupes (ex : un parent avec une liste d'enfants), piloté par `callableIdIs()` / `callableDataIs()`.
+* `HydratorRelational` : version déclarative de ce qui précède, via `CCMBenchmark\Ting\Repository\Hydrator\RelationOne` / `RelationMany` (avec `AggregateFrom`/`AggregateTo`) pour décrire des relations one-to-one et one-to-many entre les tables jointes.
+* `HydratorArray` : hydrate les lignes sous forme de tableaux plutôt que d'entités.
 
 ```php
 <?php
@@ -242,7 +241,7 @@ $hydrator = $services->get('HydratorRelational');
 $hydrator->addRelation(new \CCMBenchmark\Ting\Repository\Hydrator\RelationOne(
     new \CCMBenchmark\Ting\Repository\Hydrator\AggregateFrom('t_country_cou', 'getCode'),
     new \CCMBenchmark\Ting\Repository\Hydrator\AggregateTo('t_city_cit', 'getId'),
-    'countryIs' // setter called on the City entity
+    'countryIs' // setter appelé sur l'entité City
 ));
 
 $collection = $query->query(new \CCMBenchmark\Ting\Repository\Collection($hydrator));
@@ -251,28 +250,28 @@ foreach ($collection as $city) {
 }
 ```
 
-See `sample/src/main.php` and `sample/src/mainUnitOfWork.php` for complete, runnable examples (simple query, prepared statement, `UnitOfWork`, aggregated and relational hydration).
+Voir `sample/src/main.php` et `sample/src/mainUnitOfWork.php` pour des exemples complets et exécutables (requête simple, requête préparée, `UnitOfWork`, hydratation agrégée et relationnelle).
 
 ## Serializers
 
-Serializers convert a PHP value to/from its database representation, used both for entity fields (via `Metadata::addField()`'s `type`) and for virtual/aliased columns (via `HydratorSingleObject::unserializeAliasWith()`). Available in `CCMBenchmark\Ting\Serializer`:
+Les serializers convertissent une valeur PHP vers/depuis sa représentation en base, utilisés à la fois pour les champs d'entité (via le `type` de `Metadata::addField()`) et pour les colonnes virtuelles/aliasées (via `HydratorSingleObject::unserializeAliasWith()`). Disponibles dans `CCMBenchmark\Ting\Serializer` :
 
 * `DateTime` / `DateTimeImmutable` / `DateTimeZone`
 * `BackedEnum`
-* `Uuid` (requires `symfony/uid`)
+* `Uuid` (nécessite `symfony/uid`)
 * `Ip`
 * `Json`
-* `Geometry` (requires `brick/geo`, for MariaDB Geometry columns)
+* `Geometry` (nécessite `brick/geo`, pour les colonnes Geometry MariaDB)
 
 ## Drivers
 
-Ting ships drivers for:
+Ting fournit des drivers pour :
 
-* MySQL (`CCMBenchmark\Ting\Driver\Mysqli`, requires `ext-mysqli`)
-* PostgreSQL (`CCMBenchmark\Ting\Driver\Pgsql`, requires `ext-pgsql`)
-* SphinxQL (`CCMBenchmark\Ting\Driver\SphinxQL`, speaks the MySQL protocol)
+* MySQL (`CCMBenchmark\Ting\Driver\Mysqli`, nécessite `ext-mysqli`)
+* PostgreSQL (`CCMBenchmark\Ting\Driver\Pgsql`, nécessite `ext-pgsql`)
+* SphinxQL (`CCMBenchmark\Ting\Driver\SphinxQL`, parle le protocole MySQL)
 
-The driver used by a connection is selected through the `namespace` key of its config (see [Bootstrap](#bootstrap)).
+Le driver utilisé par une connexion est sélectionné via la clé `namespace` de sa config (voir [Bootstrap](#bootstrap)).
 
-## More :
+## Plus :
 * [Issues](https://gitlab.ccmbg.com/core/ting/-/issues)
