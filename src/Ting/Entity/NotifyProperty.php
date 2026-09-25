@@ -85,10 +85,16 @@ trait NotifyProperty
      * Restores the properties written by __serialize().
      * Without it, igbinary restores the data as public properties and the
      * private properties of the entity stay null.
+     *
+     * Data serialized without __serialize() (Ting < 3.12, still in caches) names
+     * private and protected properties "\0Class\0name" and "\0*\0name":
+     * only the part after the last "\0" is the property name.
      */
     public function __unserialize(array $data): void
     {
-        foreach ($data as $property => $value) {
+        foreach ($data as $key => $value) {
+            $separator = strrpos($key, "\0");
+            $property = $separator === false ? $key : substr($key, $separator + 1);
             $this->$property = $value;
         }
     }

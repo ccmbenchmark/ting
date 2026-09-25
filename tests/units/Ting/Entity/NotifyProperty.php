@@ -117,6 +117,31 @@ class NotifyProperty extends atoum
         ;
     }
 
+    /**
+     * Donnees ecrites avant Ting 3.12, sans __serialize() : PHP nomme les proprietes
+     * privees "\0Classe\0nom" et les protegees "\0*\0nom".
+     */
+    public function testUnserializeShouldReadDataSerializedWithoutSerializeMethod()
+    {
+        $class = Tree::class;
+        $properties = [
+            "\0*\0listeners" => 'a:0:{}',
+            "\0" . $class . "\0id" => 'i:5;',
+            "\0" . $class . "\0parent" => 'i:3;',
+        ];
+        $body = '';
+        foreach ($properties as $name => $value) {
+            $body .= sprintf('s:%d:"%s";%s', strlen($name), $name, $value);
+        }
+        $data = sprintf('O:%d:"%s":%d:{%s}', strlen($class), $class, count($properties), $body);
+
+        $this
+            ->given($entity = unserialize($data))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
     public function testSerializeShouldKeepOnlyThePropertiesListedBySleep()
     {
         $this
