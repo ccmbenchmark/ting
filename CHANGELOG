@@ -1,5 +1,5 @@
 unreleased:
-    * Fix NotifyProperty serialization: add __unserialize() so igbinary restores private properties, and honour __sleep() of the entity
+    * Fix NotifyProperty serialization: entities read back from cache keep their private properties (igbinary lost them since 3.12), __sleep() is honoured again, and the serialized format is the PHP default one, readable by every Ting version
 
 3.13.0 (2026-09-24):
     * Drop PHP 8.0 support, PHP >= 8.1 is now required
