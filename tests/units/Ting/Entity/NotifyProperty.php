@@ -27,6 +27,9 @@ namespace tests\units\CCMBenchmark\Ting\Entity;
 
 use atoum;
 use tests\fixtures\model\Bouh;
+use tests\fixtures\model\Tree;
+use tests\fixtures\model\TreeChildWithPrivate;
+use tests\fixtures\model\TreeChildWithTrait;
 
 class NotifyProperty extends atoum
 {
@@ -78,20 +81,153 @@ class NotifyProperty extends atoum
         var_dump($entity);
 
         $expected = [
-            'id' => 20,
-            'firstname' => null,
-            'name' => 'Xavier',
-            'enabled' => null,
-            'price' => null,
-            'roles' => ['USER'],
-            'city' => null,
-            'retrievedTime' => null,
-            'originalCity' => null,
-            'cities' => [],
+            "\0*\0id" => 20,
+            "\0*\0firstname" => null,
+            "\0*\0name" => 'Xavier',
+            "\0*\0enabled" => null,
+            "\0*\0price" => null,
+            "\0*\0roles" => ['USER'],
+            "\0*\0city" => null,
+            "\0*\0retrievedTime" => null,
+            "\0*\0originalCity" => null,
+            "\0*\0cities" => [],
         ];
         $this
             ->array($serialized = $entity->__serialize())
             ->isIdenticalTo($expected)
         ;
+    }
+
+    public function testUnserializeShouldRestorePrivateProperties()
+    {
+        $this
+            ->given($entity = unserialize(serialize(new Tree(5, 3))))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
+    /**
+     * @extensions igbinary
+     */
+    public function testIgbinaryUnserializeShouldRestorePrivateProperties()
+    {
+        $this
+            ->given($entity = igbinary_unserialize(igbinary_serialize(new Tree(5, 3))))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
+    /**
+     * Donnees ecrites avant Ting 3.12, sans __serialize() : PHP nomme les proprietes
+     * privees "\0Classe\0nom" et les protegees "\0*\0nom".
+     */
+    public function testUnserializeShouldReadDataSerializedWithoutSerializeMethod()
+    {
+        $class = Tree::class;
+        $properties = [
+            "\0*\0listeners" => 'a:0:{}',
+            "\0" . $class . "\0id" => 'i:5;',
+            "\0" . $class . "\0parent" => 'i:3;',
+        ];
+        $body = '';
+        foreach ($properties as $name => $value) {
+            $body .= sprintf('s:%d:"%s";%s', strlen($name), $name, $value);
+        }
+        $data = sprintf('O:%d:"%s":%d:{%s}', strlen($class), $class, count($properties), $body);
+
+        $this
+            ->given($entity = unserialize($data))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
+    public function testSerializeShouldKeepOnlyThePropertiesListedBySleep()
+    {
+        $this
+            ->given($entity = new Tree(5, 3, new Tree(3)))
+            ->array($entity->__serialize())
+            ->isIdenticalTo(["\0" . Tree::class . "\0id" => 5, "\0" . Tree::class . "\0parent" => 3])
+            ->variable(unserialize(serialize($entity))->getHydratedParent())
+            ->isNull()
+        ;
+    }
+
+    public function testUnserializeShouldNotRestoreListeners()
+    {
+        $this
+            ->given($entity = new Tree(5))
+            ->and($entity->addPropertyListener(new \mock\CCMBenchmark\Ting\Entity\PropertyListenerInterface()))
+            ->array((fn () => $this->listeners)->call(unserialize(serialize($entity))))
+            ->isEmpty()
+        ;
+    }
+
+    /**
+     * Le format ecrit est celui de PHP sans __serialize() : une version de Ting qui n'a pas
+     * __unserialize() (3.9 a 3.13) relit l'entite, pendant un deploiement ou apres un retour arriere.
+     */
+    public function testSerializeShouldWriteThePhpDefaultFormat()
+    {
+        $this
+            ->array((new Tree(5, 3))->__serialize())
+            ->isIdenticalTo([
+                "\0" . Tree::class . "\0id" => 5,
+                "\0" . Tree::class . "\0parent" => 3,
+            ])
+        ;
+    }
+
+    /**
+     * Donnees ecrites par Ting 3.12 et 3.13 : noms de proprietes sans prefixe.
+     */
+    public function testUnserializeShouldReadDataWrittenByTing312()
+    {
+        $class = Tree::class;
+        $data = sprintf('O:%d:"%s":2:{s:2:"id";i:5;s:6:"parent";i:3;}', strlen($class), $class);
+
+        $this
+            ->given($entity = unserialize($data))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->integer($entity->getParent())->isIdenticalTo(3)
+        ;
+    }
+
+    /**
+     * @dataProvider serializers
+     */
+    public function testUnserializeShouldRestorePrivatePropertiesOfAChildEntity(string $serialize, string $unserialize)
+    {
+        $this
+            ->given($entity = $unserialize($serialize(new TreeChildWithPrivate(5, 'parent', 'child'))))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->string($entity->getParentSecret())->isIdenticalTo('parent')
+            ->string($entity->getChildSecret())->isIdenticalTo('child')
+        ;
+    }
+
+    /**
+     * @dataProvider serializers
+     */
+    public function testUnserializeShouldRestorePrivatePropertiesOfAParentClassWithoutTheTrait(string $serialize, string $unserialize)
+    {
+        $this
+            ->given($entity = $unserialize($serialize(new TreeChildWithTrait(5, 'parent'))))
+            ->integer($entity->getId())->isIdenticalTo(5)
+            ->string($entity->getParentSecret())->isIdenticalTo('parent')
+            ->array(get_object_vars($entity))->notHasKey('parentSecret')
+        ;
+    }
+
+    protected function serializers(): array
+    {
+        $serializers = ['php' => ['serialize', 'unserialize']];
+        if (extension_loaded('igbinary')) {
+            $serializers['igbinary'] = ['igbinary_serialize', 'igbinary_unserialize'];
+        }
+
+        return $serializers;
     }
 }

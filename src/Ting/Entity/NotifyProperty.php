@@ -64,11 +64,73 @@ trait NotifyProperty
         return $properties;
     }
 
+    /**
+     * Serialized key of each property kept by __sleep(), per class.
+     *
+     * @var array<class-string, array{0: list<string>, 1: array<string, true>}>
+     */
+    private static $sleepKeysByClass = [];
+
+    /**
+     * Serializes the entity without its listeners, in the format PHP writes without
+     * __serialize(): private properties are keyed "\0Class\0name", protected ones "\0*\0name".
+     * PHP reads this format back natively (no __unserialize()), with serialize() and igbinary,
+     * and so does every Ting version: a cache shared by two versions stays readable
+     * (rolling deploy, rollback).
+     * When the entity defines __sleep(), only the properties it lists are kept, as PHP
+     * ignores __sleep() once __serialize() exists.
+     */
     public function __serialize(): array
     {
-        $properties = get_object_vars($this);
-        unset($properties['listeners']);
+        $properties = (array) $this;
+        unset($properties["\0*\0listeners"]);
 
-        return $properties;
+        if (!method_exists($this, '__sleep')) {
+            return $properties;
+        }
+
+        // Keys resolved once per class, again only if __sleep() changes its answer
+        $sleep = $this->__sleep();
+        $cached = self::$sleepKeysByClass[static::class] ?? null;
+        if ($cached === null || $cached[0] !== $sleep) {
+            $cached = self::$sleepKeysByClass[static::class] = [$sleep, self::serializedKeysOf(static::class, $sleep)];
+        }
+
+        return array_intersect_key($properties, $cached[1]);
+    }
+
+    /**
+     * Key under which (array) $object exposes each given property, parent classes included.
+     *
+     * @param list<string> $names
+     * @return array<string, true>
+     */
+    private static function serializedKeysOf(string $class, array $names): array
+    {
+        $wanted = array_flip($names);
+        $keys = [];
+        for ($reflection = new \ReflectionClass($class); $reflection !== false; $reflection = $reflection->getParentClass()) {
+            foreach ($reflection->getProperties() as $property) {
+                $name = $property->getName();
+                if ($property->isStatic() || !isset($wanted[$name])
+                    || $property->getDeclaringClass()->getName() !== $reflection->getName()
+                ) {
+                    continue;
+                }
+                if ($property->isPrivate()) {
+                    $keys["\0" . $reflection->getName() . "\0" . $name] = true;
+                } elseif ($property->isProtected()) {
+                    $keys["\0*\0" . $name] = true;
+                } else {
+                    $keys[$name] = true;
+                }
+            }
+        }
+        // Properties added at runtime are public
+        foreach ($names as $name) {
+            $keys[$name] = true;
+        }
+
+        return $keys;
     }
 }

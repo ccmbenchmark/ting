@@ -29,7 +29,7 @@ use CCMBenchmark\Ting\Driver\DriverInterface;
 use CCMBenchmark\Ting\Exceptions\ConnectionException;
 use CCMBenchmark\Ting\Logger\DriverLoggerInterface;
 
-class ConnectionPool implements ConnectionPoolInterface
+class ConnectionPool implements ConnectionPoolInterface, ResetInterface
 {
     /**
      * @var array
@@ -225,5 +225,10 @@ class ConnectionPool implements ConnectionPoolInterface
         }
 
         return $this->connectionConfig[$name]['namespace'] . '\\Driver';
+    }
+
+    public function reset(): void
+    {
+        $this->closeAll();
     }
 }
