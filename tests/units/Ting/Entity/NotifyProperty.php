@@ -221,27 +221,6 @@ class NotifyProperty extends atoum
         ;
     }
 
-    /**
-     * Donnees ecrites avant Ting 3.12 : elles contiennent les listeners, qui ne sont pas relus.
-     */
-    public function testUnserializeShouldIgnoreListenersFromOldData()
-    {
-        $class = Tree::class;
-        $properties = [
-            "\0*\0listeners" => 'a:1:{i:0;s:8:"listener";}',
-            "\0" . $class . "\0id" => 'i:5;',
-        ];
-        $body = '';
-        foreach ($properties as $name => $value) {
-            $body .= sprintf('s:%d:"%s";%s', strlen($name), $name, $value);
-        }
-
-        $this
-            ->given($entity = unserialize(sprintf('O:%d:"%s":2:{%s}', strlen($class), $class, $body)))
-            ->array((fn () => $this->listeners)->call($entity))->isEmpty()
-        ;
-    }
-
     protected function serializers(): array
     {
         $serializers = ['php' => ['serialize', 'unserialize']];

@@ -65,10 +65,18 @@ trait NotifyProperty
     }
 
     /**
+     * Serialized key of each property kept by __sleep(), per class.
+     *
+     * @var array<class-string, array{0: list<string>, 1: array<string, true>}>
+     */
+    private static $sleepKeysByClass = [];
+
+    /**
      * Serializes the entity without its listeners, in the format PHP writes without
-     * __serialize(): private properties are named "\0Class\0name", protected ones "\0*\0name".
-     * Every Ting version reads this format back, with or without __unserialize(), which keeps
-     * a cache shared by two versions readable (rolling deploy, rollback).
+     * __serialize(): private properties are keyed "\0Class\0name", protected ones "\0*\0name".
+     * PHP reads this format back natively (no __unserialize()), with serialize() and igbinary,
+     * and so does every Ting version: a cache shared by two versions stays readable
+     * (rolling deploy, rollback).
      * When the entity defines __sleep(), only the properties it lists are kept, as PHP
      * ignores __sleep() once __serialize() exists.
      */
@@ -77,72 +85,52 @@ trait NotifyProperty
         $properties = (array) $this;
         unset($properties["\0*\0listeners"]);
 
-        if (method_exists($this, '__sleep')) {
-            $kept = array_flip($this->__sleep());
-            foreach (array_keys($properties) as $key) {
-                if (!isset($kept[self::propertyNameFromSerializedKey($key)])) {
-                    unset($properties[$key]);
-                }
-            }
+        if (!method_exists($this, '__sleep')) {
+            return $properties;
         }
 
-        return $properties;
+        // Keys resolved once per class, again only if __sleep() changes its answer
+        $sleep = $this->__sleep();
+        $cached = self::$sleepKeysByClass[static::class] ?? null;
+        if ($cached === null || $cached[0] !== $sleep) {
+            $cached = self::$sleepKeysByClass[static::class] = [$sleep, self::serializedKeysOf(static::class, $sleep)];
+        }
+
+        return array_intersect_key($properties, $cached[1]);
     }
 
     /**
-     * Restores each property in the class that declares it.
-     * Reads both formats: "\0Class\0name" / "\0*\0name" (PHP default, Ting < 3.12) and
-     * the plain "name" written by Ting 3.12 and 3.13. Without this method igbinary restores
-     * plain names as public properties, and the private properties stay null.
-     * Listeners are never restored from serialized data.
+     * Key under which (array) $object exposes each given property, parent classes included.
+     *
+     * @param list<string> $names
+     * @return array<string, true>
      */
-    public function __unserialize(array $data): void
+    private static function serializedKeysOf(string $class, array $names): array
     {
-        $byScope = [];
-        foreach ($data as $key => $value) {
-            $key = (string) $key;
-            $property = self::propertyNameFromSerializedKey($key);
-            if ($property === 'listeners') {
-                continue;
-            }
-            $byScope[$this->declaringScope($key, $property)][$property] = $value;
-        }
-
-        foreach ($byScope as $scope => $properties) {
-            \Closure::bind(function () use ($properties) {
-                foreach ($properties as $property => $value) {
-                    $this->$property = $value;
+        $wanted = array_flip($names);
+        $keys = [];
+        for ($reflection = new \ReflectionClass($class); $reflection !== false; $reflection = $reflection->getParentClass()) {
+            foreach ($reflection->getProperties() as $property) {
+                $name = $property->getName();
+                if ($property->isStatic() || !isset($wanted[$name])
+                    || $property->getDeclaringClass()->getName() !== $reflection->getName()
+                ) {
+                    continue;
                 }
-            }, $this, $scope)();
-        }
-    }
-
-    private static function propertyNameFromSerializedKey(string $key): string
-    {
-        $separator = strrpos($key, "\0");
-
-        return $separator === false ? $key : substr($key, $separator + 1);
-    }
-
-    /**
-     * Class in which a serialized property must be written back.
-     */
-    private function declaringScope(string $key, string $property): string
-    {
-        // "\0Class\0name" : private property of Class
-        if ($key !== '' && $key[0] === "\0" && $key[1] !== '*') {
-            return substr($key, 1, strrpos($key, "\0") - 1);
-        }
-
-        // "\0*\0name" or "name" : the class that declares the property, if any
-        for ($class = new \ReflectionClass($this); $class !== false; $class = $class->getParentClass()) {
-            if ($class->hasProperty($property)
-                && $class->getProperty($property)->getDeclaringClass()->getName() === $class->getName()
-            ) {
-                return $class->getName();
+                if ($property->isPrivate()) {
+                    $keys["\0" . $reflection->getName() . "\0" . $name] = true;
+                } elseif ($property->isProtected()) {
+                    $keys["\0*\0" . $name] = true;
+                } else {
+                    $keys[$name] = true;
+                }
             }
         }
+        // Properties added at runtime are public
+        foreach ($names as $name) {
+            $keys[$name] = true;
+        }
 
-        return static::class;
+        return $keys;
     }
 }
