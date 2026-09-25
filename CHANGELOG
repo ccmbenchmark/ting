@@ -1,4 +1,4 @@
-unreleased (4.0.0):
+4.0.0 (2026-09-25):
     * BC: new major line on GitLab, installed on purpose only (the former 4.0.0-rc.1 is withdrawn)
     * BC: NotifyProperty::__serialize() returns the keys of PHP default serialization ("\0*\0name", "\0Class\0name") instead of bare names
     * Fix NotifyProperty serialization: entities read back from cache keep their private properties (igbinary lost them since 3.12), __sleep() is honoured again, and the serialized format is the PHP default one, readable by every Ting version
