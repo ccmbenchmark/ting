@@ -30,6 +30,15 @@ trait NotifyProperty
     protected $listeners = [];
 
     /**
+     * spl_object_id() of the entity the UnitOfWork managed. A copy (clone) keeps it: the
+     * UnitOfWork then recognises the copy of a managed entity, and saving it updates the row,
+     * as in Ting < 3.10. Written by the UnitOfWork, only valid for the current request.
+     *
+     * @internal
+     */
+    public ?int $tingOriginId = null;
+
+    /**
      * Add an observer to the current object
      * @param PropertyListenerInterface $listener
      * @return void
@@ -83,7 +92,7 @@ trait NotifyProperty
     public function __serialize(): array
     {
         $properties = (array) $this;
-        unset($properties["\0*\0listeners"]);
+        unset($properties["\0*\0listeners"], $properties["tingOriginId"]);
 
         if (!method_exists($this, '__sleep')) {
             return $properties;

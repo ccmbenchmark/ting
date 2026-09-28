@@ -420,4 +420,113 @@ class UnitOfWork extends atoum
                 ->isInstanceOf(\CCMBenchmark\Ting\Exception::class)
         ;
     }
+
+    private function newUnitOfWork(): \CCMBenchmark\Ting\UnitOfWork
+    {
+        return new \CCMBenchmark\Ting\UnitOfWork(
+            $this->services->get('ConnectionPool'),
+            $this->services->get('MetadataRepository'),
+            $this->services->get('QueryFactory')
+        );
+    }
+
+    /**
+     * Copie d'une entite chargee en base : son enregistrement est un UPDATE, pas un INSERT.
+     */
+    public function testCopyOfAManagedEntityShouldBeSavedAsManaged()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = $this->newUnitOfWork())
+            ->and($unitOfWork->manage($entity))
+            ->and($copy = clone $entity)
+            ->then($unitOfWork->pushSave($copy))
+            ->boolean($unitOfWork->isManaged($copy))
+                ->isTrue()
+            ->boolean($unitOfWork->isNew($copy))
+                ->isFalse()
+        ;
+    }
+
+    /**
+     * Une modification faite sur l'original avant la copie est enregistree avec la copie.
+     */
+    public function testCopyShouldKeepTheChangesMadeBeforeTheCopy()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = $this->newUnitOfWork())
+            ->and($unitOfWork->manage($entity))
+            ->and($entity->setName('avant la copie'))
+            ->and($copy = clone $entity)
+            ->and($copy->setFirstname('apres la copie'))
+            ->boolean($unitOfWork->isPropertyChanged($copy, 'name'))
+                ->isTrue()
+            ->boolean($unitOfWork->isPropertyChanged($copy, 'firstname'))
+                ->isTrue()
+        ;
+    }
+
+    public function testCopyOfANewEntityShouldStayNew()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = $this->newUnitOfWork())
+            ->and($copy = clone $entity)
+            ->then($unitOfWork->pushSave($copy))
+            ->boolean($unitOfWork->isNew($copy))
+                ->isTrue()
+        ;
+    }
+
+    public function testDetachShouldReleaseTheCopiesToo()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = $this->newUnitOfWork())
+            ->and($unitOfWork->manage($entity))
+            ->and($copy = clone $entity)
+            ->then($unitOfWork->detach($entity))
+            ->boolean($unitOfWork->isManaged($copy))
+                ->isFalse()
+        ;
+    }
+
+    /**
+     * L'identite ne vaut que le temps de la requete : une entite relue depuis un cache n'est pas geree.
+     */
+    public function testUnserializedEntityShouldNotBeManaged()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+
+        $this
+            ->if($unitOfWork = $this->newUnitOfWork())
+            ->and($unitOfWork->manage($entity))
+            ->array($entity->__serialize())
+                ->notHasKey('tingOriginId')
+            ->boolean($unitOfWork->isManaged(unserialize(serialize($entity))))
+                ->isFalse()
+        ;
+    }
+
+    /**
+     * Une entite qui n'utilise pas NotifyProperty est suivie par l'objet lui-meme.
+     */
+    public function testEntityWithoutTheTraitShouldBeTrackedByObject()
+    {
+        $entity = new \mock\CCMBenchmark\Ting\Entity\NotifyPropertyInterface();
+
+        $this
+            ->if($unitOfWork = $this->newUnitOfWork())
+            ->and($unitOfWork->manage($entity))
+            ->boolean($unitOfWork->isManaged($entity))
+                ->isTrue()
+            ->boolean($unitOfWork->isManaged(clone $entity))
+                ->isFalse()
+        ;
+    }
 }
