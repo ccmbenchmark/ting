@@ -68,7 +68,7 @@ trait NotifyProperty
     public function __debugInfo(): ?array
     {
         $properties = get_object_vars($this);
-        unset($properties['listeners']);
+        unset($properties['listeners'], $properties['tingOriginId']);
 
         return $properties;
     }

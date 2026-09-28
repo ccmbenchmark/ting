@@ -69,9 +69,6 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
     }
 
     /**
-     * @return string
-     */
-    /**
      * A copy (clone) of a managed entity carries the tingOriginId of its original: it is managed
      * too, and gets the changes of the original, as in Ting < 3.10 where the copy kept
      * tingUUID. Only reached for an object the UnitOfWork does not know, and only searches when
@@ -85,7 +82,9 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
         }
 
         foreach ($this->entities as $original => $managed) {
-            if (spl_object_id($original) === $originId && $original->tingOriginId === $originId) {
+            if (spl_object_id($original) === $originId && $original->tingOriginId === $originId
+                && $original::class === $entity::class
+            ) {
                 $this->entities[$entity] = true;
                 $entity->tingOriginId = spl_object_id($entity);
                 // Changes of the original first, then those already made on the copy
@@ -104,6 +103,9 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
         return false;
     }
 
+    /**
+     * @return string
+     */
     protected function generateUid()
     {
         return uniqid(mt_rand(), true);

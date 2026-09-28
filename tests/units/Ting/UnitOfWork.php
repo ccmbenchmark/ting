@@ -482,6 +482,30 @@ class UnitOfWork extends atoum
         ;
     }
 
+    /**
+     * PHP reutilise le numero d'un objet libere : la copie ne se rattache pas a une entite
+     * d'une autre classe qui a recu ce numero.
+     */
+    public function testCopyShouldNotBeAdoptedByAnEntityOfAnotherClassReusingTheOriginalId()
+    {
+        $unitOfWork = $this->newUnitOfWork();
+        $entity = new \tests\fixtures\model\Bouh();
+        $unitOfWork->manage($entity);
+        $copy = clone $entity;
+        $originId = spl_object_id($entity);
+        unset($entity);
+        $other = new \tests\fixtures\model\City();
+        $unitOfWork->manage($other);
+
+        $this
+            ->integer(spl_object_id($other))
+                ->isIdenticalTo($originId)
+            ->then($unitOfWork->pushSave($copy))
+            ->boolean($unitOfWork->isNew($copy))
+                ->isTrue()
+        ;
+    }
+
     public function testDetachShouldReleaseTheCopiesToo()
     {
         $entity = new \tests\fixtures\model\Bouh();
