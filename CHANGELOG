@@ -1,5 +1,6 @@
-unreleased:
+4.0.1 (2026-09-28):
     * Fix UnitOfWork: saving a copy (clone) of a managed entity updates its row again instead of inserting a new one. Since 3.10 the UnitOfWork recognised an entity by the object itself, and a copy looked new. The copy now inherits the changes of its original, as in Ting < 3.10
+    * NotifyProperty: new public property tingOriginId, internal to the UnitOfWork. It is left out of serialize() and var_dump(), but get_object_vars() and normalizers reading public properties see it
     * Fix UnitOfWork::detach(): no warning when the entity was never pushed
 
 4.0.0 (2026-09-25):
