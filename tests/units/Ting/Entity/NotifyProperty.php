@@ -98,6 +98,16 @@ class NotifyProperty extends atoum
         ;
     }
 
+    public function testDebugInfoShouldHideTheUnitOfWorkData()
+    {
+        $this
+            ->given($entity = new Bouh())
+            ->and($entity->tingOriginId = 12)
+            ->array($entity->__debugInfo())
+                ->notHasKeys(['listeners', 'tingOriginId'])
+        ;
+    }
+
     public function testUnserializeShouldRestorePrivateProperties()
     {
         $this

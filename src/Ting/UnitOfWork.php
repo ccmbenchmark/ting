@@ -47,6 +47,9 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
     protected array $entitiesShouldBePersisted;
     protected $statements = [];
 
+    /** @var array<class-string, bool> classes using NotifyProperty, which carry tingOriginId */
+    private array $tracksOrigin = [];
+
     /**
      * @param ConnectionPool        $connectionPool
      * @param MetadataRepository    $metadataRepository
@@ -63,6 +66,41 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
         $this->entities = new WeakMap();
         $this->entitiesChanged = new WeakMap();
         $this->entitiesShouldBePersisted = [];
+    }
+
+    /**
+     * A copy (clone) of a managed entity carries the tingOriginId of its original: it is managed
+     * too, and gets the changes of the original, as in Ting < 3.10 where the copy kept
+     * tingUUID. Only reached for an object the UnitOfWork does not know, and only searches when
+     * that object is a copy (a new entity has no tingOriginId).
+     */
+    private function adoptCopy(NotifyPropertyInterface $entity): bool
+    {
+        $originId = $entity->tingOriginId ?? null;
+        if ($originId === null || $originId === spl_object_id($entity)) {
+            return false;
+        }
+
+        foreach ($this->entities as $original => $managed) {
+            if (spl_object_id($original) === $originId && $original->tingOriginId === $originId
+                && $original::class === $entity::class
+            ) {
+                $this->entities[$entity] = true;
+                $entity->tingOriginId = spl_object_id($entity);
+                // Changes of the original first, then those already made on the copy
+                if (isset($this->entitiesChanged[$original])) {
+                    $changes = $this->entitiesChanged[$original];
+                    foreach ($this->entitiesChanged[$entity] ?? [] as $property => $values) {
+                        $changes[$property] = isset($changes[$property]) ? [$changes[$property][0], $values[1]] : $values;
+                    }
+                    $this->entitiesChanged[$entity] = $changes;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -93,6 +131,9 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
     {
         if (isset($this->entities[$entity]) === false) {
             $this->entities[$entity] = true;
+            if ($this->tracksOrigin[$entity::class] ??= property_exists($entity, 'tingOriginId')) {
+                $entity->tingOriginId = spl_object_id($entity);
+            }
         }
 
         $entity->addPropertyListener($this);
@@ -104,7 +145,7 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
      */
     public function isManaged(NotifyPropertyInterface $entity): bool
     {
-        return isset($this->entities[$entity]);
+        return isset($this->entities[$entity]) || $this->adoptCopy($entity);
     }
 
     /**
@@ -132,7 +173,7 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
     {
         $state = self::STATE_MANAGED;
 
-        if (isset($this->entities[$entity]) === false) {
+        if (isset($this->entities[$entity]) === false && $this->adoptCopy($entity) === false) {
             $state = self::STATE_NEW;
         }
 
@@ -187,6 +228,10 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
      */
     public function isPropertyChanged(NotifyPropertyInterface $entity, string $propertyName): bool
     {
+        if (isset($this->entities[$entity]) === false) {
+            $this->adoptCopy($entity);
+        }
+
         if (isset($this->entitiesChanged[$entity][$propertyName]) === true) {
             return true;
         }
@@ -202,9 +247,7 @@ class UnitOfWork implements PropertyListenerInterface, ResetInterface
     public function detach(NotifyPropertyInterface $entity): void
     {
         $hash = spl_object_hash($entity);
-        if ($this->entitiesShouldBePersisted[$hash]) {
-            unset($this->entitiesShouldBePersisted[$hash]);
-        }
+        unset($this->entitiesShouldBePersisted[$hash]);
         $this->entitiesChanged->offsetUnset($entity);
         $this->entities->offsetUnset($entity);
     }
