@@ -30,9 +30,22 @@ src/Ting/
 
 Le bundle Symfony associé (`ccmbenchmark/ting_bundle`) vit dans un dépôt séparé : https://gitlab.ccmbg.com/core/ting_bundle
 
+## 📚 Documentation
+
+Le dossier [`documentation/`](documentation/README.md) contient une doc pédagogique par sujet (réécrite en 2026, voir COREPHP-744) — à consulter en priorité selon le sujet plutôt que de tout lire :
+
+- [01-demarrage-rapide.md](documentation/01-demarrage-rapide.md) — installation, bootstrap `Services`/`ConnectionPool`
+- [02-entites.md](documentation/02-entites.md) — `NotifyProperty`, notification des changements
+- [03-repository-et-metadata.md](documentation/03-repository-et-metadata.md) — mapping table ↔ entité, méthodes du Repository
+- [04-requetes.md](documentation/04-requetes.md) — `Query`, requêtes préparées, transactions, QueryBuilder
+- [05-cache.md](documentation/05-cache.md) — requêtes mises en cache, composant de cache générique
+- [06-hydrateurs.md](documentation/06-hydrateurs.md) — `Hydrator`, `HydratorArray`, `HydratorAggregator`, `HydratorRelational`
+- [07-unitofwork.md](documentation/07-unitofwork.md) — persister (insert/update/delete)
+- [08-integration-symfony.md](documentation/08-integration-symfony.md) — le bundle `ting_bundle`
+
 ## 🎯 Concepts clés
 
-Le [README.md](README.md) est la référence détaillée (bootstrap, exemples). Résumé :
+Le [README.md](README.md) et [`documentation/`](documentation/README.md) sont la référence détaillée (bootstrap, exemples). Résumé :
 
 - **Services** : point d'entrée (`new CCMBenchmark\Ting\Services()`), conteneur Pimple qui expose `ConnectionPool`, `MetadataRepository`, `UnitOfWork`, `RepositoryFactory`, les Hydrators, etc.
 - **Metadata / MetadataInitializer** : le mapping table ↔ entité se déclare dans le Repository via `initMetadata()` qui retourne un `Metadata` (`setEntity`, `setConnectionName`, `setDatabase`, `setTable`, `addField(...)`). C'est le mécanisme central de mapping — pas d'attributs PHP côté `ting` (ça, c'est `ting_bundle`).
@@ -77,4 +90,4 @@ Le fichier `CHANGELOG` (à la racine, sans extension) doit être mis à jour à 
 ## Git
 
 - Dépôt rapatrié de GitHub vers GitLab (COREPHP-649), historique conservé. Pas de miroir GitHub maintenu : les projets consommateurs basculent vers le registre Composer GitLab (`gitlab.ccmbg.com/core`) via un `composer update` ciblé, puis le dépôt GitHub est archivé.
-- Ne pas recréer de documentation en ligne externe (tech.ccmbg.com) : ce README/CLAUDE.md fait foi.
+- Ne pas recréer de documentation en ligne externe (tech.ccmbg.com) : ce README/CLAUDE.md et le dossier `documentation/` font foi.
