@@ -3,4 +3,3 @@ vendor/
 /composer.lock
 coverage*
 .idea/
-/old-doc/
