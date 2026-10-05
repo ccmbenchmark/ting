@@ -173,7 +173,10 @@ class MetadataRepository
         $this->tableWithConnectionToMetadata
             [$metadataConnection . '#' . $metadataTable]
             [$metadata->getSchema() . '#' . $metadata->getDatabase()] = $repositoryClass;
-        $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
+        // PHP 8.5 deprecates null as an array key: metadata without an entity has nothing to index.
+        if ($metadata->getEntity() !== null) {
+            $this->entityToRepository[$metadata->getEntity()] = $repositoryClass;
+        }
     }
 
     /**
