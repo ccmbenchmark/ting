@@ -1,4 +1,4 @@
-unreleased:
+4.1.0 (2026-10-05):
     * Support Symfony 8: symfony/property-access, symfony/cache and symfony/uid accept ^8.0
     * Fix PHP 8.5 deprecation: MetadataRepository no longer uses null as an array key for metadata without an entity
 
