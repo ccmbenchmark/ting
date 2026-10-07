@@ -374,6 +374,91 @@ class UnitOfWork extends atoum
         ;
     }
 
+    public function testProcessAnUnchangedManagedEntityShouldUnqueueIt()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($this->services->get('SerializerFactory'));
+
+        $mockMetadataRepository->addMetadata(
+            'tests\fixtures\model\BouhRepository',
+            \tests\fixtures\model\BouhRepository::initMetadata($this->services->get('SerializerFactory'))
+        );
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('', $mockConnection);
+        $this->calling($mockPreparedQuery)->prepareExecute = $mockPreparedQuery;
+        $this->calling($mockPreparedQuery)->execute = true;
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $mockConnectionPool,
+                $mockMetadataRepository,
+                $mockQueryFactory
+            ))
+            ->and($unitOfWork->manage($entity))
+            ->then($unitOfWork->pushSave($entity))
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isTrue()
+            ->variable($unitOfWork->process())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()
+            ->mock($mockPreparedQuery)
+                ->call('execute')
+                    ->never()
+        ;
+    }
+
+    public function testProcessAManagedEntityWithRevertedChangesShouldUnqueueIt()
+    {
+        $entity = new \tests\fixtures\model\Bouh();
+        $mockMetadataRepository = new \CCMBenchmark\Ting\MetadataRepository($this->services->get('SerializerFactory'));
+
+        $mockMetadataRepository->addMetadata(
+            'tests\fixtures\model\BouhRepository',
+            \tests\fixtures\model\BouhRepository::initMetadata($this->services->get('SerializerFactory'))
+        );
+
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $mockConnection = new \mock\CCMBenchmark\Ting\Connection($mockConnectionPool, 'main', 'db');
+        $mockQueryFactory = new \mock\CCMBenchmark\Ting\Query\QueryFactory();
+        $mockPreparedQuery = new \mock\CCMBenchmark\Ting\Query\PreparedQuery('', $mockConnection);
+        $this->calling($mockPreparedQuery)->prepareExecute = $mockPreparedQuery;
+        $this->calling($mockPreparedQuery)->execute = true;
+        $this->calling($mockQueryFactory)->getPrepared = $mockPreparedQuery;
+
+        $this
+            ->if($unitOfWork = new \CCMBenchmark\Ting\UnitOfWork(
+                $mockConnectionPool,
+                $mockMetadataRepository,
+                $mockQueryFactory
+            ))
+            ->and($entity->setName('original'))
+            ->and($unitOfWork->manage($entity))
+            ->then($entity->setName('changed'))
+            ->then($entity->setName('original'))
+            ->then($unitOfWork->pushSave($entity))
+            ->variable($unitOfWork->process())
+                ->isNull()
+            ->boolean($unitOfWork->shouldBePersisted($entity))
+                ->isFalse()
+            ->mock($mockPreparedQuery)
+                ->call('execute')
+                    ->never()
+            // Une modification faite plus tard, sans nouveau pushSave(), ne doit pas partir
+            // avec l'enregistrement d'un autre objet.
+            ->then($entity->setName('later'))
+            ->variable($unitOfWork->process())
+                ->isNull()
+            ->mock($mockPreparedQuery)
+                ->call('execute')
+                    ->never()
+        ;
+    }
+
     public function testTryingToProcessAnEntityWithoutRepositoryShouldRaiseAnException()
     {
         $entity = new \tests\fixtures\model\Bouh();
