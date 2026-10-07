@@ -1,3 +1,7 @@
+3.13.1 (2026-10-07):
+    * Fix UnitOfWork: saving a managed entity without any change removes it from the queue. It stayed queued, kept in memory until detach() or reset() (a leak in worker mode), and a later change made without pushSave() was written by the next process()
+    * Fix security: Pgsql\Driver::getInsertedIdForSequence() passes the sequence name as a query parameter instead of concatenating it in the SQL
+
 3.13.0 (2026-09-24):
     * Drop PHP 8.0 support, PHP >= 8.1 is now required
     * Add ResetInterface on ConnectionPool, UnitOfWork and Repository to reset state between requests (worker mode)
