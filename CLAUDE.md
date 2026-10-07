@@ -89,5 +89,6 @@ Le fichier `CHANGELOG` (à la racine, sans extension) doit être mis à jour à 
 
 ## Git
 
-- Dépôt rapatrié de GitHub vers GitLab (COREPHP-649), historique conservé. Pas de miroir GitHub maintenu : les projets consommateurs basculent vers le registre Composer GitLab (`gitlab.ccmbg.com/core`) via un `composer update` ciblé, puis le dépôt GitHub est archivé.
+- Dépôt rapatrié de GitHub vers GitLab (COREPHP-649), historique conservé. GitLab fait foi : les versions naissent ici.
+- `master` et les tags sont recopiés sur https://github.com/ccmbenchmark/ting (Packagist lit ce dépôt), en avance rapide seulement, jamais par push --force.
 - Ne pas recréer de documentation en ligne externe (tech.ccmbg.com) : ce README/CLAUDE.md et le dossier `documentation/` font foi.
