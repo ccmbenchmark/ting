@@ -696,4 +696,43 @@ class Repository extends atoum
                     ->isIdenticalTo($metadata)
         ;
     }
+
+    public function testResetShouldResetUnitOfWorkAndReloadConnection()
+    {
+        $services           = new \CCMBenchmark\Ting\Services();
+        $mockConnectionPool = new \mock\CCMBenchmark\Ting\ConnectionPool();
+        $metadataRepository = new \mock\CCMBenchmark\Ting\MetadataRepository($services->get('SerializerFactory'));
+        $metadata           = new \mock\CCMBenchmark\Ting\Repository\Metadata($services->get('SerializerFactory'));
+        $mockUnitOfWork     = new \mock\CCMBenchmark\Ting\UnitOfWork(
+            $mockConnectionPool,
+            $metadataRepository,
+            $services->get('QueryFactory')
+        );
+        $this->calling($metadata)->getConnection = null;
+
+        $this->calling($metadataRepository)
+            ->findMetadataForRepository = function($repository, $callback, $error) use ($metadata) {
+            $callback($metadata);
+        };
+
+        $this
+            ->if($bouhRepository = new \tests\fixtures\model\BouhRepository(
+                $mockConnectionPool,
+                $metadataRepository,
+                $services->get('QueryFactory'),
+                $services->get('CollectionFactory'),
+                $services->get('Cache'),
+                $mockUnitOfWork,
+                $services->get('SerializerFactory')
+            ))
+            ->then($bouhRepository->reset())
+                ->mock($mockUnitOfWork)
+                    ->call('reset')
+                        ->once()
+                ->mock($metadata)
+                    ->call('getConnection')
+                        ->withArguments($mockConnectionPool)
+                            ->twice()
+        ;
+    }
 }
