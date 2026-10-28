@@ -1,3 +1,6 @@
+3.9.2 (2026-10-28):
+    * Add ResetInterface on ConnectionPool, UnitOfWork and Repository to reset state between requests (worker mode)
+
 3.9.1 (2024-07-19):
     * Fix: Mysqli/Driver::ping() try to reconnect when mysqli::ping() throws an exception
 

@@ -31,7 +31,7 @@ use CCMBenchmark\Ting\Entity\PropertyListenerInterface;
 use CCMBenchmark\Ting\Query\QueryFactoryInterface;
 use CCMBenchmark\Ting\Repository\Metadata;
 
-class UnitOfWork implements PropertyListenerInterface
+class UnitOfWork implements PropertyListenerInterface, ResetInterface
 {
     const STATE_NEW     = 1;
     const STATE_MANAGED = 2;
@@ -227,6 +227,15 @@ class UnitOfWork implements PropertyListenerInterface
         $this->entitiesChanged = [];
         $this->entitiesShouldBePersisted = [];
         $this->entities = [];
+    }
+
+    /**
+     * Reset state between requests (worker mode: FrankenPHP, Swoole, RoadRunner, etc.)
+     */
+    public function reset(): void
+    {
+        $this->detachAll();
+        $this->statements = [];
     }
 
     /**
