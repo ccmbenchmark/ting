@@ -149,6 +149,19 @@ class Driver extends atoum
                 );
     }
 
+    public function testReconnectShouldReturnTrueOnSuccess()
+    {
+        PGMock::override('pg_connect', true);
+
+        $this
+            ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
+            ->then($driver->connect('hostname.test', 'user.test', 'password.test', 1234))
+            ->then($driver->setDatabase('database.test'))
+            ->boolean($driver->reconnect())
+                ->isTrue()
+        ;
+    }
+
     public function testSetDatabaseWhenWrongAuthOrPortShouldRaiseDriverException()
     {
         PGMock::override('pg_connect', false);
