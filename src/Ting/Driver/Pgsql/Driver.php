@@ -104,7 +104,7 @@ class Driver implements DriverInterface
             $connectionConfig['host'] . '|' .
             $connectionConfig['port'] . '|' .
             $connectionConfig['user'] . '|' .
-            $connectionConfig['password'] . '|' .
+            hash('sha256', (string) $connectionConfig['password']) . '|' .
             $database;
     }
 
@@ -118,8 +118,17 @@ class Driver implements DriverInterface
      */
     public function connect($hostname, $username, $password, $port)
     {
-        $this->dsn = 'host=' . $hostname . ' user=' . $username . ' password=' . $password . ' port=' . $port;
+        // Chaque valeur est quotée : un mot de passe avec espace ou apostrophe ne casse plus le DSN et ne peut pas y injecter une option (sslmode=...)
+        $this->dsn = 'host=' . $this->quoteDsnValue($hostname)
+            . ' user=' . $this->quoteDsnValue($username)
+            . ' password=' . $this->quoteDsnValue($password)
+            . ' port=' . $this->quoteDsnValue($port);
         return $this;
+    }
+
+    private function quoteDsnValue($value): string
+    {
+        return "'" . addcslashes((string) $value, "\\'") . "'";
     }
 
     /**
@@ -177,11 +186,11 @@ class Driver implements DriverInterface
             return $this;
         }
 
-        $resource = pg_connect($this->dsn . ' dbname=' . $database);
+        $resource = pg_connect($this->dsn . ' dbname=' . $this->quoteDsnValue($database));
         $this->database = $database;
 
         if ($resource === false) {
-            $dsn = preg_replace('/((user|password)=[^\s]+)/', '$2=<REDACTED>', $this->dsn);
+            $dsn = preg_replace('/((user|password)=\'(?:[^\'\\\\]|\\\\.)*\')/', '$2=<REDACTED>', $this->dsn);
             throw new DriverException('Connect Error: ' . $dsn . ' dbname=' . $database);
         }
         $this->connection = $resource;
@@ -370,7 +379,8 @@ class Driver implements DriverInterface
      */
     public function escapeField($field)
     {
-        return '"' . $field . '"';
+        // Un identifiant PostgreSQL se protège en doublant les guillemets qu'il contient
+        return '"' . str_replace('"', '""', (string) $field) . '"';
     }
 
     /**
@@ -419,6 +429,9 @@ class Driver implements DriverInterface
     public function getInsertedId()
     {
         $resultResource = pg_query($this->connection, 'SELECT lastval()');
+        if ($resultResource === false) {
+            throw new QueryException(pg_last_error($this->connection) . ' (Query: SELECT lastval())');
+        }
         $row = pg_fetch_row($resultResource);
         return (int) $row[0];
     }
@@ -516,6 +529,9 @@ class Driver implements DriverInterface
         if ($this->currentTimezone === $timezone) {
             return;
         }
+        if ($timezone !== null && preg_match('/^[A-Za-z0-9_+\\-\/:]{1,64}$/', (string) $timezone) !== 1) {
+            throw new DriverException('Invalid timezone value: ' . $timezone);
+        }
         $value = $timezone;
         $query = 'SET timezone = "%s";';
         if ($timezone === null) {
@@ -540,6 +556,7 @@ class Driver implements DriverInterface
                 $this->currentCharset = null;
                 $this->setCharset($charset);
             }
+
         } catch (DriverException) {
             return false;
         }

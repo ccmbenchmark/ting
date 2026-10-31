@@ -604,8 +604,33 @@ class Metadata
             $fields
         );
         $criteriaColumn = $this->getColumnsFromCriteria($criteria);
+        // Les clés de tri sont des propriétés de l'entité, traduites en colonnes et vérifiées comme les critères
+        $orderByColumn = $this->getOrderColumns($orderBy);
 
-        return $queryGenerator->getByCriteriaWithOrderAndLimit($criteriaColumn, $collectionFactory, $forceMaster, $orderBy, $limit);
+        return $queryGenerator->getByCriteriaWithOrderAndLimit($criteriaColumn, $collectionFactory, $forceMaster, $orderByColumn, $limit);
+    }
+
+    /**
+     * Translate order keys (entity property or column name) into column names and refuse unknown ones.
+     *
+     * @param array<string,string> $orderBy
+     * @return array<string,string>
+     * @throws ValueException
+     */
+    protected function getOrderColumns(array $orderBy)
+    {
+        $orderByColumn = [];
+        foreach ($orderBy as $key => $direction) {
+            if (isset($this->fieldsByProperty[$key]) === true) {
+                $orderByColumn[$this->fieldsByProperty[$key]['columnName']] = $direction;
+            } elseif (isset($this->fields[$key]) === true) {
+                $orderByColumn[$key] = $direction;
+            } else {
+                throw new ValueException(sprintf('Undefined property or column %s in your order clause', $key));
+            }
+        }
+
+        return $orderByColumn;
     }
 
     /**
@@ -624,9 +649,19 @@ class Metadata
             } else {
                 throw new \CCMBenchmark\Ting\Exception('Incorrect format for primaries');
             }
-        } else {
-            return $originalValue;
         }
+
+        // Les clés (propriété de l'entité ou nom de colonne) sont traduites en colonnes et doivent être des primaires
+        $primariesKeyValue = [];
+        foreach ($originalValue as $key => $value) {
+            $columnName = isset($this->fieldsByProperty[$key]) === true ? $this->fieldsByProperty[$key]['columnName'] : $key;
+            if (isset($this->primaries[$columnName]) === false) {
+                throw new ValueException(sprintf('Undefined primary %s in your criteria', $key));
+            }
+            $primariesKeyValue[$columnName] = $value;
+        }
+
+        return $primariesKeyValue;
     }
 
     /**

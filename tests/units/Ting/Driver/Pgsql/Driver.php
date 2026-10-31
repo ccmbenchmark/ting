@@ -145,7 +145,7 @@ class Driver extends atoum
             ->then($driver->setDatabase('database.test'))
             ->string($outerDsn)
                 ->isIdenticalTo(
-                    'host=hostname.test user=user.test password=password.test port=1234 dbname=database.test'
+                    "host='hostname.test' user='user.test' password='password.test' port='1234' dbname='database.test'"
                 );
     }
 
@@ -285,6 +285,8 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Pgsql\Driver())
             ->string($driver->escapeField('Bouh'))
                 ->isIdenticalTo('"Bouh"')
+            ->string($driver->escapeField('Bo"uh'))
+                ->isIdenticalTo('"Bo""uh"')
         ;
     }
 

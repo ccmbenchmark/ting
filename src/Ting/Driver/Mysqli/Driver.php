@@ -148,7 +148,7 @@ class Driver implements DriverInterface
             $connectionConfig['host'] . '|' .
             $connectionConfig['port'] . '|' .
             $connectionConfig['user'] . '|' .
-            $connectionConfig['password'];
+            hash('sha256', (string) $connectionConfig['password']);
     }
 
     /**
@@ -324,7 +324,8 @@ class Driver implements DriverInterface
             "boolean" => (int) $value,
             "integer", "double" => $value,
             "NULL" => 'null',
-            default => '"' . $this->connection->real_escape_string($value) . '"',
+            // Apostrophes : en mode sql_mode=ANSI_QUOTES les guillemets désignent un identifiant, pas une chaîne
+            default => "'" . $this->connection->real_escape_string((string) $value) . "'",
         };
     }
 
@@ -409,7 +410,8 @@ class Driver implements DriverInterface
      */
     public function escapeField($field)
     {
-        return '`' . $field . '`';
+        // Un identifiant MySQL se protège en doublant les accents graves qu'il contient
+        return '`' . str_replace('`', '``', (string) $field) . '`';
     }
 
     /**
@@ -524,6 +526,9 @@ class Driver implements DriverInterface
     {
         if ($this->currentTimezone === $timezone) {
             return;
+        }
+        if ($timezone !== null && preg_match('/^[A-Za-z0-9_+\\-\/:]{1,64}$/', (string) $timezone) !== 1) {
+            throw new DriverException('Invalid timezone value: ' . $timezone);
         }
 
         $value = $timezone;

@@ -230,7 +230,7 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByCriteriaWithOrderAndLimit(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true, ['name' => 'ASC']))
+            ->object($generator->getByCriteriaWithOrderAndLimit(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true, ['population' => 'ASC']))
             ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
             ->mock($this->mockConnection)
             ->call('master')
@@ -239,6 +239,31 @@ class Generator extends atoum
         ;
     }
 
+
+    public function testGetByCriteriaWithUnknownOrderColumnShouldRaiseException()
+    {
+        $services = new \CCMBenchmark\Ting\Services();
+
+        $this
+            ->if(
+                $generator = new \CCMBenchmark\Ting\Query\Generator(
+                    $this->mockConnection,
+                    $this->mockQueryFactory,
+                    '',
+                    'table',
+                    ['id', 'population']
+                )
+            )
+            ->exception(function () use ($generator, $services): void {
+                $generator->getByCriteriaWithOrderAndLimit([], $services->get('CollectionFactory'), true, ['id` -- ' => 'ASC']);
+            })
+                ->isInstanceOf(\InvalidArgumentException::class)
+            ->exception(function () use ($generator, $services): void {
+                $generator->getByCriteriaWithOrderAndLimit([], $services->get('CollectionFactory'), true, ['id' => 'ASC; DROP TABLE t']);
+            })
+                ->isInstanceOf(\InvalidArgumentException::class)
+        ;
+    }
 
     public function testGetByCriteriaWithArrayValueAndOrderLimitShouldReturnAQuery()
     {
@@ -254,7 +279,7 @@ class Generator extends atoum
                     ['id', 'population']
                 )
             )
-            ->object($generator->getByCriteriaWithOrderAndLimit(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true, ['name' => 'ASC'], 1))
+            ->object($generator->getByCriteriaWithOrderAndLimit(['name' => ['Xavier','Olivier']], $services->get('CollectionFactory'), true, ['population' => 'ASC'], 1))
             ->isInstanceOf(\CCMBenchmark\Ting\Query\Query::class)
             ->mock($this->mockConnection)
             ->call('master')
