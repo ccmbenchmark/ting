@@ -1,3 +1,11 @@
+Unreleased:
+    * Fix security: identifiers passed to escapeField() are now really escaped (backticks doubled on MySQL, double quotes doubled on PostgreSQL, strict whitelist on SphinxQL)
+    * Fix security: Repository::getBy() order keys and Repository::get() primary-key arrays are checked against the metadata, unknown columns or directions throw instead of reaching the SQL
+    * Fix security: setTimezone() refuses values that are not a timezone name, and Pgsql connect() quotes every DSN value (a password with a space or quote no longer breaks the DSN nor injects an option)
+    * Fix security: the connection key used by ConnectionPool no longer contains the password in clear text
+    * Fix Mysqli: values inlined by execute() are quoted with apostrophes, so sql_mode=ANSI_QUOTES no longer turns them into identifiers
+    * Fix Pgsql: getInsertedId() throws when lastval() fails
+
 4.1.1 (2026-10-07):
     * Fix UnitOfWork: saving a managed entity without any change removes it from the queue. It stayed queued, kept in memory until detach() or reset() (a leak in worker mode), and a later change made without pushSave() was written by the next process()
     * Fix security: Pgsql\Driver::getInsertedIdForSequence() passes the sequence name as a query parameter instead of concatenating it in the SQL

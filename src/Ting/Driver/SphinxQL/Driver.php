@@ -50,6 +50,11 @@ class Driver extends Mysqli\Driver
      */
     public function escapeField($field)
     {
+        // SphinxQL ne protège pas les identifiants : on ne laisse passer que des noms simples
+        if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)?$/', (string) $field) !== 1) {
+            throw new \InvalidArgumentException('Invalid SphinxQL identifier: ' . $field);
+        }
+
         return $field;
     }
 }

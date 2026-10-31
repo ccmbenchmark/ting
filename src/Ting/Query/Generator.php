@@ -407,18 +407,19 @@ class Generator
      */
     protected function generateOrder(array $orderList, DriverInterface $driver)
     {
-        $fields = $this->escapeFields(array_keys($orderList), $driver);
-
         $orderClause = '';
         $orderCriteria = [];
 
-        $i = 0;
-        foreach ($orderList as $value) {
-            $value = strtoupper($value);
-            if (\in_array($value, ['ASC', 'DESC'])) {
-                $orderCriteria[] = $fields[$i] . ' ' . $value;
+        foreach ($orderList as $column => $direction) {
+            // Une colonne de tri inconnue de la table est refusée : ORDER BY ne doit jamais recevoir une valeur libre
+            if (\in_array((string) $column, $this->fields, true) === false) {
+                throw new \InvalidArgumentException(sprintf('Unknown column "%s" in order clause', $column));
             }
-            $i++;
+            $direction = strtoupper((string) $direction);
+            if (\in_array($direction, ['ASC', 'DESC'], true) === false) {
+                throw new \InvalidArgumentException(sprintf('Invalid order direction "%s" for column "%s"', $direction, $column));
+            }
+            $orderCriteria[] = $driver->escapeField($column) . ' ' . $direction;
         }
 
         if (count($orderList) > 0) {
@@ -436,6 +437,6 @@ class Generator
      */
     protected function generateLimit($limit)
     {
-        return ' LIMIT ' . $limit;
+        return ' LIMIT ' . (int) $limit;
     }
 }

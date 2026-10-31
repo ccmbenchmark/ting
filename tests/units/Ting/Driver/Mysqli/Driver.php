@@ -352,7 +352,7 @@ class Driver extends atoum
             ->mock($driverFake)
                 ->call('query')
                     ->withIdenticalArguments("SELECT 'Bouh:Ting', ' ::Ting', ADDTIME('23:59:59', '1:1:1') '
-                . ' FROM Bouh WHERE id = 3 AND login = \"Sylvain\" AND is_banned = 0")
+                . ' FROM Bouh WHERE id = 3 AND login = 'Sylvain' AND is_banned = 0")
                         ->once();
     }
 
@@ -580,6 +580,8 @@ class Driver extends atoum
             ->if($driver = new \CCMBenchmark\Ting\Driver\Mysqli\Driver($mockDriver))
             ->string($driver->escapeField('Bouh'))
                 ->isIdenticalTo('`Bouh`')
+            ->string($driver->escapeField('Bo`uh'))
+                ->isIdenticalTo('`Bo``uh`')
         ;
     }
 
