@@ -16,6 +16,7 @@ jobs:
           - 8.2
           - 8.3
           - 8.4
+          - 8.5
         deps:
           - highest
           - lowest
@@ -24,7 +25,7 @@ jobs:
     name: Run Unit Tests on PHP ${{ matrix.php }}, ${{ matrix.deps }} dependencies
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -34,9 +35,12 @@ jobs:
           tools: composer:v2, pecl
 
       - name: "Install ${{ matrix.dependencies }} dependencies with composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
-          dependency-versions: "${{ matrix.dependencies }}"
+          dependency-versions: "${{ matrix.deps }}"
+
+      - name: Audit dependencies for known vulnerabilities
+        run: composer audit --no-interaction
 
       - name: Run Atoum tests
         run: php vendor/bin/atoum

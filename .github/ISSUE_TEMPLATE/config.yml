@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Faille de sécurité
+    url: https://github.com/ccmbenchmark/ting/security/advisories/new
+    about: Ne publiez pas une faille dans une issue publique, utilisez un avis de sécurité privé.
